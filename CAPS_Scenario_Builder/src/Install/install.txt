@@ -1,0 +1,26 @@
+INSTALL CAPS SCENARIO BUILDER
+
+The specifications for CAPS Scenario Builder only require it to run on MS Windows.
+Because the app is written in Python, you can probably get it to run on nearly
+any platform, but the instructions below are for MS Windows.
+
+1) Download the contents of CAPS-Scenario-Builder/src and place in C:\Caps.
+   (Note: You don't need to download src/ReferenceCode, src/images, src/old or 
+   src/Install/QGIS-1.6.0-Setup.exe). You may choose another location, but you 
+   will need to alter the line "start "CAPS" /B pythonw "c:\caps\caps.pyw" in the file 
+   CAPS_copiapo.bat to point to your location.
+   
+2) If you don't have an existing installation of QGIS Copiapo,
+   install using QGIS-1.6.0-Setup.exe (found in src/Install).
+   
+3) Make sure that the "SET OSGEO4W_ROOT=C:\PROGRA~1\QUANTU~1" line in the file 
+   CAPS_copiapo.bat points to the installation folder (i.e. Quantum GIS Copiapo)
+   
+4) Click on CAPS_copiapo.bat to run CAPS Scenario Builder
+
+I don't have the time right now to help with installation issues, so please don't
+contact me about installation.  I will make a windows installer sometime in November
+or early December, 2011 that should make the installation easy.
+
+Thanks for your interest!
+Bob English
