@@ -120,7 +120,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # create map canvas
         self.canvas = QgsMapCanvas()
         self.mapRenderer = self.canvas.mapRenderer()
-        self.mapRenderer.setDestinationSrs(config.crs)
+        self.mapRenderer.setDestinationCrs(config.crs)
         self.mapRenderer.setExtent(config.rectExtentMA)
         self.canvas.setCanvasColor(QtGui.QColor(255,255,255))
         self.canvas.enableAntiAliasing(True)
@@ -128,13 +128,11 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.canvas.setExtent(config.rectExtentMA)# MA state extents
         self.canvas.show()
 
-        
-                
         # lay our canvas out in the main window with 
         # 'self.frame' as the parent
         self.canvaslayout = QtGui.QVBoxLayout(self.frame)
         self.canvaslayout.addWidget(self.canvas)
-       
+      
         # Create the actions and link to their behaviors.
         # pasted from mainwindow_ui.py and then change MainWindow.* to self.*
         QtCore.QObject.connect(self.mpActionNewScenario, QtCore.SIGNAL("triggered()"), self.newScenario)
@@ -235,6 +233,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         time.sleep(2)
         self.splash.hide()
         
+        # set the selection color
+        #self.setSelectionColor()
         # load the orienting layers
         self.openOrientingLayers()
 
@@ -1358,7 +1358,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
         else: print "alc old active vlayer " + self.activeVLayer.name()
         if self.activeRLayer == None:
             print "alc no active rlayer"
-        else: print "alc old active rlayer" + self.activeRLayer.name()
+        else: print "alc old active rlayer " + self.activeRLayer.name()
         print "self.editMode is " + str(self.editMode)
         print "self.editDirty is " + str(self.editDirty)
         print "self.scenarioDirty is " + str(self.scenarioDirty)
@@ -1430,8 +1430,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             for layer in self.originalScenarioLayers: print layer.name()
             print "alc currentLayers are "
             for layer in self.getCurrentLayers().values(): print layer.name()
-            print "alc self.scenarioDirty is " + str(self.scenarioDirty)
-
+      
         elif layerType == 0: #vector
             # debugging
             print "alc Setting app state for vector layer" 
@@ -1454,12 +1453,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # layer load before we replace the old renderer with the V2 renderers. 
             # (i.e setRendererV2(rendererV2)
             
-            if self.activeVLayer.renderer():
-                color = QtGui.QColor("yellow")
-                renderer = self.activeVLayer.renderer()
-                renderer.setSelectionColor(color)
-                print "The renderer name is: " + renderer.name()
-                print "The renderer.selectionColor() is: " + renderer.selectionColor().name()
+            
             
             # set the rendererV2 if it is not already set (i.e. layer loaded for the first time)
             if not self.activeVLayer.rendererV2(): self.setRendererV2()
@@ -1746,7 +1740,7 @@ before taking another action!")
             for layer in differences:
                 if layer.name() in config.editLayersBaseNames:
                     editFilePath = layer.source()
-                    layerID = layer.getLayerID()
+                    layerID = layer.id()
                     # need to remove layer from registry before delete.
                     self.legend.removeEditLayerFromRegistry(layer, layerID)
                     if not self.legend.deleteEditingLayer(editFilePath):
@@ -2421,18 +2415,21 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
         renderersList = rendererRegistry.renderersList()
         for item in renderersList:
             print str(item)'''
-        rendererV2 = None
+        # rendererV2 = None
         if self.geom == 0:
-            if self.activeVLayer.name() == config.editLayersBaseNames[0]: # the edit_scenario(points) layer
+            if self.activeVLayer.name() == config.editLayersBaseNames[0]:
+                #self.activeVLayer.rendererV2().name() ==):
+                
+                # the edit_scenario(points) layer
                 print "Entered rule based renderer setup"
-                self.activeVLayer.setUsingRendererV2(True)
+                #self.activeVLayer.setUsingRendererV2(True)
                 # This returns a QgsSymbolV2().  In particular a QgsMarkerSymbolV2()
                 # This also returns a QgsMarkerSymbolLayerV2() layer.
                 # In particular a QgsSimpleMarkerSymbolLayerV2(). 
                 symbol = QgsSymbolV2.defaultSymbol(QGis.Point)
                 # renderer only needs a symbol to be instantiated
                 rendererV2 = QgsRuleBasedRendererV2(symbol)
-                self.activeVLayer.setRendererV2(rendererV2)
+                #self.activeVLayer.setRendererV2(rendererV2)
                 
                 symbols = rendererV2.symbols()
                 symbol = symbols[0]
@@ -2450,8 +2447,11 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
                 rule1 = rendererV2.Rule(deleteSymbol, 0, 0, 
                     QtCore.QString("c_deleted='y' or d_deleted='y' or w_deleted='y' or r_deleted='y'"))
                 rendererV2.addRule(rule1)
+                
+                self.activeVLayer.setRendererV2(rendererV2)
                
                 # debugging
+                print "The renderer's name is: " + self.activeVLayer.rendererV2().name()
                 print "The number of symbols is: " + str(len(rendererV2.symbols()))
                 print "The symbolLayer properties are: "
                 for k, v in symbolLayer.properties().iteritems():
@@ -2478,10 +2478,13 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             self.activeVLayer.setRendererV2(rendererV2)    
         elif self.geom == 2 and self.activeVLayer.name() == config.baseLayersChecked[0]:
                 print "This is the base_towns layer"
-                # use old renderer
-                symbol = self.activeVLayer.renderer().symbols()[0]
-                symbol.setFillStyle(QtCore.Qt.NoBrush)
+                self.activeVLayer.setUsingRendererV2(True)
+                symbol = self.activeVLayer.rendererV2().symbols()[0]
+                layer = symbol.symbolLayer(0)
+                layer.setBrushStyle(QtCore.Qt.NoBrush)
+                layer.setColor(QtGui.QColor(255,255,255,0))
                 symbol.setLineWidth(0.4)
+                self.activeVLayer.setRendererV2(rendererV2)
         elif self.geom == 2:
             self.activeVLayer.setUsingRendererV2(True)
             rendererV2 = QgsSingleSymbolRendererV2.defaultRenderer(QGis.Polygon)

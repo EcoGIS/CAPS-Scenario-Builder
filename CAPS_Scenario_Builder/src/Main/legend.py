@@ -58,7 +58,7 @@ class LegendItem( QtGui.QTreeWidgetItem ):
                                                ( unicode( self.canvasLayer.layer().name() ) ) )
         self.setText( 0, self.canvasLayer.layer().name() )
         self.isVect = ( self.canvasLayer.layer().type() == 0 ) # 0: Vector, 1: Raster
-        self.layerId = self.canvasLayer.layer().getLayerID()
+        self.layerId = self.canvasLayer.layer().id()
 
         if self.isVect:
             geom = self.canvasLayer.layer().dataProvider().geometryType()
@@ -370,12 +370,12 @@ class Legend( QtGui.QTreeWidget ):
             if self.isLegendLayer(item): # Is the item a layer item?
                 print "This is a legend layer item" 
                 for i in self.layers:
-                    if i.layer().getLayerID() == item.layerId:
+                    if i.layer().id() == item.layerId:
                         if item.checkState( 0 ) == QtCore.Qt.Unchecked:
-                            print "is checked"
+                            print "is not checked"
                             i.setVisible(False)
                         else:
-                            print "is not checked"
+                            print "is checked"
                             i.setVisible(True)
                         self.canvas.setLayerSet(self.layers)
                         return
@@ -447,7 +447,7 @@ the file system. All changes to these files will be lost. Do you want to delete 
             else: 
                 # user chose ok so we can delete the file but must remove from registry first!
                 layer = self.currentItem().canvasLayer.layer()
-                layerID = self.currentItem().canvasLayer.layer().getLayerID()
+                layerID = self.currentItem().canvasLayer.layer().id()
                 # get the path before we set the activeVLayer to none
                 editFilePath = self.mainwindow.activeVLayer.source()
                 # since we are deleting an editing layer we should be safe and 
@@ -491,7 +491,7 @@ the file system. All changes to these files will be lost. Do you want to delete 
     def updateLayerName( self, layer ):
         """ Update the layer name in the legend """
         for i in range( self.topLevelItemCount() ):
-            if self.topLevelItem( i ).layerId == layer.getLayerID():
+            if self.topLevelItem( i ).layerId == layer.id():
                 layer.setLayerName( self.createUniqueName( unicode( layer.name() ) ) )
                 self.topLevelItem( i ).setText( 0, layer.name() )
                 break
@@ -503,7 +503,7 @@ the file system. All changes to these files will be lost. Do you want to delete 
         if legendLayer.isVect == True:
             geom = legendLayer.canvasLayer.layer().geometryType() # QGis Geometry
             for i in self.layers:
-                if i.layer().getLayerID() == legendLayer.layerId:
+                if i.layer().id() == legendLayer.layerId:
                     color = QtGui.QColorDialog.getColor( i.layer().rendererV2().symbols()[ 0 ].color(), self.mainwindow )
                     '''if geom == 1: # Line
                         color = QtGui.QColorDialog.getColor( i.layer().rendererV2().symbols()[ 0 ].color(), self.mainwindow )
@@ -585,7 +585,7 @@ the file system. All changes to these files will be lost. Do you want to delete 
         """ Zoom the map to a layer extent """
         
         for i in self.layers:
-            if i.layer().getLayerID() == legendLayer.layerId:
+            if i.layer().id() == legendLayer.layerId:
                 extent = i.layer().extent()
                 extent.scale( 1.05 )
                 self.canvas.setExtent( extent )
@@ -765,7 +765,7 @@ the file system. All changes to these files will be lost. Do you want to delete 
         """ Refresh the layer symbology. For plugins. """
         for i in range( self.topLevelItemCount() ):
             item = self.topLevelItem( i )
-            if layer.getLayerID() == item.layerId:
+            if layer.id() == item.layerId:
                 #item.vectorLayerSymbology( layer )
                 self.canvas.refresh()
                 break
