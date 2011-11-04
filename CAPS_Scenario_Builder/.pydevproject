@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse-pydev version="1.0"?>
+
+<pydev_project>
+<pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">wroclaw_v1.71</pydev_property>
+<pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.5</pydev_property>
+<pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
+<path>/CAPS_Scenario_Builder/src</path>
+</pydev_pathproperty>
+<pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
+<path>C:\Program Files\Quantum GIS Wroclaw\apps\qgis\bin</path>
+<path>C:\Program Files\Quantum GIS Wroclaw\bin</path>
+<path>C:\Program Files\Quantum GIS Wroclaw\apps\qgis\python\qgis</path>
+<path>C:\Program Files\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages</path>
+<path>C:\Program Files\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\PyQt4</path>
+</pydev_pathproperty>
+<pydev_variables_property name="org.python.pydev.PROJECT_VARIABLE_SUBSTITUTION">
+<key>QtCore</key>
+<value>C:\Program Files\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\PyQt4\QtCore.pyd</value>
+<key>QtGui</key>
+<value>C:\Program Files\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\PyQt4\QtGui.pyd</value>
+<key>qgis.core</key>
+<value>C:\Program Files\Quantum GIS Wroclaw\apps\qgis\python\qgis\core.pyd</value>
+<key>qgis.gui</key>
+<value>C:\Program Files\Quantum GIS Wroclaw\apps\qgis\python\qgis\gui.pyd</value>
+</pydev_variables_property>
+</pydev_project>
