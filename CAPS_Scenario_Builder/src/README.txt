@@ -1,3 +1,11 @@
+Description
+
+The CAPS Scenario Builder will allow government officials, conservation groups 
+and others to submit "scenarios" for proposed changes to land cover and 
+infrastructure so that these changes can be assessed for their impact on 
+ecological integrity. See the url below for more:
+http://www.umass.edu/landeco/research/caps/caps.html
+
 HOW TO INSTALL CAPS SCENARIO BUILDER
 
 The specifications for CAPS Scenario Builder only require it to run on MS Windows. 
