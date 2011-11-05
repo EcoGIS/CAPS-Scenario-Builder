@@ -2091,7 +2091,11 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
     def openOrientingLayers(self):
         ''' Open orienting layers when the app is started '''
         path = config.baseLayersPath
+        
+        info = QtCore.QFileInfo(QtCore.QString(path))
+        path2 = info.absolutePath()
         print "The path is " + path
+        print "The path is " + path2
         vlayers = config.orientingVectorLayers
         rlayers = config.orientingRasterLayers
 
@@ -2099,6 +2103,8 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         for rlayer in rlayers:
             tempPath = None
             tempPath = path + rlayer
+            info = QtCore.QFileInfo(QtCore.QString(tempPath))
+            print "The path is " + info.absoluteFilePath()
             self.openRasterLayer(tempPath)
  
         for vlayer in vlayers:
@@ -2643,57 +2649,4 @@ For example. If you have chosen to edit 'dams,' then you can only " + text + " t
             # note: the QgsAttribute map is a Python dictionary (key = field id : field value)
             for (key, attr) in attrs.iteritems():
                 print "%d: %s" % (key, attr.toString())
-                
-class RedCrossSymbolMarkerLayer(QgsMarkerSymbolLayerV2):
-    def __init__(self, size=3.0):
-        QgsMarkerSymbolLayerV2.__init__(self )
-        self.size = size
-        self.color = QtGui.QColor(255,0,0)
-
-        def layerType(self):
-            return "RedCross"
-        
-        def properties(self):
-            return { "size" : str(self.size) }
-        
-        def startRender(self, context):
-            pass
-
-        def stopRender(self, context):
-            pass
-        
-        def renderPoint(self, point, context):
-            # Rendering depends on whether the symbol is selected (Qgis >= 1.5)
-            color = context.selectionColor() if context.selected() else self.color
-            p = context.renderContext().painter()
-            p.setPen(color)
-            x = point.x()
-            y = point.y()
-            hl = self.size/2
-            pt1 = QtCore.QPointF(x-hl, y-hl)
-            pt2 = QtCore.QPointF(x+hl, y+hl)
-            pt3 = QtCore.QPointF(x-hl, y+hl)
-            pt4 = QtCore.QPointF(x+hl, y-hl)
-            p.drawlines(pt1, pt2, pt3, pt4, 2)
-        
-        def clone(self):
-            return RedCrossSymbolMarkerLayer(self.size)
-                  
-class RedCrossSymbolMarkerLayerMetadata(QgsSymbolLayerV2AbstractMetadata):       
-        def __init__(self):
-            QgsSymbolLayerV2AbstractMetadata.__init__(self, "RedCross", "RedCross", QgsSymbolV2.Marker)
-        
-        def createSymbolLayer(self, props):
-            size = float(props[QtCore.QString("size")]) if QtCore.QString("size") in props else 4.0
-            return RedCrossSymbolMarkerLayer(size)
-        
-        def createSymbolLayerWidget(self):
-            pass
-            #return FooSymbolLayerWidget()
-            
-        
-           
-        
-        
-        
                 

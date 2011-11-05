@@ -92,15 +92,16 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
         
         # set paths (edit file directory has same name as the scenario file (i.e. somedirectory.caps))
         self.baseLayersPath = config.baseLayersPath
-        self.dataDirectoryPath = config.dataDirectoryPath
+        #self.dataDirectoryPath = config.dataDirectoryPath
         self.scenariosPath = config.scenariosPath
         # the QFileInfo for the scenario file path
         self.scenarioInfo = self.mainwindow.scenarioInfo
         self.scenarioDirectory = unicode(self.mainwindow.scenarioInfo.completeBaseName()) 
         self.baseFilePath = unicode(self.baseLayersPath + self.baseLayerFileName)
-        self.editLayerPath = unicode(self.dataDirectoryPath + self.editLayer + ".shp")
+        #self.editLayerPath = unicode(self.scenariosPath + self.scenarioDirectory
+        #                                                     + self.editLayer + ".shp")
         self.newEditLayerPath = unicode(config.scenariosPath + 
-                                 self.scenarioInfo.completeBaseName() + "/" + self.editLayer + ".shp")
+                                 self.scenarioDirectory + "/" + self.editLayer + ".shp")
 
         # see if the editLayer or baseLayer is open in the layer panel
         self.isEditLayerOpen(legend)
