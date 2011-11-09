@@ -69,10 +69,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # get the splash screen
         self.splash = splash
 
-        # save the filename of the last opened raster or vector file (unicode)
-        # a Python string or unicode object, a QLatin1String or a QChar 
-        # may be used whenever a QString is expected
-   
         # LISTS
         self.originalScenarioLayers = []
         self.currentLayers = []
@@ -114,25 +110,37 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.geom = None #0 point, 1 line, 2 polygon
         # This saves an editing layer's color so that it gets refreshed
         # when the layer loads after updating extents (see shared.updateExtents
-        self.layerColor = None     
-
+        self.layerColor = None
         
         # create map canvas
         self.canvas = QgsMapCanvas()
+        self.canvas.setCanvasColor(QtGui.QColor(255,255,255))
         self.mapRenderer = self.canvas.mapRenderer()
         self.mapRenderer.setDestinationCrs(config.crs)
         self.mapRenderer.setExtent(config.rectExtentMA)
-        self.canvas.setCanvasColor(QtGui.QColor(255,255,255))
         self.canvas.enableAntiAliasing(True)
         self.canvas.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.canvas.setExtent(config.rectExtentMA)# MA state extents
-        self.canvas.show()
-
-        # lay our canvas out in the main window with 
-        # 'self.frame' as the parent
-        self.canvaslayout = QtGui.QVBoxLayout(self.frame)
-        self.canvaslayout.addWidget(self.canvas)
-      
+        self.gridlayout.addWidget(self.canvas)
+  
+        # set the QDockWidget that holds the legend
+        self.legendDock = QtGui.QDockWidget("Layers", self)
+        self.legendDock.setObjectName("legend")
+        # without "NoDockWidgetFeatures, the user could close the legend with no way to reopen it
+        self.legendDock.setFeatures(self.legendDock.NoDockWidgetFeatures)
+        self.legendDock.setContentsMargins (1, 1, 1, 1)
+        # create the legend from legend.py
+        self.legend = Legend(self)
+        self.legend.setObjectName("theMapLegend")
+        # add the legend to the dock widget
+        self.legendDock.setWidget(self.legend)
+        # add the dock widget to the main window and show it
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.legendDock)
+        
+        # now that we have self.legend, get active layer changed signal
+        # connect the Python 'short circuit' signal from legend.py to the handler
+        self.connect( self.legend, QtCore.SIGNAL("activeLayerChanged"), self.activeLayerChanged)
+        
         # Create the actions and link to their behaviors.
         # pasted from mainwindow_ui.py and then change MainWindow.* to self.*
         QtCore.QObject.connect(self.mpActionNewScenario, QtCore.SIGNAL("triggered()"), self.newScenario)
@@ -212,31 +220,16 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # set the map coordinates display in the status bar
         self.mapcoords = MapCoords(self)
         
-        # create the legend from legend.py
-        self.legend = Legend(self)
-        self.legend.setCanvas(self.canvas)
-        self.legend.setObjectName("theMapLegend")
-        # set the QDockWidget that holds the legend
-        self.LegendDock = QtGui.QDockWidget("Layers", self)
-        self.LegendDock.setObjectName("legend")
-        # without "NoDockWidgetFeatures, the user could close the legend with no way to reopen it
-        self.LegendDock.setFeatures(self.LegendDock.NoDockWidgetFeatures)
-        self.LegendDock.setWidget(self.legend)
-        self.LegendDock.setContentsMargins (9, 9, 9, 9)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.LegendDock)
-
-        # now that we have self.legend, get active layer changed signal
-        # connect the Python 'short circuit' signal from legend.py to the handler
-        self.connect( self.legend, QtCore.SIGNAL("activeLayerChanged"), self.activeLayerChanged)
-         
         # close splash screen
         time.sleep(2)
         self.splash.hide()
         
-        # set the selection color
-        #self.setSelectionColor()
         # load the orienting layers
         self.openOrientingLayers()
+
+        # The V2 renderers get the selection color from the old renderer.
+        # This sets the selection color once, when the app starts
+        self.setSelectionColor()
 
 ############################################################################################   
     ''' SCENARIO MENU CUSTOM SLOTS '''
@@ -1441,22 +1434,19 @@ attribute table is very large and can take a few seconds to load.  Do you want t
 
             # set the active vector layer
             self.activeVLayer = self.legend.activeLayer().layer()
+            
+            if self.activeVLayer.isUsingRendererV2():
+                print "The vlayer is using RendererV2!"
+            
             # set the geometry of the layer
             self.geom = self.activeVLayer.geometryType() #0 point, 1 line, 2 polygon
             # set extents if not within MA state extents
             self.setExtents()
             # set the data provider
             self.provider = self.activeVLayer.dataProvider()
-            
-            # The V2 renderers get the selection color from the old renderer.
-            # This sets the selection color for the layer only on the first vector 
-            # layer load before we replace the old renderer with the V2 renderers. 
-            # (i.e setRendererV2(rendererV2)
-            
-            
-            
-            # set the rendererV2 if it is not already set (i.e. layer loaded for the first time)
-            if not self.activeVLayer.rendererV2(): self.setRendererV2()
+           
+            # This method sets colors, marker types and other properties for certain vector layers
+            self.setRendererV2()
             
             # refresh attribute table if open
             if self.attrTable != None and self.attrTable.isVisible():
@@ -1852,6 +1842,8 @@ Prioritization System (CAPS) Scenario Builder")
         print "disableSelectActions()"
         
         self.canvas.unsetMapTool(self.toolSelect)
+        if self.activeVLayer:
+            self.activeVLayer.removeSelection(False)
         self.mpActionSelectFeatures.setChecked(False)
         self.mpActionDeselectFeatures.setDisabled(True)
         self.mpActionDeselectFeatures.setChecked(False)
@@ -2406,58 +2398,39 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
         # debugging
         print "main.MainWindow.setRendererV2()"
         print "self.geom is :" + str(self.geom)
-        
-        '''# add our custom red cross layer to the layer registry
-        #QgsSymbolLayerV2Registry.instance().addSymbolLayerType( RedCrossSymbolMarkerLayerMetadata() ) 
-        list = QgsSymbolLayerV2Registry.instance().symbolLayersForType(QgsSymbolV2.Marker)
-        for item in list:
-            print item'''
-            
-        # set to use new generation symbology
-        #self.activeVLayer.setUsingRendererV2(True)
-        
-        '''# Will need this when I write new class for red X
-        rendererRegistry = QgsRendererV2Registry.instance()
-        renderersList = rendererRegistry.renderersList()
-        for item in renderersList:
-            print str(item)'''
-        # rendererV2 = None
-        if self.geom == 0:
-            if self.activeVLayer.name() == config.editLayersBaseNames[0]:
-                #self.activeVLayer.rendererV2().name() ==):
-                
-                # the edit_scenario(points) layer
-                print "Entered rule based renderer setup"
-                #self.activeVLayer.setUsingRendererV2(True)
+      
+        if self.activeVLayer.name() == config.editLayersBaseNames[0]: # edit_scenario(points) layer
+                print "Setting Rule Based Renderer for 'edit_scenario(points).shp"
                 # This returns a QgsSymbolV2().  In particular a QgsMarkerSymbolV2()
                 # This also returns a QgsMarkerSymbolLayerV2() layer.
                 # In particular a QgsSimpleMarkerSymbolLayerV2(). 
                 symbol = QgsSymbolV2.defaultSymbol(QGis.Point)
                 # renderer only needs a symbol to be instantiated
                 rendererV2 = QgsRuleBasedRendererV2(symbol)
-                #self.activeVLayer.setRendererV2(rendererV2)
-                
-                symbols = rendererV2.symbols()
-                symbol = symbols[0]
-                if self.layerColor:
-                    symbol.setColor(self.layerColor)
+                # get the symbols list and symbol (usually only one symbol)
+                symbol = rendererV2.symbols()[0]
+                # return the symbol's symbol layer (usually only one layer)
                 symbolLayer = symbol.symbolLayer(0)
-                                                   
-                #deleteLayer = RedCrossSymbolMarkerLayer()
-                deleteSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
+                # this variable is set in Tools.shared.updateExtents() 
+                if self.layerColor: symbolLayer.setColor(self.layerColor)
+                            
+                # create a new symbol layer for the delete symbol
+                newSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
+                map = {"name": "cross", "color": "DEFAULT_SIMPLEMARKER_COLOR", 
+                       "color_border": "255,0,0,255", "size": "4.0", "angle": "45.0"}
+                deleteSymbol = newSymbol.createSimple(map)
                 deleteLayer = deleteSymbol.symbolLayer(0)
-                deleteLayer.setSize(4.0)
-                deleteLayer.setColor(QtGui.QColor(255, 0, 0, 150))
 
-                # make the rule and add it
+                # make the rule, using the delete symbol, and add it
                 rule1 = rendererV2.Rule(deleteSymbol, 0, 0, 
                     QtCore.QString("c_deleted='y' or d_deleted='y' or w_deleted='y' or r_deleted='y'"))
                 rendererV2.addRule(rule1)
                 
+                # associate the new renderer with the activeVLayer
                 self.activeVLayer.setRendererV2(rendererV2)
                
                 # debugging
-                print "The renderer's name is: " + self.activeVLayer.rendererV2().name()
+                #print "The delete layers name is: " + deleteLayer.name()
                 print "The number of symbols is: " + str(len(rendererV2.symbols()))
                 print "The symbolLayer properties are: "
                 for k, v in symbolLayer.properties().iteritems():
@@ -2465,73 +2438,53 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
                 print "The deleteLayer properties are: "
                 for k, v in deleteLayer.properties().iteritems():
                     print "%s: %s" % (k, v)
-            else:
-                self.activeVLayer.setUsingRendererV2(True)
-                rendererV2 = QgsSingleSymbolRendererV2.defaultRenderer(QGis.Point)
-                self.activeVLayer.setRendererV2(rendererV2)
-        elif self.geom == 1:
+        elif self.geom == 1: # set line width and color
             print "geometry = 1"
-            self.activeVLayer.setUsingRendererV2(True)
-            rendererV2 = QgsSingleSymbolRendererV2.defaultRenderer(QGis.Line)
+            rendererV2 = self.activeVLayer.rendererV2()
             symbol = rendererV2.symbols()[0]
             # this is a QgsLineSymbolLayerV2()
-            layer = symbol.symbolLayer(0)
-            print "The layer width is: " + str(layer.width())
-            layer.setWidth(0.4)
+            symbolLayer = symbol.symbolLayer(0)
+            print "The line width before setting is: " + str(symbolLayer.width())
+            symbolLayer.setWidth(0.4)
             if self.layerColor: # we saved color in Tools.shared.setExtents()
                 print "THERE IS A LINE COLOR"
-                layer.setColor(self.layerColor)
-            self.activeVLayer.setRendererV2(rendererV2)    
-        elif self.geom == 2 and self.activeVLayer.name() == config.baseLayersChecked[0]:
+                symbolLayer.setColor(self.layerColor)
+            print "The line width after setting is: " + str(symbolLayer.width())
+        elif self.geom == 2 and self.activeVLayer.name() == config.baseLayersChecked[0]: # base_towns layer
                 print "This is the base_towns layer"
-                self.activeVLayer.setUsingRendererV2(True)
-                symbol = self.activeVLayer.rendererV2().symbols()[0]
-                layer = symbol.symbolLayer(0)
-                layer.setBrushStyle(QtCore.Qt.NoBrush)
-                layer.setColor(QtGui.QColor(255,255,255,0))
-                symbol.setLineWidth(0.4)
-                self.activeVLayer.setRendererV2(rendererV2)
-        elif self.geom == 2:
-            self.activeVLayer.setUsingRendererV2(True)
-            rendererV2 = QgsSingleSymbolRendererV2.defaultRenderer(QGis.Polygon)
+                #symbolLayer = symbol.symbolLayer(0)
+                rendererV2 = self.activeVLayer.rendererV2()
+                symbol = rendererV2.symbols()[0]
+                map = {"color": "DEFAULT_SIMPLEFILL_COLOR", "style": "no", 
+                                  "color_border": "DEFAULT_SIMPLEFILL_BORDERCOLOR", 
+                                  "style_border": "DEFAULT_SIMPLEFILL_BORDERSTYLE", 
+                                  "width_border": "0.3" }
+                simpleSymbol = symbol.createSimple(map)
+                rendererV2.setSymbol(simpleSymbol)
+        elif self.geom == 2: # set the layer color for polygons if set in Tools.shared.setExtents()
+            rendererV2 = self.activeVLayer.rendererV2()
             symbol = rendererV2.symbols()[0]
-            # this is a QgsLineSymbolLayerV2()
-            layer = symbol.symbolLayer(0)
+            symbolLayer = symbol.symbolLayer(0)
             if self.layerColor:
-                layer.setColor(self.layerColor)
-            self.activeVLayer.setRendererV2(rendererV2)   
- 
+                symbolLayer.setColor(self.layerColor)
+   
         # make an instance variable of the V2 renderer
-        self.rendererV2 = rendererV2
-     
-        # debugging
         
+     
         if self.activeVLayer.isUsingRendererV2():
-        # new symbology - subclass of QgsFeatureRendererV2 class
-            # returns a list of symbols for the V2 renderer
+            self.rendererV2 = self.activeVLayer.rendererV2()
+            # debugging
             symbols = self.rendererV2.symbols()
             # only 1 symbol in symbols and only one layer
             symbol = symbols[0]
-            layer = symbol.symbolLayer(0)
+            symbolLayer = symbol.symbolLayer(0)
             print "rendererV2.dump is:" + self.rendererV2.dump()
             print "The layer properties are: "
-            for k, v in layer.properties().iteritems():
+            for k, v in symbolLayer.properties().iteritems():
                 print "%s: %s" % (k, v)
             print "The number of symbols is: " + str(len(symbols))
             print "The number of layers in symbols[0] is: " + str(symbol.symbolLayerCount())
-            print "The layer type is: " + str(layer.layerType())
-        else:
-            # old symbology - subclass of QgsRenderer class
-            renderer = self.activeVLayer.renderer()
-            symbols = renderer.symbols()
-            print "old renderer"
-            print "The number of symbols is: " + str(len(symbols))
-            print symbols 
-        
-        # debugging
-        print "alc opened active layer is " + self.activeVLayer.name()
-        print "alc opened active layer source is " + self.activeVLayer.source()
-        print "alc num selected feats " + str(len(self.activeVLayer.selectedFeatures()))
+            print "The layer type is: " + str(symbolLayer.layerType())
 
     def makeScenarioDirectory(self):
         ''' Create a directory to store a scenario's editing files '''
@@ -2595,6 +2548,13 @@ For example. If you have chosen to edit 'dams,' then you can only " + text + " t
 'base_dams'")
             return False
         else: return True
+
+    def setSelectionColor(self):
+        renderer = QgsSingleSymbolRenderer(QGis.Point)
+        color = QtGui.QColor("yellow")
+        renderer.setSelectionColor(color)
+        print "The renderer name is: " + renderer.name()
+        print "The renderer.selectionColor() is: " + renderer.selectionColor().name()
     
 #**************************************************************
     ''' Testing '''

@@ -43,9 +43,9 @@ various scenario change types.
 # Paths to important files.  These cannot change without altering
 # the application installer.
 #dataDirectoryPath = u"./data/"
-baseLayersPath = u"./src/base_layers/"
-scenariosPath = u"./src/scenarios/"
-scenarioExportsPath = u"./src/Exported Scenarios/"
+baseLayersPath = u"./base_layers/"
+scenariosPath = u"./scenarios/"
+scenarioExportsPath = u"./Exported Scenarios/"
 
 # MA State Plane coordinate system used by MassGIS
 crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)

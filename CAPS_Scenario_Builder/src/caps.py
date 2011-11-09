@@ -61,7 +61,7 @@ def main(argv):
     app = QtGui.QApplication(argv, True)
         
     # add a splash screen on startup   
-    mySplashPix = QtGui.QPixmap(QtCore.QString("./src/CAPS_splash.png"))
+    mySplashPix = QtGui.QPixmap(QtCore.QString("./CAPS_splash.png"))
     mySplashPixScaled = mySplashPix.scaled(500,300,QtCore.Qt.KeepAspectRatio)
     mySplash = QtGui.QSplashScreen(mySplashPixScaled)
     mySplash.show()

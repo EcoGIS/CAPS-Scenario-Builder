@@ -196,24 +196,24 @@ class Legend( QtGui.QTreeWidget ):
         QtGui.QTreeWidget.__init__( self, parent )
         
         self.mainwindow = parent
-        self.canvas = None
+        self.canvas = parent.canvas
         self.layers = self.getLayerSet()
         
         self.bMousePressedFlag = False
         self.itemBeingMoved = None
 
         # QTreeWidget properties
-        self.setSortingEnabled( False )
-        self.setDragEnabled( False )
-        self.setAutoScroll( True )
-        self.setHeaderHidden( True )
-        self.setRootIsDecorated( True )
-        self.setContextMenuPolicy( QtCore.Qt.CustomContextMenu )
+        self.setSortingEnabled(False)
+        self.setDragEnabled(False)
+        self.setAutoScroll(True)
+        self.setHeaderHidden(True)
+        self.setRootIsDecorated(True)
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         # added by be
         self.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
         #self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.setSelectionBehavior(QtGui.QAbstractItemView.SelectItems)
-   
+ 
         self.connect( self, QtCore.SIGNAL( "customContextMenuRequested(QPoint)" ),
             self.showMenu )
         self.connect( QgsMapLayerRegistry.instance(), QtCore.SIGNAL("layerWasAdded(QgsMapLayer *)"),
@@ -828,7 +828,7 @@ Please check if it is open in another program and try again.")
         print "Main.legend.setActiveLayerVariables()"
         
         self.mainwindow.activeRLayer = None
-        self.mainwindow.activeVLayer.rendererV2 = None
+        self.mainwindow.rendererV2 = None
         self.mainwindow.activeVLayer = None 
         self.mainwindow.geom = None # reset activeVLayer information
         self.mainwindow.provider = None
