@@ -159,7 +159,7 @@ class DlgAddAttributes(QtGui.QDialog):
             print "current text is " + widget.currentText()
             if not widget.currentText():
                 QtGui.QMessageBox.warning(self, "Value Error:", "You must enter a \
-value for every item except the 'Description:'") 
+value for every item except the 'Description':") 
                 return
         QtGui.QDialog.accept(self)
         

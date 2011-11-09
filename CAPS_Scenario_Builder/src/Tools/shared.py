@@ -152,14 +152,14 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
         # I tried every update method I could find, but nothing other than closing
         # and reopening the layer seems to reset the layer extents.  So I do that here!
         if activeVLayer.name() in config.editLayersBaseNames:
-            layerID = activeVLayer.getLayerID()
+            layerId = activeVLayer.id()
             # save the color so we can keep the same color when reopening the layer
             mainwindow.layerColor = mainwindow.activeVLayer.rendererV2().symbols()[0].color()
             # remove the layer from the originalScenarioLayers list, reset the 
             # variables associated with the layer we are removing (to avoid runtime errors)
             # and remove the layer from the registry.  Finally remove from legend and update
             # the legend's layer set
-            mainwindow.legend.removeEditLayerFromRegistry(activeVLayer, layerID)
+            mainwindow.legend.removeEditLayerFromRegistry(activeVLayer, layerId)
             # now reopen the layer
             mainwindow.openVectorLayer(vfilePath)
             # Make the layer visible.  This will cause a signal to be sent
@@ -204,7 +204,7 @@ def checkConstraints(mainwindow, geometry):
             QtGui.QMessageBox.warning(mainwindow, "Constriants Error:", "The added feature must \
 fall on the centerline of a stream (dark blue color) in the base_streams layer.  Please make the base_streams layer \
 visible on your map, and try again. If the base_streams layer is not open in your scenario, you may \
-open it by clicking 'Add Raster' on the toolbar or in the 'Layer' menu.")
+open it by clicking 'Add Raster Layer' on the toolbar or in the 'Layer' menu.")
             # add the layer to the registry here if it is not already open
             return False # constraints have not been met
         else: 

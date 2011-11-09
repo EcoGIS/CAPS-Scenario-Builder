@@ -388,17 +388,14 @@ class Legend( QtGui.QTreeWidget ):
             It could be used to activate/deactivate GUI buttons according the layer type
         """
         layerType = None
-        item = None
         if self.currentItem():
             if self.isLegendLayer(newItem):
                 layerType = newItem.canvasLayer.layer().type()
                 self.canvas.setCurrentLayer(newItem.canvasLayer.layer())
-                item = newItem
             else:
                 layerType = newItem.parent().canvasLayer.layer().type()
                 self.canvas.setCurrentLayer(newItem.parent().canvasLayer.layer())
-                item = newItem.parent()
-        
+         
         # be Create a Python "short-circuit" signal (note no "SIGNAL" parentheses)
         self.emit( QtCore.SIGNAL( "activeLayerChanged" ), layerType )
 
@@ -447,14 +444,14 @@ the file system. All changes to these files will be lost. Do you want to delete 
             else: 
                 # user chose ok so we can delete the file but must remove from registry first!
                 layer = self.currentItem().canvasLayer.layer()
-                layerID = self.currentItem().canvasLayer.layer().id()
+                layerId = self.currentItem().canvasLayer.layer().id()
                 # get the path before we set the activeVLayer to none
                 editFilePath = self.mainwindow.activeVLayer.source()
                 # since we are deleting an editing layer we should be safe and 
                 # remove any exported scenario files.
                 self.mainwindow.deleteExportScenarioFile()
                 # remove the layer from the registry
-                self.removeEditLayerFromRegistry(layer, layerID)
+                self.removeEditLayerFromRegistry(layer, layerId)
                 # and delete the editing layer
                 self.deleteEditingLayer(editFilePath)
                 return # we are done deleting the layer so return
@@ -475,7 +472,7 @@ the file system. All changes to these files will be lost. Do you want to delete 
         self.setActiveLayerVariables()
         
         # remove layer from the registry
-        QgsMapLayerRegistry.instance().removeMapLayer(layerID)
+        QgsMapLayerRegistry.instance().removeMapLayer(layerId)
         self.removeLegendLayer( self.currentItem() )
         self.updateLayerSet()
 
@@ -776,18 +773,14 @@ the file system. All changes to these files will be lost. Do you want to delete 
             QgsMapLayerRegistry.instance().removeMapLayer( layerId )
 
             # Remove the legend item
-            for i in range( self.topLevelItemCount() ):
-                item = self.topLevelItem( i )
-                if layerId == item.layerId:
-                    self.removeLegendLayer( item )
-                    break
+            self.removeLayerFromLegendByID(layerId)
 
         self.updateLayerSet()
         
     def deleteEditingLayer(self, editFilePath):
         ''' Removes an editing shapefile and any associated export scenario file. '''
         # debugging
-        print "deleteEditingLayer()"
+        print "Main.legend.deleteEditingLayer()"
         print "editFilePath is " + editFilePath
 
         editFile = QtCore.QFile(editFilePath)
@@ -800,7 +793,7 @@ Please check if it is open in another program and try again.")
             return False
         else: return True
      
-    def removeEditLayerFromRegistry(self, layer, layerID):
+    def removeEditLayerFromRegistry(self, layer, layerId):
         ''' Remove an editing layer from the registry, but clean up first '''
         # debugging
         print "Main.legend.removeEditLayerFrom Registry()"
@@ -813,13 +806,23 @@ Please check if it is open in another program and try again.")
             print 'The activeVLayer was removed from the originalScenarioLayers'
             print 'length originalScenarioLayers after removal' + str(len(originalScenarioLayers))
         
-        # Reset all variables associated with the layer and then remove from 
-        # registry and delete it.
-        self.setActiveLayerVariables()
-        QgsMapLayerRegistry.instance().removeMapLayer(layerID)
+        # This method is called by "Tools.shared.updateExtents()," where the editing layer to
+        # be removed is the activeVLayer.  The method is also called by 
+        # Main.mainwindow.chkScenarioState(), where the layer to be removed is probably not
+        # the activeVLayer. Since we want to reset activeVLayer variables after removing
+        # the layer from the registry, we need to record the layer id of the activeVLayer
+        # before we delete it.
+        activeVLayerId = self.mainwindow.activeVLayer.id()
         
-        # Layer is successfully removed from registry so remove from legend.
-        self.removeLegendLayer(self.currentItem())
+        # Remove the layer from the registry
+        QgsMapLayerRegistry.instance().removeMapLayer(layerId)
+        
+        # if the removed layer is the current activeVLayer, reset all associated variables
+        if activeVLayerId == layerId:
+            self.setActiveLayerVariables() 
+        
+        # Layer is successfully removed from registry so remove it from legend.
+        self.removeLayerFromLegendById(layerId)
         self.updateLayerSet()
  
     def setActiveLayerVariables(self):
@@ -827,9 +830,17 @@ Please check if it is open in another program and try again.")
         # debugging
         print "Main.legend.setActiveLayerVariables()"
         
-        self.mainwindow.activeRLayer = None
-        self.mainwindow.rendererV2 = None
+        #self.mainwindow.activeRLayer = None
+        #self.mainwindow.rendererV2 = None
         self.mainwindow.activeVLayer = None 
         self.mainwindow.geom = None # reset activeVLayer information
         self.mainwindow.provider = None
-        self.mainwindow.layerType = None        
+        self.mainwindow.layerType = None  
+
+    def removeLayerFromLegendById(self, layerId):
+        # Remove the legend item
+        for i in range( self.topLevelItemCount() ):
+            item = self.topLevelItem( i )
+            if layerId == item.layerId:
+                self.removeLegendLayer( item )
+                break

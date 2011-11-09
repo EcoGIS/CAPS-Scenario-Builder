@@ -594,8 +594,8 @@ was not written.  Please check that a file with the same name is not open in ano
                 vlayer = self.openHiddenVectorLayer(editingShapefilePath)
                 if not vlayer: return
             else:
-                vlayerID = items[0].layerId
-                vlayer = QgsMapLayerRegistry.instance().mapLayer(vlayerID)
+                vlayerId = items[0].layerId
+                vlayer = QgsMapLayerRegistry.instance().mapLayer(vlayerId)
             
             # We need to delete any existing editing shapefile exports for this editing shapefile
             # before we write a new one. The ogr driver creates a directory named "csvBaseName" 
@@ -1060,6 +1060,14 @@ before you can make edits.  Please save the current scenario or open an existing
             # call the dialog to get the scenario change type
             self.scenarioTypes = DlgScenarioTypes(self)
             self.scenarioTypes.exec_()
+            
+            # add scenarioType to statusbar
+            self.editTypeLabel = QtGui.QLabel(self.statusBar)
+            capture_string = QtCore.QString("The current scenario edit type is:  '" 
+                                                                    + self.scenarioType + "'")
+            self.editTypeLabel.setText(capture_string)
+            self.statusBar.insertPermanentWidget(0, self.editTypeLabel)        
+        
                 
         else: #False action deactivated
             # check for unsaved edits when deselecting "Edit Scenario"
@@ -1081,8 +1089,9 @@ before you can make edits.  Please save the current scenario or open an existing
             self.disableEditActions()
             print "setDisabled = True"
             
-    
-    
+            # remove the 'editTypeLabel' permanent message from the statusBar
+            self.statusBar.removeWidget(self.editTypeLabel)
+
     def addPoints(self, state):
         # debugging
         print "addPoints() " + str(state)
@@ -1106,7 +1115,7 @@ before you can make edits.  Please save the current scenario or open an existing
         
         self.addLines(state)
         
-    def saveEdits(self, isSignal=True):
+    def saveEdits(self):
         # debugging
         print "saveEdits()"
         print "self.scenarioDirty begin is " + str(self.scenarioDirty)
@@ -1121,14 +1130,13 @@ before you can make edits.  Please save the current scenario or open an existing
         # This gives a save message only if the user clicks the Save Edits action
         # or if there are no edtis to save.
         title = "Save Edits"
-        if isSignal and self.editDirty:
-            text = "Your edits have been saved!"
-            # give user feedback 
-            QtGui.QMessageBox.information(self, title, text, QtGui.QMessageBox.Ok)
-        elif not self.editDirty: 
+        if not self.editDirty: 
             text = "You have not made any edits to save!"
             QtGui.QMessageBox.information(self, title, text, QtGui.QMessageBox.Ok)
 
+        # Set "Save Edits" action to disabled to let user know edits are saved.
+        # Clean up
+        self.mpActionSaveEdits.setDisabled(True)
         self.scenarioDirty = True
         self.editDirty = False    
             
@@ -1372,6 +1380,11 @@ attribute table is very large and can take a few seconds to load.  Do you want t
         if layerType == 1: # raster 
             # set active raster layer
             self.activeRLayer = self.legend.activeLayer().layer()
+ 
+            # add filename to statusbar
+            capture_string = QtCore.QString(self.activeRLayer.source())
+            self.statusBar.showMessage(capture_string)
+    
             # ensure that the canvas always shows Mass State Plane coordinates
             self.activeRLayer.setCrs(config.crs)
             # set extents
@@ -1435,8 +1448,9 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # set the active vector layer
             self.activeVLayer = self.legend.activeLayer().layer()
             
-            if self.activeVLayer.isUsingRendererV2():
-                print "The vlayer is using RendererV2!"
+            # add filename to statusbar
+            capture_string = QtCore.QString(self.activeVLayer.source())
+            self.statusBar.showMessage(capture_string)
             
             # set the geometry of the layer
             self.geom = self.activeVLayer.geometryType() #0 point, 1 line, 2 polygon
@@ -1634,22 +1648,22 @@ before taking another action!")
             if callingAction == "removeCurrentLayer" and len(self.legend.getLayerIDs()) == 1:
                 # A layer has been loaded previously so user deleting only layer in legend
                 print "asc set app to initial state"
-                self.saveEdits(False)
+                self.saveEdits()
                 self.setInitialAppState()
             # No need to change editing state if saving the scenario, selecting features
             # deleting features, or removing a layer.  Note that a user is warned about
             # deleting a base layer or an editing layer in legend.removeCurrentLayer.
             # If user deletes one of their own layers, there is no need to disable editing
             elif callingAction in list:
-                self.saveEdits(False)
+                self.saveEdits()
             # if opening new layer or changing layers just disable edit actions
             elif callingAction == "addVector" or "addRaster" or "legendMousePress":
-                self.saveEdits(False)
+                self.saveEdits()
                 self.disableEditActions()
             else:
                 # opening new scenario, exporting scenario or closing app
                 # save the edits and disable "Edit Scenario" mode
-                self.saveEdits(False)
+                self.saveEdits()
                 self.disableEditing()                
         elif reply == QtGui.QMessageBox.Discard:
             # debugging
@@ -1726,13 +1740,14 @@ before taking another action!")
             differences = [layer for layer in self.currentLayers.values() if layer not in 
                                                                 self.originalScenarioLayers]
             print "These are the differences:"
-            for layer in differences: print  layer.name()
+            for layer in differences: print layer.name()
             for layer in differences:
                 if layer.name() in config.editLayersBaseNames:
                     editFilePath = layer.source()
-                    layerID = layer.id()
+                    print "Main.mainwindow.chkScenarioState() path to remove is: " + editFilePath
+                    layerId = layer.id()
                     # need to remove layer from registry before delete.
-                    self.legend.removeEditLayerFromRegistry(layer, layerID)
+                    self.legend.removeEditLayerFromRegistry(layer, layerId)
                     if not self.legend.deleteEditingLayer(editFilePath):
                         # Warn and return
                         QtGui.QMessageBox.warning(self, "Deletion Error:", "Caps Scenario Builder \
@@ -2076,10 +2091,6 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         reg = QgsMapLayerRegistry.instance()
         reg.addMapLayer(rlayer)
 
-        # add filename to statusbar with 8 sec. timeout         
-        capture_string = QtCore.QString(rfilePath)
-        self.statusBar.showMessage(capture_string, 8000)
-    
     def openOrientingLayers(self):
         ''' Open orienting layers when the app is started '''
         path = config.baseLayersPath
@@ -2472,13 +2483,14 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
         
      
         if self.activeVLayer.isUsingRendererV2():
-            self.rendererV2 = self.activeVLayer.rendererV2()
+            #self.rendererV2 = self.activeVLayer.rendererV2() # so far I'm not using this
             # debugging
-            symbols = self.rendererV2.symbols()
+            rendererV2 = self.activeVLayer.rendererV2()
+            symbols = rendererV2.symbols()
             # only 1 symbol in symbols and only one layer
             symbol = symbols[0]
             symbolLayer = symbol.symbolLayer(0)
-            print "rendererV2.dump is:" + self.rendererV2.dump()
+            print "rendererV2.dump is:" + rendererV2.dump()
             print "The layer properties are: "
             for k, v in symbolLayer.properties().iteritems():
                 print "%s: %s" % (k, v)

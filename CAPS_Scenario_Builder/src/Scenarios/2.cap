@@ -13,7 +13,7 @@
         <destinationsrs>
             <spatialrefsys>
                 <proj4></proj4>
-                <srsid>23785392</srsid>
+                <srsid>34467760</srsid>
                 <srid>2019914862</srid>
                 <authid></authid>
                 <description></description>
@@ -25,13 +25,13 @@
     </mapcanvas>
     <projectlayers layercount="5">
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>USGS20111108195420456</id>
+            <id>USGS20111109120618137</id>
             <datasource>./base_layers/USGS.SID</datasource>
             <layername>USGS</layername>
             <srs>
                 <spatialrefsys>
                     <proj4></proj4>
-                    <srsid>23785392</srsid>
+                    <srsid>34467760</srsid>
                     <srid>2019914862</srid>
                     <authid></authid>
                     <description></description>
@@ -81,13 +81,13 @@
             </rasterproperties>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>base_land20111108195420928</id>
+            <id>base_land20111109120619198</id>
             <datasource>./base_layers/base_land.tif</datasource>
             <layername>base_land</layername>
             <srs>
                 <spatialrefsys>
                     <proj4></proj4>
-                    <srsid>23785392</srsid>
+                    <srsid>34467760</srsid>
                     <srid>2019914862</srid>
                     <authid></authid>
                     <description></description>
@@ -388,13 +388,13 @@
             </rasterproperties>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>base_streams20111108195420956</id>
+            <id>base_streams20111109120619258</id>
             <datasource>./base_layers/base_streams.tif</datasource>
             <layername>base_streams</layername>
             <srs>
                 <spatialrefsys>
                     <proj4></proj4>
-                    <srsid>23785392</srsid>
+                    <srsid>34467760</srsid>
                     <srid>2019914862</srid>
                     <authid></authid>
                     <description></description>
@@ -695,7 +695,7 @@
             </rasterproperties>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0">
-            <id>base_towns20111108195421011</id>
+            <id>base_towns20111109120619352</id>
             <datasource>./base_layers/base_towns.shp</datasource>
             <layername>base_towns</layername>
             <srs>
@@ -758,13 +758,13 @@
             <attributeactions/>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>base_traffic20111108195420986</id>
+            <id>base_traffic20111109120619305</id>
             <datasource>./base_layers/base_traffic.tif</datasource>
             <layername>base_traffic</layername>
             <srs>
                 <spatialrefsys>
                     <proj4></proj4>
-                    <srsid>23785392</srsid>
+                    <srsid>34467760</srsid>
                     <srid>2019914862</srid>
                     <authid></authid>
                     <description></description>

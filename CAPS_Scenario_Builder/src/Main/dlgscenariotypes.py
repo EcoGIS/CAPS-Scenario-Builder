@@ -86,7 +86,7 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
         # to a main window variable for use in other modules
         scenarioType = unicode(self.typesComboBox.currentText())
         self.mainwindow.scenarioType = scenarioType
-        
+
         # get the needed editingLayer and baseLayer names for the current scenarioType
         self.getEditAndBaseLayerNames(scenarioType)
         
