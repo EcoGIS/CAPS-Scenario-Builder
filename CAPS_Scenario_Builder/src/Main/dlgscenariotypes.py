@@ -130,6 +130,9 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
         if not self.baseLayerOpen:
             self.openBaseLayer()
             
+        # now that the layers are open, highlight them
+        self.colorEditBaseLayers(legend)
+            
         ''' Set the position and visibility of needed edit and base layers '''      
         
         # First, hide all edit layers and base layers not used for orientation.
@@ -171,20 +174,20 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
         ''' Get the needed editingLayer and baseLayer file names '''
         if scenarioType == self.scenarioTypesList[0]:
             self.editLayer = config.editLayersBaseNames[0]
-            self.baseLayerName = config.pointBaseLayers[0]
-            self.baseLayerFileName = config.pointBaseLayers[0] + ".shp"
+            self.baseLayerName = config.pointBaseLayersBaseNames[0]
+            self.baseLayerFileName = config.pointBaseLayersBaseNames[0] + ".shp"
         elif scenarioType == self.scenarioTypesList[1]:
             self.editLayer = config.editLayersBaseNames[0]
-            self.baseLayerName = config.pointBaseLayers[1]
-            self.baseLayerFileName = config.pointBaseLayers[1] + ".shp"
+            self.baseLayerName = config.pointBaseLayersBaseNames[1]
+            self.baseLayerFileName = config.pointBaseLayersBaseNames[1] + ".shp"
         elif scenarioType == self.scenarioTypesList[2]:
             self.editLayer = config.editLayersBaseNames[0]
-            self.baseLayerName = config.pointBaseLayers[2]
-            self.baseLayerFileName = config.pointBaseLayers[2] + ".shp"
+            self.baseLayerName = config.pointBaseLayersBaseNames[2]
+            self.baseLayerFileName = config.pointBaseLayersBaseNames[2] + ".shp"
         elif scenarioType == self.scenarioTypesList[3]:
             self.editLayer = config.editLayersBaseNames[0]
-            self.baseLayerName = config.pointBaseLayers[3]
-            self.baseLayerFileName = config.pointBaseLayers[3] + ".shp"
+            self.baseLayerName = config.pointBaseLayersBaseNames[3]
+            self.baseLayerFileName = config.pointBaseLayersBaseNames[3] + ".shp"
         elif scenarioType == self.scenarioTypesList[4]:
             self.editLayer = config.editLayersBaseNames[1]
             self.baseLayerName = config.lineBaseLayersBaseNames[0]
@@ -332,4 +335,28 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
         itemToMove.restoreAppearanceSettings()
         legend.blockSignals(False)
         #itemToMove.setCheckState(0, QtCore.Qt.Checked)
-
+        
+    def colorEditBaseLayers(self, legend):
+        ''' A method to highlight the edit layer and base layer for the
+            current scenario edit type.
+        '''
+        brush = QtGui.QBrush()
+        brush.setColor(QtCore.Qt.black)
+        # First remove any previous highlighting
+        for i in range(legend.topLevelItemCount()):
+            legend.topLevelItem(i).setForeground(0, brush)
+    
+        # now color the layers
+        brush.setColor(QtCore.Qt.darkGreen)
+        editItems = legend.findItems(self.editLayer, QtCore.Qt.MatchFixedString, 0)
+        editItems[0].setForeground(0, brush)
+        baseItems = legend.findItems(self.baseLayerName, QtCore.Qt.MatchFixedString, 0)
+        baseItems[0].setForeground(0, brush)
+        
+        #debugging
+        print "Main.dlgscenariotypes.colorEditBaseLayers()"
+        print "The edit layer name is: " + editItems[0].text(0)
+        print "The base layer name is: " + baseItems[0].text(0)
+        print "The brush color is: " + str(brush.color())
+        
+        

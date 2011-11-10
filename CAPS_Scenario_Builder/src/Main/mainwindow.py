@@ -597,26 +597,24 @@ was not written.  Please check that a file with the same name is not open in ano
                 vlayerId = items[0].layerId
                 vlayer = QgsMapLayerRegistry.instance().mapLayer(vlayerId)
             
-            # We need to delete any existing editing shapefile exports for this editing shapefile
-            # before we write a new one. The ogr driver creates a directory named "csvBaseName" 
-            # and then puts the .csv file in it. The ogr CSV driver does not seem to support 
-            # "-overwrite", so we delete the directory and its contents.
+            # We need to delete any existing editing shapefile csv conversions
+            # for this editing shapefile before we write a new one. The ogr driver
+            # writes the files to the csvPath. 
             error = None
-            
-            if QtCore.QDir(csvPath).exists():
-                csvPath = unicode(csvPath) # python needs a python string
-                print "csv directory exists " + csvPath    
+            currentCsvFile = QtCore.QFile(csvPath)
+            if currentCsvFile.exists():
+                print "currentCsvFile exists"
                 try:
-                    shutil.rmtree(csvPath) # use python here
+                    currentCsvFile.remove()
                 except (IOError, OSError), e:
                     error = unicode(e)
                 if error:
-                    print e
-                    QtGui.QMessageBox.warning(self, "Deletion Error:", "The folder \
-containing " + csvFileName + " could not be completely removed. Please check if the file \
-is open in another program.")
-                    break
-            
+                    print error
+                    QtGui.QMessageBox.warning(self, "Deletion Error:", "An old editing layer \
+csv file '" + csvFileName + " could not be deleted.  Please check if the file is open in \
+another program and then try again.")
+                    return
+         
             # Create an empty datasource and errorMessage option for the 
             # QgsVectorFileWriter parameters list
             datasourceOptions = QtCore.QStringList(QtCore.QString())
@@ -629,12 +627,13 @@ is open in another program.")
             if error != QgsVectorFileWriter.NoError:
                 QtGui.QMessageBox.warning(self, "Write Error:", "The file " + csvFileName + " \
 was not written.  Please check that a file with the same name is not open in another program.")
-            else: print "Success!"
+                return
+            else: print "The csv file " + csvPath + " was successfully written."
             
             # Now write the csv to the file to be exported to UMass using python
             try:
                 csvExportScenario = open(exportPath, 'a')
-                csvEditingShapefile = open(csvPath + '/' + csvFileName, 'r')
+                csvEditingShapefile = open(csvPath, 'r')
                 csvText = csvEditingShapefile.read()
                 csvEditingShapefile.close()
                 csvExportScenario.write(csvText)
@@ -645,13 +644,13 @@ was not written.  Please check that a file with the same name is not open in ano
                 print e
                 QtGui.QMessageBox.warning(self, 'Export Error:', 'The export file, ' \
 + exportFileName + ' could not be written.  Please try again.')
+                return
                 
         # Exited the for loop, so let the user know things worked
         QtGui.QMessageBox.information(self, 'Export Succeeded:', "The export file is named "\
  + exportFileName + ". It can be found in the CAPS Scenario Builder program directory \
 in the Exported Scenarios folder." )
-          
-      
+     
 ############################################################################################   
     ''' EDITING MENU CUSTOM SLOTS '''
 ############################################################################################
@@ -781,7 +780,7 @@ before you can deselect."
         # if the user is deleting baselayer features
         name = self.activeVLayer.name()
         type = self.scenarioType
-        if name in config.pointBaseLayers:
+        if name in config.pointBaseLayersBaseNames:
             title = "Deletion Error:"
             text = "delete from"
             if not self.checkBaseLayerMatch(title, text):
@@ -1870,7 +1869,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.mpActionCopyFeatures.setChecked(False)
         
     def enableSelectSubActions(self):
-        if self.activeVLayer.name() in config.pointBaseLayers:
+        if self.activeVLayer.name() in config.pointBaseLayersBaseNames:
             self.mpActionModifyPoints.setDisabled(False)
             self.mpActionCopyFeatures.setDisabled(True)
         else: self.mpActionCopyFeatures.setDisabled(False)
@@ -2051,9 +2050,6 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         
         # This double checks for loading errors using qgis methods
         if not self.checkLayerLoadError(vlayer): return False
-        
-        capture_string = QtCore.QString(vfilePath)
-        self.statusBar.showMessage(capture_string, 8000)
         
         # add layer to layer registry and set extent if necessary   
         QgsMapLayerRegistry.instance().addMapLayer(vlayer)
@@ -2253,7 +2249,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
     def copyFeaturesShared(self):
         ''' 
             This method copies features and is used by mainwindow.copyFeatures and
-            mainwindow.deleteFeatures (when deleting from config.pointBaseLayers)
+            mainwindow.deleteFeatures (when deleting from config.pointBaseLayersBaseNames)
         '''
         # make copy as instance variable so we can paste features into another layer
         # "selectedFeatures" is a QgsFeatureList (a Python list of QgsFeature objects)
@@ -2423,7 +2419,9 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
                 # return the symbol's symbol layer (usually only one layer)
                 symbolLayer = symbol.symbolLayer(0)
                 # this variable is set in Tools.shared.updateExtents() 
-                if self.layerColor: symbolLayer.setColor(self.layerColor)
+                if self.layerColor: 
+                    symbolLayer.setColor(self.layerColor)
+                    self.layerColor = None
                             
                 # create a new symbol layer for the delete symbol
                 newSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
@@ -2460,6 +2458,7 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             if self.layerColor: # we saved color in Tools.shared.setExtents()
                 print "THERE IS A LINE COLOR"
                 symbolLayer.setColor(self.layerColor)
+                self.layerColor = None
             print "The line width after setting is: " + str(symbolLayer.width())
         elif self.geom == 2 and self.activeVLayer.name() == config.baseLayersChecked[0]: # base_towns layer
                 print "This is the base_towns layer"
@@ -2478,10 +2477,8 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             symbolLayer = symbol.symbolLayer(0)
             if self.layerColor:
                 symbolLayer.setColor(self.layerColor)
-   
-        # make an instance variable of the V2 renderer
-        
-     
+                self.layerColor = None
+
         if self.activeVLayer.isUsingRendererV2():
             #self.rendererV2 = self.activeVLayer.rendererV2() # so far I'm not using this
             # debugging
@@ -2550,10 +2547,10 @@ different name.")
     def checkBaseLayerMatch(self, title, text):
         name = self.activeVLayer.name()
         type = self.scenarioType
-        if (type == config.scenarioTypesList[0] and name != config.pointBaseLayers[0] or
-             type == config.scenarioTypesList[1] and name != config.pointBaseLayers[1] or
-             type == config.scenarioTypesList[2] and name != config.pointBaseLayers[2] or
-             type == config.scenarioTypesList[3] and name != config.pointBaseLayers[3]):
+        if (type == config.scenarioTypesList[0] and name != config.pointBaseLayersBaseNames[0] or
+             type == config.scenarioTypesList[1] and name != config.pointBaseLayersBaseNames[1] or
+             type == config.scenarioTypesList[2] and name != config.pointBaseLayersBaseNames[2] or
+             type == config.scenarioTypesList[3] and name != config.pointBaseLayersBaseNames[3]):
             QtGui.QMessageBox.warning(self, title, "The point base layer which \
 you are trying to " + text + " does not match the scenario edit type you have chosen. \
 For example. If you have chosen to edit 'dams,' then you can only " + text + " the layer \

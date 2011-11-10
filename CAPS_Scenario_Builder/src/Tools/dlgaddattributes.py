@@ -50,13 +50,13 @@ class DlgAddAttributes(QtGui.QDialog):
         # Get the lists of field labels, combobox drop down values, and 
         # input field names for the current scenarioType.
         self.fieldLabels = [] # labels for the combo box
-        self.fieldValues = [] # values in the combobox drop down menu that the user can choose
+        self.comboBoxOptions = [] # values in the combobox drop down menu that the user can choose
         self.inputFieldNames = [] # all the field names needing input for the current scenario type
         i = 0
         while i < len(scenarioTypesList):
             if scenarioTypesList[i] == scenarioType:
                 self.fieldLabels = eval("config.fieldLabels" + str(i))
-                self.fieldValues = eval("config.fieldValues" + str(i))
+                self.comboBoxOptions = eval("config.comboBoxOptions" + str(i))
                 self.inputFieldNames = eval("config.inputFieldNames" + str(i))
                 self.valuesDictionaryList = eval("config.valuesDictionaryList" + str(i))
                 break
@@ -94,7 +94,7 @@ class DlgAddAttributes(QtGui.QDialog):
             # make each combo box
             self.comboBoxWidgets[c] = QtGui.QComboBox(self)
             self.comboBoxWidgets[c].setObjectName(comboBoxName)
-            self.comboBoxWidgets[c].addItems(self.fieldValues[c])
+            self.comboBoxWidgets[c].addItems(self.comboBoxOptions[c])
             self.gridLayout.addWidget(self.comboBoxWidgets[c], c, 1, 1, 1)
             #self.lineEditName = QtGui.QLineEdit(self)
             #self.lineEditName.setObjectName(lineEditName)
@@ -223,7 +223,8 @@ value for every item except the 'Description':")
             if subListCount < len(self.inputFieldNames):
                 text = unicode(self.comboBoxWidgets[i].currentText())
                 # returns the value associated with the option chosen by the user
-                value = self.valuesDictionaryList[i].get(text)
+                value = text[:text.find('-')-1]
+                # value = self.valuesDictionaryList[i].get(text)
                 print "The type is "
                 print "is value a string? " + str(isinstance(value, str))
                 print "Value is " + value

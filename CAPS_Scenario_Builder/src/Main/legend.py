@@ -809,10 +809,13 @@ Please check if it is open in another program and try again.")
         # This method is called by "Tools.shared.updateExtents()," where the editing layer to
         # be removed is the activeVLayer.  The method is also called by 
         # Main.mainwindow.chkScenarioState(), where the layer to be removed is probably not
-        # the activeVLayer. Since we want to reset activeVLayer variables after removing
+        # the activeVLayer. In fact the activeVLayer could be "None," or the active layer could
+        # be a raster. Since we want to reset activeVLayer variables after removing
         # the layer from the registry, we need to record the layer id of the activeVLayer
         # before we delete it.
-        activeVLayerId = self.mainwindow.activeVLayer.id()
+        activeVLayerId = None
+        if self.mainwindow.activeVLayer:
+            activeVLayerId = self.mainwindow.activeVLayer.id()
         
         # Remove the layer from the registry
         QgsMapLayerRegistry.instance().removeMapLayer(layerId)
