@@ -865,9 +865,11 @@ before you can deselect."
   
         ''' CHECK FOR USER ERROR AND SET INTIAL CONDITIONS '''
  
-        # check if user has chosen the correct editing shapefile to paste to
-        vlayerName = self.activeVLayer.name()
-        if shared.checkSelectedLayer(self, self.scenarioType, vlayerName) == "Cancel":
+        # If we are modifying a point, we have already programatically selected the correct layer.
+        # Otherwise, check if user has chosen the correct editing shapefile to paste to
+        if not modifyFlag:
+            vlayerName = self.activeVLayer.name()
+            if shared.checkSelectedLayer(self, self.scenarioType, vlayerName) == "Cancel":
                 return
  
         # Inform user if attempting to paste into incompatible layer type. This can happen if the user
@@ -918,13 +920,12 @@ before you can deselect."
                 print error                    
                 QtGui.QMessageBox.warning(self, "Failed to paste feature(s)", "Please check if "
                             + vlayerName + " is open in another program and then try again.")
-    
-        # update extents and refresh to show feature(s)
-        #shared.updateExtents(self, self.provider, self.activeVLayer, self.canvas)
-           
+ 
         # The provider gives the pasted features new id's when they are added
         # to the editing shapefile.  Here we use the same method as we use
         # to get deleted feature ids to get the pasted feature ids after pasting.
+        # In other words, we compare the layer's feature ids before and after pasting
+        # and then return the difference between the two.
         # pastedFeatureIDS is a python list.
         pastedFeatureIDS = shared.getFeatsToDelete(self.provider, self.originalFeats)        # now get the difference
           
@@ -951,7 +952,10 @@ before you can deselect."
             self.dlg.setGeometry(0, 500, 200, 200)
             if self.dlg.exec_(): # open the dialog and then if user clicks OK returns true
                 # validate user input
-                if modifyFlag: attributes = self.dlg.getNewAttributes(True)
+                if modifyFlag: 
+                    
+                    attributes = self.dlg.getNewAttributes(True)
+                    
                 else: attributes = self.dlg.getNewAttributes()
                 changedAttributes = {id : attributes} # create a "QgsChangedAttributesMap"
                 try:
@@ -2423,30 +2427,41 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
                     symbolLayer.setColor(self.layerColor)
                     self.layerColor = None
                             
-                # create a new symbol layer for the delete symbol
+                # create a new symbol layer for the delete symbol (i.e. a red cross)
                 newSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
-                map = {"name": "cross", "color": "DEFAULT_SIMPLEMARKER_COLOR", 
-                       "color_border": "255,0,0,255", "size": "4.0", "angle": "45.0"}
-                deleteSymbol = newSymbol.createSimple(map)
+                map1 = {"name": "cross", "color": "DEFAULT_SIMPLEMARKER_COLOR", 
+                       "color_border": "255,0,0,255", "size": "5.0", "angle": "45.0"}
+                deleteSymbol = newSymbol.createSimple(map1)
                 deleteLayer = deleteSymbol.symbolLayer(0)
-
+                # create a new symbol layer for the altered symbol (i.e. a green triangle
+                map2 = {"name": "equilateral_triangle", "color": "0,0,0,0", 
+                       "color_border": "255,0,0,255", "size": "5.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
+                alteredSymbol = newSymbol.createSimple(map2)
+                alteredLayer = alteredSymbol.symbolLayer(0)
+ 
                 # make the rule, using the delete symbol, and add it
                 rule1 = rendererV2.Rule(deleteSymbol, 0, 0, 
                     QtCore.QString("c_deleted='y' or d_deleted='y' or w_deleted='y' or r_deleted='y'"))
                 rendererV2.addRule(rule1)
-                
+                rule2 = rendererV2.Rule(alteredSymbol, 0, 0, 
+                    QtCore.QString("c_altered = 'y' or d_altered = 'y' or w_altered = 'y' or r_altered = 'y'"))
+                rendererV2.addRule(rule2)
                 # associate the new renderer with the activeVLayer
                 self.activeVLayer.setRendererV2(rendererV2)
                
                 # debugging
                 #print "The delete layers name is: " + deleteLayer.name()
                 print "The number of symbols is: " + str(len(rendererV2.symbols()))
+                print "The number of rules is: " + str(rendererV2.ruleCount())
                 print "The symbolLayer properties are: "
                 for k, v in symbolLayer.properties().iteritems():
                     print "%s: %s" % (k, v)
                 print "The deleteLayer properties are: "
                 for k, v in deleteLayer.properties().iteritems():
                     print "%s: %s" % (k, v)
+                print "The alteredLayer properties are: "
+                for k, v in alteredLayer.properties().iteritems():
+                    print "%s: %s" % (k, v)    
         elif self.geom == 1: # set line width and color
             print "geometry = 1"
             rendererV2 = self.activeVLayer.rendererV2()

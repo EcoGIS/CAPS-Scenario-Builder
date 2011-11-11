@@ -179,7 +179,6 @@ value for every item except the 'Description':")
         print "DlgAddAttributes.getNewAttributes()"
         print "The modifyFlag is " + str(modifyFlag)
         
-        activeVLayer = self.mainwindow.activeVLayer
         geom = self.mainwindow.geom # geometry of the active layer
 
         # get the editFields for the current editing shapefile
