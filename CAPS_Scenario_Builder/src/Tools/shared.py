@@ -63,10 +63,7 @@ def checkSelectedLayer(mainwindow, scenarioType, currentLayerName):
         scenarioTypesList = config.scenarioTypesList
         print "Tools.shared.checkSelectedLayer()"
         print "scenarioType is " + scenarioType
-        print "scenarioTypesList is "
-        print scenarioTypesList
         print "currentLayerName is " + currentLayerName
-        
 
         if scenarioType in scenarioTypesList[:4] and currentLayerName != "edit_scenario(points)":
             print "edit points"
@@ -342,3 +339,49 @@ def resetIdNumbers(provider, geom):
                         print error     
                     break
                 
+def newRoadExists(mainwindow):
+    ''' Check if the editing shapefile associated with a new road exists '''
+    # debugging
+    print "Tools.shared.newRoadExists()"
+    
+    newRoadEditFileName = config.editLayersBaseNames[1] + ".shp"
+    scenarioDirectoryName = mainwindow.scenarioInfo.completeBaseName()
+    newRoadEditFilePath = QtCore.QString(config.scenariosPath + scenarioDirectoryName + "/" + newRoadEditFileName)
+    newRoadEditFile = QtCore.QFile(newRoadEditFilePath)
+    print "The newRoadEditFileName is " + newRoadEditFileName
+    print "The newRoadEditFilePath is " + newRoadEditFilePath
+    
+    if newRoadEditFile.exists(): 
+        print "The new road exists"
+        return True 
+    else: 
+        print "The new road does not exist"
+        return False
+        
+def snapToNewRoad(mainwindow, point):
+    # debugging
+    print "Tools.shared.snapToNewRoad()"
+    
+    # set the editing shapefile for new roads to be the active layer
+    newRoadEditFileBaseName = QtCore.QString(config.editLayersBaseNames[1])
+    items = mainwindow.legend.findItems(newRoadEditFileBaseName, QtCore.Qt.MatchFixedString, 0)
+    print "the length of items is " + str(len(items))
+    if len(items) > 0:
+        item = items[0]
+        newRoadEditFileId = item.layerId
+        layer = QgsMapLayerRegistry.instance().mapLayer(newRoadEditFileId)
+        mainwindow.canvas.setCurrentLayer(layer)
+    snapper = QgsMapCanvasSnapper(mainwindow.canvas)
+    #(retval, result) = snapper.snapToBackgroundLayers(point)
+    (retval, result) = snapper.snapToCurrentLayer(point, QgsSnapper.SnapToSegment)
+    print "retval is " + str(retval)
+    print "result is "
+    print result
+    #print "The snapped layer is " + str(result.layer)
+    transform = mainwindow.canvas.getCoordinateTransform()
+    # returns a QgsPoint object in map coordinates
+    qgsPoint = transform.toMapCoordinates(point.x(), point.y())
+    print "The clicked point in map coords is " + str(qgsPoint)
+    #print "The snapped point is " +  str(result.snappedVertex)
+    #print "The snapped geometry is " + str(result.snappedAtGeometry)
+    return result

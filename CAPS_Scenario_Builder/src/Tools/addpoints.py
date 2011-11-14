@@ -74,9 +74,19 @@ class AddPoints(QgsMapTool):
                                                          currentLayerName) == "Cancel":
             self.qgsPoint = None
             return # if wrong edit layer cancel drawing
-        # Check constraints on the added point for the scenario edit type
-        # and prompt the user if constraints are not met. Method returns False 
-        # if the constraints are not met.
+        
+        ''' 
+            Check constraints on the added point for the scenario edit type, 
+            and prompt the user if constraints are not met.
+        '''
+        
+        # First check if the point can be snapped to a new road in the scenario
+        if shared.newRoadExists(self.mainwindow):
+            if shared.snapToNewRoad(self.mainwindow, point) != []:
+                return
+
+        # If not editing a new road.
+        # This method returns False if the constraints are not met.
         if not shared.checkConstraints(self.mainwindow, self.qgsPoint):
             self.qgsPoint = None
             return
