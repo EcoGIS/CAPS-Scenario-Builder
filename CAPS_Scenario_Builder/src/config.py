@@ -35,6 +35,7 @@ from qgis.core import QgsRectangle, QgsCoordinateReferenceSystem
 ''' 
 The following are variables that might change over time.
 They can be altered throughout the application by changing values here.
+
 Changing field labels, field values and field names will be reflected in 
 the "Add Attributes" dialog and the editing shapefiles created for the 
 various scenario edit types.
@@ -49,6 +50,7 @@ scenarioExportsPath = u"./Exported Scenarios/"
 
 # MA State Plane coordinate system used by MassGIS
 crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
+# The rough extents of Massachusetts
 rectExtentMA = QgsRectangle(32000, 780000, 330000, 965000)
 
 
@@ -88,7 +90,11 @@ fieldLabels6 = ['Land cover class:']
 ''' Field values for the comboBox dropdown lists '''
 # If a fieldLabel is added above, a python list [] of field values for the
 # new combobox must be added, in the proper position, to the corresponding 
-# "list of lists" here. These will appear in the dropdown list for the combobox.
+# "list of lists" here. These will appear in the dropdown list for the comboboxes
+# corresponding to the scenario edit type. Each integer appended
+#  to "comboBoxOptions" represents a scenario edit type.  Each scenario
+# edit type must have a dropdown list for each comboBox needed for that edit type.  Thus we 
+# have a "list of lists" for each edit type
 comboBoxOptions0 = [['', '1.0 - Full passage', '0.8 - Minor barrier', '0.6 - Moderate barrier', 
                  '0.4 - Significant barrier', '0.2 - Severe barrier']]
 comboBoxOptions1 = [['', '1.0 - Complete removal/full passage', '0.6 - Fishway/breached dam', 
@@ -113,44 +119,7 @@ comboBoxOptions5 = [['','0.0 - none(closed road; 0 cars/day)', '0.025 - very low
 comboBoxOptions6 = [['', '1 - Commercial', '2 - Industrial', '10 - Residential', 
                  '30 - Cropland', '50 - Water']]
 
-# These are lists of dictionaries that contain the values for the various "comboBoxOptions" displayed
-# in the combo box widgets dropdown lists for each scenario type. They were used to "lookup" the 
-# "score" corresponding to the users input so that it could be inserted into the Export Scenario csv file.
-# Although they duplicate much of the information in the field values lists above, they were separate
-# because the lists above are ordered (and can be predictably looped through), 
-# while dictionaries are unordered. Now that we added the "scores" to the comboBoxOptions, 
-# I changed code to 'slice' the 'scores' from the 
-# comboBoxOptions strings above, making the lists below unnecessary.
-valuesDictionaryList0 = [{'': 'empty', '1.0 - Full passage': '1.0', '0.8 - Minor barrier': '0.8', 
-                          '0.6 - Moderate barrier': '0.6',
-                           '0.4 - Significant barrier': '0.4', '0.2 - Severe barrier': '0.2'}]
-valuesDictionaryList1 = [{'': 'empty', '1.0 - Complete removal/full passage': '1.0', 
-                          '0.6 - Fishway/breached dam': '0.6', '0.2 - Eel passage only': '0.2',
-                         '0.0 - Full barrier': '0.0'}]
-valuesDictionaryList2 = [{'': 'empty', '1.0 - Full passage (bear, moose)': '1.0', 
-                          '0.75 - Large animals (fox, coyote, fisher, bobcat, otter)': '0.75', 
-                          '0.5 - Medium animals (rabbit, skunk, mink, opossum, raccoon)': '0.5', 
-                          '0.2 - Small animals (amphibians, reptiles, mice, voles, chipmunk, weasel)': 
-                          '0.2', '0.0 - No passage structure': '0.0'}]
-valuesDictionaryList3 = [{'': 'empty', '0 m - No restriction': '0 m', 
-                          '0.5 m - Minor restriction': '0.5 m', '1.0 m - Moderate restriction': '1.0 m',
-                           '2.0 m - Severe restriction': '2.0 m'}]
-valuesDictionaryList4 = [{u'': 'empty', u'0.0 - none(closed road; 0 cars/day)': '0.0', 
-                          u'0.025 - very low(tiny road; 100 cars/day)': '0.025', 
-                          u'0.2 - low(minor road; 800 cars/day)': '0.2',
-                           u'0.5 - medium(collector; 2500 cars/day)': '0.5', 
-                          u'0.75 - medium-high(secondary highway; 5000 cars/day)': '0.75',     
-                          u'0.94 - high(primary highway; 10,000 cars/day)': '0.94',
-                            u'1.0 - extreme(expressway; >40,000 cars/day)': '1.0'}, {'add road class': 'some value'}]
-valuesDictionaryList5 = [{u'': 'empty', u'0.0 - none(closed road; 0 cars/day)': '0.0', 
-                          u'0.025 - very low(tiny road; 100 cars/day)': '0.025', 
-                          u'0.2 - low(minor road; 800 cars/day)': '0.2',
-                           u'0.5 - medium(collector; 2500 cars/day)': '0.5', 
-                          u'0.75 - medium-high(secondary highway; 5000 cars/day)': '0.75',     
-                          u'0.94 - high(primary highway; 10,000 cars/day)': '0.94',
-                            u'1.0 - extreme(expressway; >40,000 cars/day)': '1.0'}, {'add road class?': 'some value'}]
-valuesDictionaryList6 = [{'': 'empty', '1 - Commercial': '1', '2 - Industrial': '2', 
-                          '10 - Residential': '10', '30 - Cropland': '30', '50 - Water': '50'}]
+
 
 ''' The fields lists for the three editing shapefiles '''
 # no changes should be made to the code under this heading
@@ -159,8 +128,8 @@ editPointsFields = (inputFieldNames0 + inputFieldNames1
 editLinesFields = inputFieldNames4 # 4 fields
 editPolygonsFields = inputFieldNames5 + inputFieldNames6 # 7 fields
 
-# The list of scenario change types for populating the "Edit Scenario" dialog.
-# Changing these values will only change the names shown in the "Scenario Types" dialog
+# The list of scenario edit types for populating the "Edit Scenario" dialog.
+# Changing these values will only change the names shown in the "ScenarioTypes" dialog
 # Adding a value here will NOT create a new scenario type complete with base layers
 # and editing shapefile fields.
 scenarioTypesList = ["Road stream crossing (points)", "Dams (points)",  
@@ -168,15 +137,15 @@ scenarioTypesList = ["Road stream crossing (points)", "Dams (points)",
                           "Add roads (lines)", "Modify roads (polygons)",        
                           "Land cover change (polygons)"]
 
-# The below are used in varios places to check that correct layers are active for editing operations.
+# The below are used in various places to check that correct layers are active for editing operations.
 # The spelling of these names can be changed, but not the number of them.
 pointBaseLayersBaseNames = ["base_crossings", "base_dams", "base_wildlife",
                              "base_tidal_restrictions"]
-
-slowLoadingLayers = ["base_crossings"]
-
 lineBaseLayersBaseNames = ["base_traffic"]
 polygonBaseLayersBaseNames = ["base_traffic", "base_land"]
+
+# This is used to warn users of slow loading attribute tables.
+slowLoadingLayers = ["base_crossings"]
 
 # names of just the editing layers (used in Main.legend.removeCurrentLayer()
 # and Main.mainwindow.deleteFeatures()).  These should not be changed unless

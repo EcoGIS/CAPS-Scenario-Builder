@@ -59,7 +59,6 @@ import Tools.shared
 from Main.dlgscenariotypes import DlgScenarioTypes
 import config
 
-
 class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def __init__(self, splash):
         QtGui.QMainWindow.__init__(self)
@@ -90,6 +89,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.dwAttrTable = None
         self.dwRasterTable = None
         self.scenarioInfo = None
+        # used to display data about the base layer when modifying points
+        self.currentBaseLayerId = None
         # get active vlayer to pass to edit tools
         # this variable is updated by self.activeLayerChanged
         self.activeVLayer = None
@@ -722,6 +723,7 @@ before you can deselect."
         ''' Allow the user to modify points on base layers '''
         # check if there are any features selected to modify 
         count = self.activeVLayer.selectedFeatureCount()
+        self.baseLayerId = self.activeVLayer.id()
         if count == 0:
             title = "Modify Selected Features"
             text = "You must select at least one feature on a points base layer before you\
@@ -861,7 +863,7 @@ before you can deselect."
         print "copied feat count = " + str(self.copiedFeatCount)
         print "copied feat geometry " + str(self.copiedFeatGeom)
         print "self.geom is " + str(self.geom)
-        print "modifyFlag"
+        print "modifyFlag is " + str(modifyFlag)
   
         ''' CHECK FOR USER ERROR AND SET INTIAL CONDITIONS '''
  
@@ -907,10 +909,14 @@ before you can deselect."
         values = [QtCore.QVariant()]*len(editFields)
         attributes = dict(zip(keys, values))
        
+        
+        
         # Set the attributes of the features to empty and paste.
         # Pasting features with empty attributes allows us to select each 
         # feature on the map canvas when the user inputs data for that feature.                 
         feat = QgsFeature()
+        # make a deep copy of the copied features so we don't alter them
+        # we need the original copied base layer features below
         for feat in self.copiedFeats:
             feat.setAttributeMap(attributes)
             try:
@@ -920,7 +926,7 @@ before you can deselect."
                 print error                    
                 QtGui.QMessageBox.warning(self, "Failed to paste feature(s)", "Please check if "
                             + vlayerName + " is open in another program and then try again.")
- 
+
         # The provider gives the pasted features new id's when they are added
         # to the editing shapefile.  Here we use the same method as we use
         # to get deleted feature ids to get the pasted feature ids after pasting.
@@ -942,7 +948,7 @@ before you can deselect."
         '''
 
         reply = None
-        for id in pastedFeatureIDS:
+        for count, id in enumerate(pastedFeatureIDS):
             print "feat.id is " + str(id)
             #select the feature
             self.activeVLayer.setSelectedFeatures( [id] )
@@ -950,12 +956,41 @@ before you can deselect."
             self.canvas.refresh()
             self.dlg = DlgAddAttributes(self)
             self.dlg.setGeometry(0, 500, 200, 200)
-            if self.dlg.exec_(): # open the dialog and then if user clicks OK returns true
+            if modifyFlag: # open the dialog with existing feature data
+                # show a window with the existing features data if user ismodifying the point
+                # get the point base layer and provider for the current points being modified
+                baseLayer = QgsMapLayerRegistry.instance().mapLayer(self.baseLayerId)
+                provider = baseLayer.dataProvider()
+                # get all the attributes for the point base layer
+                allAttrs = provider.attributeIndexes()
+                # get the data for the current feature
+                copiedFeatId = self.copiedFeats[count].id()
+                copiedFeat = QgsFeature()
+                provider.featureAtId(copiedFeatId, copiedFeat, True, allAttrs)
+                # A QgsAttributeMap is a Python dictionary (key = field id : value = 
+                # the field's value as a QtCore.QVariant()object
+                attrs = copiedFeat.attributeMap()
+                print "length of attrs is " + str(len(attrs))
+                # return the features geometry as coordinates
+                featGeom = copiedFeat.geometry()
+                # create the text for the geometry in display window
+                text = "Feature ID %d: %s\n" % (copiedFeat.id()+1, featGeom.exportToWkt())
+                print "The Feat ID and Wkt is " + text
+                # get the field name and attribute data for each attribue and add to the text
+                # fields() returns a dictionary with the field key and the name of the field
+                fieldNamesDict = provider.fields()
+                print "The field names dict is "
+                print fieldNamesDict
+                for (key, attr) in attrs.iteritems():
+                    print "key is: " + str(key)
+                    text += "%s: %s\n" % (fieldNamesDict.get(key).name(), attr.toString())
+                # set the title for the display window
+                title = "Unmodified Feature's Geometry and Attribute Information" 
+                self.displayInformation(title, text)
+            if self.dlg.exec_(): # open DlgAddAttributes and then if user clicks OK returns true
                 # validate user input
-                if modifyFlag: 
-                    
+                if modifyFlag: # if user is modifying a point, set the altered field to 'y'
                     attributes = self.dlg.getNewAttributes(True)
-                    
                 else: attributes = self.dlg.getNewAttributes()
                 changedAttributes = {id : attributes} # create a "QgsChangedAttributesMap"
                 try:
@@ -970,6 +1005,8 @@ before you can deselect."
                                 + vlayerName + " is open in another program and then try again.")
                 self.activeVLayer.removeSelection(False) # false means do not emit signal
                 self.canvas.refresh()
+                if count == len(pastedFeatureIDS) - 1:
+                    self.dlgDisplay.close()
                 continue
             else: #if user clicks "Cancel"
                 if modifyFlag:
@@ -1432,6 +1469,9 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # if there could be something to export
             if self.scenarioDirty or self.scenarioFilePath:
                 self.mpActionExportScenario.setDisabled(False)
+                
+            # last thing to do is check whether the layer is checked for visibility
+            #self.legend.updateLayerStatus(self.legend.currentItem())
             
             # debugging
             print "alc self.scenarioDirty is " + str(self.scenarioDirty)
@@ -1450,6 +1490,9 @@ attribute table is very large and can take a few seconds to load.  Do you want t
 
             # set the active vector layer
             self.activeVLayer = self.legend.activeLayer().layer()
+            
+            # debugging 
+            print "The activeVLayer name is " + self.activeVLayer.name()
             
             # add filename to statusbar
             capture_string = QtCore.QString(self.activeVLayer.source())
@@ -1539,6 +1582,9 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # if there could be something to export
             if self.scenarioDirty or self.scenarioFilePath:
                 self.mpActionExportScenario.setDisabled(False)
+                
+            # last thing to do is check whether the layer is 'checked' for visibility
+            #self.legend.updateLayerStatus(self.legend.currentItem())    
                 
             # debugging
             print "alc self.scenarioDirty is " + str(self.scenarioDirty)
@@ -1798,6 +1844,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.editMode = False 
         self.attrTable = None
         self.dwAttrTable = None
+        self.currentBaseLayerId = None
         self.dwRasterTable = None
         self.activeVLayer = None
         self.activeRLayer = None
@@ -1980,7 +2027,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         # Under these conditions, the user will only be prompted to save the scenario when the 
         # "Edit Scenario" function is checked. 
         if self.currentLayersCount == len(config.allOrientingLayers) and self.scenarioFileName == None:
-            print "Entered "
+            print "Entered length = allOrientingLayers loop"
             orientingLayerNames = []
             for fileName in config.allOrientingLayers:
                 info = QtCore.QFileInfo(fileName)  
@@ -2213,7 +2260,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
                 lrect.scale(1.05)
                 self.canvas.setExtent(lrect)
                 self.canvas.updateFullExtent()
-                self.canvas.refresh()
+                #self.canvas.refresh()
             else:
                 print "SET CANVAS TO MA EXTENTS"
                 config.rectExtentMA.scale(1.05)
@@ -2221,7 +2268,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
                 if self.activeVLayer:
                     self.activeVLayer.setCacheImage(None)
                 else: self.activeRLayer.setCacheImage(None)    
-                self.canvas.refresh()
+                #self.canvas.refresh()
                 self.canvas.updateFullExtent()
                 print "SET CANVAS TO MA EXTENT"
                 print "lrect.isEmpty " + str(lrect.isEmpty())
@@ -2580,6 +2627,29 @@ For example. If you have chosen to edit 'dams,' then you can only " + text + " t
         print "The renderer name is: " + renderer.name()
         print "The renderer.selectionColor() is: " + renderer.selectionColor().name()
     
+    def displayInformation(self, title, text):
+        ''' Display the information about the vector or raster '''
+        # debugging
+        print "identify.displayInformation()"
+        
+        title = QtCore.QString(title)
+        text = QtCore.QString(text)
+        self.dlgDisplay = None
+        # See self.openRasterCategoryTable() for a description of the following code: 
+        if not self.dlgDisplay:       
+            self.dlgDisplay = QtGui.QDockWidget(title, self.dlg)
+            self.dlgDisplay.setFloating(True)
+            self.dlgDisplay.setMinimumSize(QtCore.QSize(450, 300))
+            self.textBrowser = QtGui.QTextBrowser()
+            self.textBrowser.setWordWrapMode(QtGui.QTextOption.NoWrap)
+            self.textBrowser.setText(text)
+            self.textBrowser.setFontPointSize(9.0)
+            self.dlgDisplay.setWidget(self.textBrowser)
+            self.dlgDisplay.show()
+        else:
+            self.textBrowser.setText(text)
+            self.dlgDisplay.setVisible(True)    
+            
 #**************************************************************
     ''' Testing '''
 #**************************************************************

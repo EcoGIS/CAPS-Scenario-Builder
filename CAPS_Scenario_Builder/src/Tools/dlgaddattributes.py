@@ -58,7 +58,7 @@ class DlgAddAttributes(QtGui.QDialog):
                 self.fieldLabels = eval("config.fieldLabels" + str(i))
                 self.comboBoxOptions = eval("config.comboBoxOptions" + str(i))
                 self.inputFieldNames = eval("config.inputFieldNames" + str(i))
-                self.valuesDictionaryList = eval("config.valuesDictionaryList" + str(i))
+                #self.valuesDictionaryList = eval("config.valuesDictionaryList" + str(i))
                 break
             i += 1
         else:

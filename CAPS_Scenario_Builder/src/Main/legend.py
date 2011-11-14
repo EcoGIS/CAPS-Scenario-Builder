@@ -33,6 +33,7 @@
 #---------------------------------------------------------------------
 # General system includes
 from os.path import isfile
+from time import sleep
 # PyQt4 includes for python bindings to QT
 # used this import format to be consistent with the Qt Designer ui file format
 # and because it works better with eclipse
@@ -221,7 +222,7 @@ class Legend( QtGui.QTreeWidget ):
         self.connect( QgsMapLayerRegistry.instance(), QtCore.SIGNAL( "removedAll()" ),
             self.removeAll )
         self.connect( self, QtCore.SIGNAL("itemChanged(QTreeWidgetItem *,int)"),
-            self.updateLayerStatus )
+            self.updateLayerStatus ) 
         self.connect( self, QtCore.SIGNAL( "currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)" ),
             self.currentItemChanged )
 
@@ -365,6 +366,7 @@ class Legend( QtGui.QTreeWidget ):
         # debugging
         print "legend.updateLayerStatus()"
         print item
+        #sleep(2.0)
         
         if (item):
             if self.isLegendLayer(item): # Is the item a layer item?
@@ -395,33 +397,14 @@ class Legend( QtGui.QTreeWidget ):
             else:
                 layerType = newItem.parent().canvasLayer.layer().type()
                 self.canvas.setCurrentLayer(newItem.parent().canvasLayer.layer())
-         
+
         # be Create a Python "short-circuit" signal (note no "SIGNAL" parentheses)
         self.emit( QtCore.SIGNAL( "activeLayerChanged" ), layerType )
 
     def zoomToLayer( self ):
         """ Slot. Manage the zoomToLayer action in the context Menu """
         self.zoomToLegendLayer( self.currentItem() )
-        
-        '''rect = self.canvas.extent()
-        
-        # debugging
-        print "Main.MainWindow.setExtents()"
-        print "The canvas extents on loading are:"
-        print ("(" + str(rect.xMinimum()) + ", " + str(rect.yMinimum()) + ", " + 
-                     str(rect.xMaximum()) + ", " + str(rect.yMaximum()) + ")")
-        print "extentMA is (32000, 780000, 330000, 965000)"
-        
-        # set extents no bigger than MA state extents
-        extentMA = QgsRectangle(32000, 780000, 330000, 965000)
-        if (self.canvas.extent().contains(extentMA) or 
-            not self.canvas.extent().intersects(extentMA)):
-            print "canvas extent contains or does not intersect MA"
-            print "SET MA EXTENT"
-            extentMA.scale(1.05)
-            self.canvas.setExtent(extentMA)
-            self.canvas.refresh()'''
-
+ 
     def removeCurrentLayer( self ):
         """ Slot. Manage the removeCurrentLayer action in the context Menu """
         # debugging
@@ -603,7 +586,7 @@ the file system. All changes to these files will be lost. Do you want to delete 
             self.setCurrentItem( newCurrentItem )
             self.takeTopLevelItem( self.indexOfTopLevelItem( legendLayer ) )
 
-    def setStatusForAllLayers( self, visible ):
+    '''def setStatusForAllLayers( self, visible ):
         """ Show/Hide all layers in the map """
         # Block SIGNALS to avoid setLayerSet for each item status changed
         self.blockSignals( True )
@@ -615,8 +598,24 @@ the file system. All changes to these files will be lost. Do you want to delete 
 
         self.blockSignals( False )
 
-        self.updateLayerSet() # Finally, update the layer set
+        self.updateLayerSet() # Finally, update the layer set'''
+        
+    def setStatusForAllLayers(self):
+        """ Show/Hide all layers in the map """
+        # debugging
+        print "Main.legend.setStatusForAllLayers()"
+        # Block SIGNALS to avoid setLayerSet for each item status changed
+        self.blockSignals( True )
 
+        for i in range(self.topLevelItemCount()):
+            if self.topLevelItem( i ).checkState(0) == QtCore.Qt.Checked:
+                self.topLevelItem( i ).canvasLayer.setVisible(True)
+            else: self.topLevelItem( i ).canvasLayer.setVisible(False)
+
+        self.blockSignals( False )
+
+        self.updateLayerSet() # Finally, update the layer set
+    
     def removeAll( self ):
         """ Remove all legend items """
         self.clear()
@@ -638,8 +637,8 @@ the file system. All changes to these files will be lost. Do you want to delete 
     def updateLayerSet( self ):
         """ Update the LayerSet and set it to canvas """
         self.layers = self.getLayerSet()
-        self.canvas.setLayerSet( self.layers )
-
+        self.canvas.setLayerSet(self.layers)
+ 
     def getLayerSet( self ):
         """ Get the LayerSet by reading the layer items in the legend """
         layers = []
@@ -838,7 +837,7 @@ Please check if it is open in another program and try again.")
         self.mainwindow.activeVLayer = None 
         self.mainwindow.geom = None # reset activeVLayer information
         self.mainwindow.provider = None
-        self.mainwindow.layerType = None  
+        self.mainwindow.layerType = None
 
     def removeLayerFromLegendById(self, layerId):
         # Remove the legend item

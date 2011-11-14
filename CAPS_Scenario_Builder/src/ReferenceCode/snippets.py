@@ -8,12 +8,56 @@ from PyQt4 import QtCore, QtGui
 from qgis.core import *
 from qgis.gui import *
 
-
-
-                
-
 self = "some class"
 parent = "some widget's parent"
+
+'''CODE FOR OLD SYMBOLOGY THAT WORKED'''
+self.activeVLayer.setUsingRendererV2(False)
+                renderer = QgsSingleSymbolRenderer(QGis.Polygon)
+                symbol = renderer.symbols()[0]
+                symbol.setFillStyle(QtCore.Qt.NoBrush)
+                symbol.setLineWidth(0.3)
+                self.activeVLayer.setRenderer(renderer)
+
+'''# These are lists of dictionaries that contain the values for the various "comboBoxOptions" displayed
+# in the combo box widgets dropdown lists for each scenario type. They were used to "lookup" the 
+# "score" corresponding to the users input so that it could be inserted into the Export Scenario csv file.
+# Although they duplicate much of the information in the field values lists above, they were separate
+# because the lists above are ordered (and can be predictably looped through), 
+# while dictionaries are unordered. Now that we added the "scores" to the comboBoxOptions, 
+# I changed code to 'slice' the 'scores' from the 
+# comboBoxOptions strings above, making the lists below unnecessary.
+valuesDictionaryList0 = [{'': 'empty', '1.0 - Full passage': '1.0', '0.8 - Minor barrier': '0.8', 
+                          '0.6 - Moderate barrier': '0.6',
+                           '0.4 - Significant barrier': '0.4', '0.2 - Severe barrier': '0.2'}]
+valuesDictionaryList1 = [{'': 'empty', '1.0 - Complete removal/full passage': '1.0', 
+                          '0.6 - Fishway/breached dam': '0.6', '0.2 - Eel passage only': '0.2',
+                         '0.0 - Full barrier': '0.0'}]
+valuesDictionaryList2 = [{'': 'empty', '1.0 - Full passage (bear, moose)': '1.0', 
+                          '0.75 - Large animals (fox, coyote, fisher, bobcat, otter)': '0.75', 
+                          '0.5 - Medium animals (rabbit, skunk, mink, opossum, raccoon)': '0.5', 
+                          '0.2 - Small animals (amphibians, reptiles, mice, voles, chipmunk, weasel)': 
+                          '0.2', '0.0 - No passage structure': '0.0'}]
+valuesDictionaryList3 = [{'': 'empty', '0 m - No restriction': '0 m', 
+                          '0.5 m - Minor restriction': '0.5 m', '1.0 m - Moderate restriction': '1.0 m',
+                           '2.0 m - Severe restriction': '2.0 m'}]
+valuesDictionaryList4 = [{u'': 'empty', u'0.0 - none(closed road; 0 cars/day)': '0.0', 
+                          u'0.025 - very low(tiny road; 100 cars/day)': '0.025', 
+                          u'0.2 - low(minor road; 800 cars/day)': '0.2',
+                           u'0.5 - medium(collector; 2500 cars/day)': '0.5', 
+                          u'0.75 - medium-high(secondary highway; 5000 cars/day)': '0.75',     
+                          u'0.94 - high(primary highway; 10,000 cars/day)': '0.94',
+                            u'1.0 - extreme(expressway; >40,000 cars/day)': '1.0'}, {'add road class': 'some value'}]
+valuesDictionaryList5 = [{u'': 'empty', u'0.0 - none(closed road; 0 cars/day)': '0.0', 
+                          u'0.025 - very low(tiny road; 100 cars/day)': '0.025', 
+                          u'0.2 - low(minor road; 800 cars/day)': '0.2',
+                           u'0.5 - medium(collector; 2500 cars/day)': '0.5', 
+                          u'0.75 - medium-high(secondary highway; 5000 cars/day)': '0.75',     
+                          u'0.94 - high(primary highway; 10,000 cars/day)': '0.94',
+                            u'1.0 - extreme(expressway; >40,000 cars/day)': '1.0'}, {'add road class?': 'some value'}]
+valuesDictionaryList6 = [{'': 'empty', '1 - Commercial': '1', '2 - Industrial': '2', 
+                          '10 - Residential': '10', '30 - Cropland': '30', '50 - Water': '50'}]'''
+
 
 #    THE BELOW CRASHES THE APP
 #self.info = QtCore.QFileInfo(QtCore.QString(self.mainwindow.scenarioFilePath))
