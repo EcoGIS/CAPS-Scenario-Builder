@@ -32,7 +32,7 @@ from qgis.core import *
 from qgis.gui import *
 # CAPS application imports
 from dlgaddattributes import DlgAddAttributes
-import shared
+import shared, config
 
 class AddPoints(QgsMapTool):
     ''' Provide a tool to add new points and their attributes to an editing shapefile '''
@@ -66,11 +66,11 @@ class AddPoints(QgsMapTool):
         transform = self.canvas.getCoordinateTransform()
         # returns a QgsPoint object in map coordinates
         self.qgsPoint = transform.toMapCoordinates(point.x(), point.y())
-        print "The point is " + str(self.qgsPoint)
+        print "The original clicked point in map coordinates is " + str(self.qgsPoint)
         
         # check if the proper editing layer is selected
         currentLayerName = self.mainwindow.legend.currentItem().canvasLayer.layer().name()
-        if shared.checkSelectedLayer(self.mainwindow, self.mainwindow.scenarioType, 
+        if shared.checkSelectedLayer(self.mainwindow, self.mainwindow.scenarioEditType, 
                                                          currentLayerName) == "Cancel":
             self.qgsPoint = None
             return # if wrong edit layer cancel drawing
@@ -79,12 +79,17 @@ class AddPoints(QgsMapTool):
             Check constraints on the added point for the scenario edit type, 
             and prompt the user if constraints are not met.
         '''
-        
+ 
         # First check if the point can be snapped to a new road in the scenario
         if shared.newRoadExists(self.mainwindow):
-            if shared.snapToNewRoad(self.mainwindow, point) != []:
-                return
-
+            snappedQgsPoint = shared.snapToNewRoad(self.mainwindow, point)
+            print "The returned snappedPoint is " + str(snappedQgsPoint)
+            if snappedQgsPoint:
+                # constraints are satisfied because clicked point is on a new road
+                # set the new wildlife crossing's point to be the point on the new road
+                self.qgsPoint = snappedQgsPoint
+                self.getNewAttributes()
+                return    
         # If not editing a new road.
         # This method returns False if the constraints are not met.
         if not shared.checkConstraints(self.mainwindow, self.qgsPoint):
@@ -105,18 +110,26 @@ class AddPoints(QgsMapTool):
     def getNewAttributes(self):
         # debugging
         print "Class AddPoints() getNewAttributes()"
-        
+        '''print "Tools.addpoints.getNewAttributes(): The point is " + str(aQgsPoint)
+        # must set a class instance variable here 
+        self.qgsPoint = aQgsPoint
+        print "Tools.addpoints.getNewAttributes(): self.qgsPoint is " + str(self.qgsPoint)'''
         self.dlg = DlgAddAttributes(self.mainwindow)
 
         if self.dlg.exec_(): # The user has clicked "OK"
             attributes = self.dlg.getNewAttributes() # method has the same name in DlgAddAttributes()
-            #attributes = {0 : QtCore.QVariant(id), 1 : QtCore.QVariant(type)}
             self.markPoint(attributes) 
-    
+            # the below does not work because Python destroys the passed variable (i.e. aQgsPoint) 
+            # when the scope changes to the DlgAddAttributes class
+            # self.markPoint(attributes, aQgsPoint)
     def markPoint(self, attributes):
         ''' Add the new feature and display '''
         # debugging
         print "markPoint starting"
+        print "The self.qgsPoint is " + str(self.qgsPoint)
+        print "The point's type is "
+        type(self.qgsPoint)
+        
         # set the current provider
         self.provider = self.mainwindow.provider
         # make a list of the original points in the active layer
@@ -125,9 +138,11 @@ class AddPoints(QgsMapTool):
         self.mainwindow.originalFeats = self.originalFeats
         
         feat = QgsFeature()
+        geometry = QgsGeometry()
         vlayerName = self.mainwindow.activeVLayer.name()
+        print "The vlayer name is " + vlayerName
         # add the point geometry to the feature
-        feat.setGeometry(QgsGeometry.fromPoint(self.qgsPoint))
+        feat.setGeometry(geometry.fromPoint(self.qgsPoint))
         feat.setAttributeMap(attributes)
         # this actually writes the added point to disk!
         try:
@@ -137,9 +152,7 @@ class AddPoints(QgsMapTool):
             print error                    
             QtGui.QMessageBox.warning(self, "Failed to add feature(s)", "Please check if "
                                  + vlayerName + " is open in another program and then try again.")
-        
-        
-        
+      
         # reset the id numbers for the editing layer
         shared.resetIdNumbers(self.provider, self.mainwindow.geom)
         
@@ -160,7 +173,51 @@ class AddPoints(QgsMapTool):
         # for adding features.  The extents are NOT updated in any variation.
         shared.updateExtents(self.mainwindow, self.mainwindow.provider, self.mainwindow.activeVLayer, 
                                                                     self.mainwindow.canvas)
+    '''def snapToNewRoad(self, point):
+        # debugging
+        print "Tools.shared.snapToNewRoad()"
         
+        # remember the original edit points layer
+        pointsEditLayer = self.mainwindow.activeVLayer
+        
+        # set the editing shapefile for new roads to be the active layer
+        newRoadEditFileBaseName = QtCore.QString(config.editLayersBaseNames[1])
+        items = self.mainwindow.legend.findItems(newRoadEditFileBaseName, QtCore.Qt.MatchFixedString, 0)
+        if len(items) > 0:
+            item = items[0]
+            newRoadEditFileId = item.layerId
+            layer = QgsMapLayerRegistry.instance().mapLayer(newRoadEditFileId)
+            self.mainwindow.canvas.setCurrentLayer(layer)
+        else: print "Could not find the new roads editing shapefile in the legend, although it exists!"
+        
+        # Now that the line layer is the active layer, snap the wildlife crossing point to the line.
+        snapper = QgsMapCanvasSnapper(self.mainwindow.canvas)
+        (retval, result) = snapper.snapToCurrentLayer(point, QgsSnapper.SnapToSegment)
+        # Set the current layer back to the layer that was clicked (i.e. edit_scenario(points))
+        self.mainwindow.canvas.setCurrentLayer(pointsEditLayer)
+        
+        # debugging
+        print "the length of items is " + str(len(items))
+        print "retval is " + str(retval)
+        print "result is "
+        print result
+        print "The clicked points in device coordinates is " + str(point)
+        transform = self.mainwindow.canvas.getCoordinateTransform()
+        qgsPoint = transform.toMapCoordinates(point.x(), point.y())
+        print "The clicked point in map coords is " + str(qgsPoint)
+        
+        if result:
+            print "The snapped layer is " + str(result[0].layer.name())
+            print "The snapped point is " +  str(result[0].snappedVertex)
+            print "The snapped geometry is " + str(result[0].snappedAtGeometry)
+            qgsPoint = result[0].snappedVertex
+            x = qgsPoint.x()
+            y = qgsPoint.y()
+            self.qgsPoint = QgsPoint(x, y)
+            return True 
+        else: return False '''  
+
+
 #**************************************************************
     ''' Testing '''
 #**************************************************************

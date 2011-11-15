@@ -89,6 +89,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.dwAttrTable = None
         self.dwRasterTable = None
         self.scenarioInfo = None
+        self.dlgDisplay = None
         # used to display data about the base layer when modifying points
         self.currentBaseLayerId = None
         # get active vlayer to pass to edit tools
@@ -104,7 +105,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # VALUES
         self.scenarioFilePath = None
         self.scenarioFileName = None
-        self.scenarioType = None
+        self.scenarioEditType = None
         self.currentLayersCount = None
         self.layerType = None
         # get the geometry of the activeVLayer
@@ -118,7 +119,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.canvas.setCanvasColor(QtGui.QColor(255,255,255))
         self.mapRenderer = self.canvas.mapRenderer()
         self.mapRenderer.setDestinationCrs(config.crs)
-        self.mapRenderer.setExtent(config.rectExtentMA)
+        self.mapRenderer.setProjectionsEnabled(True)
+        #self.mapRenderer.setExtent(config.rectExtentMA)
         self.canvas.enableAntiAliasing(True)
         self.canvas.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.canvas.setExtent(config.rectExtentMA)# MA state extents
@@ -781,7 +783,7 @@ before you can deselect."
         
         # if the user is deleting baselayer features
         name = self.activeVLayer.name()
-        type = self.scenarioType
+        type = self.scenarioEditType
         if name in config.pointBaseLayersBaseNames:
             title = "Deletion Error:"
             text = "delete from"
@@ -871,7 +873,7 @@ before you can deselect."
         # Otherwise, check if user has chosen the correct editing shapefile to paste to
         if not modifyFlag:
             vlayerName = self.activeVLayer.name()
-            if shared.checkSelectedLayer(self, self.scenarioType, vlayerName) == "Cancel":
+            if shared.checkSelectedLayer(self, self.scenarioEditType, vlayerName) == "Cancel":
                 return
  
         # Inform user if attempting to paste into incompatible layer type. This can happen if the user
@@ -985,8 +987,12 @@ before you can deselect."
                     print "key is: " + str(key)
                     text += "%s: %s\n" % (fieldNamesDict.get(key).name(), attr.toString())
                 # set the title for the display window
-                title = "Unmodified Feature's Geometry and Attribute Information" 
-                self.displayInformation(title, text)
+                title = "Unmodified Feature's Geometry and Attribute Information"
+                # If we are changing the title and text, we need a new dialog
+                if self.dlgDisplay and self.dlgDisplay.windowTitle() != title:
+                    self.dlgDisplay.close()
+                    self.dlgDisplay = None 
+                shared.displayInformation(self, title, text)
             if self.dlg.exec_(): # open DlgAddAttributes and then if user clicks OK returns true
                 # validate user input
                 if modifyFlag: # if user is modifying a point, set the altered field to 'y'
@@ -1028,7 +1034,9 @@ want to stop pasting?"
                     # Nothing has been pasted/changed so just do housekeeping and return
                     self.copiedFeats = None
                     self.copyFlag = False
-                    if modifyFlag: self.mpActionModifyPoints.setDisabled(True)
+                    if modifyFlag: 
+                        self.mpActionModifyPoints.setDisabled(True)
+                        self.dlgDisplay.close()
                     else: self.mpActionPasteFeatures.setDisabled(True)
                     #self.mpAction
                     return 
@@ -1097,14 +1105,14 @@ before you can make edits.  Please save the current scenario or open an existing
             if self.copyFlag:
                 self.mpActionPasteFeatures.setDisabled(False)
                  
-            # call the dialog to get the scenario change type
-            self.scenarioTypes = DlgScenarioTypes(self)
-            self.scenarioTypes.exec_()
+            # call the dialog to get the scenario edit type
+            self.scenarioEditTypes = DlgScenarioTypes(self)
+            self.scenarioEditTypes.exec_()
             
-            # add scenarioType to statusbar
+            # add scenarioEditType to statusbar
             self.editTypeLabel = QtGui.QLabel(self.statusBar)
             capture_string = QtCore.QString("The current scenario edit type is:  '" 
-                                                                    + self.scenarioType + "'")
+                                                                    + self.scenarioEditType + "'")
             self.editTypeLabel.setText(capture_string)
             self.statusBar.insertPermanentWidget(0, self.editTypeLabel)        
         
@@ -1286,6 +1294,12 @@ JPEG(*.jpg *.jpeg *.JPG *.JPEG)")
         # use a QDockWidget to create floating window 
         # with the MainWindow as parent 
         self.dwRasterTable = QtGui.QDockWidget("Raster Category Tables", self)
+        self.dwRasterTable.setFloating(True)
+        # The line below prevents the dock widget from distorting the window when dragged.
+        self.dwRasterTable.setAllowedAreas(QtCore.Qt.NoDockWidgetArea)
+        self.dwRasterTable.setMinimumSize(QtCore.QSize(800, 600))
+        # Show the QDockWidget and make it a separate floating window
+        self.dwRasterTable.show()
         
         # create a QTextBrowser to display the file
         # *Note: using QTextBrowser alone
@@ -1297,12 +1311,7 @@ JPEG(*.jpg *.jpeg *.JPG *.JPEG)")
         if not fh.open(QtCore.QIODevice.ReadOnly):
                 raise IOError, unicode(fh.errorString())
         stream = QtCore.QTextStream(fh)
-        
-        # Show the QDockWidget and make it a separate floating window
-        self.dwRasterTable.show()
-        self.dwRasterTable.setFloating(True)
-        self.dwRasterTable.setMinimumSize(QtCore.QSize(800, 600))
-        
+    
         # add the QTextBrowser to the QDockWidget
         self.dwRasterTable.setWidget(self.browserRaster)
         
@@ -1368,9 +1377,11 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # debugging
             print "dwAttrTable not open"
             self.dwAttrTable = QtGui.QDockWidget("Vector Attribute Table", self)
-            self.dwAttrTable.show()
             self.dwAttrTable.setFloating(True)
+            self.dwAttrTable.setAllowedAreas(QtCore.Qt.NoDockWidgetArea)
             self.dwAttrTable.setMinimumSize(QtCore.QSize(400,250))
+            self.dwAttrTable.show()
+            
             # add the attribute table to the dock widget
         elif self.dwAttrTable.isHidden():
             self.dwAttrTable.setMinimumSize(QtCore.QSize(400,250))
@@ -1724,7 +1735,7 @@ before taking another action!")
                                                             self.canvas, self.originalFeats)
                 if self.attrTable != None and self.attrTable.isVisible():
                     self.openVectorAttributeTable()
-                self.mainwindow.editDirty = False
+                self.editDirty = False
                 print "asc set app to initial state"
                 self.setInitialAppState()
             # under these situation just discard edits and leave editing state as is
@@ -1733,7 +1744,7 @@ before taking another action!")
                                                     self.canvas, self.originalFeats)
                 if self.attrTable != None and self.attrTable.isVisible():
                     self.openVectorAttributeTable()
-                self.mainwindow.editDirty = False
+                self.editDirty = False
             # if opening new layer or changing layers just disable edit actions
             elif callingAction == ("addVector" or "addRaster" or 
                                     "legendMousePress"):
@@ -1741,7 +1752,7 @@ before taking another action!")
                                                     self.canvas, self.originalFeats)
                 if self.attrTable != None and self.attrTable.isVisible():
                     self.openVectorAttributeTable()
-                self.mainwindow.editDirty = False
+                self.editDirty = False
                 self.disableEditActions()
             # if opening new scenario, exporting scenario or closing the app
             # discard the edits and disable editing mode
@@ -1836,7 +1847,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.currentLayersCount = None
         self.copiedFeats = []
         self.originalFeats = []
-        self.scenarioType = None
+        self.scenarioEditType = None
         self.copyFlag = False
         self.exportFileFlag = False
         self.isBaseLayerDeletions = False
@@ -1844,6 +1855,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.editMode = False 
         self.attrTable = None
         self.dwAttrTable = None
+        self.dlgDisplay = None
         self.currentBaseLayerId = None
         self.dwRasterTable = None
         self.activeVLayer = None
@@ -2339,8 +2351,8 @@ the appropriate scenario edit type, and try again.")
         print "featureCount begin = " + str(self.copiedFeatCount)
       
         # get the list of fields for the current scenario edit type
-        for (count, scenarioType) in enumerate(config.scenarioTypesList):
-            if scenarioType == self.scenarioType:
+        for (count, scenarioEditType) in enumerate(config.scenarioEditTypesList):
+            if scenarioEditType == self.scenarioEditType:
                 inputFieldNames = eval("config.inputFieldNames" + str(count))
                 break
         
@@ -2608,11 +2620,11 @@ different name.")
 
     def checkBaseLayerMatch(self, title, text):
         name = self.activeVLayer.name()
-        type = self.scenarioType
-        if (type == config.scenarioTypesList[0] and name != config.pointBaseLayersBaseNames[0] or
-             type == config.scenarioTypesList[1] and name != config.pointBaseLayersBaseNames[1] or
-             type == config.scenarioTypesList[2] and name != config.pointBaseLayersBaseNames[2] or
-             type == config.scenarioTypesList[3] and name != config.pointBaseLayersBaseNames[3]):
+        type = self.scenarioEditType
+        if (type == config.scenarioEditTypesList[0] and name != config.pointBaseLayersBaseNames[0] or
+             type == config.scenarioEditTypesList[1] and name != config.pointBaseLayersBaseNames[1] or
+             type == config.scenarioEditTypesList[2] and name != config.pointBaseLayersBaseNames[2] or
+             type == config.scenarioEditTypesList[3] and name != config.pointBaseLayersBaseNames[3]):
             QtGui.QMessageBox.warning(self, title, "The point base layer which \
 you are trying to " + text + " does not match the scenario edit type you have chosen. \
 For example. If you have chosen to edit 'dams,' then you can only " + text + " the layer \
@@ -2627,28 +2639,7 @@ For example. If you have chosen to edit 'dams,' then you can only " + text + " t
         print "The renderer name is: " + renderer.name()
         print "The renderer.selectionColor() is: " + renderer.selectionColor().name()
     
-    def displayInformation(self, title, text):
-        ''' Display the information about the vector or raster '''
-        # debugging
-        print "identify.displayInformation()"
-        
-        title = QtCore.QString(title)
-        text = QtCore.QString(text)
-        self.dlgDisplay = None
-        # See self.openRasterCategoryTable() for a description of the following code: 
-        if not self.dlgDisplay:       
-            self.dlgDisplay = QtGui.QDockWidget(title, self.dlg)
-            self.dlgDisplay.setFloating(True)
-            self.dlgDisplay.setMinimumSize(QtCore.QSize(450, 300))
-            self.textBrowser = QtGui.QTextBrowser()
-            self.textBrowser.setWordWrapMode(QtGui.QTextOption.NoWrap)
-            self.textBrowser.setText(text)
-            self.textBrowser.setFontPointSize(9.0)
-            self.dlgDisplay.setWidget(self.textBrowser)
-            self.dlgDisplay.show()
-        else:
-            self.textBrowser.setText(text)
-            self.dlgDisplay.setVisible(True)    
+    
             
 #**************************************************************
     ''' Testing '''

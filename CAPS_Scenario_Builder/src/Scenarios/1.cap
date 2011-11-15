@@ -4,34 +4,34 @@
     <mapcanvas>
         <units>degrees</units>
         <extent>
-            <xmin>78057.194185</xmin>
-            <ymin>925981.094501</ymin>
-            <xmax>81685.052995</xmax>
-            <ymax>929041.582699</ymax>
+            <xmin>103428.834485</xmin>
+            <ymin>920990.620112</ymin>
+            <xmax>104828.665515</xmax>
+            <ymax>922146.005888</ymax>
         </extent>
         <projections>0</projections>
         <destinationsrs>
             <spatialrefsys>
                 <proj4></proj4>
-                <srsid>4190128</srsid>
+                <srsid>41611184</srsid>
                 <srid>2019914862</srid>
                 <authid></authid>
                 <description></description>
                 <projectionacronym></projectionacronym>
                 <ellipsoidacronym></ellipsoidacronym>
-                <geographicflag>true</geographicflag>
+                <geographicflag>false</geographicflag>
             </spatialrefsys>
         </destinationsrs>
     </mapcanvas>
     <projectlayers layercount="7">
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>USGS20111111113425859</id>
+            <id>USGS20111115150407710</id>
             <datasource>./base_layers/USGS.SID</datasource>
             <layername>USGS</layername>
             <srs>
                 <spatialrefsys>
                     <proj4></proj4>
-                    <srsid>4190128</srsid>
+                    <srsid>30535600</srsid>
                     <srid>2019914862</srid>
                     <authid></authid>
                     <description></description>
@@ -81,19 +81,19 @@
             </rasterproperties>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" geometry="Point" type="vector" hasScaleBasedVisibilityFlag="0">
-            <id>base_crossings20111111113519899</id>
-            <datasource>./base_layers/base_crossings.shp</datasource>
-            <layername>base_crossings</layername>
+            <id>base_dams20111115150526532</id>
+            <datasource>./base_layers/base_dams.shp</datasource>
+            <layername>base_dams</layername>
             <srs>
                 <spatialrefsys>
-                    <proj4>+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
-                    <srsid>774</srsid>
-                    <srid>2805</srid>
-                    <authid>EPSG:2805</authid>
-                    <description>NAD83(HARN) / Massachusetts Mainland</description>
-                    <projectionacronym>lcc</projectionacronym>
+                    <proj4>+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs</proj4>
+                    <srsid>3276</srsid>
+                    <srid>4140</srid>
+                    <authid>EPSG:4140</authid>
+                    <description>NAD83(CSRS98)</description>
+                    <projectionacronym>longlat</projectionacronym>
                     <ellipsoidacronym>GRS80</ellipsoidacronym>
-                    <geographicflag>false</geographicflag>
+                    <geographicflag>true</geographicflag>
                 </spatialrefsys>
             </srs>
             <transparencyLevelInt>255</transparencyLevelInt>
@@ -104,7 +104,7 @@
                     <symbol outputUnit="MM" alpha="1" type="marker" name="0">
                         <layer pass="0" class="SimpleMarker" locked="0">
                             <prop k="angle" v="0"/>
-                            <prop k="color" v="104,139,99,255"/>
+                            <prop k="color" v="153,19,33,255"/>
                             <prop k="color_border" v="0,0,0,255"/>
                             <prop k="name" v="circle"/>
                             <prop k="offset" v="0,0"/>
@@ -116,7 +116,7 @@
                 <sizescale field=""/>
             </renderer-v2>
             <customproperties/>
-            <displayfield></displayfield>
+            <displayfield>X_COORD</displayfield>
             <label>0</label>
             <labelattributes>
                 <label fieldname="" text="Label"/>
@@ -144,13 +144,13 @@
             <attributeactions/>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>base_land20111111113429265</id>
+            <id>base_land20111115150408185</id>
             <datasource>./base_layers/base_land.tif</datasource>
             <layername>base_land</layername>
             <srs>
                 <spatialrefsys>
                     <proj4></proj4>
-                    <srsid>4190128</srsid>
+                    <srsid>30535600</srsid>
                     <srid>2019914862</srid>
                     <authid></authid>
                     <description></description>
@@ -451,13 +451,13 @@
             </rasterproperties>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>base_streams20111111113430824</id>
+            <id>base_streams20111115150408214</id>
             <datasource>./base_layers/base_streams.tif</datasource>
             <layername>base_streams</layername>
             <srs>
                 <spatialrefsys>
                     <proj4></proj4>
-                    <srsid>4190128</srsid>
+                    <srsid>30535600</srsid>
                     <srid>2019914862</srid>
                     <authid></authid>
                     <description></description>
@@ -758,7 +758,7 @@
             </rasterproperties>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0">
-            <id>base_towns20111111113433525</id>
+            <id>base_towns20111115150408261</id>
             <datasource>./base_layers/base_towns.shp</datasource>
             <layername>base_towns</layername>
             <srs>
@@ -793,7 +793,7 @@
                 <sizescale field=""/>
             </renderer-v2>
             <customproperties/>
-            <displayfield></displayfield>
+            <displayfield>TOWN</displayfield>
             <label>0</label>
             <labelattributes>
                 <label fieldname="" text="Label"/>
@@ -821,13 +821,13 @@
             <attributeactions/>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>base_traffic20111111113432181</id>
+            <id>base_traffic20111115150408238</id>
             <datasource>./base_layers/base_traffic.tif</datasource>
             <layername>base_traffic</layername>
             <srs>
                 <spatialrefsys>
                     <proj4></proj4>
-                    <srsid>4190128</srsid>
+                    <srsid>30535600</srsid>
                     <srid>2019914862</srid>
                     <authid></authid>
                     <description></description>
@@ -1128,7 +1128,7 @@
             </rasterproperties>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" geometry="Point" type="vector" hasScaleBasedVisibilityFlag="0">
-            <id>edit_scenario_points_20111111114153828</id>
+            <id>edit_scenario_points_20111115153039302</id>
             <datasource>./scenarios/1/edit_scenario(points).shp</datasource>
             <layername>edit_scenario(points)</layername>
             <srs>
@@ -1156,7 +1156,7 @@
                     <symbol outputUnit="MM" alpha="1" type="marker" name="0">
                         <layer pass="0" class="SimpleMarker" locked="0">
                             <prop k="angle" v="0"/>
-                            <prop k="color" v="80,149,51,255"/>
+                            <prop k="color" v="214,155,179,255"/>
                             <prop k="color_border" v="0,0,0,255"/>
                             <prop k="name" v="circle"/>
                             <prop k="offset" v="0,0"/>
@@ -1168,7 +1168,7 @@
                             <prop k="angle" v="45"/>
                             <prop k="color" v="0,0,0,255"/>
                             <prop k="color_border" v="255,0,0,255"/>
-                            <prop k="name" v="cross2"/>
+                            <prop k="name" v="cross"/>
                             <prop k="offset" v="0,0"/>
                             <prop k="size" v="5"/>
                         </layer>
@@ -1176,9 +1176,9 @@
                     <symbol outputUnit="MM" alpha="1" type="marker" name="2">
                         <layer pass="0" class="SimpleMarker" locked="0">
                             <prop k="angle" v="0"/>
-                            <prop k="color" v="0,0,0,255"/>
-                            <prop k="color_border" v="0,255,0,255"/>
-                            <prop k="name" v="triangle"/>
+                            <prop k="color" v="0,0,0,0"/>
+                            <prop k="color_border" v="255,0,0,255"/>
+                            <prop k="name" v="equilateral_triangle"/>
                             <prop k="offset" v="0,0"/>
                             <prop k="size" v="5"/>
                         </layer>
@@ -1186,7 +1186,7 @@
                     <symbol outputUnit="MM" alpha="1" type="marker" name="default">
                         <layer pass="0" class="SimpleMarker" locked="0">
                             <prop k="angle" v="0"/>
-                            <prop k="color" v="46,195,130,255"/>
+                            <prop k="color" v="202,128,89,255"/>
                             <prop k="color_border" v="0,0,0,255"/>
                             <prop k="name" v="circle"/>
                             <prop k="offset" v="0,0"/>

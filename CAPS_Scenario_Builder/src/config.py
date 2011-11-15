@@ -71,7 +71,7 @@ inputFieldNames6 = ['ldcvr_id', 'ldcvr_cls', 'l_describe']
 
 ''' Labels for the combo boxes in the "Add Attributes" dialog '''
 # If you add a new field label here, it will create a corresponding combo box
-# in the "Add Attributes" dialog for the corresponding scenarioType. A new "field values" 
+# in the "Add Attributes" dialog for the corresponding scenarioEditType. A new "field values" 
 # list for the new combobox's drop down list must also be added below. In addition, 
 # you must add a new field name to the fieldNames list above, so the field will be 
 # added to the editing layer attribute table when it is created on the fly. 
@@ -129,10 +129,10 @@ editLinesFields = inputFieldNames4 # 4 fields
 editPolygonsFields = inputFieldNames5 + inputFieldNames6 # 7 fields
 
 # The list of scenario edit types for populating the "Edit Scenario" dialog.
-# Changing these values will only change the names shown in the "ScenarioTypes" dialog
+# Changing these values will only change the names shown in the "scenarioTypes" dialog
 # Adding a value here will NOT create a new scenario type complete with base layers
 # and editing shapefile fields.
-scenarioTypesList = ["Road stream crossing (points)", "Dams (points)",  
+scenarioEditTypesList = ["Road stream crossing (points)", "Dams (points)",  
                           "Wildlife crossing (points)", "Tidal restriction (points)",
                           "Add roads (lines)", "Modify roads (polygons)",        
                           "Land cover change (polygons)"]

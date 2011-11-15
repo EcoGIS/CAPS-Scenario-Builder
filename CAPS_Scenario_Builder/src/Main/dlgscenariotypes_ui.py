@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'dlgscenariotypes.ui'
+# Form implementation generated from reading ui file 'dlgScenarioTypes.ui'
 #
 # Created: Mon Sep 19 13:57:07 2011
 #      by: PyQt4 UI code generator 4.5.2
@@ -22,10 +22,10 @@ class Ui_DlgScenarioTypes(object):
         self.horizontalLayout.addWidget(self.typesLabel)
         self.typesComboBox = QtGui.QComboBox(DlgScenarioTypes)
         self.typesComboBox.setObjectName("typesComboBox")
-        # add the items from the scenarioTypesList 
+        # add the items from the ScenarioTypesList 
         #found at the beginning of the mainwindow
         '''
-        self.typesComboBox.addItems(scenarioTypesList)
+        self.typesComboBox.addItems(ScenarioTypesList)
         self.typesComboBox.addItem(QtCore.QString())
         self.typesComboBox.addItem(QtCore.QString())
         self.typesComboBox.addItem(QtCore.QString())

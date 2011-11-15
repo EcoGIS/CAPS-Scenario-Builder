@@ -58,24 +58,24 @@ def listOriginalFeatures(provider):
         
         return originalFeats
     
-def checkSelectedLayer(mainwindow, scenarioType, currentLayerName):
+def checkSelectedLayer(mainwindow, scenarioEditType, currentLayerName):
         # debugging
-        scenarioTypesList = config.scenarioTypesList
+        scenarioEditTypesList = config.scenarioEditTypesList
         print "Tools.shared.checkSelectedLayer()"
-        print "scenarioType is " + scenarioType
+        print "scenarioEditType is " + scenarioEditType
         print "currentLayerName is " + currentLayerName
 
-        if scenarioType in scenarioTypesList[:4] and currentLayerName != "edit_scenario(points)":
+        if scenarioEditType in scenarioEditTypesList[:4] and currentLayerName != config.editLayersBaseNames[0]:
             print "edit points"
             QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
 named 'edit_scenario(points)' in the layer list panel to make the scenario edit type you have chosen.")
             return "Cancel"
-        elif scenarioType == scenarioTypesList[4] and currentLayerName != "edit_scenario(lines)":
+        elif scenarioEditType == scenarioEditTypesList[4] and currentLayerName != config.editLayersBaseNames[1]:
             print "edit lines"
             QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
 named 'edit_scenario(lines)' in the layer list panel to make the scenario edit type you have chosen.")
             return "Cancel"
-        elif scenarioType in scenarioTypesList[5:7] and currentLayerName != "edit_scenario(polygons)":
+        elif scenarioEditType in scenarioEditTypesList[5:7] and currentLayerName != config.editLayersBaseNames[2]:
             print "edit polygons"
             QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
 named 'edit_scenario(polygons)' in the layer list panel to make the scenario edit type you have chosen.") 
@@ -184,8 +184,8 @@ def checkConstraints(mainwindow, geometry):
     print "shared.checkConstraints()"
     
     basePath = config.baseLayersPath
-    type = mainwindow.scenarioType
-    list = config.scenarioTypesList
+    type = mainwindow.scenarioEditType
+    list = config.scenarioEditTypesList
     pointsList = [list[0], list[1], list[3]]
     if type in pointsList: # crossing, dam removal or tidal restriction
         # Load the raster layer, but do not add it to the registry
@@ -274,32 +274,7 @@ def makeSelectRect (geom, point, transform):
         bottomRight = transform.toMapCoordinates(xBottomRight, yBottomRight)
         selectRect = QgsRectangle(topLeft, bottomRight)
         return selectRect
-        
-#**************************************************************
-''' Testing '''
-#**************************************************************
 
-def printFeatures(provider):       
-        "starting printFeatures()"
-        #self.provider.reloadData()
-        feat = QgsFeature()
-        allAttrs = provider.attributeIndexes()
-        provider.select(allAttrs)
-        # the nextFeature() method operates on a select initialized provider
-        while provider.nextFeature(feat):
-            # fetch the feature geometry, which is the feature's spatial coordinates
-            fgeom = feat.geometry()
-            # This prints the feature's ID and its spatial coordinates
-            print "Feature ID %d: %s\n" % (feat.id(), fgeom.exportToWkt()) 
-            print type(feat.id())
-            # a QgsAttributeMap is a pointer to a series of QtCore.QVariant objects
-            attrs = feat.attributeMap() 
-             
-            # the map first prints the Qgs feature ID and 
-            # then it prints the field key (starting with 0 for the first field) and the field's value.
-            # note: the QgsAttribute map is a Python dictionary (key = field id : field value)
-            for (key, attr) in attrs.iteritems():
-                print "%d: %s" % (key, attr.toString())
 
 def resetIdNumbers(provider, geom):
         ''' Set the values of id field to start at 1 and finish with the number of features
@@ -362,26 +337,95 @@ def snapToNewRoad(mainwindow, point):
     # debugging
     print "Tools.shared.snapToNewRoad()"
     
+    # remember the original edit points layer
+    pointsEditLayer = mainwindow.activeVLayer
+    
     # set the editing shapefile for new roads to be the active layer
     newRoadEditFileBaseName = QtCore.QString(config.editLayersBaseNames[1])
     items = mainwindow.legend.findItems(newRoadEditFileBaseName, QtCore.Qt.MatchFixedString, 0)
-    print "the length of items is " + str(len(items))
     if len(items) > 0:
         item = items[0]
         newRoadEditFileId = item.layerId
         layer = QgsMapLayerRegistry.instance().mapLayer(newRoadEditFileId)
         mainwindow.canvas.setCurrentLayer(layer)
+    else: print "Could not find the new roads editing shapefile in the legend, although it exists!"
+    
+    # Now that the line layer is the active layer, snap the wildlife crossing point to the line.
     snapper = QgsMapCanvasSnapper(mainwindow.canvas)
-    #(retval, result) = snapper.snapToBackgroundLayers(point)
     (retval, result) = snapper.snapToCurrentLayer(point, QgsSnapper.SnapToSegment)
+    # Set the current layer back to the layer that was clicked (i.e. edit_scenario(points))
+    mainwindow.canvas.setCurrentLayer(pointsEditLayer)
+    
+    # debugging
+    print "the length of items is " + str(len(items))
     print "retval is " + str(retval)
     print "result is "
     print result
-    #print "The snapped layer is " + str(result.layer)
+    print "The clicked points in device coordinates is " + str(point)
     transform = mainwindow.canvas.getCoordinateTransform()
-    # returns a QgsPoint object in map coordinates
     qgsPoint = transform.toMapCoordinates(point.x(), point.y())
     print "The clicked point in map coords is " + str(qgsPoint)
-    #print "The snapped point is " +  str(result.snappedVertex)
-    #print "The snapped geometry is " + str(result.snappedAtGeometry)
-    return result
+    
+    if result:
+        print "The snapped layer is " + str(result[0].layer.name())
+        print "The snapped point is " +  str(result[0].snappedVertex)
+        print "The snapped geometry is " + str(result[0].snappedAtGeometry)
+        # Note that the result object will be destroyed by QGIS when this method ends,
+        # so we need to make a new variable that contains deep copies of the information
+        # we want.  !!It took a while for me to figure this out!!
+        qgsPoint = result[0].snappedVertex
+        x = qgsPoint.x()
+        y = qgsPoint.y()
+        snappedQgsPoint = QgsPoint(x, y)
+        return snappedQgsPoint
+
+def displayInformation(mainwindow, title, text):
+        ''' Display the information about the vector or raster '''
+        # debugging
+        print "identify.displayInformation()"
+        
+        title = QtCore.QString(title)
+        text = QtCore.QString(text)
+        # See Main.mainwindow.openRasterCategoryTable() for a description of the following code: 
+        if not mainwindow.dlgDisplay:
+            if title =="Unmodified Feature's Geometry and Attribute Information":
+                mainwindow.dlgDisplay = QtGui.QDockWidget(title, mainwindow.dlg)
+            else: mainwindow.dlgDisplay = QtGui.QDockWidget(title, mainwindow)
+            mainwindow.dlgDisplay.setFloating(True)
+            mainwindow.dlgDisplay.setAllowedAreas(QtCore.Qt.NoDockWidgetArea)
+            mainwindow.dlgDisplay.setMinimumSize(QtCore.QSize(450, 300))
+            mainwindow.dlgDisplay.show()
+            mainwindow.textBrowser = QtGui.QTextBrowser()
+            mainwindow.textBrowser.setWordWrapMode(QtGui.QTextOption.NoWrap)
+            mainwindow.textBrowser.setFontPointSize(9.0)
+            mainwindow.textBrowser.setText(text)
+            mainwindow.dlgDisplay.setWidget(mainwindow.textBrowser)
+        else:
+            mainwindow.textBrowser.setText(text)
+            mainwindow.dlgDisplay.setVisible(True)
+        
+#**************************************************************
+''' Testing '''
+#**************************************************************
+
+def printFeatures(provider):       
+        "starting printFeatures()"
+        #self.provider.reloadData()
+        feat = QgsFeature()
+        allAttrs = provider.attributeIndexes()
+        provider.select(allAttrs)
+        # the nextFeature() method operates on a select initialized provider
+        while provider.nextFeature(feat):
+            # fetch the feature geometry, which is the feature's spatial coordinates
+            fgeom = feat.geometry()
+            # This prints the feature's ID and its spatial coordinates
+            print "Feature ID %d: %s\n" % (feat.id(), fgeom.exportToWkt()) 
+            print type(feat.id())
+            # a QgsAttributeMap is a pointer to a series of QtCore.QVariant objects
+            attrs = feat.attributeMap() 
+             
+            # the map first prints the Qgs feature ID and 
+            # then it prints the field key (starting with 0 for the first field) and the field's value.
+            # note: the QgsAttribute map is a Python dictionary (key = field id : field value)
+            for (key, attr) in attrs.iteritems():
+                print "%d: %s" % (key, attr.toString())                    

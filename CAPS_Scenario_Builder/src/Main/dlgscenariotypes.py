@@ -47,14 +47,14 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
         
         self.mainwindow = mainwindow
         # get the list of scenario types from main window
-        self.scenarioTypesList = config.scenarioTypesList
+        self.scenarioEditTypesList = config.scenarioEditTypesList
 
         # debugging
-        print "Class DlgScenarioTypes() scenarioTypesList is: "
-        print self.scenarioTypesList
+        print "Class DlgScenarioTypes() scenarioEditTypesList is: "
+        print self.scenarioEditTypesList
         
         # add the scenario types list to the combo box drop down
-        self.typesComboBox.addItems(self.scenarioTypesList)
+        self.typesComboBox.addItems(self.scenarioEditTypesList)
     
         QtCore.QObject.connect(self, QtCore.SIGNAL("accepted()"), self.apply)
         QtCore.QObject.connect(self, QtCore.SIGNAL("rejected()"), self.cancel)
@@ -84,11 +84,11 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
 
         # Get the scenario type chosen from the dialog and save
         # to a main window variable for use in other modules
-        scenarioType = unicode(self.typesComboBox.currentText())
-        self.mainwindow.scenarioType = scenarioType
+        scenarioEditType = unicode(self.typesComboBox.currentText())
+        self.mainwindow.scenarioEditType = scenarioEditType
 
-        # get the needed editingLayer and baseLayer names for the current scenarioType
-        self.getEditAndBaseLayerNames(scenarioType)
+        # get the needed editingLayer and baseLayer names for the current scenarioEditType
+        self.getEditAndBaseLayerNames(scenarioEditType)
         
         # set paths (edit file directory has same name as the scenario file (i.e. somedirectory.caps))
         self.baseLayersPath = config.baseLayersPath
@@ -108,7 +108,7 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
         self.isBaseLayerOpen(legend)
         
         # debugging
-        print "The self.scenarioType is " + scenarioType 
+        print "The self.scenarioEditType is " + scenarioEditType 
         print "The self.editingLayer is " + self.editLayer
         print "The self.baseLayerName is " + self.baseLayerName
         print "The self.baseLayerFileName is " + self.baseLayerFileName
@@ -164,39 +164,40 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
         print "closed the dialog"
         # reset the edit scenario button
         self.mainwindow.mpActionEditScenario.setChecked(False)
+        self.mainwindow.scenarioEditType = None
         return      
     
 #################################################################################   
     ''' Core methods '''   
 #################################################################################
     
-    def getEditAndBaseLayerNames(self, scenarioType):
+    def getEditAndBaseLayerNames(self, scenarioEditType):
         ''' Get the needed editingLayer and baseLayer file names '''
-        if scenarioType == self.scenarioTypesList[0]:
+        if scenarioEditType == self.scenarioEditTypesList[0]:
             self.editLayer = config.editLayersBaseNames[0]
             self.baseLayerName = config.pointBaseLayersBaseNames[0]
             self.baseLayerFileName = config.pointBaseLayersBaseNames[0] + ".shp"
-        elif scenarioType == self.scenarioTypesList[1]:
+        elif scenarioEditType == self.scenarioEditTypesList[1]:
             self.editLayer = config.editLayersBaseNames[0]
             self.baseLayerName = config.pointBaseLayersBaseNames[1]
             self.baseLayerFileName = config.pointBaseLayersBaseNames[1] + ".shp"
-        elif scenarioType == self.scenarioTypesList[2]:
+        elif scenarioEditType == self.scenarioEditTypesList[2]:
             self.editLayer = config.editLayersBaseNames[0]
             self.baseLayerName = config.pointBaseLayersBaseNames[2]
             self.baseLayerFileName = config.pointBaseLayersBaseNames[2] + ".shp"
-        elif scenarioType == self.scenarioTypesList[3]:
+        elif scenarioEditType == self.scenarioEditTypesList[3]:
             self.editLayer = config.editLayersBaseNames[0]
             self.baseLayerName = config.pointBaseLayersBaseNames[3]
             self.baseLayerFileName = config.pointBaseLayersBaseNames[3] + ".shp"
-        elif scenarioType == self.scenarioTypesList[4]:
+        elif scenarioEditType == self.scenarioEditTypesList[4]:
             self.editLayer = config.editLayersBaseNames[1]
             self.baseLayerName = config.lineBaseLayersBaseNames[0]
             self.baseLayerFileName = config.lineBaseLayersBaseNames[0] + ".tif"
-        elif scenarioType == self.scenarioTypesList[5]:
+        elif scenarioEditType == self.scenarioEditTypesList[5]:
             self.editLayer = config.editLayersBaseNames[2]
             self.baseLayerName = config.polygonBaseLayersBaseNames[0]
             self.baseLayerFileName = config.polygonBaseLayersBaseNames[0] + ".tif"
-        elif scenarioType == self.scenarioTypesList[6]:
+        elif scenarioEditType == self.scenarioEditTypesList[6]:
             self.editLayer = config.editLayersBaseNames[2]    
             self.baseLayerName = config.polygonBaseLayersBaseNames[1]
             self.baseLayerFileName = config.polygonBaseLayersBaseNames[1] + ".tif"
@@ -263,7 +264,7 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
             print "Error when creating shapefile: ", writer.hasError()
     
     def openBaseLayer(self):
-        ''' Open the baseLayer needed for the current scenarioType '''
+        ''' Open the baseLayer needed for the current scenarioEditType '''
         # debugging
         print "openBaseLayer()"
         

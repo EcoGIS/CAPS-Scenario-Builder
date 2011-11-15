@@ -75,7 +75,7 @@ class AddLinesPolygons(QgsMapTool):
         # check if the editing layer is selected but only on the first click
         if self.started == False:
             currentLayerName = self.mainwindow.legend.currentItem().canvasLayer.layer().name()
-            if shared.checkSelectedLayer(self.mainwindow, self.mainwindow.scenarioType, 
+            if shared.checkSelectedLayer(self.mainwindow, self.mainwindow.scenarioEditType, 
                                                                currentLayerName) == "Cancel":    
                 return # return without starting to draw
         self.down = True # starts the drawing process

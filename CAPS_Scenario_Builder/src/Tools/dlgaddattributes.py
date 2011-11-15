@@ -40,21 +40,21 @@ class DlgAddAttributes(QtGui.QDialog):
         # get a handle to the main window
         self.mainwindow = mainwindow
         # get the list of Scenario Types from mainwindow
-        scenarioTypesList = config.scenarioTypesList
-        # get the current user-chosen scenarioType from mainwindow 
-        scenarioType = self.mainwindow.scenarioType
+        scenarioEditTypesList = config.scenarioEditTypesList
+        # get the current user-chosen scenarioEditType from mainwindow 
+        scenarioEditType = self.mainwindow.scenarioEditType
         
         # debugging
-        print "DlgAddAttributes class initiated: scenario type is " + scenarioType
+        print "DlgAddAttributes class initiated: scenario type is " + scenarioEditType
      
         # Get the lists of field labels, combobox drop down values, and 
-        # input field names for the current scenarioType.
+        # input field names for the current scenarioEditType.
         self.fieldLabels = [] # labels for the combo box
         self.comboBoxOptions = [] # values in the combobox drop down menu that the user can choose
         self.inputFieldNames = [] # all the field names needing input for the current scenario type
         i = 0
-        while i < len(scenarioTypesList):
-            if scenarioTypesList[i] == scenarioType:
+        while i < len(scenarioEditTypesList):
+            if scenarioEditTypesList[i] == scenarioEditType:
                 self.fieldLabels = eval("config.fieldLabels" + str(i))
                 self.comboBoxOptions = eval("config.comboBoxOptions" + str(i))
                 self.inputFieldNames = eval("config.inputFieldNames" + str(i))
@@ -130,7 +130,7 @@ class DlgAddAttributes(QtGui.QDialog):
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.gridLayout.addWidget(self.buttonBox, c+3, 2, 1, 2)
-        self.setWindowTitle("Add Attributes: " + scenarioType)
+        self.setWindowTitle("Add Attributes: " + scenarioEditType)
         
         # These connections close the dialog
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), self.accept)

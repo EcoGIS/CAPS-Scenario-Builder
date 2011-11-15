@@ -83,7 +83,11 @@ class Identify(QgsMapTool):
         
         # now display the text to the user
         title = "Identify Raster"
-        self.displayInformation(title, text)        
+        # If we are changing the title and text, we need a new dialog
+        if self.mainwindow.dlgDisplay and self.mainwindow.dlgDisplay.windowTitle() != title:
+            self.mainwindow.dlgDisplay.close()
+            self.mainwindow.dlgDisplay = None 
+        shared.displayInformation(self.mainwindow, title, text)        
              
     def vectorIdentifyTool(self, point, qgsPoint):
         ''' Get text for the coordinates and attributes of vector features '''
@@ -114,10 +118,14 @@ class Identify(QgsMapTool):
                 
             # display the text to the user
             title = "Vector Feature Information"
-            self.displayInformation(title, text)
+            # If we are changing the title and text, we need a new dialog
+            if self.mainwindow.dlgDisplay and self.mainwindow.dlgDisplay.windowTitle() != title:
+                self.mainwindow.dlgDisplay.close()
+                self.mainwindow.dlgDisplay = None 
+            shared.displayInformation(self.mainwindow, title, text)
                             
-    def displayInformation(self, title, text):
-        ''' Display the information about the vector or raster '''
+    '''def displayInformation(self, title, text):
+         Display the information about the vector or raster 
         # debugging
         print "identify.displayInformation()"
         
@@ -136,4 +144,4 @@ class Identify(QgsMapTool):
             self.display.show()
         else:
             self.textBrowser.setText(text)
-            self.display.setVisible(True)
+            self.display.setVisible(True)'''
