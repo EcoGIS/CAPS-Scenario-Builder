@@ -49,7 +49,8 @@ scenariosPath = u"./scenarios/"
 scenarioExportsPath = u"./Exported Scenarios/"
 
 # MA State Plane coordinate system used by MassGIS
-crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
+#crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
+#crs = QgsCoordinateReferenceSystem(2805, QgsCoordinateReferenceSystem.EpsgCrsId)
 # The rough extents of Massachusetts
 rectExtentMA = QgsRectangle(32000, 780000, 330000, 965000)
 

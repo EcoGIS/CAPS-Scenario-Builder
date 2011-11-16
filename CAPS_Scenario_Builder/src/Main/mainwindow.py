@@ -117,15 +117,17 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # create map canvas
         self.canvas = QgsMapCanvas()
         self.canvas.setCanvasColor(QtGui.QColor(255,255,255))
-        self.mapRenderer = self.canvas.mapRenderer()
-        self.mapRenderer.setDestinationCrs(config.crs)
-        self.mapRenderer.setProjectionsEnabled(True)
-        #self.mapRenderer.setExtent(config.rectExtentMA)
+        
         self.canvas.enableAntiAliasing(True)
         self.canvas.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.canvas.setExtent(config.rectExtentMA)# MA state extents
         self.gridlayout.addWidget(self.canvas)
-  
+        
+        self.crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
+        self.mapRenderer = self.canvas.mapRenderer()
+        self.mapRenderer.setProjectionsEnabled(True)
+        self.mapRenderer.setDestinationCrs(self.crs)
+
         # set the QDockWidget that holds the legend
         self.legendDock = QtGui.QDockWidget("Layers", self)
         self.legendDock.setObjectName("legend")
@@ -496,7 +498,7 @@ scenario file is open in another program.")
             copyPaths.append(copyPath)
             print "copyPath is " + copyPath
             error = QgsVectorFileWriter.writeAsVectorFormat(vlayer, copyPath , "utf-8", 
-                                                                config.crs, "ESRI Shapefile")
+                                                                self.crs, "ESRI Shapefile")
             if error != QgsVectorFileWriter.NoError:
                 QtGui.QMessageBox.warning(self, "Write Error:", "The file " + vlayerName + " \
 was not written.  Please check that a file with the same name is not open in another program.")
@@ -626,7 +628,7 @@ another program and then try again.")
             creationOptions = QtCore.QStringList(QtCore.QString("GEOMETRY=AS_WKT"))
             # write csv file in MA State Plane coordinates and check for error
             error = QgsVectorFileWriter.writeAsVectorFormat(vlayer, csvPath, "utf-8", 
-                        config.crs, "CSV", False, errorMessage  , datasourceOptions, creationOptions)
+                        self.crs, "CSV", False, errorMessage  , datasourceOptions, creationOptions)
             if error != QgsVectorFileWriter.NoError:
                 QtGui.QMessageBox.warning(self, "Write Error:", "The file " + csvFileName + " \
 was not written.  Please check that a file with the same name is not open in another program.")
@@ -1411,9 +1413,12 @@ attribute table is very large and can take a few seconds to load.  Do you want t
         if self.activeRLayer == None:
             print "alc no active rlayer"
         else: print "alc old active rlayer " + self.activeRLayer.name()
-        print "self.editMode is " + str(self.editMode)
-        print "self.editDirty is " + str(self.editDirty)
-        print "self.scenarioDirty is " + str(self.scenarioDirty)
+        print "alc self.editMode is " + str(self.editMode)
+        print "alc self.editDirty is " + str(self.editDirty)
+        print "alc self.scenarioDirty is " + str(self.scenarioDirty)
+        print "alc Crs Transform is enabled? " + str(self.canvas.hasCrsTransformEnabled())
+        print "alc The destination crs description is " + str(self.canvas.mapRenderer().destinationCrs().description())
+        print "alc The destination authority identifier is " + str(self.canvas.mapRenderer().destinationCrs().authid())
         
         #**************************************************************************        
         
@@ -1431,13 +1436,14 @@ attribute table is very large and can take a few seconds to load.  Do you want t
         if layerType == 1: # raster 
             # set active raster layer
             self.activeRLayer = self.legend.activeLayer().layer()
- 
+            print "The layer's authority id is " + str(self.activeRLayer.crs().authid())
+            print "The description of the layer crs is " + str(self.activeRLayer.crs().description())
             # add filename to statusbar
             capture_string = QtCore.QString(self.activeRLayer.source())
             self.statusBar.showMessage(capture_string)
     
             # ensure that the canvas always shows Mass State Plane coordinates
-            self.activeRLayer.setCrs(config.crs)
+            self.activeRLayer.setCrs(self.crs)
             # set extents
             self.setExtents()
             # set the layer geometry
@@ -1497,10 +1503,12 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             print "copyFlag is " + str(self.copyFlag)
             
             # ensure that the canvas always shows Mass State Plane coordinates
-            #self.activeVLayer.setCrs(config.crs)
+            #self.activeVLayer.setCrs(self.crs)
 
             # set the active vector layer
             self.activeVLayer = self.legend.activeLayer().layer()
+            print "The layers authid is " + str(self.activeVLayer.crs().authid())
+            print "The description of the srs is " + str(self.activeVLayer.crs().description())
             
             # debugging 
             print "The activeVLayer name is " + self.activeVLayer.name()
@@ -2172,6 +2180,8 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         for vlayer in vlayers:
             tempPath = None
             tempPath = path + vlayer
+            info = QtCore.QFileInfo(QtCore.QString(tempPath))
+            print "The path is " + info.absoluteFilePath()
             self.openVectorLayer(tempPath)
            
         # In config.py you, can set the baselyer(s) of your choice to be visible 
