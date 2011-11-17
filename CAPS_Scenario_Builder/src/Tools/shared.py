@@ -172,9 +172,15 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
             
             return # opening the layer will update the extents, so just return
         
+        # none of these work for updating the extents of a vector layer after editing
+        #provider.reloadData()
+        #activeVLayer.reload()
+        activeVLayer.updateExtents()
         provider.updateExtents()
+        canvas.mapRenderer().updateFullExtent()
         canvas.updateFullExtent()
-        canvas.refresh()
+        canvas.map().render()
+        #canvas.refresh()
 
 def checkConstraints(mainwindow, geometry):
     ''' Checks constraints on scenario edits.  Currently only point edits are checked, 

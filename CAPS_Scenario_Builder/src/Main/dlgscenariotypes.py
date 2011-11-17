@@ -258,7 +258,7 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
         for field in fields.values(): print field.name()
 
         path = QtCore.QString(self.newEditLayerPath)
-        writer = QgsVectorFileWriter(path, "utf-8", fields, geometry, config.crs, "ESRI Shapefile")
+        writer = QgsVectorFileWriter(path, "utf-8", fields, geometry, self.mainwindow.crs, "ESRI Shapefile")
         
         if writer.hasError() != QgsVectorFileWriter.NoError:
             print "Error when creating shapefile: ", writer.hasError()

@@ -1358,20 +1358,19 @@ attribute table is very large and can take a few seconds to load.  Do you want t
         self.provider.select(allAttrs)
         # populate the table with attribute data
         # the nextFeature() method operates on a "provider.select()" initialized provider
+        setItem = self.attrTable.setItem
+        item = QtGui.QTableWidgetItem
         while self.provider.nextFeature(feat): 
             # attrs is a dictionary: key = field index, value = QgsFeatureAttribute
-            attrs = feat.attributeMap()
-            row = feat.id()
-            for k, attr in attrs.iteritems():
-                column = k     
-                item = QtGui.QTableWidgetItem(attr.toString())
-                self.attrTable.setItem(row, column, item)    
-        
+            id = feat.id()
+            map = feat.attributeMap()
+            for k, attr in map.iteritems():
+                setItem(id, k, item(attr.toString())) # feat.id() = row, key = the column number  
+      
         self.attrTable.resizeColumnsToContents()
         self.attrTable.setMinimumSize(QtCore.QSize(400,250))
         #self.attrTable.adjustSize()
-        
-        
+      
         # Show the QDockWidget and make it a separate floating window
         # (Need a dock widget to handle separate window properly)
         # if it is already open don't open another window

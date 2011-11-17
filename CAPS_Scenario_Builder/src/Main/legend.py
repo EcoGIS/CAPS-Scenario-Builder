@@ -455,6 +455,7 @@ the file system. All changes to these files will be lost. Do you want to delete 
         self.setActiveLayerVariables()
         
         # remove layer from the registry
+        layerId = self.currentItem().canvasLayer.layer().id()
         QgsMapLayerRegistry.instance().removeMapLayer(layerId)
         self.removeLegendLayer( self.currentItem() )
         self.updateLayerSet()
