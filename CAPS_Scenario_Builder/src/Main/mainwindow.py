@@ -879,7 +879,7 @@ before you can deselect."
                 return
  
         # Inform user if attempting to paste into incompatible layer type. This can happen if the user
-        #  copies features from a layer with different geometry than the current edit scenario type.
+        # copies features from a layer with different geometry than the current edit scenario type.
         copyGeom = self.getGeometryName(self.copiedFeatGeom)
         activeGeom = self.getGeometryName(self.geom) #0 point, 1 line, 2 polygon
         if self.geom != None:
@@ -889,7 +889,15 @@ before you can deselect."
                 QtGui.QMessageBox.information(self, title, text, QtGui.QMessageBox.Ok)
                 return
  
-        # Now that we have a correct layer to paste to:
+        # If a pasted point(s), make sure constraints are met.
+        if self.geom == 0:
+            for feat in self.copiedFeats:
+                qgsPoint = feat.geometry().asPoint()
+                id = feat.id() 
+                if not shared.checkConstraints(self, qgsPoint, id):
+                    return
+         
+        # Now that we have good features and a correct layer to paste to:
         # Set self.originalFeats in case the user wants to delete pasted features
         # The self.originalFeats list is only set when the AddPoints or AddLinesPolygons
         # tools are initiated, at the end of self.deleteFeatures(), and when self.saveEdits is called.
@@ -912,15 +920,11 @@ before you can deselect."
         keys = range(len(editFields))
         values = [QtCore.QVariant()]*len(editFields)
         attributes = dict(zip(keys, values))
-       
-        
         
         # Set the attributes of the features to empty and paste.
         # Pasting features with empty attributes allows us to select each 
         # feature on the map canvas when the user inputs data for that feature.                 
         feat = QgsFeature()
-        # make a deep copy of the copied features so we don't alter them
-        # we need the original copied base layer features below
         for feat in self.copiedFeats:
             feat.setAttributeMap(attributes)
             try:
@@ -1013,7 +1017,7 @@ before you can deselect."
                                 + vlayerName + " is open in another program and then try again.")
                 self.activeVLayer.removeSelection(False) # false means do not emit signal
                 self.canvas.refresh()
-                if count == len(pastedFeatureIDS) - 1:
+                if self.dlgDisplay and count == len(pastedFeatureIDS) - 1:
                     self.dlgDisplay.close()
                 continue
             else: #if user clicks "Cancel"
@@ -1418,7 +1422,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
         print "alc Crs Transform is enabled? " + str(self.canvas.hasCrsTransformEnabled())
         print "alc The destination crs description is " + str(self.canvas.mapRenderer().destinationCrs().description())
         print "alc The destination authority identifier is " + str(self.canvas.mapRenderer().destinationCrs().authid())
-        
+        print "alc The QgsProject.isDirty() flag is " + str(QgsProject.instance().isDirty())
         #**************************************************************************        
         
         # keep track of the active layer type for use in other methods
@@ -1524,6 +1528,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             self.provider = self.activeVLayer.dataProvider()
            
             # This method sets colors, marker types and other properties for certain vector layers
+            print "The activeVLayer renderer type is " + self.activeVLayer.rendererV2().type()
             self.setRendererV2()
             
             # refresh attribute table if open
@@ -2480,6 +2485,10 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
       
         if self.activeVLayer.name() == config.editLayersBaseNames[0]: # edit_scenario(points) layer
                 print "Setting Rule Based Renderer for 'edit_scenario(points).shp"
+                
+                if self.activeVLayer.rendererV2().type() == "RuleRenderer":
+                    print "RuleRenderer if worked"
+                    return
                 # This returns a QgsSymbolV2().  In particular a QgsMarkerSymbolV2()
                 # This also returns a QgsMarkerSymbolLayerV2() layer.
                 # In particular a QgsSimpleMarkerSymbolLayerV2(). 
@@ -2494,7 +2503,6 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
                 if self.layerColor: 
                     symbolLayer.setColor(self.layerColor)
                     self.layerColor = None
-                            
                 # create a new symbol layer for the delete symbol (i.e. a red cross)
                 newSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
                 map1 = {"name": "cross", "color": "DEFAULT_SIMPLEMARKER_COLOR", 
@@ -2531,17 +2539,20 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
                 for k, v in alteredLayer.properties().iteritems():
                     print "%s: %s" % (k, v)    
         elif self.geom == 1: # set line width and color
+            # debugging
             print "geometry = 1"
+ 
             rendererV2 = self.activeVLayer.rendererV2()
             symbol = rendererV2.symbols()[0]
             # this is a QgsLineSymbolLayerV2()
             symbolLayer = symbol.symbolLayer(0)
-            print "The line width before setting is: " + str(symbolLayer.width())
-            symbolLayer.setWidth(0.4)
             if self.layerColor: # we saved color in Tools.shared.setExtents()
                 print "THERE IS A LINE COLOR"
                 symbolLayer.setColor(self.layerColor)
                 self.layerColor = None
+            print "The line width before setting is: " + str(symbolLayer.width())
+            symbolLayer.setWidth(0.4)
+            
             print "The line width after setting is: " + str(symbolLayer.width())
         elif self.geom == 2 and self.activeVLayer.name() == config.baseLayersChecked[0]: # base_towns layer
                 print "This is the base_towns layer"
@@ -2555,13 +2566,15 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
                 simpleSymbol = symbol.createSimple(map)
                 rendererV2.setSymbol(simpleSymbol)
         elif self.geom == 2: # set the layer color for polygons if set in Tools.shared.setExtents()
-            rendererV2 = self.activeVLayer.rendererV2()
-            symbol = rendererV2.symbols()[0]
-            symbolLayer = symbol.symbolLayer(0)
+            #rendererV2 = self.activeVLayer.rendererV2()
+            #symbol = rendererV2.symbols()[0]
+            symbolLayer = self.activeVLayer.rendererV2().symbols()[0].symbolLayer(0)
             if self.layerColor:
+                print "reset polygon layer color"
                 symbolLayer.setColor(self.layerColor)
                 self.layerColor = None
 
+        # debugging
         if self.activeVLayer.isUsingRendererV2():
             #self.rendererV2 = self.activeVLayer.rendererV2() # so far I'm not using this
             # debugging

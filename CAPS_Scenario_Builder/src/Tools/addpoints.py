@@ -42,10 +42,11 @@ class AddPoints(QgsMapTool):
         # debugging
         print "Class AddPoints()"
         
-        ''' This class is initiated whenever the add points action is
-            selected.  The add points action is set to unselected
-            whenever the active layer is changed, so the instance variables below
-            always get updated whenever the active layer changes.
+        ''' 
+        This class is instantiated once when Main.mainwindow is instantiated. The instance 
+        variables below always get updated from the mainwindow whenever the active layer 
+        changes, so there is no need to instantiate this class more than once.
+        
         '''
         
         # make handle to mainwindow
@@ -90,7 +91,7 @@ class AddPoints(QgsMapTool):
                 self.qgsPoint = snappedQgsPoint
                 self.getNewAttributes()
                 return    
-        # If not editing a new road.
+        # If not editing a new road check constraints.
         # This method returns False if the constraints are not met.
         if not shared.checkConstraints(self.mainwindow, self.qgsPoint):
             self.qgsPoint = None
@@ -110,39 +111,33 @@ class AddPoints(QgsMapTool):
     def getNewAttributes(self):
         # debugging
         print "Class AddPoints() getNewAttributes()"
-        '''print "Tools.addpoints.getNewAttributes(): The point is " + str(aQgsPoint)
-        # must set a class instance variable here 
-        self.qgsPoint = aQgsPoint
-        print "Tools.addpoints.getNewAttributes(): self.qgsPoint is " + str(self.qgsPoint)'''
+        
         self.dlg = DlgAddAttributes(self.mainwindow)
 
         if self.dlg.exec_(): # The user has clicked "OK"
             attributes = self.dlg.getNewAttributes() # method has the same name in DlgAddAttributes()
             self.markPoint(attributes) 
-            # the below does not work because Python destroys the passed variable (i.e. aQgsPoint) 
-            # when the scope changes to the DlgAddAttributes class
-            # self.markPoint(attributes, aQgsPoint)
+ 
     def markPoint(self, attributes):
         ''' Add the new feature and display '''
         # debugging
         print "markPoint starting"
         print "The self.qgsPoint is " + str(self.qgsPoint)
-        print "The point's type is "
-        type(self.qgsPoint)
         
         # set the current provider
         self.provider = self.mainwindow.provider
         # make a list of the original points in the active layer
         self.originalFeats = shared.listOriginalFeatures(self.provider)
-        # need to update the mainwindow instance variable for call to Tools.shared.deleteEdits
+        # need to update the mainwindow instance variable 
+        # in case the user deletes the added point (i.e. call to Tools.shared.deleteEdits)
         self.mainwindow.originalFeats = self.originalFeats
         
         feat = QgsFeature()
         geometry = QgsGeometry()
         vlayerName = self.mainwindow.activeVLayer.name()
-        print "The vlayer name is " + vlayerName
         # add the point geometry to the feature
         feat.setGeometry(geometry.fromPoint(self.qgsPoint))
+        # add the user's input attributes to the feature
         feat.setAttributeMap(attributes)
         # this actually writes the added point to disk!
         try:
@@ -162,62 +157,19 @@ class AddPoints(QgsMapTool):
         
         # set the edit flag to unsaved
         self.mainwindow.editDirty = self.activeVLayer.name()
-        # enable the save edits action
-        self.mainwindow.mpActionSaveEdits.setDisabled(False)
         
         # debugging
         print "the edit flag was set to " + self.activeVLayer.name() + " by MarkPoint."
-        print "the number of features added is " + str(shared.numberFeaturesAdded
-                                                         (self.activeVLayer, self.originalFeats))
-        # The method below works for deleting features, but it doesn't work
-        # for adding features.  The extents are NOT updated in any variation.
-        shared.updateExtents(self.mainwindow, self.mainwindow.provider, self.mainwindow.activeVLayer, 
-                                                                    self.mainwindow.canvas)
-    '''def snapToNewRoad(self, point):
-        # debugging
-        print "Tools.shared.snapToNewRoad()"
         
-        # remember the original edit points layer
-        pointsEditLayer = self.mainwindow.activeVLayer
-        
-        # set the editing shapefile for new roads to be the active layer
-        newRoadEditFileBaseName = QtCore.QString(config.editLayersBaseNames[1])
-        items = self.mainwindow.legend.findItems(newRoadEditFileBaseName, QtCore.Qt.MatchFixedString, 0)
-        if len(items) > 0:
-            item = items[0]
-            newRoadEditFileId = item.layerId
-            layer = QgsMapLayerRegistry.instance().mapLayer(newRoadEditFileId)
-            self.mainwindow.canvas.setCurrentLayer(layer)
-        else: print "Could not find the new roads editing shapefile in the legend, although it exists!"
-        
-        # Now that the line layer is the active layer, snap the wildlife crossing point to the line.
-        snapper = QgsMapCanvasSnapper(self.mainwindow.canvas)
-        (retval, result) = snapper.snapToCurrentLayer(point, QgsSnapper.SnapToSegment)
-        # Set the current layer back to the layer that was clicked (i.e. edit_scenario(points))
-        self.mainwindow.canvas.setCurrentLayer(pointsEditLayer)
+        # enable the save edits action
+        self.mainwindow.mpActionSaveEdits.setDisabled(False)
+        # refresh the extents of the map on the canvas
+        shared.updateExtents(self.mainwindow, self.provider, self.activeVLayer, self.canvas)
         
         # debugging
-        print "the length of items is " + str(len(items))
-        print "retval is " + str(retval)
-        print "result is "
-        print result
-        print "The clicked points in device coordinates is " + str(point)
-        transform = self.mainwindow.canvas.getCoordinateTransform()
-        qgsPoint = transform.toMapCoordinates(point.x(), point.y())
-        print "The clicked point in map coords is " + str(qgsPoint)
-        
-        if result:
-            print "The snapped layer is " + str(result[0].layer.name())
-            print "The snapped point is " +  str(result[0].snappedVertex)
-            print "The snapped geometry is " + str(result[0].snappedAtGeometry)
-            qgsPoint = result[0].snappedVertex
-            x = qgsPoint.x()
-            y = qgsPoint.y()
-            self.qgsPoint = QgsPoint(x, y)
-            return True 
-        else: return False '''  
-
-
+        print "The vlayer name is " + vlayerName
+        print "the number of features added is " + str(shared.numberFeaturesAdded)
+ 
 #**************************************************************
     ''' Testing '''
 #**************************************************************

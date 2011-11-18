@@ -43,10 +43,11 @@ class AddLinesPolygons(QgsMapTool):
         # debigging
         print "Class AddLinesPolygons()"
         
-        ''' This class is initiated whenever the add line or add polygon action is
-            selected.  The add line and add polygon actions are set to unselected
-            whenever the active layer is changed, so the instance variables below
-            always get updated whenever the active layer changes.
+        ''' 
+        This class is instantiated once when Main.mainwindow is instantiated. The instance 
+        variables below always get updated from the mainwindow whenever the active layer 
+        changes, so there is no need to instantiate this class more than once.
+        
         '''
         
         self.mainwindow = parent
@@ -149,11 +150,13 @@ class AddLinesPolygons(QgsMapTool):
         ''' Add the new line or polygon and display '''
         # debugging
         print "AddLinesPolygons.addLinePolygon() starting"
+        
         # Set the data provider
         self.provider = self.mainwindow.provider
         # make a list of the original points in the active layer
         self.originalFeats = shared.listOriginalFeatures(self.provider)
-        # need to update the mainwindow instance variable for call to Tools.shared.deleteEdits
+        # need to update the mainwindow instance variable 
+        # in case the user deletes the added point (i.e. call to Tools.shared.deleteEdits)
         self.mainwindow.originalFeats = self.originalFeats
         
         feat = QgsFeature()
@@ -193,8 +196,7 @@ class AddLinesPolygons(QgsMapTool):
                                                        (self.activeVLayer, self.originalFeats))
         
         # update layer extents
-        shared.updateExtents(self.mainwindow, self.mainwindow.provider, self.mainwindow.activeVLayer, 
-                                                                    self.mainwindow.canvas)
+        shared.updateExtents(self.mainwindow, self.provider, self.activeVLayer, self.canvas)
  
     def resetDraw(self):
         ''' Resets drawing if user cancels "Add Attributes" dialog '''

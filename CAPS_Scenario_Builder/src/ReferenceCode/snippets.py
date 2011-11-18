@@ -11,6 +11,37 @@ from qgis.gui import *
 self = "some class"
 parent = "some widget's parent"
 
+''' OLD CODE THAT WORKED TO UPDATE EXTENTS ON MAP CANVAS 
+    ELIMINATED WHEN I FIGURED OUT HOW TO USE mainwindow.canvas.map().render()
+'''
+vfilePath = activeVLayer.source()
+# I tried every update method I could find, but nothing other than closing
+# and reopening the layer seems to reset the layer extents.  So I do that here!
+name = activeVLayer.name()
+if name in config.editLayersBaseNames:
+    layerId = activeVLayer.id()
+    # save the color so we can keep the same color when reopening the layer
+    mainwindow.layerColor = mainwindow.activeVLayer.rendererV2().symbols()[0].color()
+    # remove the layer from the originalScenarioLayers list, reset the 
+    # variables associated with the layer we are removing (to avoid runtime errors)
+    # and remove the layer from the registry.  Finally remove from legend and update
+    # the legend's layer set
+    mainwindow.legend.removeEditLayerFromRegistry(activeVLayer, layerId)
+    # now reopen the layer
+    mainwindow.openVectorLayer(vfilePath)
+    # now highlight the layer as it was before
+    brush = QtGui.QBrush()
+    brush.setColor(QtCore.Qt.darkGreen)
+    editItems = mainwindow.legend.findItems(name, QtCore.Qt.MatchFixedString, 0)
+    editItems[0].setForeground(0, brush)
+    # Make the layer visible.  This will cause a signal to be sent
+    # and the legend will update the layer's status if not visible.
+    # because we have just opened it, it is the active layer
+    mainwindow.legend.currentItem().setCheckState(0, QtCore.Qt.Checked)
+    
+    return # opening the layer will update the extents, so just return'''
+
+
 '''CODE FOR OLD SYMBOLOGY THAT WORKED'''
 self.activeVLayer.setUsingRendererV2(False)
                 renderer = QgsSingleSymbolRenderer(QGis.Polygon)

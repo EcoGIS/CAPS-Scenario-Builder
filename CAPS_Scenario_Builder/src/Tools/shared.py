@@ -147,7 +147,8 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
         print "The active layer feature count is " + str(activeVLayer.featureCount())
         vfilePath = activeVLayer.source()
         # I tried every update method I could find, but nothing other than closing
-        # and reopening the layer seems to reset the layer extents.  So I do that here!
+        # and reopening the layer seems to reset the layer extents on the canvas.  
+        # So I do that here!
         name = activeVLayer.name()
         if name in config.editLayersBaseNames:
             layerId = activeVLayer.id()
@@ -160,29 +161,35 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
             mainwindow.legend.removeEditLayerFromRegistry(activeVLayer, layerId)
             # now reopen the layer
             mainwindow.openVectorLayer(vfilePath)
+            # Newly opened layer will 
             # now highlight the layer as it was before
             brush = QtGui.QBrush()
             brush.setColor(QtCore.Qt.darkGreen)
             editItems = mainwindow.legend.findItems(name, QtCore.Qt.MatchFixedString, 0)
             editItems[0].setForeground(0, brush)
+            #activeLayerId = editItems[0].layerId
+            #activeLayer = QgsMapLayerRegistry.instance().mapLayer(activeLayerId)
+            #activeLayer.rendererV2().symbols[0].setColor(layerColor) 
             # Make the layer visible.  This will cause a signal to be sent
             # and the legend will update the layer's status if not visible.
             # because we have just opened it, it is the active layer
             mainwindow.legend.currentItem().setCheckState(0, QtCore.Qt.Checked)
+            #symbolLayer.
             
             return # opening the layer will update the extents, so just return
         
         # none of these work for updating the extents of a vector layer after editing
+        # activeVLayer.clearCacheImage()
         #provider.reloadData()
         #activeVLayer.reload()
         activeVLayer.updateExtents()
         provider.updateExtents()
-        canvas.mapRenderer().updateFullExtent()
+        #canvas.mapRenderer().updateFullExtent()
         canvas.updateFullExtent()
-        canvas.map().render()
-        #canvas.refresh()
+        #canvas.map().render()
+        canvas.refresh()
 
-def checkConstraints(mainwindow, geometry):
+def checkConstraints(mainwindow, geometry, id = None):
     ''' Checks constraints on scenario edits.  Currently only point edits are checked, 
         but this could change in the future, so the geometry parameter is generic.
     '''
@@ -211,10 +218,16 @@ def checkConstraints(mainwindow, geometry):
             return False
         if unicode(identifyDict.get(QtCore.QString("Band 1"))) != u"1": # stream centerlines have a value of 1
             print "base_streams return False value = " + unicode(identifyDict.get(QtCore.QString("Band 1")))
-            QtGui.QMessageBox.warning(mainwindow, "Constriants Error:", "The added feature must \
-fall on the centerline of a stream (dark blue color) in the base_streams layer.  Please make the base_streams layer \
-visible on your map, and try again. If the base_streams layer is not open in your scenario, you may \
-open it by clicking 'Add Raster Layer' on the toolbar or in the 'Layer' menu.")
+            if id:
+                text = "All pasted features must fall on the centerline of a stream (dark blue color) \
+in the base_streams layer. The feature in row = " + id + " in the attribute table of the layer you \
+copied from does not meet this constraint.  Please check all your points carefully and try again."
+            else:
+                text = "The added feature must fall on the centerline of a stream (dark blue color) \
+in the base_streams layer.  Please make the base_streams layer visible on your map, and try again. \
+If the base_streams layer is not open in your scenario, you may open it by clicking 'Add Raster Layer' \
+on the toolbar or in the 'Layer' menu."
+            QtGui.QMessageBox.warning(mainwindow, "Constraints Error:", text)
             # add the layer to the registry here if it is not already open
             return False # constraints have not been met
         else: 
@@ -238,10 +251,15 @@ open it by clicking 'Add Raster Layer' on the toolbar or in the 'Layer' menu.")
             return False
         if unicode(identifyDict.get(QtCore.QString("Band 1"))) == u"null (no data)": # value for areas not on roads is null 
             print "base_traffic return False value = " + unicode(identifyDict.get(QtCore.QString("Band 1")))
-            QtGui.QMessageBox.warning(mainwindow, "Constraints Error:", "The added feature must \
-fall on a road in the 'base_traffic' layer.  Please make the base_traffic layer \
-visible on your map, and try again. If the base_traffic layer is not open in your scenario, you may \
-open it by clicking 'Add Raster' on the toolbar or in the 'Layer' menu.")
+            if id:
+                text = "All pasted features must fall on a road in the 'base_traffic' layer. \
+The feature in row = " + id + " in the attribute table of the layer you copied from does not meet \
+this constraint.  Please check all your points carefully and try again."
+            else:
+                text = "The added feature must fall on a road in the 'base_traffic' layer. Please make \
+the base_traffic layer visible on your map, and try again. If the base_traffic layer is not open \
+in your scenario, you may open it by clicking 'Add Raster' on the toolbar or in the 'Layer' menu."
+            QtGui.QMessageBox.warning(mainwindow, "Constraints Error:", text)
             # add the layer to the registry here if it is not already open
             return False # constraints have not been met
         else: return True # base file opened and constraints have been met.
@@ -250,7 +268,7 @@ open it by clicking 'Add Raster' on the toolbar or in the 'Layer' menu.")
         "The rfilePath is " + rfilePath
         "The raster value for base_traffic.tif is " + unicode(identifyDict.get(QtCore.QString("Band 1")))
         "The constraints were met and the return value is 'True'"
-    else: print "Layer does not need contraints checked"
+    else: print "Layer does not need constraints checked"
     
 def openHiddenRasterLayer(mainwindow, rfilePath):    
     info = QtCore.QFileInfo(QtCore.QString(rfilePath))

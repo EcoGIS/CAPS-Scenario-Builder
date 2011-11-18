@@ -413,8 +413,7 @@ class Legend( QtGui.QTreeWidget ):
         # be Check app state and give user a chance to cancel.
         if self.mainwindow.appStateChanged("removeCurrentLayer") == "Cancel":
             return
-        
-        
+       
         # Check and warn on removing an editing layer
         name = self.currentItem().canvasLayer.layer().name()
         if name in config.editLayersBaseNames:
@@ -496,6 +495,8 @@ the file system. All changes to these files will be lost. Do you want to delete 
                 #pm = QtGui.QPixmap()
                 #iconChild = QtGui.QIcon()
                 legendLayer.canvasLayer.layer().rendererV2().symbols()[ 0 ].setColor( color )
+                # remember the color the user chose
+                #self.mainwindow.layerColor = self.mainwindow.activeVLayer.rendererV2().symbols()[0].color()
                 '''if geom == 1: # Line
                     legendLayer.canvasLayer.layer().rendererV2().symbols()[ 0 ].setColor( color )                                       
                 else:  
@@ -794,7 +795,7 @@ Please check if it is open in another program and try again.")
         else: return True
      
     def removeEditLayerFromRegistry(self, layer, layerId):
-        ''' Remove an editing layer from the registry, but clean up first '''
+        ''' Remove an editing layer from the registry, but clean up first. '''
         # debugging
         print "Main.legend.removeEditLayerFrom Registry()"
      
@@ -806,13 +807,12 @@ Please check if it is open in another program and try again.")
             print 'The activeVLayer was removed from the originalScenarioLayers'
             print 'length originalScenarioLayers after removal' + str(len(originalScenarioLayers))
         
-        # This method is called by "Tools.shared.updateExtents()," where the editing layer to
-        # be removed is the activeVLayer.  The method is also called by 
-        # Main.mainwindow.chkScenarioState(), where the layer to be removed is probably not
-        # the activeVLayer. In fact the activeVLayer could be "None," or the active layer could
-        # be a raster. Since we want to reset activeVLayer variables after removing
-        # the layer from the registry, we need to record the layer id of the activeVLayer
-        # before we delete it.
+        # This method is called by self.removeCurrentLayer() and Tools.shared.updateExtents().
+        # The method is also called by Main.mainwindow.chkScenarioState(), where the layer to 
+        # be removed is probably not the activeVLayer. In fact the activeVLayer
+        # could be "None," or the active layer could be a raster. If the layer is the 
+        # activeVLayer, we need to reset activeVLayer variables after removing the layer from the 
+        # registry, so we need to record the layer id of the activeVLayer before we delete it.
         activeVLayerId = None
         if self.mainwindow.activeVLayer:
             activeVLayerId = self.mainwindow.activeVLayer.id()
