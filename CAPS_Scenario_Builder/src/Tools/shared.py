@@ -195,6 +195,7 @@ def checkConstraints(mainwindow, geometry, id = None):
     '''
     # debugging
     print "shared.checkConstraints()"
+    print "The id is " + str(id)
     
     basePath = config.baseLayersPath
     type = mainwindow.scenarioEditType
@@ -218,9 +219,9 @@ def checkConstraints(mainwindow, geometry, id = None):
             return False
         if unicode(identifyDict.get(QtCore.QString("Band 1"))) != u"1": # stream centerlines have a value of 1
             print "base_streams return False value = " + unicode(identifyDict.get(QtCore.QString("Band 1")))
-            if id:
+            if id != None:
                 text = "All pasted features must fall on the centerline of a stream (dark blue color) \
-in the base_streams layer. The feature in row = " + id + " in the attribute table of the layer you \
+in the base_streams layer. The feature in row " + str(id+1) + " in the attribute table of the layer you \
 copied from does not meet this constraint.  Please check all your points carefully and try again."
             else:
                 text = "The added feature must fall on the centerline of a stream (dark blue color) \
@@ -251,9 +252,9 @@ on the toolbar or in the 'Layer' menu."
             return False
         if unicode(identifyDict.get(QtCore.QString("Band 1"))) == u"null (no data)": # value for areas not on roads is null 
             print "base_traffic return False value = " + unicode(identifyDict.get(QtCore.QString("Band 1")))
-            if id:
+            if id != None:
                 text = "All pasted features must fall on a road in the 'base_traffic' layer. \
-The feature in row = " + id + " in the attribute table of the layer you copied from does not meet \
+The feature in row " + str(id+1) + " in the attribute table of the layer you copied from does not meet \
 this constraint.  Please check all your points carefully and try again."
             else:
                 text = "The added feature must fall on a road in the 'base_traffic' layer. Please make \

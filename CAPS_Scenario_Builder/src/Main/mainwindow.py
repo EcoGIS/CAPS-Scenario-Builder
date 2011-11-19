@@ -90,6 +90,12 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.dwRasterTable = None
         self.scenarioInfo = None
         self.dlgDisplay = None
+        # MA State Plane coordinate system used by MassGIS
+        self.crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
+        #crs = QgsCoordinateReferenceSystem(2805, QgsCoordinateReferenceSystem.EpsgCrsId)
+        # The rough extents of Massachusetts
+        self.rectExtentMA = QgsRectangle(26000, 747000, 350000, 989000)
+
         # used to display data about the base layer when modifying points
         self.currentBaseLayerId = None
         # get active vlayer to pass to edit tools
@@ -120,10 +126,9 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         
         self.canvas.enableAntiAliasing(True)
         self.canvas.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
-        self.canvas.setExtent(config.rectExtentMA)# MA state extents
+        #self.canvas.setExtent(self.rectExtentMA)# MA state extents
         self.gridlayout.addWidget(self.canvas)
         
-        self.crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
         self.mapRenderer = self.canvas.mapRenderer()
         self.mapRenderer.setProjectionsEnabled(True)
         self.mapRenderer.setDestinationCrs(self.crs)
@@ -879,7 +884,7 @@ before you can deselect."
                 return
  
         # Inform user if attempting to paste into incompatible layer type. This can happen if the user
-        # copies features from a layer with different geometry than the current edit scenario type.
+        # copies features from a layer with different geometry than the current scenario edit type.
         copyGeom = self.getGeometryName(self.copiedFeatGeom)
         activeGeom = self.getGeometryName(self.geom) #0 point, 1 line, 2 polygon
         if self.geom != None:
@@ -893,7 +898,8 @@ before you can deselect."
         if self.geom == 0:
             for feat in self.copiedFeats:
                 qgsPoint = feat.geometry().asPoint()
-                id = feat.id() 
+                id = feat.id()
+                print "The point is " + str(qgsPoint) 
                 if not shared.checkConstraints(self, qgsPoint, id):
                     return
          
@@ -2262,53 +2268,34 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         print "Main.mainwindow.setExtents()"
         
         rect = self.canvas.extent()
-        if self.activeVLayer:
-            lrect = self.activeVLayer.extent()
-        else: lrect = self.activeRLayer.extent()
+        rectExtentMA = self.rectExtentMA
+        smallRectExtentMA = QgsRectangle(27000, 780050, 336500, 964950)
         
-        rectExtentMA = config.rectExtentMA
-        # debugging
-        print "The layer extents on loading are:"
-        print ("(" + str(lrect.xMinimum()) + ", " + str(lrect.yMinimum()) + ", " + 
-                     str(lrect.xMaximum()) + ", " + str(lrect.yMaximum()) + ")")
         print "The canvas extents on loading are:"
         print ("(" + str(rect.xMinimum()) + ", " + str(rect.yMinimum()) + ", " + 
                      str(rect.xMaximum()) + ", " + str(rect.yMaximum()) + ")")
-        print "extentMA is (32000, 780000, 330000, 965000)"
-   
+        print "rectExtentMA is "
+        print ("(" + str(rectExtentMA.xMinimum()) + ", " + str(rectExtentMA.yMinimum()) + ", " + 
+                     str(rectExtentMA.xMaximum()) + ", " + str(rectExtentMA.yMaximum()) + ")")
         # set extents no bigger than MA state extents
         if rect.contains(rectExtentMA) or not rect.intersects(rectExtentMA):
             print "canvas extent contains or does not intersect MA"
-            if (rectExtentMA.contains(lrect) or lrect.intersects(rectExtentMA) 
-                                                 or not lrect.isEmpty()):
-                print "layer extent is not empty and either is within or intersects MA extents"
-                print "SET CANVAS TO LAYER EXTENTS"
-                lrect.scale(1.05)
-                self.canvas.setExtent(lrect)
-                self.canvas.updateFullExtent()
-                #self.canvas.refresh()
-            else:
-                print "SET CANVAS TO MA EXTENTS"
-                config.rectExtentMA.scale(1.05)
-                self.canvas.setExtent(rectExtentMA)
-                if self.activeVLayer:
-                    self.activeVLayer.setCacheImage(None)
-                else: self.activeRLayer.setCacheImage(None)    
-                #self.canvas.refresh()
-                self.canvas.updateFullExtent()
-                print "SET CANVAS TO MA EXTENT"
-                print "lrect.isEmpty " + str(lrect.isEmpty())
-        else: print "THE EXTENTS WERE NOT CHANGED"       
+            # set the canvas extents to be a little smaller than the MA Extent
+            self.canvas.setExtent(smallRectExtentMA)
+            self.canvas.updateFullExtent()
+            self.canvas.refresh()
+            print "SET CANVAS TO MA EXTENT"
+        else: print "THE EXTENTS WERE NOT CHANGED" 
         
-        
+       
         # debugging
-        print "The layer extents after loading are:"
-        print ("(" + str(lrect.xMinimum()) + ", " + str(lrect.yMinimum()) + ", " + 
-                     str(lrect.xMaximum()) + ", " + str(lrect.yMaximum()) + ")")
+        rect = self.canvas.extent()
         print "The canvas extents after loading are:"
         print ("(" + str(rect.xMinimum()) + ", " + str(rect.yMinimum()) + ", " + 
                      str(rect.xMaximum()) + ", " + str(rect.yMaximum()) + ")")
-        print "extentMA is (32000, 780000, 330000, 965000)"
+        print "The scaled rectangle is "
+        print ("(" + str(smallRectExtentMA.xMinimum()) + ", " + str(smallRectExtentMA.yMinimum()) + ", " + 
+                     str(smallRectExtentMA.xMaximum()) + ", " + str(smallRectExtentMA.yMaximum()) + ")")
                 
     def getEditFields(self):
         # debugging
@@ -2484,96 +2471,108 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
         print "self.geom is :" + str(self.geom)
       
         if self.activeVLayer.name() == config.editLayersBaseNames[0]: # edit_scenario(points) layer
-                print "Setting Rule Based Renderer for 'edit_scenario(points).shp"
-                
-                if self.activeVLayer.rendererV2().type() == "RuleRenderer":
-                    print "RuleRenderer if worked"
-                    return
-                # This returns a QgsSymbolV2().  In particular a QgsMarkerSymbolV2()
-                # This also returns a QgsMarkerSymbolLayerV2() layer.
-                # In particular a QgsSimpleMarkerSymbolLayerV2(). 
-                symbol = QgsSymbolV2.defaultSymbol(QGis.Point)
-                # renderer only needs a symbol to be instantiated
-                rendererV2 = QgsRuleBasedRendererV2(symbol)
-                # get the symbols list and symbol (usually only one symbol)
-                symbol = rendererV2.symbols()[0]
-                # return the symbol's symbol layer (usually only one layer)
-                symbolLayer = symbol.symbolLayer(0)
-                # this variable is set in Tools.shared.updateExtents() 
-                if self.layerColor: 
-                    symbolLayer.setColor(self.layerColor)
-                    self.layerColor = None
-                # create a new symbol layer for the delete symbol (i.e. a red cross)
-                newSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
-                map1 = {"name": "cross", "color": "DEFAULT_SIMPLEMARKER_COLOR", 
-                       "color_border": "255,0,0,255", "size": "5.0", "angle": "45.0"}
-                deleteSymbol = newSymbol.createSimple(map1)
-                deleteLayer = deleteSymbol.symbolLayer(0)
-                # create a new symbol layer for the altered symbol (i.e. a green triangle
-                map2 = {"name": "equilateral_triangle", "color": "0,0,0,0", 
-                       "color_border": "255,0,0,255", "size": "5.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
-                alteredSymbol = newSymbol.createSimple(map2)
-                alteredLayer = alteredSymbol.symbolLayer(0)
- 
-                # make the rule, using the delete symbol, and add it
-                rule1 = rendererV2.Rule(deleteSymbol, 0, 0, 
-                    QtCore.QString("c_deleted='y' or d_deleted='y' or w_deleted='y' or r_deleted='y'"))
-                rendererV2.addRule(rule1)
-                rule2 = rendererV2.Rule(alteredSymbol, 0, 0, 
-                    QtCore.QString("c_altered = 'y' or d_altered = 'y' or w_altered = 'y' or r_altered = 'y'"))
-                rendererV2.addRule(rule2)
-                # associate the new renderer with the activeVLayer
-                self.activeVLayer.setRendererV2(rendererV2)
-               
-                # debugging
-                #print "The delete layers name is: " + deleteLayer.name()
-                print "The number of symbols is: " + str(len(rendererV2.symbols()))
-                print "The number of rules is: " + str(rendererV2.ruleCount())
-                print "The symbolLayer properties are: "
-                for k, v in symbolLayer.properties().iteritems():
-                    print "%s: %s" % (k, v)
-                print "The deleteLayer properties are: "
-                for k, v in deleteLayer.properties().iteritems():
-                    print "%s: %s" % (k, v)
-                print "The alteredLayer properties are: "
-                for k, v in alteredLayer.properties().iteritems():
-                    print "%s: %s" % (k, v)    
-        elif self.geom == 1: # set line width and color
-            # debugging
-            print "geometry = 1"
- 
-            rendererV2 = self.activeVLayer.rendererV2()
+            print "Setting Rule Based Renderer for 'edit_scenario(points).shp"
+            # if rule renderer is already set then no need to do anything, just return
+            if self.activeVLayer.rendererV2().type() == "RuleRenderer": 
+                print "RuleRenderer if worked"
+                return
+            # This returns a QgsSymbolV2().  In particular a QgsMarkerSymbolV2()
+            # This also returns a QgsMarkerSymbolLayerV2() layer.
+            # In particular a QgsSimpleMarkerSymbolLayerV2(). 
+            symbol = QgsSymbolV2.defaultSymbol(QGis.Point)
+            # renderer only needs a symbol to be instantiated
+            rendererV2 = QgsRuleBasedRendererV2(symbol)
+            # get the symbols list and symbol (usually only one symbol)
             symbol = rendererV2.symbols()[0]
-            # this is a QgsLineSymbolLayerV2()
+            # return the symbol's symbol layer (usually only one layer)
             symbolLayer = symbol.symbolLayer(0)
+            # This variable is set in Tools.shared.updateExtents() when reopening the edit layer.
+            # after editing.  If the user had set a color, we reset it here. 
+            if self.layerColor: 
+                symbolLayer.setColor(self.layerColor)
+                self.layerColor = None
+            else: symbolLayer.setColor(QtGui.QColor("red"))
+            # create a new symbol layer for the delete symbol (i.e. a red cross)
+            newSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
+            map1 = {"name": "cross", "color": "DEFAULT_SIMPLEMARKER_COLOR", 
+                   "color_border": "255,0,0,255", "size": "5.0", "angle": "45.0"}
+            deleteSymbol = newSymbol.createSimple(map1)
+            deleteLayer = deleteSymbol.symbolLayer(0)
+            # create a new symbol layer for the altered symbol (i.e. a green triangle
+            map2 = {"name": "equilateral_triangle", "color": "0,0,0,0", 
+                   "color_border": "255,0,0,255", "size": "5.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
+            alteredSymbol = newSymbol.createSimple(map2)
+            alteredLayer = alteredSymbol.symbolLayer(0)
+            
+            # make the rule, using the delete symbol, and add it
+            rule1 = rendererV2.Rule(deleteSymbol, 0, 0, 
+                QtCore.QString("c_deleted='y' or d_deleted='y' or w_deleted='y' or r_deleted='y'"))
+            rendererV2.addRule(rule1)
+            rule2 = rendererV2.Rule(alteredSymbol, 0, 0, 
+                QtCore.QString("c_altered = 'y' or d_altered = 'y' or w_altered = 'y' or r_altered = 'y'"))
+            rendererV2.addRule(rule2)
+            # associate the new renderer with the activeVLayer
+            self.activeVLayer.setRendererV2(rendererV2)
+
+            # debugging
+            #print "The delete layers name is: " + deleteLayer.name()
+            print "The number of symbols is: " + str(len(rendererV2.symbols()))
+            print "The number of rules is: " + str(rendererV2.ruleCount())
+            print "The symbolLayer properties are: "
+            for k, v in symbolLayer.properties().iteritems():
+                print "%s: %s" % (k, v)
+            print "The deleteLayer properties are: "
+            for k, v in deleteLayer.properties().iteritems():
+                print "%s: %s" % (k, v)
+            print "The alteredLayer properties are: "
+            for k, v in alteredLayer.properties().iteritems():
+                print "%s: %s" % (k, v)    
+        elif self.activeVLayer.name() == config.editLayersBaseNames[1]: # edit_scenario(lines).shp
+            print "Setting color and line width for edit_scenario(lines).shp"
+            #rendererV2 = self.activeVLayer.rendererV2()
+            #symbol = rendererV2.symbols()[0]
+            # this is a QgsLineSymbolLayerV2()
+            symbolLayer = self.activeVLayer.rendererV2().symbols()[0].symbolLayer(0)
+            if symbolLayer.width() == (0.4): # if line width and color already set then return
+                return
             if self.layerColor: # we saved color in Tools.shared.setExtents()
                 print "THERE IS A LINE COLOR"
                 symbolLayer.setColor(self.layerColor)
                 self.layerColor = None
-            print "The line width before setting is: " + str(symbolLayer.width())
-            symbolLayer.setWidth(0.4)
-            
-            print "The line width after setting is: " + str(symbolLayer.width())
-        elif self.geom == 2 and self.activeVLayer.name() == config.baseLayersChecked[0]: # base_towns layer
-                print "This is the base_towns layer"
-                #symbolLayer = symbol.symbolLayer(0)
-                rendererV2 = self.activeVLayer.rendererV2()
-                symbol = rendererV2.symbols()[0]
-                map = {"color": "DEFAULT_SIMPLEFILL_COLOR", "style": "no", 
-                                  "color_border": "DEFAULT_SIMPLEFILL_BORDERCOLOR", 
-                                  "style_border": "DEFAULT_SIMPLEFILL_BORDERSTYLE", 
-                                  "width_border": "0.3" }
-                simpleSymbol = symbol.createSimple(map)
-                rendererV2.setSymbol(simpleSymbol)
-        elif self.geom == 2: # set the layer color for polygons if set in Tools.shared.setExtents()
+            else: symbolLayer.setColor(QtGui.QColor("red")) # default to red if user has not chosen other color   
+            symbolLayer.setWidth(0.4) 
+        elif self.activeVLayer.name() == config.editLayersBaseNames[2]: #edit_scenario(polygons).shp
+            print "Setting color and line width for edit_scenario(lines).shp"
             #rendererV2 = self.activeVLayer.rendererV2()
             #symbol = rendererV2.symbols()[0]
+            # this is a QgsLineSymbolLayerV2()
             symbolLayer = self.activeVLayer.rendererV2().symbols()[0].symbolLayer(0)
-            if self.layerColor:
-                print "reset polygon layer color"
+            if symbolLayer.color() == (255, 0, 0, 255): # if color already set then return
+                return
+            if self.layerColor: # we saved color in Tools.shared.setExtents()
+                print "THERE IS A POLYGON COLOR"
                 symbolLayer.setColor(self.layerColor)
                 self.layerColor = None
-
+            else: symbolLayer.setColor(QtGui.QColor("red")) # default to red if user has not chosen other color   
+        elif self.activeVLayer.name() == config.baseLayersChecked[0]: # the base_towns layer
+            print "This is the base_towns layer"
+            # Set the base_towns layer fill color to none
+            rendererV2 = self.activeVLayer.rendererV2()
+            symbol = rendererV2.symbols()[0]
+            map = {"color": "DEFAULT_SIMPLEFILL_COLOR", "style": "no", 
+                              "color_border": "DEFAULT_SIMPLEFILL_BORDERCOLOR", 
+                              "style_border": "DEFAULT_SIMPLEFILL_BORDERSTYLE", 
+                              "width_border": "0.3" }
+            simpleSymbol = symbol.createSimple(map)
+            rendererV2.setSymbol(simpleSymbol)
+        elif self.geom == 1: # set line width for all line layers
+            # debugging
+            print "geometry = 1"
+            symbolLayer = self.activeVLayer.rendererV2().symbols()[0].symbolLayer(0)
+            print "The line width before setting is: " + str(symbolLayer.width())
+            symbolLayer.setWidth(0.4)
+            print "The line width after setting is: " + str(symbolLayer.width())
+ 
         # debugging
         if self.activeVLayer.isUsingRendererV2():
             #self.rendererV2 = self.activeVLayer.rendererV2() # so far I'm not using this

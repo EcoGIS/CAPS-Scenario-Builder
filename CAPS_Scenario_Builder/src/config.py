@@ -27,7 +27,6 @@
 #You should have received a copy of the GNU General Public License
 #along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
 #-----------------------------------------------------------------------
-from qgis.core import QgsRectangle, QgsCoordinateReferenceSystem
 
 ############################################################################################
 ''' APPLICATION CONFIGURATION '''
@@ -47,12 +46,6 @@ various scenario edit types.
 baseLayersPath = u"./base_layers/"
 scenariosPath = u"./scenarios/"
 scenarioExportsPath = u"./Exported Scenarios/"
-
-# MA State Plane coordinate system used by MassGIS
-#crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
-#crs = QgsCoordinateReferenceSystem(2805, QgsCoordinateReferenceSystem.EpsgCrsId)
-# The rough extents of Massachusetts
-rectExtentMA = QgsRectangle(32000, 780000, 330000, 965000)
 
 
 ''' Field names, which appear in the editing layer attribute table, for each scenario edit type. '''     
