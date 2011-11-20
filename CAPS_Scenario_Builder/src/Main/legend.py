@@ -426,6 +426,7 @@ the file system. All changes to these files will be lost. Do you want to delete 
             else: 
                 # user chose ok so we can delete the file but must remove from registry first!
                 layer = self.currentItem().canvasLayer.layer()
+                name = layer.name() 
                 layerId = self.currentItem().canvasLayer.layer().id()
                 # get the path before we set the activeVLayer to none
                 editFilePath = self.mainwindow.activeVLayer.source()
@@ -436,6 +437,9 @@ the file system. All changes to these files will be lost. Do you want to delete 
                 self.removeEditLayerFromRegistry(layer, layerId)
                 # and delete the editing layer
                 self.deleteEditingLayer(editFilePath)
+                # if the editing layer is edit_scenario(polygons) then reset the flag
+                if name ==config.editLayersBaseNames[2]:
+                    self.mainwindow.editingPolygon = False
                 return # we are done deleting the layer so return
         # Note that this section handles a layer whether it is a raster or vector
         # and not an editing layer.

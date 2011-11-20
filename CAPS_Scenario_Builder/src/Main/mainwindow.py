@@ -83,7 +83,9 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # if editDirty contains activeVLayer name, edits are unsaved
         self.editDirty = False #if editDirty false edits saved
         self.editMode = False # True if "Toggle Edits" is activated
-        
+        # used to remember if edit_scenario(polygons).shp was loaded from a scenario file
+        self.editingPolygon = False 
+                
         # OBJECTS
         self.attrTable = None
         self.dwAttrTable = None
@@ -310,6 +312,10 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # debugging
         print "openScenario() after remove registry count " + str(QgsMapLayerRegistry.instance().count())
      
+        # Set the self.editingPolygon flag to False because we don't know if the 
+        # edit_scenario(polygons) layer is in this scenario
+        self.editingPolygon = False   
+        
         # Create a scenario instance and read the scenario from disk.
         # Note that QgsProject gets the extents, creates map layers and registers them
         scenario = QgsProject.instance()
@@ -334,9 +340,9 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             print "the length of items is " + str(len(items))
             if len(items) > 0:
                 item = items[0]
-                item.setCheckState(0, QtCore.Qt.Checked)    
-
-        # give the user some file info
+                item.setCheckState(0, QtCore.Qt.Checked)
+ 
+         # give the user some file info
         self.setWindowTitle("Conservation Assessment and \
 Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
         
@@ -1445,8 +1451,12 @@ attribute table is very large and can take a few seconds to load.  Do you want t
         if layerType == 1: # raster 
             # set active raster layer
             self.activeRLayer = self.legend.activeLayer().layer()
+            
+            # debugging
             print "The layer's authority id is " + str(self.activeRLayer.crs().authid())
             print "The description of the layer crs is " + str(self.activeRLayer.crs().description())
+            print "The activeRLayer name is " + self.activeRLayer.name()
+            
             # add filename to statusbar
             capture_string = QtCore.QString(self.activeRLayer.source())
             self.statusBar.showMessage(capture_string)
@@ -1516,11 +1526,11 @@ attribute table is very large and can take a few seconds to load.  Do you want t
 
             # set the active vector layer
             self.activeVLayer = self.legend.activeLayer().layer()
-            print "The layers authid is " + str(self.activeVLayer.crs().authid())
-            print "The description of the srs is " + str(self.activeVLayer.crs().description())
             
             # debugging 
             print "The activeVLayer name is " + self.activeVLayer.name()
+            print "The layers authid is " + str(self.activeVLayer.crs().authid())
+            print "The description of the srs is " + str(self.activeVLayer.crs().description())
             
             # add filename to statusbar
             capture_string = QtCore.QString(self.activeVLayer.source())
@@ -1867,6 +1877,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.originalFeats = []
         self.scenarioEditType = None
         self.copyFlag = False
+        self.editingPolygon = False
         self.exportFileFlag = False
         self.isBaseLayerDeletions = False
         self.editDirty = False
@@ -2542,18 +2553,27 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             else: symbolLayer.setColor(QtGui.QColor("red")) # default to red if user has not chosen other color   
             symbolLayer.setWidth(0.4) 
         elif self.activeVLayer.name() == config.editLayersBaseNames[2]: #edit_scenario(polygons).shp
-            print "Setting color and line width for edit_scenario(lines).shp"
-            #rendererV2 = self.activeVLayer.rendererV2()
-            #symbol = rendererV2.symbols()[0]
-            # this is a QgsLineSymbolLayerV2()
+            print "Setting color for edit_scenario(polygons).shp"
+        
             symbolLayer = self.activeVLayer.rendererV2().symbols()[0].symbolLayer(0)
-            if symbolLayer.color() == (255, 0, 0, 255): # if color already set then return
-                return
+            # if the layer is being reloaded by update extents after editing then set the color
             if self.layerColor: # we saved color in Tools.shared.setExtents()
                 print "THERE IS A POLYGON COLOR"
                 symbolLayer.setColor(self.layerColor)
                 self.layerColor = None
-            else: symbolLayer.setColor(QtGui.QColor("red")) # default to red if user has not chosen other color   
+                return
+            # If the layer is being loaded from a scenario file return so that the
+            #  layer color will be set to the color property in the scenario file.
+            if self.origScenarioLyrsLoaded == False:
+                print"The " + config.editLayersBaseNames[2] + "is loading from a scenario"
+                self.editingPolygon = True
+                return
+            # If the layer was loaded from a scenario file then return because
+            # we don't want to change the user's color selection.
+            if self.editingPolygon == True:
+                return
+            # if the layer being loaded into the scenario for the first time default to red
+            symbolLayer.setColor(QtGui.QColor("red"))
         elif self.activeVLayer.name() == config.baseLayersChecked[0]: # the base_towns layer
             print "This is the base_towns layer"
             # Set the base_towns layer fill color to none

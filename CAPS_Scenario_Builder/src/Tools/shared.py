@@ -155,12 +155,15 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
             # save the color so we can keep the same color when reopening the layer
             mainwindow.layerColor = mainwindow.activeVLayer.rendererV2().symbols()[0].color()
             # remove the layer from the originalScenarioLayers list, reset the 
-            # variables associated with the layer we are removing (to avoid runtime errors)
+            # variables associated with the layer we are removing (to avoid runtime errors
+            # associated with deleting underlying C++ objects)
             # and remove the layer from the registry.  Finally remove from legend and update
             # the legend's layer set
             mainwindow.legend.removeEditLayerFromRegistry(activeVLayer, layerId)
             # now reopen the layer
             mainwindow.openVectorLayer(vfilePath)
+            # now add it back to the original scenario files list
+            
             # Newly opened layer will 
             # now highlight the layer as it was before
             brush = QtGui.QBrush()
