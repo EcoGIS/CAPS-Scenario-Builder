@@ -73,7 +73,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.currentLayers = []
         self.copiedFeats = []
         self.originalFeats = []
-     
+        self.originalScenarioLayersNames = []
+        
         # FLAGS
         self.scenarioDirty = False
         self.origScenarioLyrsLoaded = False 
@@ -529,18 +530,16 @@ was not written.  Please check that a file with the same name is not open in ano
         self.legend.blockSignals(False)
         print "CLOSED OLD EDIT SHAPEFILES"
         
-        # The old activeVLayer may have been deleted so set to none or we get
-        # RunTime errors due to the underlying C++ object being deleted.
+        # The old activeVLayer may have been deleted so set all associated variables to "None"
+        #  or we would get runtime errors due to the underlying C++ object being deleted.
         # The activeVLayer will be reset when we load the layers below.
-        self.activeVLayer = None
+        self.legend.setActiveLayerVariables()
         self.originalScenarioLayers = []
         # Open the copied editing shapefiles (they will open at the top of the layer panel)
         # The last one opened will become the new activeVLayer
         for path in copyPaths:
             if not self.openVectorLayer(path): return
             
-        self.originalScenarioLayers = self.getCurrentLayers().values()
-        
         # Finally, write the project information to a scenario file using QgsProject
         scenario = QgsProject.instance()
         scenario.write(self.scenarioInfo)
@@ -554,7 +553,7 @@ was not written.  Please check that a file with the same name is not open in ano
         scenario = None # if no error close the QgsProject.instance()
      
         ''' NOW DO SOME HOUSEKEEPING '''    
- 
+
         self.setScenarioSaved()
         
         # debugging
@@ -1802,7 +1801,6 @@ before taking another action!")
         print "chkScenarioState()"
         
         # Prompt the user about a dirty scenario.
-        # Note that qgis handles the dirty flag for scenarios 
         title = "Save Scenario"
         text = "Do you want to save the current scenario?"
 
@@ -1818,19 +1816,34 @@ before taking another action!")
         elif reply == QtGui.QMessageBox.Discard:
             # debugging
             print "msgBoxYesDiscardCancel = Discard"
+            if callingAction == "exportScenario":
+                QtGui.QMessageBox.warning(self, "You must save the scenario before you can \
+you can export it. Please click OK and try again if you still wish to export the scenario.")
+                return "Cancel"
+            
             # If the user wants to close a scenario without saving it, we need to check
-            # for unsaved editing layers.  If an editing layer is open, and the user doesn't
-            # save the scenario, then that editing layer will not appear if the scenario is 
-            # reopened.  However, it will remain in the scenario's folder where it will be read
+            # for editing layers that were not part of the saved scenario and delete them.  
+            # If an editing layer is open but has not been saved with the scenario, 
+            # and the user doesn't choose to save the scenario,
+            # then that editing layer will not appear if the scenario is 
+            # reopened.  However, it would remain in the scenario's folder where it will be read
             # for an export.  This would certainly  lead to erroneous scenario exports!!
-            # Self.currentLayers returns a dictionary of open layers.
-            # We check this for differences with the layers saved in the scenario.
-            differences = [layer for layer in self.currentLayers.values() if layer not in 
-                                                                self.originalScenarioLayers]
+            # Self.currentLayersNames() returns a list of names of open layers.
+            # We check this for differences with the names saved in the scenario.
+            differences = [name for name in self.getCurrentLayersNames() if name not in 
+                                                            self.originalScenarioLayersNames]                                                    
+            # debugging
+            print "These are the originalScenarioLayersNames"
+            for name in self.originalScenarioLayersNames: print name
+            print "These are the CurrentLayersNames()"
+            for name in self.getCurrentLayersNames(): print name
             print "These are the differences:"
-            for layer in differences: print layer.name()
-            for layer in differences:
-                if layer.name() in config.editLayersBaseNames:
+            for name in differences: print name
+            
+            for name in differences:
+                if name in config.editLayersBaseNames:
+                    # get the layer object from the name
+                    layer = self.getLayerFromName(name)
                     editFilePath = layer.source()
                     print "Main.mainwindow.chkScenarioState() path to remove is: " + editFilePath
                     layerId = layer.id()
@@ -1871,6 +1884,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.scenarioDirty = False
         self.origScenarioLyrsLoaded = False
         self.originalScenarioLayers = []
+        self.originalScenarioLayersNames = []
         self.currentLayers = []
         self.currentLayersCount = None
         self.copiedFeats = []
@@ -2007,13 +2021,33 @@ Prioritization System (CAPS) Scenario Builder")
         # debugging
         print "getCurrentLayersNames()"
         
-        self.currentLayersNames = []
+        currentLayersNames = []
         for layer in self.getCurrentLayers().values():
-            self.currentLayersNames.append(layer.name())
-            
-        print "self.currentLayersNames are "
-        for name in self.currentLayersNames: print name
-     
+            currentLayersNames.append(layer.name())
+        
+        #debugging
+        print "currentLayersNames are "
+        for name in currentLayersNames: print name
+        
+        return currentLayersNames
+        
+        
+        
+    def getLayerFromName(self, layerName):
+        # debugging
+        print "Main.mainwindow.getLayerFromName()"
+        for layer in self.getCurrentLayers().values():
+            if layerName == layer.name():
+                return layer
+        
+    def getOriginalScenarioLayersNames(self):
+        # debugging
+        print "Main.mainwindow.getOriginalScenarioLayersNames()"
+        self.originalScenarioLayersNames = []
+        for layer in self.originalScenarioLayers: 
+            self.originalScenarioLayersNames.append(layer.name())
+        return self.originalScenarioLayersNames
+    
     def getOriginalScenarioLayers(self, i, count):                  
         ''' This method is called when a scenario is loaded.  The call
             originates each time QgsProject emits a "layerLoaded" signal
@@ -2034,6 +2068,8 @@ Prioritization System (CAPS) Scenario Builder")
             # self.getCurrentLayers() returns a dictionary of QgsMapLayers
             # self.originalScenarioLayers is a list of QgsMapLayer objects
             self.originalScenarioLayers = self.getCurrentLayers().values()
+            # This method sets the instance variable self.getOriginalScenarioLayersNames
+            self.getOriginalScenarioLayersNames()
             self.origScenarioLyrsLoaded = True
             # inform user of missing layers
             if len(self.originalScenarioLayers) < count:
@@ -2091,10 +2127,10 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
                 return
  
         
-        # If some layer is opened when the layer count is other than 5 and there is no scenario 
-        # loaded then the scenario is dirty. This would and should be true even
+        # If the above is not true and if the layer count is > 0 and there is no scenario loaded 
+        # then the scenario is dirty. This would and should be true even
         # if the user removed all the intially loaded layers and then loaded an orienting
-        #  baselayer, because that might be a scenario they want to save for some reason.  
+        # baselayer, because that might be a scenario they want to save for some reason.  
         if self.currentLayersCount > 0 and self.scenarioFileName == None:
             self.scenarioDirty = True
             return
@@ -2111,11 +2147,15 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             # the layers are the same length but do they have the same members?
             differences = []
             # this is what Python calls a "list comprehension"
-            differences = [i for i in self.currentLayers.values() if i not in 
-                                                        self.originalScenarioLayers]
+            differences = [name for name in self.getCurrentLayersNames() if name not in 
+                                                            self.originalScenarioLayersNames]
             # debugging
+            print "currentLayersNames are"
+            for name in self.getCurrentLayersNames(): print name
+            print "self.originalScenarioLayersNames are"
+            for name in self.originalScenarioLayersNames: print name
             print "differences are "
-            for layer in differences: print layer.name()
+            for name in differences: print name
             
             if differences: # if there are differences
                 self.scenarioDirty = True
@@ -2145,6 +2185,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         
         # add layer to layer registry and set extent if necessary   
         QgsMapLayerRegistry.instance().addMapLayer(vlayer)
+        self.activeVLayer = vlayer
         return True
     
     def openHiddenVectorLayer(self, vfilePath):
@@ -2449,6 +2490,9 @@ the appropriate scenario edit type, and try again.")
         # that have not been saved when closing a scenario or the app.
         # We also use this to check if the scenario is dirty.
         self.originalScenarioLayers = self.getCurrentLayers().values()
+        # sets the instance variable self.originalScenarioLayersNames
+        self.getOriginalScenarioLayersNames()
+        
         # get the complete filename without the path
         self.scenarioFileName = self.scenarioInfo.fileName()
         # give the user some info
@@ -2631,7 +2675,10 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             try:
                 if os.path.exists(exportPath):
                     os.remove(exportPath) # use Python here
-                shutil.rmtree(dirPath) 
+                shutil.rmtree(dirPath)
+                # Give the os some time to delete files before trying to create new directory
+                # with the same name
+                time.sleep(1) 
             except (IOError, OSError), e:
                 error = unicode(e)
             if error:
@@ -2641,12 +2688,9 @@ file directory or export files could not be completely removed. Please check if 
 files in the scenario is open in another program and then try again.")
                 return "Error"
         # now make the new directory        
-        try:
-            QtCore.QDir().mkdir(config.scenariosPath + scenarioDirectoryName)
-        except (IOError, OSError), e:
-                error = unicode(e)
-        if error:
-            print e
+        if QtCore.QDir().mkdir(config.scenariosPath + scenarioDirectoryName):
+                print "directory made"
+        else: 
             QtGui.QMessageBox.warning(self, "Failed to create directory:", "The scenario \
 editing file directory could not be created. Please try to save the project again, or save it with a \
 different name.")

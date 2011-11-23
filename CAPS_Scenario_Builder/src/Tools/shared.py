@@ -148,41 +148,46 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
         vfilePath = activeVLayer.source()
         # I tried every update method I could find, but nothing other than closing
         # and reopening the layer seems to reset the layer extents on the canvas.  
-        # So I do that here!
+        # So I do that here.
         name = activeVLayer.name()
         if name in config.editLayersBaseNames:
             layerId = activeVLayer.id()
             # save the color so we can keep the same color when reopening the layer
             mainwindow.layerColor = mainwindow.activeVLayer.rendererV2().symbols()[0].color()
-            # remove the layer from the originalScenarioLayers list, reset the 
+            # The method below removes the layer from the originalScenarioLayers list if the 
+            # edit layer was in self.originalScenarioLayers and returns True if it was
+            # or False if it was not.  The method resets the 
             # variables associated with the layer we are removing (to avoid runtime errors
             # associated with deleting underlying C++ objects)
-            # and remove the layer from the registry.  Finally remove from legend and update
-            # the legend's layer set
-            mainwindow.legend.removeEditLayerFromRegistry(activeVLayer, layerId)
+            # and removes the layer from the registry.  Finally it removes the layer 
+            # from the legend and updates the legend's layer set.
+            inOriginalScenario = mainwindow.legend.removeEditLayerFromRegistry(activeVLayer, layerId)
             # now reopen the layer
             mainwindow.openVectorLayer(vfilePath)
-            # now add it back to the original scenario files list
             
-            # Newly opened layer will 
+            # if the layer was in self.originalSceenarioLayers then add it back 
+            if inOriginalScenario:
+                mainwindow.originalScenarioLayers.append(mainwindow.activeVLayer)
+                # although layer names shouldn't have changed, update anyway
+                mainwindow.getOriginalScenarioLayersNames()
+                print "Tools.shared.updateExtents() appended edit layer"
+            
+            # debugging
+            for layer in mainwindow.originalScenarioLayers: print layer.name()
+
             # now highlight the layer as it was before
             brush = QtGui.QBrush()
             brush.setColor(QtCore.Qt.darkGreen)
             editItems = mainwindow.legend.findItems(name, QtCore.Qt.MatchFixedString, 0)
             editItems[0].setForeground(0, brush)
-            #activeLayerId = editItems[0].layerId
-            #activeLayer = QgsMapLayerRegistry.instance().mapLayer(activeLayerId)
-            #activeLayer.rendererV2().symbols[0].setColor(layerColor) 
             # Make the layer visible.  This will cause a signal to be sent
             # and the legend will update the layer's status if not visible.
             # because we have just opened it, it is the active layer
             mainwindow.legend.currentItem().setCheckState(0, QtCore.Qt.Checked)
-            #symbolLayer.
-            
             return # opening the layer will update the extents, so just return
         
         # none of these work for updating the extents of a vector layer after editing
-        # activeVLayer.clearCacheImage()
+        #activeVLayer.clearCacheImage()
         #provider.reloadData()
         #activeVLayer.reload()
         activeVLayer.updateExtents()

@@ -160,16 +160,15 @@ class AddPoints(QgsMapTool):
         
         # debugging
         print "the edit flag was set to " + self.activeVLayer.name() + " by MarkPoint."
+        print "The vlayer name is " + vlayerName
+        print "the number of features added is " + str(shared.numberFeaturesAdded
+                                                       (self.activeVLayer, self.originalFeats))
         
         # enable the save edits action
         self.mainwindow.mpActionSaveEdits.setDisabled(False)
         # refresh the extents of the map on the canvas
         shared.updateExtents(self.mainwindow, self.provider, self.activeVLayer, self.canvas)
-        
-        # debugging
-        print "The vlayer name is " + vlayerName
-        print "the number of features added is " + str(shared.numberFeaturesAdded)
- 
+
 #**************************************************************
     ''' Testing '''
 #**************************************************************
