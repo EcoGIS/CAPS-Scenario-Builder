@@ -54,11 +54,9 @@ class Identify(QgsMapTool):
         self.transform = self.mainwindow.canvas.getCoordinateTransform()
         # returns a QgsPoint object in map coordinates
         qgsPoint = self.transform.toMapCoordinates(point.x(), point.y())
-        if self.mainwindow.activeVLayer:
-            self.vectorIdentifyTool(point, qgsPoint)
-        elif self.mainwindow.activeRLayer:
-            self.rasterIdentifyTool(qgsPoint)
-        
+        if self.mainwindow.activeVLayer: self.vectorIdentifyTool(point, qgsPoint)
+        elif self.mainwindow.activeRLayer: self.rasterIdentifyTool(qgsPoint)
+     
     def canvasReleaseEvent(self, event):
         pass
      
@@ -123,25 +121,3 @@ class Identify(QgsMapTool):
                 self.mainwindow.dlgDisplay.close()
                 self.mainwindow.dlgDisplay = None 
             shared.displayInformation(self.mainwindow, title, text)
-                            
-    '''def displayInformation(self, title, text):
-         Display the information about the vector or raster 
-        # debugging
-        print "identify.displayInformation()"
-        
-        title = QtCore.QString(title)
-        text = QtCore.QString(text)
-        # See mainwindow.openRasterCategoryTable() for a description of the following code: 
-        if not self.display:       
-            self.display = QtGui.QDockWidget(title, self.mainwindow)
-            self.display.setFloating(True)
-            self.display.setMinimumSize(QtCore.QSize(450, 300))
-            self.textBrowser = QtGui.QTextBrowser()
-            self.textBrowser.setWordWrapMode(QtGui.QTextOption.NoWrap)
-            self.textBrowser.setText(text)
-            self.textBrowser.setFontPointSize(9.0)
-            self.display.setWidget(self.textBrowser)
-            self.display.show()
-        else:
-            self.textBrowser.setText(text)
-            self.display.setVisible(True)'''

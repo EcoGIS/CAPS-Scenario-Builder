@@ -61,8 +61,8 @@ class AddPoints(QgsMapTool):
         ''' Get point and transform to map coordinates '''
         # get the current activeVLayer from mainwindow
         self.activeVLayer = self.mainwindow.activeVLayer
-        if self.activeVLayer == None:
-            return
+        if self.activeVLayer == None: return
+        
         point = event.pos()
         transform = self.canvas.getCoordinateTransform()
         # returns a QgsPoint object in map coordinates

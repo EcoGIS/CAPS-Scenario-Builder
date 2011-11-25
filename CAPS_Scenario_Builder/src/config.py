@@ -123,7 +123,7 @@ editLinesFields = inputFieldNames4 # 4 fields
 editPolygonsFields = inputFieldNames5 + inputFieldNames6 # 7 fields
 
 # The list of scenario edit types for populating the "Edit Scenario" dialog.
-# Changing these values will only change the names shown in the "scenarioTypes" dialog
+# Changing these values will only change the names shown in the "ScenarioEditTypes" dialog
 # Adding a value here will NOT create a new scenario type complete with base layers
 # and editing shapefile fields.
 scenarioEditTypesList = ["Road stream crossing (points)", "Dams (points)",  
@@ -163,7 +163,7 @@ allOrientingLayers = orientingRasterLayers + orientingVectorLayers
 baseLayersChecked = ["base_towns"]
 
 # A list of the non-orienting base layers and editing layers. 
-# Main.dlgscenariotypes.hideEditBaseLayers() uses this list to hide (uncheck) unneeded layers.
+# Main.dlgscenarioedittypes.hideEditBaseLayers() uses this list to hide (uncheck) unneeded layers.
 # Adding a name to this list will hide (uncheck) that layer if not needed when opening a
 # new scenario edit type. 
 hideEditLayers = ["edit_scenario(points)", "edit_scenario(lines)",

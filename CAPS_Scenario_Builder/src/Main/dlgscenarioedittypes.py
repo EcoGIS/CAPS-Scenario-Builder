@@ -34,12 +34,12 @@ from PyQt4 import QtCore, QtGui
 # import qgis API
 from qgis.core import *
 # import the ui made with Qt Designer
-from dlgscenariotypes_ui import Ui_DlgScenarioTypes
+from dlgscenarioedittypes_ui import Ui_DlgScenarioEditTypes
 # CAPS application imports
 import config
 
 
-class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
+class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
     """ Open a dialog to select the type of scenario change """
     def __init__(self, mainwindow):
         QtGui.QDialog.__init__(self, mainwindow)
@@ -50,7 +50,7 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
         self.scenarioEditTypesList = config.scenarioEditTypesList
 
         # debugging
-        print "Class DlgScenarioTypes() scenarioEditTypesList is: "
+        print "Class DlgScenarioEditTypes() scenarioEditTypesList is: "
         print self.scenarioEditTypesList
         
         # add the scenario types list to the combo box drop down
@@ -68,7 +68,7 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
             Open needed layers for the scenario change type 
         '''
         # debugging
-        print "DlgScenarioTypes.apply()"
+        print "DlgScenarioEditTypes.apply()"
         
         # we are starting a new edit type, so disable previous edit actions 
         #(i.e. Add points, lines, polygons) 
@@ -127,9 +127,8 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
             if not self.mainwindow.openVectorLayer(self.newEditLayerPath): return
         
         # if the base layer is not open then open it
-        if not self.baseLayerOpen:
-            self.openBaseLayer()
-            
+        if not self.baseLayerOpen: self.openBaseLayer()
+ 
         # now that the layers are open, highlight them
         self.colorEditBaseLayers(legend)
             
@@ -148,9 +147,8 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
    
         # Move the needed base layer to second in list, check and make visible
         # We do not want to change position or visibility of the orienting base layer, "base_land"
-        if self.baseLayerName != "base_land":
-            self.moveBaseLayer(legend)
-        
+        if self.baseLayerName != "base_land": self.moveBaseLayer(legend)
+      
         # I like the towns layer to be selected so if it is open, I do it here.
         for checked in config.baseLayersChecked:
             items = legend.findItems(checked, QtCore.Qt.MatchFixedString, 0)
@@ -158,7 +156,6 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
             if len(items) > 0:
                 item = items[0]
                 item.setCheckState(0, QtCore.Qt.Checked)    
-            
 
     def cancel(self):
         print "closed the dialog"
@@ -210,8 +207,7 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
         
         items = legend.findItems(self.editLayer, QtCore.Qt.MatchFixedString, 0)
         print "length of item list is " + str(len(items))
-        if len(items) > 0:
-            self.editLayerOpen = True # set the editLayerOpen flag
+        if len(items) > 0: self.editLayerOpen = True # set the editLayerOpen flag
 
     def isBaseLayerOpen(self, legend):
         ''' Check if editLayer or baseLayer is open in the layer panel '''
@@ -220,9 +216,8 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
         
         items = legend.findItems(self.baseLayerName, QtCore.Qt.MatchFixedString, 0)
         print "length of item list is " + str(len(items))
-        if len(items) > 0:
-            self.baseLayerOpen = True # set the editLayerOpen flag
-    
+        if len(items) > 0: self.baseLayerOpen = True # set the editLayerOpen flag
+   
     def writeNewEditingShapefile(self):
         ''' Write a new editing shapefile for the current scenario type '''
         # debugging
@@ -275,8 +270,7 @@ class DlgScenarioTypes(QtGui.QDialog, Ui_DlgScenarioTypes):
         
         if baseFile.exists():
             print "baseFile exists is True"
-            if ".shp" in baseFileName: 
-                self.mainwindow.openVectorLayer(self.baseFilePath)
+            if ".shp" in baseFileName: self.mainwindow.openVectorLayer(self.baseFilePath)
             else: self.mainwindow.openRasterLayer(self.baseFilePath)
         else:
             QtGui.QMessageBox.warning(self, "File Error", "The needed base file, "\

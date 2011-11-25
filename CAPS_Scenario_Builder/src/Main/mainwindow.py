@@ -56,7 +56,7 @@ from Tools.dlgaddattributes import DlgAddAttributes
 from Tools.addlinespolygons import *
 from Tools.identify import Identify
 import Tools.shared
-from Main.dlgscenariotypes import DlgScenarioTypes
+from Main.dlgscenarioedittypes import DlgScenarioEditTypes
 import config
 
 class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
@@ -224,7 +224,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # New Scenario, Open Scenario, Save Scenario, Save Scenario As,
         # Add Vector, Add Raster and Open Raster Category Table are on 
         self.toolGroup.setDisabled(True)
-        #self.mpActionEditScenario.setDisabled(False)
         self.mpActionOpenVectorAttributeTable.setDisabled(True)
         self.mpActionSaveEdits.setDisabled(True)
         self.mpActionExportScenario.setDisabled(True)
@@ -291,9 +290,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         scenarioFilePath = unicode(qd.getOpenFileName(self, QtCore.QString
                                                 ("Open Scenario"), dir, filterString))
         # Check for cancel
-        if len(scenarioFilePath) == 0:
-            return
-        
+        if len(scenarioFilePath) == 0: return
+ 
         # remember the file info to use in saveScenario()
         self.scenarioFilePath = scenarioFilePath
         self.scenarioInfo = QtCore.QFileInfo(QtCore.QString(scenarioFilePath))
@@ -425,9 +423,8 @@ scenario file is open in another program.")
         print "scenarioFilePath is: " + scenarioFilePath
         
         # Check for cancel
-        if len(scenarioFilePath) == 0:
-            return "Cancel"
-    
+        if len(scenarioFilePath) == 0: return "Cancel"
+ 
         # We have a new file path. We start by storing the old path (if one exists) for use
         # below and storing the new file path for use in saveScenario()
         oldScenarioFilePath = self.scenarioFilePath
@@ -450,8 +447,7 @@ scenario file is open in another program.")
         for editLayer in config.editLayersBaseNames:
             # This method returns a list of matches
             items = self.legend.findItems(editLayer, QtCore.Qt.MatchFixedString, 0)
-            if len(items) > 0:    
-                editLayerLegendItems.append(items[0])
+            if len(items) > 0: editLayerLegendItems.append(items[0])  
 
         # If there are no editing layers open, we can just write the new editing file 
         # directory, call saveScenario, and set the variables for a successfully saved
@@ -582,8 +578,7 @@ was not written.  Please check that a file with the same name is not open in ano
         # Finally, append the editing shapefile csv file to the scenario export file,
         # which will consist of all edits to the current scenario in csv format.
         for fileName in scenarioDirectoryFileList:
-            if not ".shp" in fileName: # only looking for the .shp files
-                continue
+            if not ".shp" in fileName: continue # only looking for the .shp files
             # get the path to write the csv file to
             csvInfo = QtCore.QFileInfo(fileName)
             csvBaseName = csvInfo.completeBaseName() # csvBaseName = editing shapefile BaseName
@@ -731,7 +726,7 @@ before you can deselect."
             # This method copies the features, but the same method is used in deleteFeatures
             self.copyFeaturesShared()
         # we have copied features so enable the paste action
-        self.mpActionPasteFeatures.setEnabled(True)
+        self.mpActionPasteFeatures.setDisabled(False)
                  
     def modifyPoints(self):
         ''' Allow the user to modify points on base layers '''
@@ -751,9 +746,8 @@ before you can deselect."
         # incorrect entries in the editing shapefile attribute table!
         title = "Modify Point Error:"
         text = "modify"
-        if not self.checkBaseLayerMatch(title, text):
-            return
-        
+        if not self.checkBaseLayerMatch(title, text): return
+     
         # we have selected features so copy them
         self.copyFeaturesShared()
         
@@ -799,8 +793,7 @@ before you can deselect."
         if name in config.pointBaseLayersBaseNames:
             title = "Deletion Error:"
             text = "delete from"
-            if not self.checkBaseLayerMatch(title, text):
-                return
+            if not self.checkBaseLayerMatch(title, text): return
             else:
                 print "Features are in a base layer that matches"
                 # We do not allow deleting features from a base layer.  Rather, we copy
@@ -905,9 +898,8 @@ before you can deselect."
                 qgsPoint = feat.geometry().asPoint()
                 id = feat.id()
                 print "The point is " + str(qgsPoint) 
-                if not shared.checkConstraints(self, qgsPoint, id):
-                    return
-         
+                if not shared.checkConstraints(self, qgsPoint, id): return
+
         # Now that we have good features and a correct layer to paste to:
         # Set self.originalFeats in case the user wants to delete pasted features
         # The self.originalFeats list is only set when the AddPoints or AddLinesPolygons
@@ -1119,11 +1111,10 @@ before you can make edits.  Please save the current scenario or open an existing
             self.mpActionSelectFeatures.setDisabled(False)
 
             # set the paste action
-            if self.copyFlag:
-                self.mpActionPasteFeatures.setDisabled(False)
-                 
+            if self.copyFlag: self.mpActionPasteFeatures.setDisabled(False)
+          
             # call the dialog to get the scenario edit type
-            self.scenarioEditTypes = DlgScenarioTypes(self)
+            self.scenarioEditTypes = DlgScenarioEditTypes(self)
             self.scenarioEditTypes.exec_()
             
             # add scenarioEditType to statusbar
@@ -1132,8 +1123,6 @@ before you can make edits.  Please save the current scenario or open an existing
                                                                     + self.scenarioEditType + "'")
             self.editTypeLabel.setText(capture_string)
             self.statusBar.insertPermanentWidget(0, self.editTypeLabel)        
-        
-                
         else: #False action deactivated
             # check for unsaved edits when deselecting "Edit Scenario"
             # return mpActionEditScenario to previous state on cancel
@@ -1161,19 +1150,15 @@ before you can make edits.  Please save the current scenario or open an existing
         # debugging
         print "addPoints() " + str(state)
         
-        if state:
-            self.canvas.setMapTool(self.toolAddPoints)
-        else:
-            self.canvas.unsetMapTool(self.toolAddPoints)
-     
+        if state: self.canvas.setMapTool(self.toolAddPoints)
+        else: self.canvas.unsetMapTool(self.toolAddPoints)
+    
     def addLines(self, state):
         # debugging
         print "addLines()"
-        if state:
-            self.canvas.setMapTool(self.toolAddLinesPolygons)
-        else: 
-            self.canvas.unsetMapTool(self.toolAddLinesPolygons)
-            
+        if state: self.canvas.setMapTool(self.toolAddLinesPolygons)
+        else:  self.canvas.unsetMapTool(self.toolAddLinesPolygons)
+          
     def addPolygons(self, state):
         # debugging
         print "addPolygons()"
@@ -1212,22 +1197,19 @@ before you can make edits.  Please save the current scenario or open an existing
     def zoomIn(self, state):
         print "zoomIn() " + str(state)
         
-        if state:
-            self.canvas.setMapTool(self.toolZoomIn)
+        if state: self.canvas.setMapTool(self.toolZoomIn) 
         else: self.canvas.unsetMapTool(self.toolZoomIn)    
 
     def zoomOut(self, state):
         print "zoomOut() "  + str(state)
         
-        if state:
-            self.canvas.setMapTool(self.toolZoomOut)
+        if state: self.canvas.setMapTool(self.toolZoomOut)
         else: self.canvas.unsetMapTool(self.toolZoomOut)
                     
     def pan(self, state):
         print "pan " + str(state)
         
-        if state:
-            self.canvas.setMapTool(self.toolPan)
+        if state: self.canvas.setMapTool(self.toolPan)
         else: self.canvas.unsetMapTool(self.toolPan)
  
     def zoomToMapExtent(self):
@@ -1240,8 +1222,6 @@ before you can make edits.  Please save the current scenario or open an existing
         extent.scale(1.05)
         self.canvas.setExtent(extent)
         self.canvas.refresh()
-        
-        #self.setExtents()
         
     def identifyFeatures(self, state):
         # debugging
@@ -1277,15 +1257,13 @@ SQLite(*.sqlite *.SQLITE)\nArc\\Info ASCII Coverage(*.e00 *.E00)\nAll Files(*)")
         vfilePath = unicode(qd.getOpenFileName(self, QtCore.QString("Add Vector Layer"),
                                             dir, filterString))
         # Check for cancel
-        if len(vfilePath) == 0:
-            return
-        
+        if len(vfilePath) == 0: return
+
         self.openVectorLayer(vfilePath)
             
     def addRasterLayer(self):
         # check app state and handle user cancel
-        if self.appStateChanged("addRaster") == "Cancel":
-            return
+        if self.appStateChanged("addRaster") == "Cancel": return
         # open file dialog
         qd = QtGui.QFileDialog()
         filterString = QtCore.QString("All Files(*)\nMrSID(*.sid *.SID)\nGeoTIFF\
@@ -1298,9 +1276,8 @@ JPEG(*.jpg *.jpeg *.JPG *.JPEG)")
         rfilePath = unicode(qd.getOpenFileName(self, QtCore.QString("Add Raster Layer"),
                                     dir, filterString))
         # Check for cancel
-        if len(rfilePath) == 0:
-            return
-        
+        if len(rfilePath) == 0: return
+
         #create the layer
         self.openRasterLayer(rfilePath)
           
@@ -1325,8 +1302,7 @@ JPEG(*.jpg *.jpeg *.JPG *.JPEG)")
         
         # Open the file and create a text stream to read
         fh = QtCore.QFile(fname)
-        if not fh.open(QtCore.QIODevice.ReadOnly):
-                raise IOError, unicode(fh.errorString())
+        if not fh.open(QtCore.QIODevice.ReadOnly): raise IOError, unicode(fh.errorString())
         stream = QtCore.QTextStream(fh)
     
         # add the QTextBrowser to the QDockWidget
@@ -1346,9 +1322,8 @@ JPEG(*.jpg *.jpeg *.JPG *.JPEG)")
             reply = QtGui.QMessageBox.question(self, "Vector Attribute Table", "This layer's \
 attribute table is very large and can take a few seconds to load.  Do you want to continue?", 
                                                     QtGui.QMessageBox.Cancel|QtGui.QMessageBox.Yes)
-            if reply == QtGui.QMessageBox.Cancel:
-                return
-        
+            if reply == QtGui.QMessageBox.Cancel: return
+
         names = []
         feat = QgsFeature()
 
@@ -1421,11 +1396,9 @@ attribute table is very large and can take a few seconds to load.  Do you want t
         ''' Debugging Code '''
         print "ALC() STARTING"
         print "alc layer type is " + str(layerType)
-        if not self.activeVLayer: 
-            print "alc no active vlayer"
+        if not self.activeVLayer: print "alc no active vlayer"
         else: print "alc old active vlayer " + self.activeVLayer.name()
-        if self.activeRLayer == None:
-            print "alc no active rlayer"
+        if self.activeRLayer == None: print "alc no active rlayer"
         else: print "alc old active rlayer " + self.activeRLayer.name()
         print "alc self.editMode is " + str(self.editMode)
         print "alc self.editDirty is " + str(self.editDirty)
@@ -1476,7 +1449,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             
             # Start with all tool group actions enabled 
             # and then disable as necessary
-            self.toolGroup.setEnabled(True)
+            self.toolGroup.setDisabled(False)
             # Disable (gray out) select tool actions
             # if raster layer loaded.
             self.mpActionSelectFeatures.setDisabled(True)
@@ -1487,8 +1460,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             self.mpActionEditScenario.setDisabled(False)
             # disable edit actions except if self.editsDirty enable save edits
             self.disableEditActions()
-            if self.editDirty:
-                self.mpActionSaveEdits.setDisabled(False)
+            if self.editDirty: self.mpActionSaveEdits.setDisabled(False)
             # disable the vector attribute table action
             self.mpActionOpenVectorAttributeTable.setDisabled(True)
             
@@ -1498,16 +1470,12 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # It also returns immediately if a scenario is in the process of loading
             # There is no need to check if the scenario is already dirty.  Once a scenario
             # is dirty, the policy is it stays dirty until the user saves it.
-            if not self.scenarioDirty:
-                self.setScenarioDirty()
-            
+            if not self.scenarioDirty: self.setScenarioDirty()
+          
             # if there could be something to export
             if self.scenarioDirty or self.scenarioFilePath:
                 self.mpActionExportScenario.setDisabled(False)
-                
-            # last thing to do is check whether the layer is checked for visibility
-            #self.legend.updateLayerStatus(self.legend.currentItem())
-            
+
             # debugging
             print "alc self.scenarioDirty is " + str(self.scenarioDirty)
             print "alc originalScenarioLayers are "
@@ -1548,7 +1516,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             
             # refresh attribute table if open
             if self.attrTable != None and self.attrTable.isVisible():
-                self.openVectorAttributeTable()
+                self.openVectorAttributeTable() 
 
             '''
             A New Vector layer has been selected or opened, so set action states.
@@ -1556,11 +1524,10 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             
             # Enable map navigation tools, select tools, edit 
             # tools, andcopy, delete, paste features
-            self.toolGroup.setEnabled(True)
+            self.toolGroup.setDisabled(False)
             
             # if self.editDirty is True, the save edits action should be enabled
-            if self.editDirty:
-                self.mpActionSaveEdits.setDisabled(False)
+            if self.editDirty: self.mpActionSaveEdits.setDisabled(False)
             else: self.mpActionSaveEdits.setDisabled(True)
             
             # Manage the Edit Scenario action. 
@@ -1614,9 +1581,8 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # However, it returns immediately if the layer count has not changed. 
             # There is no need to check if the scenario is already dirty.  Once a scenario
             # is dirty, the policy is it stays dirty until the user saves it.
-            if not self.scenarioDirty:
-                self.setScenarioDirty()
-            
+            if not self.scenarioDirty: self.setScenarioDirty()
+        
             # if there could be something to export
             if self.scenarioDirty or self.scenarioFilePath:
                 self.mpActionExportScenario.setDisabled(False)
@@ -1637,8 +1603,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
     def closeEvent(self, event):
         ''' Slot to handle signal emitted when user exits app '''
 
-        if self.appStateChanged("appClosing") == "Cancel":
-            event.ignore()
+        if self.appStateChanged("appClosing") == "Cancel": event.ignore()
 
 ############################################################################################   
     ''' METHODS TO MANAGE APPLICATION STATE CHANGES '''
@@ -1649,9 +1614,8 @@ attribute table is very large and can take a few seconds to load.  Do you want t
         # If no layer is loaded then user is loading first layer after app start (num layers = 0),
         # or loading first layer after deleting the only layer in the legend (num layers = 0).
         # If there are no layers in the scenario, no need to scave the scenario or edits.
-        if len(self.legend.getLayerIDs()) == 0: 
-            return
-        
+        if len(self.legend.getLayerIDs()) == 0:  return
+
         # If user in the middle of a line or polygon edit, warn
         if self.toolAddLinesPolygons and self.toolAddLinesPolygons.started:
             QtGui.QMessageBox.warning(self, "Editing Error", "Please complete your edit \
@@ -1661,11 +1625,9 @@ before taking another action!")
         #**********************************************************       
         ''' Debug code '''
         print "APP_STATE_CHANGED() STARTING: callingAction is " + callingAction
-        if self.activeVLayer == None: 
-            print "asc no active vlayer"
+        if self.activeVLayer == None: print "asc no active vlayer" 
         else: print "asc current active " + self.activeVLayer.name()
-        if self.activeRLayer == None:
-            print "asc no active rlayer"
+        if self.activeRLayer == None: print "asc no active rlayer"
         else: print "asc current active rlayer " + self.activeRLayer.name()
         print "asc num layers " + str(len(self.legend.getLayerIDs()))
         print "asc registry count " + str(QgsMapLayerRegistry.instance().count())
@@ -1691,18 +1653,16 @@ before taking another action!")
         # editing, on all scenario menu actions, or on closing the app.  In other words
         # we check for unsaved edits on all callingActions, but that behavior can be changed here. 
         if self.editDirty:
-            if self.chkEditsState(callingAction) == "Cancel":
-                return "Cancel"
-         
+            if self.chkEditsState(callingAction) == "Cancel": return "Cancel"
+
         # We only want to check for a dirty scenario when:
         # creating a new scenario, opening a scenario, 
         # exporting a scenario, or closing the app.
         list = ["newScenario", "openScenario", "exportScenario", "appClosing"]
         if self.scenarioDirty:
             if callingAction in list:
-                if self.chkScenarioState(callingAction) == "Cancel":
-                    return "Cancel"                
-        
+                if self.chkScenarioState(callingAction) == "Cancel": return "Cancel"
+
         # If there were no unsaved edits or scenarios that handled 
         # removal of the last layer in legend, then handle it here.    
         if callingAction == "removeCurrentLayer" and len(self.legend.getLayerIDs()) == 1:
@@ -1741,8 +1701,7 @@ before taking another action!")
             # deleting features, or removing a layer.  Note that a user is warned about
             # deleting a base layer or an editing layer in legend.removeCurrentLayer.
             # If user deletes one of their own layers, there is no need to disable editing
-            elif callingAction in list:
-                self.saveEdits()
+            elif callingAction in list: self.saveEdits()
             # if opening new layer or changing layers just disable edit actions
             elif callingAction == "addVector" or "addRaster" or "legendMousePress":
                 self.saveEdits()
@@ -1809,10 +1768,8 @@ before taking another action!")
         if reply == QtGui.QMessageBox.Save:
             # debugging
             print "msgBoxSaveDiscardCancel = Save"
-            if self.scenarioFilePath:
-                self.saveScenario()
-            elif self.saveScenarioAs() == "Cancel":
-                return "Cancel"
+            if self.scenarioFilePath: self.saveScenario()
+            elif self.saveScenarioAs() == "Cancel": return "Cancel"
         elif reply == QtGui.QMessageBox.Discard:
             # debugging
             print "msgBoxYesDiscardCancel = Discard"
@@ -1864,18 +1821,12 @@ choose 'Export Scenario' for this scenario in the future.")
         ''' Set the app state to be its first opened state '''
         # debugging
         print "setInitialAppState()"
-        if self.toolSelect:
-            self.canvas.unsetMapTool(self.toolSelect)
-        if self.toolIdentify:
-            self.canvas.unsetMapTool(self.toolIdentify)
-        if self.toolAddPoints:
-            self.canvas.unsetMapTool(self.toolAddPoints)
-        if self.toolAddLinesPolygons:
-            self.canvas.unsetMapTool(self.toolAddLinesPolygons)
-        if self.dwAttrTable:
-            self.dwAttrTable.close()
-        if self.dwRasterTable:
-            self.dwRasterTable.close()
+        if self.toolSelect: self.canvas.unsetMapTool(self.toolSelect)
+        if self.toolIdentify: self.canvas.unsetMapTool(self.toolIdentify)
+        if self.toolAddPoints: self.canvas.unsetMapTool(self.toolAddPoints)
+        if self.toolAddLinesPolygons: self.canvas.unsetMapTool(self.toolAddLinesPolygons)
+        if self.dwAttrTable: self.dwAttrTable.close()
+        if self.dwRasterTable: self.dwRasterTable.close()
         self.setWindowTitle("Conservation Assessment and \
 Prioritization System (CAPS) Scenario Builder")
         self.scenarioFilePath = None
@@ -1923,18 +1874,14 @@ Prioritization System (CAPS) Scenario Builder")
     def getGeometryName(self, layerGeom):
         geometry = "No Geometry"
         if layerGeom != None: # None if raster loaded
-            if layerGeom == 0:
-                geometry = "point(s)"
-            elif layerGeom == 1:
-                geometry = "line(s)"
-            elif layerGeom == 2:
-                geometry = "polygon(s)"
+            if layerGeom == 0: geometry = "point(s)"
+            elif layerGeom == 1: geometry = "line(s)"
+            elif layerGeom == 2: geometry = "polygon(s)"
             else: geometry = "Unknown Geometry"
             return geometry
         
     def enablePointsOrLinesOrPolygons(self):
-        if "base" in self.activeVLayer.name():
-            return
+        if "base" in self.activeVLayer.name(): return
         if self.geom == 0:  #0 point, 1 line, 2 polygon
             self.mpActionAddPoints.setDisabled(False)
             print "enablePointsOrLinesOrPolygons() geom 0" 
@@ -1962,8 +1909,7 @@ Prioritization System (CAPS) Scenario Builder")
         print "disableSelectActions()"
         
         self.canvas.unsetMapTool(self.toolSelect)
-        if self.activeVLayer:
-            self.activeVLayer.removeSelection(False)
+        if self.activeVLayer: self.activeVLayer.removeSelection(False)
         self.mpActionSelectFeatures.setChecked(False)
         self.mpActionDeselectFeatures.setDisabled(True)
         self.mpActionDeselectFeatures.setChecked(False)
@@ -2037,9 +1983,8 @@ Prioritization System (CAPS) Scenario Builder")
         # debugging
         print "Main.mainwindow.getLayerFromName()"
         for layer in self.getCurrentLayers().values():
-            if layerName == layer.name():
-                return layer
-        
+            if layerName == layer.name(): return layer
+ 
     def getOriginalScenarioLayersNames(self):
         # debugging
         print "Main.mainwindow.getOriginalScenarioLayersNames()"
@@ -2157,8 +2102,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             print "differences are "
             for name in differences: print name
             
-            if differences: # if there are differences
-                self.scenarioDirty = True
+            if differences: self.scenarioDirty = True # if there are differences
             else: self.scenarioDirty = False
         
         # debugging
@@ -2353,13 +2297,11 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         # debugging
         print "mainwindow.getEditFields()"
         
-        geom = self.geom
-        if geom == 0:  #0 point, 1 line, 2 polygon
-            editFields = config.editPointsFields
-        elif geom == 1:
-            editFields = config.editLinesFields
-        elif geom == 2:
-            editFields = config.editPolygonsFields        
+        geom = self.geom #0 point, 1 line, 2 polygon
+        if geom == 0: editFields = config.editPointsFields  
+        elif geom == 1: editFields = config.editLinesFields
+        elif geom == 2: editFields = config.editPolygonsFields   
+                
         return editFields
     
     def copyFeaturesShared(self):
@@ -2529,7 +2471,7 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             print "Setting Rule Based Renderer for 'edit_scenario(points).shp"
             # if rule renderer is already set then no need to do anything, just return
             if self.activeVLayer.rendererV2().type() == "RuleRenderer": 
-                print "RuleRenderer if worked"
+                print "RuleRenderer returned"
                 return
             # This returns a QgsSymbolV2().  In particular a QgsMarkerSymbolV2()
             # This also returns a QgsMarkerSymbolLayerV2() layer.
@@ -2546,6 +2488,8 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             if self.layerColor: 
                 symbolLayer.setColor(self.layerColor)
                 self.layerColor = None
+                # color the preview icon
+                self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
             else: symbolLayer.setColor(QtGui.QColor("red"))
             # create a new symbol layer for the delete symbol (i.e. a red cross)
             newSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
@@ -2568,6 +2512,8 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             rendererV2.addRule(rule2)
             # associate the new renderer with the activeVLayer
             self.activeVLayer.setRendererV2(rendererV2)
+            # color the preview icon
+            self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
 
             # debugging
             #print "The delete layers name is: " + deleteLayer.name()
@@ -2584,8 +2530,6 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
                 print "%s: %s" % (k, v)    
         elif self.activeVLayer.name() == config.editLayersBaseNames[1]: # edit_scenario(lines).shp
             print "Setting color and line width for edit_scenario(lines).shp"
-            #rendererV2 = self.activeVLayer.rendererV2()
-            #symbol = rendererV2.symbols()[0]
             # this is a QgsLineSymbolLayerV2()
             symbolLayer = self.activeVLayer.rendererV2().symbols()[0].symbolLayer(0)
             if symbolLayer.width() == (0.4): # if line width and color already set then return
@@ -2594,8 +2538,12 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
                 print "THERE IS A LINE COLOR"
                 symbolLayer.setColor(self.layerColor)
                 self.layerColor = None
+                # color the preview icon
+                self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
             else: symbolLayer.setColor(QtGui.QColor("red")) # default to red if user has not chosen other color   
-            symbolLayer.setWidth(0.4) 
+            symbolLayer.setWidth(0.4)
+            # color the preview icon
+            self.legend.currentItem().vectorLayerSymbology(self.activeVLayer) 
         elif self.activeVLayer.name() == config.editLayersBaseNames[2]: #edit_scenario(polygons).shp
             print "Setting color for edit_scenario(polygons).shp"
         
@@ -2605,6 +2553,8 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
                 print "THERE IS A POLYGON COLOR"
                 symbolLayer.setColor(self.layerColor)
                 self.layerColor = None
+                # color the preview icon
+                self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
                 return
             # If the layer is being loaded from a scenario file return so that the
             #  layer color will be set to the color property in the scenario file.
@@ -2618,17 +2568,20 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
                 return
             # if the layer being loaded into the scenario for the first time default to red
             symbolLayer.setColor(QtGui.QColor("red"))
+            # color the preview icon
+            self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
         elif self.activeVLayer.name() == config.baseLayersChecked[0]: # the base_towns layer
             print "This is the base_towns layer"
             # Set the base_towns layer fill color to none
             rendererV2 = self.activeVLayer.rendererV2()
             symbol = rendererV2.symbols()[0]
-            map = {"color": "DEFAULT_SIMPLEFILL_COLOR", "style": "no", 
+            map = {"color": "255, 255, 255, 0", "style": "no", 
                               "color_border": "DEFAULT_SIMPLEFILL_BORDERCOLOR", 
                               "style_border": "DEFAULT_SIMPLEFILL_BORDERSTYLE", 
                               "width_border": "0.3" }
             simpleSymbol = symbol.createSimple(map)
             rendererV2.setSymbol(simpleSymbol)
+            self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
         elif self.geom == 1: # set line width for all line layers
             # debugging
             print "geometry = 1"

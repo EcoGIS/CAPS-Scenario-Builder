@@ -64,13 +64,11 @@ class AddLinesPolygons(QgsMapTool):
         ''' Record the mouse down event '''
         # set the active vector layer
         self.activeVLayer = self.mainwindow.activeVLayer
-        if self.activeVLayer == None:
-            return
-        
+        if self.activeVLayer == None: return
+
         # set the current geometry and some variables for the QgsRubberBand
         if self.mainwindow.geom:
-            if self.mainwindow.geom == 1: # line
-                self.geom = False
+            if self.mainwindow.geom == 1: self.geom = False# line
             else: self.geom = True # polygon
         
         # check if the editing layer is selected but only on the first click

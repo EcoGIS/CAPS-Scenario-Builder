@@ -50,8 +50,8 @@ class SelectTool(QgsMapTool):
 #######################################################################
  
     def canvasPressEvent(self, event):
-        if self.mainwindow.activeVLayer == None:
-            return
+        if self.mainwindow.activeVLayer == None: return
+            
         point = event.pos()
         self.transform = self.mainwindow.canvas.getCoordinateTransform()
         self.selectFeat(point)
