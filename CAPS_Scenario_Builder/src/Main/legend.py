@@ -394,8 +394,8 @@ the file system. All changes to these files will be lost. Do you want to delete 
             self.mainwindow.scenarioDirty = True
             print "layer was removed from originalScenarioLayers"
             
-        # be layer ready to be removed so reset active layer variables to none or could
-        #  get C++ object deleted runtime errors from deleting referenced variable
+        # be Layer ready to be removed so reset active layer variables to none or we could
+        #  get C++ object deleted runtime errors from deleting an object underlying a python variable.
         self.setActiveLayerVariables()
         
         # remove layer from the registry
@@ -656,7 +656,7 @@ Please check if it is open in another program and try again.")
         # debugging
         print "Main.legend.setActiveLayerVariables()"
         
-        #self.mainwindow.activeRLayer = None
+        self.mainwindow.activeRLayer = None
         #self.mainwindow.rendererV2 = None
         self.mainwindow.activeVLayer = None 
         self.mainwindow.geom = None # reset activeVLayer information

@@ -85,7 +85,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.editDirty = False #if editDirty false edits saved
         self.editMode = False # True if "Toggle Edits" is activated
         # used to remember if edit_scenario(polygons).shp was loaded from a scenario file
-        self.editingPolygon = False 
+        self.editingPolygon = False
+        self.openingOrientingLayers = False 
                 
         # OBJECTS
         self.attrTable = None
@@ -205,7 +206,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.toolGroup.addAction(self.mpActionPan)
         self.toolGroup.addAction(self.mpActionZoomIn)
         self.toolGroup.addAction(self.mpActionZoomOut)
-        self.toolGroup.addAction(self.mpActionZoomtoMapExtent)
+        #self.toolGroup.addAction(self.mpActionZoomtoMapExtent)
         self.toolGroup.addAction(self.mpActionIdentifyFeatures)
         self.toolGroup.addAction(self.mpActionSelectFeatures)
         self.toolGroup.addAction(self.mpActionDeselectFeatures)
@@ -557,7 +558,7 @@ was not written.  Please check that a file with the same name is not open in ano
    
     def exportScenario(self):
         # debugging
-        print "exportScenario()"
+        print "mainwindow.exportScenario()"
         
         # check the app state for unsaved edits and scenario changes
         if self.appStateChanged("exportScenario") == "Cancel":
@@ -570,15 +571,29 @@ was not written.  Please check that a file with the same name is not open in ano
         scenarioDirectoryFileList = os.listdir(scenarioDirectoryPath) # use Python os module here
         exportFileName = unicode(scenarioDirectoryName + ".csv")
         exportPath = unicode(config.scenarioExportsPath + exportFileName)
-        
+                
+        if scenarioDirectoryFileList == []:
+            QtGui.QMessageBox.warning(self, "Export Scenario Error:", "You have not made any scenario edits to export. \
+Please choose 'Edit Scenario' from the Edit menu, make some edits, and then try again." )
+            return
+
         self.deleteExportScenarioFile()
 
+        # Get a count of the number of editing shapefiles for use below.
+        shapefileCount = 0
+        for fileName in scenarioDirectoryFileList:
+            if not ".shp" in fileName: continue # only looking for the .shp files
+            shapefileCount += 1
         # Iterate through the editing shapefiles in the current scenario's directory.
         # Open the file if it is not already open, and write it as a csv file.  
         # Finally, append the editing shapefile csv file to the scenario export file,
         # which will consist of all edits to the current scenario in csv format.
+        exportFileWritten = False
+        loopCount = 0
         for fileName in scenarioDirectoryFileList:
             if not ".shp" in fileName: continue # only looking for the .shp files
+            loopCount += 1
+            print "The loopCount begin is " + str(loopCount)
             # get the path to write the csv file to
             csvInfo = QtCore.QFileInfo(fileName)
             csvBaseName = csvInfo.completeBaseName() # csvBaseName = editing shapefile BaseName
@@ -606,6 +621,22 @@ was not written.  Please check that a file with the same name is not open in ano
             else:
                 vlayerId = items[0].layerId
                 vlayer = QgsMapLayerRegistry.instance().mapLayer(vlayerId)
+                
+            # Check if there are any features in the layer because the QgsVectorFileWriter fails to 
+            # write the csv file if there are no features and does NOT return an error!!
+            print "The vlayer feature count is " + str(vlayer.featureCount())
+            if vlayer.featureCount() == 0:
+                # keep trying until the last layer in the scenarioDirectoryFileList
+                print "the shapefileCount is " + str(shapefileCount)
+                print "the loopCount is " + str(loopCount)
+                if loopCount < shapefileCount:
+                    continue
+                elif exportFileWritten: # loopCount = shapefileCount and something exported
+                    break
+                elif not exportFileWritten: # loopCount = shapefileCount and nothing exported
+                    QtGui.QMessageBox.warning(self, "Export Scenario Error:", "There are no features to export.  Please \
+make some edits to your scenario and try again.")
+                    return    
             
             # We need to delete any existing editing shapefile csv conversions
             # for this editing shapefile before we write a new one. The ogr driver
@@ -624,7 +655,7 @@ was not written.  Please check that a file with the same name is not open in ano
 csv file '" + csvFileName + " could not be deleted.  Please check if the file is open in \
 another program and then try again.")
                     return
-         
+
             # Create an empty datasource and errorMessage option for the 
             # QgsVectorFileWriter parameters list
             datasourceOptions = QtCore.QStringList(QtCore.QString())
@@ -634,7 +665,7 @@ another program and then try again.")
             # write csv file in MA State Plane coordinates and check for error
             error = QgsVectorFileWriter.writeAsVectorFormat(vlayer, csvPath, "utf-8", 
                         self.crs, "CSV", False, errorMessage  , datasourceOptions, creationOptions)
-            if error != QgsVectorFileWriter.NoError:
+            if error: # != QgsVectorFileWriter.NoError:
                 QtGui.QMessageBox.warning(self, "Write Error:", "The file " + csvFileName + " \
 was not written.  Please check that a file with the same name is not open in another program.")
                 return
@@ -655,7 +686,7 @@ was not written.  Please check that a file with the same name is not open in ano
                 QtGui.QMessageBox.warning(self, 'Export Error:', 'The export file, ' \
 + exportFileName + ' could not be written.  Please try again.')
                 return
-                
+            exportFileWritten = True    
         # Exited the for loop, so let the user know things worked
         QtGui.QMessageBox.information(self, 'Export Succeeded:', "The export file is named "\
  + exportFileName + ". It can be found in the CAPS Scenario Builder program directory \
@@ -1407,6 +1438,8 @@ attribute table is very large and can take a few seconds to load.  Do you want t
         print "alc The destination crs description is " + str(self.canvas.mapRenderer().destinationCrs().description())
         print "alc The destination authority identifier is " + str(self.canvas.mapRenderer().destinationCrs().authid())
         print "alc The QgsProject.isDirty() flag is " + str(QgsProject.instance().isDirty())
+        print "alc self.openingOrientingLayers is " + str(self.openingOrientingLayers)
+        
         #**************************************************************************        
         
         # keep track of the active layer type for use in other methods
@@ -1464,10 +1497,11 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # disable the vector attribute table action
             self.mpActionOpenVectorAttributeTable.setDisabled(True)
             
-            # New layer loaded so set the scenarioDirty flag.  Note: This gets called
-            # unnecessarily when a different layer is selected in the layer panel.
+            # New layer loaded so check about seting the scenarioDirty flag.  
+            # Note: This gets called unnecessarily when a different layer is selected in the layer panel.
             # However, it returns immediately if the layer count has not changed.
             # It also returns immediately if a scenario is in the process of loading
+            # or if the orienting layers are loading.
             # There is no need to check if the scenario is already dirty.  Once a scenario
             # is dirty, the policy is it stays dirty until the user saves it.
             if not self.scenarioDirty: self.setScenarioDirty()
@@ -1488,9 +1522,6 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             print "alc Setting app state for vector layer" 
             print "copyFlag is " + str(self.copyFlag)
             
-            # ensure that the canvas always shows Mass State Plane coordinates
-            #self.activeVLayer.setCrs(self.crs)
-
             # set the active vector layer
             self.activeVLayer = self.legend.activeLayer().layer()
             
@@ -1526,24 +1557,24 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # tools, andcopy, delete, paste features
             self.toolGroup.setDisabled(False)
             
-            # if self.editDirty is True, the save edits action should be enabled
-            if self.editDirty: self.mpActionSaveEdits.setDisabled(False)
-            else: self.mpActionSaveEdits.setDisabled(True)
-            
+            # if self.editDirty is False, the save edits action should be disabled
+            if self.editDirty:
+                self.mpActionSaveEdits.setDisabled(False)
+            else: 
+                self.mpActionSaveEdits.setDisabled(True)
+                
             # Manage the Edit Scenario action. 
             # note: "Edit Scenario" is not part of self.toolGroup
             # The Edit Scenario action is always on!
             self.mpActionEditScenario.setDisabled(False)
+            # new active layer loading so disable previous edit actions
+            self.disableEditActions()
             if self.editMode:
                 self.mpActionEditScenario.setChecked(True)
-                # new active layer loading so disable previous edit actions
-                self.disableEditActions()
                 # loading a new active layer so enable the proper edit buttons
                 self.enablePointsOrLinesOrPolygons()
             else: # not in edit mode
                 self.mpActionEditScenario.setChecked(False)
-                # gray out edit sub actions until user starts editing
-                self.disableEditActions()
             
             # enable the  "Open Vector Attribute Table" action    
             self.mpActionOpenVectorAttributeTable.setDisabled(False)
@@ -1554,7 +1585,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
                 # Note that "Modify Selected" will only be enabled if the active layer
                 # is one of the point base layers
                 self.mpActionSelectFeatures.setDisabled(False)
-                self.mpActionSelectFeatures.setChecked(True)
+                #self.mpActionSelectFeatures.setChecked(True)
                 self.enableSelectSubActions()
             elif self.editMode and len(self.activeVLayer.selectedFeatures()) != 0:
                 # We have selected features, so enable all the selected features actions
@@ -1842,6 +1873,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.originalFeats = []
         self.scenarioEditType = None
         self.copyFlag = False
+        self.openingOrientingLayers = False
         self.editingPolygon = False
         self.exportFileFlag = False
         self.isBaseLayerDeletions = False
@@ -2033,14 +2065,21 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         # debugging
         print "setScenarioDirty()"
         print "self.origScenarioLyrsLoaded is " + str(self.origScenarioLyrsLoaded)
-        print "self.scenarioDirty begin is " + str(self.scenarioDirty)
+        print "self.setScenarioDirty() begin is " + str(self.scenarioDirty)
         print "self.scenarioFileName is " + str(self.scenarioFileName)
+        print "self.openingOrientingLayers is " + str(self.openingOrientingLayers)
         
         # The line below fails because it returns false if the layer order changes
         # self.originalScenarioLayers == self.currentLayers.values()
 
         self.getCurrentLayersCount()
         print "self.currentLayersCount is " + str(self.currentLayersCount)
+        
+        # if in the process of opening the orienting layers, just return
+        if self.openingOrientingLayers:
+            self.scenarioDirty = False
+            print "self.setScenarioDirty() end is " + str(self.scenarioDirty)
+            return
         
         # If no scenario is open and the loaded layers are the orienting baselayers,
         # The user is probably either opening the app or has chosen "New Scenario." 
@@ -2068,7 +2107,8 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             print difference
             if difference == []:
                 self.scenarioDirty = False
-                print "setScenarioDirty() return"
+                print "setScenarioDirty() difference == []"
+                print "self.setScenarioDirty() end is " + str(self.scenarioDirty)
                 return
  
         
@@ -2078,6 +2118,8 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         # baselayer, because that might be a scenario they want to save for some reason.  
         if self.currentLayersCount > 0 and self.scenarioFileName == None:
             self.scenarioDirty = True
+            print "layer count > 0 if statement"
+            print "self.setScenarioDirty() end is " + str(self.scenarioDirty)
             return
     
         # Now we handle if a scenario is open
@@ -2181,6 +2223,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             tempPath = path + rlayer
             info = QtCore.QFileInfo(QtCore.QString(tempPath))
             print "The path is " + info.absoluteFilePath()
+            self.openingOrientingLayers = True
             self.openRasterLayer(tempPath)
  
         for vlayer in vlayers:
@@ -2188,8 +2231,9 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             tempPath = path + vlayer
             info = QtCore.QFileInfo(QtCore.QString(tempPath))
             print "The path is " + info.absoluteFilePath()
+            self.openingOrientingLayers = True
             self.openVectorLayer(tempPath)
-           
+        
         # In config.py you, can set the baselyer(s) of your choice to be visible 
         for checked in config.baseLayersChecked:
             items = self.legend.findItems(checked, QtCore.Qt.MatchFixedString, 0)
@@ -2197,9 +2241,9 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             if len(items) > 0:
                 item = items[0]
                 item.setCheckState(0, QtCore.Qt.Checked)
-         
-        self.scenarioDirty = False       
-       
+                
+        self.openingOrientingLayers = False
+
     def arrangeOrientingLayers(self):
         ''' The QgsProject instance does not set layer position in our layer panel,
             so we set it here.
