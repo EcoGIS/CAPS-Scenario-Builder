@@ -196,40 +196,39 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.toolAddPoints = AddPoints(self)
         self.toolAddLinesPolygons = AddLinesPolygons(self)
         
-        # Create a QActionGroup to manage edit actions states
+        # Create a QActionGroup to manage map tool actions states.
         # If an action is set as "checkable" in mainwindow_ui.py and
         # the action is in a tool group, only one action in the 
         # group can be active at a time (). All other buttons 
         # are deactivated.  A toolGroup also makes it possible to
         # easily set all actions in the group as enabled or disabled.
-        self.toolGroup = QtGui.QActionGroup(self)
-        self.toolGroup.addAction(self.mpActionPan)
-        self.toolGroup.addAction(self.mpActionZoomIn)
-        self.toolGroup.addAction(self.mpActionZoomOut)
-        #self.toolGroup.addAction(self.mpActionZoomtoMapExtent)
-        self.toolGroup.addAction(self.mpActionIdentifyFeatures)
-        self.toolGroup.addAction(self.mpActionSelectFeatures)
-        self.toolGroup.addAction(self.mpActionDeselectFeatures)
-        #self.toolGroup.addAction(self.mpActionModifyPoints)
-        self.toolGroup.addAction(self.mpActionDeleteFeatures)
-        self.toolGroup.addAction(self.mpActionCopyFeatures)
-        self.toolGroup.addAction(self.mpActionPasteFeatures)
-        self.toolGroup.addAction(self.mpActionAddPoints)
-        self.toolGroup.addAction(self.mpActionAddLines)
-        self.toolGroup.addAction(self.mpActionAddPolygons)
-        #self.toolGroup.addAction(self.mpActionOpenVectorAttributeTable)
-        #self.toolGroup.addAction(self.mpActionSaveEdits)
-        #self.toolGroup.addAction(self.mpActionExportScenario)
-                         
-        # set initial action states; all disabled except:
-        # New Scenario, Open Scenario, Save Scenario, Save Scenario As,
-        # Add Vector, Add Raster and Open Raster Category Table are on 
-        self.toolGroup.setDisabled(True)
-        self.mpActionOpenVectorAttributeTable.setDisabled(True)
+        self.mapToolGroup = QtGui.QActionGroup(self) # 8 actions of 26 total
+        # The four actions below are usually disabled
+        self.mapToolGroup.addAction(self.mpActionSelectFeatures)
+        self.mapToolGroup.addAction(self.mpActionAddPoints)
+        self.mapToolGroup.addAction(self.mpActionAddLines)
+        self.mapToolGroup.addAction(self.mpActionAddPolygons)
+        # The four actions below are always enabled when a layer is loaded
+        self.mapToolGroup.addAction(self.mpActionIdentifyFeatures)
+        self.mapToolGroup.addAction(self.mpActionPan)
+        self.mapToolGroup.addAction(self.mpActionZoomIn)
+        self.mapToolGroup.addAction(self.mpActionZoomOut)
+        
+        # The following actions are usually disabled (8 actions of 26 total)
+        self.mpActionDeselectFeatures.setDisabled(True)
+        self.mpActionModifyPoints.setDisabled(True)
+        self.mpActionDeleteFeatures.setDisabled(True)
+        self.mpActionCopyFeatures.setDisabled(True)
+        self.mpActionPasteFeatures.setDisabled(True)
         self.mpActionSaveEdits.setDisabled(True)
         self.mpActionExportScenario.setDisabled(True)
-        self.mpActionModifyPoints.setDisabled(True)
- 
+        self.mpActionOpenVectorAttributeTable.setDisabled(True)
+                        
+        # Set initial action states; all disabled except ten actions are always enabled (by default).
+        # New Scenario, Open Scenario, Save Scenario, Save Scenario As, Edit Scenario
+        # Add Vector, Add Raster and Open Raster Category Table, Exit and Zoom to Map Extent are on 
+        self.mapToolGroup.setDisabled(True)
+
         # set the map coordinates display in the status bar
         self.mapcoords = MapCoords(self)
         
@@ -1466,35 +1465,44 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             capture_string = QtCore.QString(self.activeRLayer.source())
             self.statusBar.showMessage(capture_string)
     
-            # ensure that the canvas always shows Mass State Plane coordinates
+            # For some reason, the USGS.sid will not render unless we include this line of code.
+            # The USGS.sid layer reports that it is in geographic coordinates WGS 84.  Transformation
+            # on the fly should convert it to MA State Plane, but it does not for some reason.
             self.activeRLayer.setCrs(self.crs)
             # set extents
             self.setExtents()
             # set the layer geometry
             self.geom = None
             self.provider = None
-            # set extents if not within MA state extents
-            #self.setExtents()
-  
+            
             # debugging
             print "alc opened active layer is " + self.activeRLayer.name()
             print "alc self.editDirty is " + str(self.editDirty)
             
-            # Start with all tool group actions enabled 
-            # and then disable as necessary
-            self.toolGroup.setDisabled(False)
-            # Disable (gray out) select tool actions
-            # if raster layer loaded.
+            ''' 
+                A new raster layer has been selected or opened so set action states. 
+            ''' 
+            
+            # Since we are loading a layer, enable the navigation map tools 
+            self.mapToolGroup.setDisabled(False)
+            self.disableNonNavigationMapTools()
+            # Disable (gray out) select tool actions if raster layer loaded.
+            # Note that this tool is disabled in mainwindow.init() but enabled
+            # whenever a vector layer is loaded while editing a scenario.
             self.mpActionSelectFeatures.setDisabled(True)
+            # This disables 4 usuallyDisabledToolGroup actions that may have been enabled
+            # when a vector layer was active while editing a scenario.
             self.disableSelectActions()
             # can't paste features to a raster so disable paste action
             self.mpActionPasteFeatures.setDisabled(True)
             # edit scenario should always be on
-            self.mpActionEditScenario.setDisabled(False)
-            # disable edit actions except if self.editsDirty enable save edits
+            #self.mpActionEditScenario.setDisabled(False)
+            # disable edit actions since we can't edit a raster 
             self.disableEditActions()
+            # if self.editsDirty enable save edits
             if self.editDirty: self.mpActionSaveEdits.setDisabled(False)
-            # disable the vector attribute table action
+            # Disable the vector attribute table action, which may have been
+            # enabled by loading a vector layer.
             self.mpActionOpenVectorAttributeTable.setDisabled(True)
             
             # New layer loaded so check about seting the scenarioDirty flag.  
@@ -1525,6 +1533,13 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # set the active vector layer
             self.activeVLayer = self.legend.activeLayer().layer()
             
+            # New layer loaded so set the scenarioDirty flag.  Note: This gets called
+            # unnecessarily when a different layer is selected in the layer panel.
+            # However, it returns immediately if the layer count has not changed. 
+            # There is no need to check if the scenario is already dirty.  Once a scenario
+            # is dirty, the policy is it stays dirty until the user saves it.
+            if not self.scenarioDirty: self.setScenarioDirty()
+            
             # debugging 
             print "The activeVLayer name is " + self.activeVLayer.name()
             print "The layers authid is " + str(self.activeVLayer.crs().authid())
@@ -1553,67 +1568,55 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             A New Vector layer has been selected or opened, so set action states.
             '''
             
-            # Enable map navigation tools, select tools, edit 
-            # tools, andcopy, delete, paste features
-            self.toolGroup.setDisabled(False)
+            # Enable map navigation tools
+            self.mapToolGroup.setDisabled(False) # map tools can't be enabled if the group is off
+            self.disableNonNavigationMapTools()
             
+            # We are changing the activeVLayer, so we need to handle select actions
+            if self.editMode: 
+                self.mpActionSelectFeatures.setDisabled(False) # select always enabled in edit mode
+                self.disableSelectActions() # if just in edit mode, select sub actions should be disabled
+                if self.mpActionSelectFeatures.isChecked():
+                    # The user has checked Select Features, so leave select features activated.
+                    #self.mpActionSelectFeatures.setChecked(True)
+                    # Note that "Modify Selected" will only be enabled if the active layer
+                    # is one of the point base layers
+                    self.enableSelectSubActions() # enable deselect, modify, delete and copy features
+                elif len(self.activeVLayer.selectedFeatures()) != 0:
+                    # We have selected features, so enable all the selected features actions
+                    # Note that "Modify Selected" will only be enabled if the active layer
+                    # is an editable point base layer.
+                    self.mpActionSelectFeatures.setChecked(True)
+                    self.enableSelectSubActions()
+            else: # not in edit mode so disable "Select Features"
+                self.mpActionSelectFeatures.setDisabled(True)
+                self.disableSelectActions()
+            
+            # new active vector layer loading so disable previous edit actions (these are mapToolGroup actions)
+            self.disableEditActions() # actions are add points, lines, polygons
+ 
+            if self.editMode:
+                self.mpActionEditScenario.setChecked(True) # to be safe, but this should not be needed
+                # loading a new active layer so enable the proper edit action if an editing layer
+                if self.activeVLayer.name() in config.editLayersBaseNames:
+                    self.enablePointsOrLinesOrPolygons()
+            else: # not in edit mode
+                self.mpActionEditScenario.setChecked(False) # to be safe, but this should not be needed
+                      
+            # handle the paste action
+            if self.copyFlag and self.editMode:
+                self.mpActionPasteFeatures.setDisabled(False)
+            else: self.mpActionPasteFeatures.setDisabled(True)
+           
             # if self.editDirty is False, the save edits action should be disabled
             if self.editDirty:
                 self.mpActionSaveEdits.setDisabled(False)
             else: 
                 self.mpActionSaveEdits.setDisabled(True)
-                
-            # Manage the Edit Scenario action. 
-            # note: "Edit Scenario" is not part of self.toolGroup
-            # The Edit Scenario action is always on!
-            self.mpActionEditScenario.setDisabled(False)
-            # new active layer loading so disable previous edit actions
-            self.disableEditActions()
-            if self.editMode:
-                self.mpActionEditScenario.setChecked(True)
-                # loading a new active layer so enable the proper edit buttons
-                self.enablePointsOrLinesOrPolygons()
-            else: # not in edit mode
-                self.mpActionEditScenario.setChecked(False)
-            
+        
             # enable the  "Open Vector Attribute Table" action    
             self.mpActionOpenVectorAttributeTable.setDisabled(False)
-            
-            # We are changing the activeVLayer, so we need to set select actions
-            if self.editMode and self.mpActionSelectFeatures.isChecked():
-                # So the user has checked Select Features. Leave select features activated
-                # Note that "Modify Selected" will only be enabled if the active layer
-                # is one of the point base layers
-                self.mpActionSelectFeatures.setDisabled(False)
-                #self.mpActionSelectFeatures.setChecked(True)
-                self.enableSelectSubActions()
-            elif self.editMode and len(self.activeVLayer.selectedFeatures()) != 0:
-                # We have selected features, so enable all the selected features actions
-                # Note that "Modify Selected" will only be enabled if the active layer
-                # is an editable point base layer.
-                self.mpActionSelectFeatures.setDisabled(False)
-                self.mpActionSelectFeatures.setChecked(True)
-                self.enableSelectSubActions()
-            # If in editMode, make sure the select action is enabled, but not selected.
-            elif self.editMode: # enable select features but disable sub actions
-                self.mpActionSelectFeatures.setDisabled(False)
-                self.disableSelectActions()
-            else: # not in edit mode so disable "Select Features"
-                self.mpActionSelectFeatures.setDisabled(True)
-                self.disableSelectActions()
-                
-            # handle the copy action
-            if self.copyFlag and self.editMode:
-                self.mpActionPasteFeatures.setDisabled(False)
-            else: self.mpActionPasteFeatures.setDisabled(True)
-        
-            # New layer loaded so set the scenarioDirty flag.  Note: This gets called
-            # unnecessarily when a different layer is selected in the layer panel.
-            # However, it returns immediately if the layer count has not changed. 
-            # There is no need to check if the scenario is already dirty.  Once a scenario
-            # is dirty, the policy is it stays dirty until the user saves it.
-            if not self.scenarioDirty: self.setScenarioDirty()
-        
+    
             # if there could be something to export
             if self.scenarioDirty or self.scenarioFilePath:
                 self.mpActionExportScenario.setDisabled(False)
@@ -1890,7 +1893,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.provider = None
         self.geom = None
         self.layerColor = None
-        self.toolGroup.setDisabled(True)
+        self.mapToolGroup.setDisabled(True)
         #self.canvas.setExtent(self.extent)
         self.mpActionOpenVectorAttributeTable.setDisabled(True)
         self.mpActionSaveEdits.setDisabled(True)
@@ -1903,14 +1906,6 @@ Prioritization System (CAPS) Scenario Builder")
     ''' UTILITY METHODS '''
 ############################################################################################
  
-    def getGeometryName(self, layerGeom):
-        geometry = "No Geometry"
-        if layerGeom != None: # None if raster loaded
-            if layerGeom == 0: geometry = "point(s)"
-            elif layerGeom == 1: geometry = "line(s)"
-            elif layerGeom == 2: geometry = "polygon(s)"
-            else: geometry = "Unknown Geometry"
-            return geometry
         
     def enablePointsOrLinesOrPolygons(self):
         if "base" in self.activeVLayer.name(): return
@@ -1924,6 +1919,23 @@ Prioritization System (CAPS) Scenario Builder")
             self.mpActionAddPolygons.setDisabled(False)
             print "enablePointsOrLinesOrPolygons() geom 2"
 
+    def enableSelectSubActions(self):
+        if self.activeVLayer.name() in config.pointBaseLayersBaseNames:
+            self.mpActionModifyPoints.setDisabled(False)
+            self.mpActionCopyFeatures.setDisabled(True)
+        else: self.mpActionCopyFeatures.setDisabled(False)
+        self.mpActionDeselectFeatures.setDisabled(False)
+        self.mpActionDeleteFeatures.setDisabled(False)
+        
+    def disableNonNavigationMapTools(self):
+        # debugging
+        print "mainwindow.enableLayerNavigationMapTools()"
+        
+        self.mpActionSelectFeatures.setDisabled(True)
+        self.mpActionAddPoints.setDisabled(True)
+        self.mpActionAddLines.setDisabled(True)
+        self.mpActionAddPolygons.setDisabled(True)
+   
     def disableEditActions(self):
         # debugging
         print "disableEditActions()"
@@ -1952,14 +1964,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.mpActionCopyFeatures.setDisabled(True)
         self.mpActionCopyFeatures.setChecked(False)
         
-    def enableSelectSubActions(self):
-        if self.activeVLayer.name() in config.pointBaseLayersBaseNames:
-            self.mpActionModifyPoints.setDisabled(False)
-            self.mpActionCopyFeatures.setDisabled(True)
-        else: self.mpActionCopyFeatures.setDisabled(False)
-        self.mpActionDeselectFeatures.setDisabled(False)
-        self.mpActionDeleteFeatures.setDisabled(False)
-        
+    
     def disableSelectSubActions(self):
         self.mpActionModifyPoints.setDisabled(True)
         self.mpActionDeselectFeatures.setDisabled(True)
@@ -1985,6 +1990,15 @@ Prioritization System (CAPS) Scenario Builder")
         self.currentLayersCount = QgsMapLayerRegistry.instance().count()
         return self.currentLayersCount
  
+    def getGeometryName(self, layerGeom):
+        geometry = "No Geometry"
+        if layerGeom != None: # None if raster loaded
+            if layerGeom == 0: geometry = "point(s)"
+            elif layerGeom == 1: geometry = "line(s)"
+            elif layerGeom == 2: geometry = "polygon(s)"
+            else: geometry = "Unknown Geometry"
+            return geometry
+    
     def getCurrentLayers(self):
         ''' Get the layers currently registered in the QgsMapLayerRegistry '''
         # debugging
@@ -2060,6 +2074,17 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         print "getOriginalScenarioLayers() currentLayers are " 
         for layer in self.getCurrentLayers().values(): print layer.name()
    
+    def getEditFields(self):
+        # debugging
+        print "mainwindow.getEditFields()"
+        
+        geom = self.geom #0 point, 1 line, 2 polygon
+        if geom == 0: editFields = config.editPointsFields  
+        elif geom == 1: editFields = config.editLinesFields
+        elif geom == 2: editFields = config.editPolygonsFields   
+                
+        return editFields
+    
     def setScenarioDirty(self):
         ''' Set the scenarioDirty flag '''
         # debugging
@@ -2336,18 +2361,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         print "The scaled rectangle is "
         print ("(" + str(smallRectExtentMA.xMinimum()) + ", " + str(smallRectExtentMA.yMinimum()) + ", " + 
                      str(smallRectExtentMA.xMaximum()) + ", " + str(smallRectExtentMA.yMaximum()) + ")")
-                
-    def getEditFields(self):
-        # debugging
-        print "mainwindow.getEditFields()"
-        
-        geom = self.geom #0 point, 1 line, 2 polygon
-        if geom == 0: editFields = config.editPointsFields  
-        elif geom == 1: editFields = config.editLinesFields
-        elif geom == 2: editFields = config.editPolygonsFields   
-                
-        return editFields
-    
+  
     def copyFeaturesShared(self):
         ''' 
             This method copies features and is used by mainwindow.copyFeatures and
