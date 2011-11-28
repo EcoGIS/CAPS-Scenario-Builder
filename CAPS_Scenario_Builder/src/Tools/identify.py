@@ -68,7 +68,7 @@ class Identify(QgsMapTool):
         ''' Get text for the clicked point and raster value at that point '''
         # debugging
         print "identify.rasterIdentifyTool()"
-        
+
         text = "The clicked x,y point is (" + str(qgsPoint.x()) + ", " + str(qgsPoint.y()) + ")\n"
         # this QgsVectorLayer method returns a tuple consisting of the bool result (success = True) 
         # and a dictionary with the key being the band names of the raster and the values
@@ -80,12 +80,8 @@ class Identify(QgsMapTool):
             print "Identify raster layer failed"
         
         # now display the text to the user
-        title = "Identify Raster"
-        # If we are changing the title and text, we need a new dialog
-        if self.mainwindow.dlgDisplay and self.mainwindow.dlgDisplay.windowTitle() != title:
-            self.mainwindow.dlgDisplay.close()
-            self.mainwindow.dlgDisplay = None 
-        shared.displayInformation(self.mainwindow, title, text)        
+        title = "Raster Information"
+        self.displayInformation(title, text)        
              
     def vectorIdentifyTool(self, point, qgsPoint):
         ''' Get text for the coordinates and attributes of vector features '''
@@ -116,8 +112,30 @@ class Identify(QgsMapTool):
                 
             # display the text to the user
             title = "Vector Feature Information"
-            # If we are changing the title and text, we need a new dialog
-            if self.mainwindow.dlgDisplay and self.mainwindow.dlgDisplay.windowTitle() != title:
-                self.mainwindow.dlgDisplay.close()
-                self.mainwindow.dlgDisplay = None 
-            shared.displayInformation(self.mainwindow, title, text)
+            self.displayInformation(title, text)
+            
+    def displayInformation(self, title, text):
+        ''' Display the information about the vector or raster '''
+        # debugging
+        print "identify.displayInformation()"
+        
+        title = QtCore.QString(title)
+        text = QtCore.QString(text)
+        
+        # See Main.mainwindow.openRasterCategoryTable() for a description of the following code: 
+        if not self.mainwindow.dlgDisplayIdentify:
+            self.mainwindow.dlgDisplayIdentify = QtGui.QDockWidget(title, self.mainwindow)
+            self.mainwindow.dlgDisplayIdentify.setFloating(True)
+            self.mainwindow.dlgDisplayIdentify.setAllowedAreas(QtCore.Qt.NoDockWidgetArea)
+            self.mainwindow.dlgDisplayIdentify.setMinimumSize(QtCore.QSize(450, 300))
+            self.mainwindow.dlgDisplayIdentify.show()
+            self.mainwindow.textBrowserIdentify = QtGui.QTextBrowser()
+            self.mainwindow.textBrowserIdentify.setWordWrapMode(QtGui.QTextOption.NoWrap)
+            self.mainwindow.textBrowserIdentify.setFontPointSize(9.0)
+            self.mainwindow.textBrowserIdentify.setText(text)
+            self.mainwindow.dlgDisplayIdentify.setWidget(self.mainwindow.textBrowserIdentify)
+        else:
+            if self.mainwindow.dlgDisplayIdentify.windowTitle() != title: 
+                self.mainwindow.dlgDisplayIdentify.setWindowTitle(title)
+            self.mainwindow.textBrowserIdentify.setText(text)
+            self.mainwindow.dlgDisplayIdentify.setVisible(True)

@@ -412,31 +412,6 @@ def snapToNewRoad(mainwindow, point):
         snappedQgsPoint = QgsPoint(x, y)
         return snappedQgsPoint
 
-def displayInformation(mainwindow, title, text):
-        ''' Display the information about the vector or raster '''
-        # debugging
-        print "identify.displayInformation()"
-        
-        title = QtCore.QString(title)
-        text = QtCore.QString(text)
-        # See Main.mainwindow.openRasterCategoryTable() for a description of the following code: 
-        if not mainwindow.dlgDisplay:
-            if title =="Unmodified Feature's Geometry and Attribute Information":
-                mainwindow.dlgDisplay = QtGui.QDockWidget(title, mainwindow.dlg)
-            else: mainwindow.dlgDisplay = QtGui.QDockWidget(title, mainwindow)
-            mainwindow.dlgDisplay.setFloating(True)
-            mainwindow.dlgDisplay.setAllowedAreas(QtCore.Qt.NoDockWidgetArea)
-            mainwindow.dlgDisplay.setMinimumSize(QtCore.QSize(450, 300))
-            mainwindow.dlgDisplay.show()
-            mainwindow.textBrowser = QtGui.QTextBrowser()
-            mainwindow.textBrowser.setWordWrapMode(QtGui.QTextOption.NoWrap)
-            mainwindow.textBrowser.setFontPointSize(9.0)
-            mainwindow.textBrowser.setText(text)
-            mainwindow.dlgDisplay.setWidget(mainwindow.textBrowser)
-        else:
-            mainwindow.textBrowser.setText(text)
-            mainwindow.dlgDisplay.setVisible(True)
-        
 #**************************************************************
 ''' Testing '''
 #**************************************************************

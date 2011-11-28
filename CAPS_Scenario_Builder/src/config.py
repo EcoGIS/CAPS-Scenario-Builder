@@ -55,12 +55,12 @@ scenarioExportsPath = u"./Exported Scenarios/"
 # Please note that you MUST NOT delete or change the list position of the id, 
 # altered, deleted or description field names. The values for these fields are added 
 # programmatically and depend on their positions in the list.
-inputFieldNames0 = ['cross_id', 'c_altered', 'c_deleted', 'c_aqua_scr', 'c_describe'] 
+inputFieldNames0 = ['cross_id', 'c_altered', 'c_deleted', 'c_aqua_scr', 'terr_scr', 'c_describe'] 
 inputFieldNames1 = ['dam_id', 'd_altered', 'd_deleted', 'd_aqua_scr', 'd_describe']
 inputFieldNames2 = ['wildlf_id', 'w_altered', 'w_deleted', 'terr_scr', 'w_describe']
 inputFieldNames3 = ['restr_id', 'r_altered', 'r_deleted', 'r_rest_scr', 'r_describe']
-inputFieldNames4 = ['newrd_id', 'newrd_rate', 'nrd_descr']
-inputFieldNames5 = ['modrd_id', 'modrd_rate', 'mrd_descr']
+inputFieldNames4 = ['newrd_id', 'newrd_rate', 'nrd_class', 'nrd_descr']
+inputFieldNames5 = ['modrd_id', 'modrd_rate', 'nrd_class', 'mrd_descr']
 inputFieldNames6 = ['ldcvr_id', 'ldcvr_cls', 'l_describe']
 
 ''' Labels for the combo boxes in the "Add Attributes" dialog '''
@@ -73,12 +73,12 @@ inputFieldNames6 = ['ldcvr_id', 'ldcvr_cls', 'l_describe']
 # THE ORDER WITHIN THE LISTS IS CRITICAL, SINCE THEY ARE LOOPED THROUGH AND MATCHED
 # Of course, any old scenarios the user has stored that use the editing layer that 
 # has been modified will become obsolete.  The users would need to be notified of this.
-fieldLabels0 = ['Aquatic crossing score:']
+fieldLabels0 = ['Aquatic crossing score:', 'Terrestrial crossing score:']
 fieldLabels1 = ['Aquatic crossing score:']
 fieldLabels2 = ['Terrestrial crossing score:']
 fieldLabels3 = ['Tidal Restriction severity:']
-fieldLabels4 = ['New road traffic rate:'] 
-fieldLabels5 = ['Modified road traffic rate:']
+fieldLabels4 = ['New road traffic rate:', 'New road class:'] 
+fieldLabels5 = ['Modified road traffic rate:', 'New road class:']
 fieldLabels6 = ['Land cover class:']
 
 ''' Field values for the comboBox dropdown lists '''
@@ -90,9 +90,12 @@ fieldLabels6 = ['Land cover class:']
 # edit type must have a dropdown list for each comboBox needed for that edit type.  Thus we 
 # have a "list of lists" for each edit type
 comboBoxOptions0 = [['', '1.0 - Full passage', '0.8 - Minor barrier', '0.6 - Moderate barrier', 
-                 '0.4 - Significant barrier', '0.2 - Severe barrier']]
-comboBoxOptions1 = [['', '1.0 - Complete removal/full passage', '0.6 - Fishway/breached dam', 
-                 '0.2 - Eel passage only', '0.0 - Full barrier']]
+                 '0.4 - Significant barrier', '0.2 - Severe barrier'], ['', '1.0 - Full passage (bear, moose)', 
+                 '0.75 - Large animals (fox, coyote, fisher, bobcat, otter)', 
+                 '0.5 - Medium animals (rabbit, skunk, mink, opossum, raccoon)', 
+                 '0.2 - Small animals (amphibians, reptiles, mice, voles, chipmunk, weasel)', 
+                 '0.0 - No passage structure']]
+comboBoxOptions1 = [['', '0.6 - Fishway/breached dam', '0.2 - Eel passage only', '0.0 - Full barrier']]
 comboBoxOptions2 = [['', '1.0 - Full passage (bear, moose)', 
                  '0.75 - Large animals (fox, coyote, fisher, bobcat, otter)', 
                  '0.5 - Medium animals (rabbit, skunk, mink, opossum, raccoon)', 
@@ -103,17 +106,28 @@ comboBoxOptions3 = [['', '0.0 m - No restriction', '0.5 m - Minor restriction',
 comboBoxOptions4 = [['','0.0 - none(closed road; 0 cars/day)', '0.025 - very low(tiny road; 100 cars/day)',
                  '0.2 - low(minor road; 800 cars/day)', '0.5 - medium(collector; 2500 cars/day)',
                  '0.75 - medium-high(secondary highway; 5000 cars/day)', 
-                 '0.94 - high(primary highway; 10,000 cars/day)', 
-                 '1.0 - extreme(expressway; >40,000 cars/day)'], ['add road class here?']] 
+                 '0.94 - high(primary highway; 10,000 cars/day)',  '1.0 - extreme(expressway; >40,000 cars/day)'],
+                   ['', '81 - Expressway', '82 - Primary highway', '83 - Secondary highway', '84 - Light duty road',
+                   '85 - Unpaved road', '90 - Railroad', '91 - Abandoned railbed', '92 - Rail trail']] 
 comboBoxOptions5 = [['','0.0 - none(closed road; 0 cars/day)', '0.025 - very low(tiny road; 100 cars/day)',
                 '0.2 - low(minor road; 800 cars/day)', '0.5 - medium(collector; 2500 cars/day)',
                 '0.75 - medium-high(secondary highway; 5000 cars/day)', 
                 '0.94 - high(primary highway; 10,000 cars/day)', 
-                '1.0 - extreme(expressway; >40,000 cars/day)'], ['add road class here?']]
-comboBoxOptions6 = [['', '1 - Commercial', '2 - Industrial', '10 - Residential', 
-                 '30 - Cropland', '50 - Water']]
-
-
+                '1.0 - extreme(expressway; >40,000 cars/day)'], ['', '81 - Expressway', '82 - Primary highway', '83 - Secondary highway', '84 - Light duty road',
+                   '85 - Unpaved road', '90 - Railroad', '91 - Abandoned railbed', '92 - Rail trail']]
+comboBoxOptions6 = [['', '1 - Commercial', '2 - Industrial', '3 - Urban open', '4 - Urban public ', 
+                     '5 - Transportation ', '6 - Mining', '7 - Waste disposal', '8 - Junkyard', 
+                     '10 - Multi-family  residential', '11 - High-density residential', 
+                     '12 - Medium-density residential', '13 - Low-density residential', 
+                     '20 - Spectator recreation', '21 - Participatory recreation', 
+                     '22 - Golf', '23 - Water based recreation ', '24 - Marina', 
+                     '30 - Cropland', '31 - Cranberry bog ', '32 - Nursery', '33 - Orchard', 
+                     '34 - Cemetery', '35 - Pasture', '36 - Powerline shrubland', '37 - Open land', 
+                     '40 - Forest', '41 - Deciduous forested wetland', '42 - Mixed forested wetland', 
+                     '43 - Coniferous forested wetland', '44 - Shrub swamp', '45 - Bog', '46 - Shallow marsh', 
+                     '47 - Deep marsh', '48 - Vernal pool', '55 - Pond', '56 - Lake', '60 - Sea cliff', 
+                     '61 - Vegetated dune ', '62 - Coastal dune', '63 - Coastal beach', '70 - Salt marsh', 
+                     '71 - Tidal flat', '72 - Rocky intertidal', '75 - Salt pond/bay']]
 
 ''' The fields lists for the three editing shapefiles '''
 # no changes should be made to the code under this heading
@@ -126,8 +140,8 @@ editPolygonsFields = inputFieldNames5 + inputFieldNames6 # 7 fields
 # Changing these values will only change the names shown in the "ScenarioEditTypes" dialog
 # Adding a value here will NOT create a new scenario type complete with base layers
 # and editing shapefile fields.
-scenarioEditTypesList = ["Road stream crossing (points)", "Dams (points)",  
-                          "Wildlife crossing (points)", "Tidal restriction (points)",
+scenarioEditTypesList = ["Culverts/bridges (points)", "Dams (points)",  
+                          "Terrestrial passage structures (points)", "Tidal restriction (points)",
                           "Add roads (lines)", "Modify roads (polygons)",        
                           "Land cover change (polygons)"]
 

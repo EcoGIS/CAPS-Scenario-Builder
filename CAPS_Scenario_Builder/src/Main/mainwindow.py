@@ -93,7 +93,9 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.dwAttrTable = None
         self.dwRasterTable = None
         self.scenarioInfo = None
-        self.dlgDisplay = None
+        self.dlgDisplayIdentify = None
+        self.dlgModifyInfo = None
+
         # MA State Plane coordinate system used by MassGIS
         self.crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
         #crs = QgsCoordinateReferenceSystem(2805, QgsCoordinateReferenceSystem.EpsgCrsId)
@@ -123,6 +125,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # This saves an editing layer's color so that it gets refreshed
         # when the layer loads after updating extents (see shared.updateExtents
         self.layerColor = None
+        self.windowTitle = None
         
         # create map canvas
         self.canvas = QgsMapCanvas()
@@ -923,12 +926,13 @@ before you can deselect."
                 return
  
         # If a pasted point(s), make sure constraints are met.
-        if self.geom == 0:
-            for feat in self.copiedFeats:
-                qgsPoint = feat.geometry().asPoint()
-                id = feat.id()
-                print "The point is " + str(qgsPoint) 
-                if not shared.checkConstraints(self, qgsPoint, id): return
+        if not modifyFlag:
+            if self.geom == 0:
+                for feat in self.copiedFeats:
+                    qgsPoint = feat.geometry().asPoint()
+                    id = feat.id()
+                    print "The point is " + str(qgsPoint) 
+                    if not shared.checkConstraints(self, qgsPoint, id): return
 
         # Now that we have good features and a correct layer to paste to:
         # Set self.originalFeats in case the user wants to delete pasted features
@@ -997,9 +1001,8 @@ before you can deselect."
             self.canvas.refresh()
             self.dlg = DlgAddAttributes(self)
             self.dlg.setGeometry(0, 500, 200, 200)
-            if modifyFlag: # open the dialog with existing feature data
-                # show a window with the existing features data if user ismodifying the point
-                # get the point base layer and provider for the current points being modified
+            if modifyFlag: # open the dialog with existing feature data if user is modifying the point
+                # get the point base layer (set in modifyPoints() and provider for the current points being modified
                 baseLayer = QgsMapLayerRegistry.instance().mapLayer(self.baseLayerId)
                 provider = baseLayer.dataProvider()
                 # get all the attributes for the point base layer
@@ -1027,11 +1030,7 @@ before you can deselect."
                     text += "%s: %s\n" % (fieldNamesDict.get(key).name(), attr.toString())
                 # set the title for the display window
                 title = "Unmodified Feature's Geometry and Attribute Information"
-                # If we are changing the title and text, we need a new dialog
-                if self.dlgDisplay and self.dlgDisplay.windowTitle() != title:
-                    self.dlgDisplay.close()
-                    self.dlgDisplay = None 
-                shared.displayInformation(self, title, text)
+                self.displayModifyPointsInformation(title, text)
             if self.dlg.exec_(): # open DlgAddAttributes and then if user clicks OK returns true
                 # validate user input
                 if modifyFlag: # if user is modifying a point, set the altered field to 'y'
@@ -1050,8 +1049,8 @@ before you can deselect."
                                 + vlayerName + " is open in another program and then try again.")
                 self.activeVLayer.removeSelection(False) # false means do not emit signal
                 self.canvas.refresh()
-                if self.dlgDisplay and count == len(pastedFeatureIDS) - 1:
-                    self.dlgDisplay.close()
+                if self.dlgModifyInfo and count == len(pastedFeatureIDS) - 1:
+                    self.dlgModifyInfo.close()
                 continue
             else: #if user clicks "Cancel"
                 if modifyFlag:
@@ -1075,7 +1074,7 @@ want to stop pasting?"
                     self.copyFlag = False
                     if modifyFlag: 
                         self.mpActionModifyPoints.setDisabled(True)
-                        self.dlgDisplay.close()
+                        self.dlgModifyInfo.close()
                     else: self.mpActionPasteFeatures.setDisabled(True)
                     #self.mpAction
                     return 
@@ -1485,7 +1484,6 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             
             # Since we are loading a layer, enable the navigation map tools 
             self.mapToolGroup.setDisabled(False)
-            self.disableNonNavigationMapTools()
             # Disable (gray out) select tool actions if raster layer loaded.
             # Note that this tool is disabled in mainwindow.init() but enabled
             # whenever a vector layer is loaded while editing a scenario.
@@ -1570,7 +1568,8 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             
             # Enable map navigation tools
             self.mapToolGroup.setDisabled(False) # map tools can't be enabled if the group is off
-            self.disableNonNavigationMapTools()
+            # Select tool only enabled if in editMode
+            self.mpActionSelectFeatures.setDisabled(True)
             
             # We are changing the activeVLayer, so we need to handle select actions
             if self.editMode: 
@@ -1863,6 +1862,8 @@ choose 'Export Scenario' for this scenario in the future.")
         if self.dwRasterTable: self.dwRasterTable.close()
         self.setWindowTitle("Conservation Assessment and \
 Prioritization System (CAPS) Scenario Builder")
+        self.dlgDisplayIdentify = None
+        self.dlgModifyInfo = None
         self.scenarioFilePath = None
         self.scenarioInfo = None
         self.scenarioFileName = None
@@ -1884,7 +1885,6 @@ Prioritization System (CAPS) Scenario Builder")
         self.editMode = False 
         self.attrTable = None
         self.dwAttrTable = None
-        self.dlgDisplay = None
         self.currentBaseLayerId = None
         self.dwRasterTable = None
         self.activeVLayer = None
@@ -1893,6 +1893,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.provider = None
         self.geom = None
         self.layerColor = None
+        self.windowTitle = None
         self.mapToolGroup.setDisabled(True)
         #self.canvas.setExtent(self.extent)
         self.mpActionOpenVectorAttributeTable.setDisabled(True)
@@ -1905,8 +1906,7 @@ Prioritization System (CAPS) Scenario Builder")
 ############################################################################################
     ''' UTILITY METHODS '''
 ############################################################################################
- 
-        
+       
     def enablePointsOrLinesOrPolygons(self):
         if "base" in self.activeVLayer.name(): return
         if self.geom == 0:  #0 point, 1 line, 2 polygon
@@ -1953,7 +1953,7 @@ Prioritization System (CAPS) Scenario Builder")
         print "disableSelectActions()"
         
         self.canvas.unsetMapTool(self.toolSelect)
-        if self.activeVLayer: self.activeVLayer.removeSelection(False)
+        #if self.activeVLayer: self.activeVLayer.removeSelection(False)
         self.mpActionSelectFeatures.setChecked(False)
         self.mpActionDeselectFeatures.setDisabled(True)
         self.mpActionDeselectFeatures.setChecked(False)
@@ -2735,7 +2735,26 @@ For example. If you have chosen to edit 'dams,' then you can only " + text + " t
         print "The renderer name is: " + renderer.name()
         print "The renderer.selectionColor() is: " + renderer.selectionColor().name()
     
-    
+    def displayModifyPointsInformation(self, title, text):
+        ''' Display the information about the vector or raster '''
+        # debugging
+        print "identify.displayInformation()"
+        
+        title = QtCore.QString(title)
+        text = QtCore.QString(text)
+        
+        # See Main.mainwindow.openRasterCategoryTable() for a description of the following code: 
+        self.dlgModifyInfo = QtGui.QDockWidget(title, self.dlg)
+        self.dlgModifyInfo.setFloating(True)
+        self.dlgModifyInfo.setAllowedAreas(QtCore.Qt.NoDockWidgetArea)
+        self.dlgModifyInfo.setMinimumSize(QtCore.QSize(450, 300))
+        self.dlgModifyInfo.show()
+        self.textBrowserModifyInfo = QtGui.QTextBrowser()
+        self.textBrowserModifyInfo.setWordWrapMode(QtGui.QTextOption.NoWrap)
+        self.textBrowserModifyInfo.setFontPointSize(9.0)
+        self.textBrowserModifyInfo.setText(text)
+        self.dlgModifyInfo.setWidget(self.textBrowserModifyInfo)
+        
             
 #**************************************************************
     ''' Testing '''
