@@ -51,13 +51,15 @@ scenarioExportsPath = u"./Exported Scenarios/"
 ''' Field names, which appear in the editing layer attribute table, for each scenario edit type. '''     
 # To change the data users input into the application in the "Add Attributes" dialog,
 # a new field name for the editing shapefile attribute table must be inserted,
-# in the correct position, in the corresponding list here. 
+# in the correct position, in the corresponding list here. Each field name must be unique,
+# so I recommend staying with the convention of a letter and underscore preceding any
+# newly inserted field name.
 # Please note that you MUST NOT delete or change the list position of the id, 
 # altered, deleted or description field names. The values for these fields are added 
 # programmatically and depend on their positions in the list.
-inputFieldNames0 = ['cross_id', 'c_altered', 'c_deleted', 'c_aqua_scr', 'terr_scr', 'c_describe'] 
+inputFieldNames0 = ['cross_id', 'c_altered', 'c_deleted', 'c_aqua_scr', 'c_terr_scr', 'c_describe'] 
 inputFieldNames1 = ['dam_id', 'd_altered', 'd_deleted', 'd_aqua_scr', 'd_describe']
-inputFieldNames2 = ['wildlf_id', 'w_altered', 'w_deleted', 'terr_scr', 'w_describe']
+inputFieldNames2 = ['wildlf_id', 'w_altered', 'w_deleted', 'w_terr_scr', 'w_describe']
 inputFieldNames3 = ['restr_id', 'r_altered', 'r_deleted', 'r_rest_scr', 'r_describe']
 inputFieldNames4 = ['newrd_id', 'newrd_rate', 'nrd_class', 'nrd_descr']
 inputFieldNames5 = ['modrd_id', 'modrd_rate', 'nrd_class', 'mrd_descr']
@@ -147,13 +149,13 @@ scenarioEditTypesList = ["Culverts/bridges (points)", "Dams (points)",
 
 # The below are used in various places to check that correct layers are active for editing operations.
 # The spelling of these names can be changed, but not the number of them.
-pointBaseLayersBaseNames = ["base_crossings", "base_dams", "base_wildlife",
+pointBaseLayersBaseNames = ["base_culverts_bridges", "base_dams", "base_terrestrial_passage",
                              "base_tidal_restrictions"]
 lineBaseLayersBaseNames = ["base_traffic"]
 polygonBaseLayersBaseNames = ["base_traffic", "base_land"]
 
 # This is used to warn users of slow loading attribute tables.
-slowLoadingLayers = ["base_crossings"]
+slowLoadingLayers = ["base_culverts_bridges"]
 
 # names of just the editing layers (used in Main.legend.removeCurrentLayer()
 # and Main.mainwindow.deleteFeatures()).  These should not be changed unless
@@ -181,7 +183,7 @@ baseLayersChecked = ["base_towns"]
 # Adding a name to this list will hide (uncheck) that layer if not needed when opening a
 # new scenario edit type. 
 hideEditLayers = ["edit_scenario(points)", "edit_scenario(lines)",
-                       "edit_scenario(polygons)", "base_crossings", "base_dams",
-                        "base_wildlife", "base_tidal_restrictions", "base_traffic"]
+                       "edit_scenario(polygons)", "base_culverts_bridges", "base_dams",
+                        "base_terrestrial_passage", "base_tidal_restrictions", "base_traffic"]
 
 ############################################################################################

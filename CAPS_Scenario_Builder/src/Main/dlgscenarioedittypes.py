@@ -147,7 +147,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
    
         # Move the needed base layer to second in list, check and make visible
         # We do not want to change position or visibility of the orienting base layer, "base_land"
-        if self.baseLayerName != "base_land": self.moveBaseLayer(legend)
+        if self.baseLayerName != config.polygonBaseLayersBaseNames[1]: self.moveBaseLayer(legend)
       
         # I like the towns layer to be selected so if it is open, I do it here.
         for checked in config.baseLayersChecked:

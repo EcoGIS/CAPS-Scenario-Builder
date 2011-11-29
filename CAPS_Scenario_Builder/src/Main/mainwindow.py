@@ -716,8 +716,9 @@ in the Exported Scenarios folder." )
         else: # action deselected (state = False)
             # debugging
             print "selectFeatures() state is false"
-            # select action is not selected so disable these tools
-            self.disableSelectActions()  
+            # select action is not selected so disable the select sub actions if no selections have been made
+            if len(self.activeVLayer.selectedFeatures()) == 0:
+                self.disableSelectActions()  
  
     def deselectFeatures(self):
         ''' Slot to clear the selected features without deleting them '''
@@ -820,8 +821,12 @@ before you can deselect."
             QtGui.QMessageBox.information(self, title, text, QtGui.QMessageBox.Ok)
             return
         
-        # if the user is deleting baselayer features
+        # check if user is trying to delete from an orientingBaseLayer (i.e. base_towns)
         name = self.activeVLayer.name()
+        if name in config.orientingVectorLayers:
+            QtGui.QMessageBox.warning(self, "Deletion Error", "You cannot delete features from this base layer." )
+            
+        # if the user is deleting baselayer features
         type = self.scenarioEditType
         if name in config.pointBaseLayersBaseNames:
             title = "Deletion Error:"
@@ -849,16 +854,6 @@ before you can deselect."
             title = "Delete Selected Features"
             text = "Delete " + unicode(count) + " feature(s)?" 
         
-        '''if sys.platform == 'win32':    
-            # process name = qgis.exe
-            for line in os.popen("TASKLIST"):
-                fields  = line.split()
-                imageName = fields[0]
-                if imageName.find('qgis.exe') > 0:
-                    text = "File Warning: Please make sure that " + vfileName + " is not open \
-            in the QGIS program before you click OK!\n Delete " + unicode(count) + " feature(s)?"
-                else: text = "Delete " + unicode(count) + " feature(s)?"'''
-            
         # Now check with the user about deleting the features 
         reply = QtGui.QMessageBox.question(self, title, text, QtGui.QMessageBox.Cancel|QtGui.QMessageBox.Ok)
         if reply == QtGui.QMessageBox.Ok:
@@ -1164,6 +1159,8 @@ before you can make edits.  Please save the current scenario or open an existing
             
             # unset the select tool
             self.mpActionSelectFeatures.setDisabled(True)
+            # remove any selections
+            if self.activeVLayer: self.activeVLayer.removeSelection(False)
             self.disableSelectActions()
             
             # unset the paste action (only active in edit mode)
@@ -1570,14 +1567,14 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             self.mapToolGroup.setDisabled(False) # map tools can't be enabled if the group is off
             # Select tool only enabled if in editMode
             self.mpActionSelectFeatures.setDisabled(True)
+            self.disableSelectActions()
             
-            # We are changing the activeVLayer, so we need to handle select actions
+            # We are changing the activeVLayer, so we need to handle editMode
             if self.editMode: 
                 self.mpActionSelectFeatures.setDisabled(False) # select always enabled in edit mode
-                self.disableSelectActions() # if just in edit mode, select sub actions should be disabled
                 if self.mpActionSelectFeatures.isChecked():
                     # The user has checked Select Features, so leave select features activated.
-                    #self.mpActionSelectFeatures.setChecked(True)
+                    # Also activate the select sub actions.
                     # Note that "Modify Selected" will only be enabled if the active layer
                     # is one of the point base layers
                     self.enableSelectSubActions() # enable deselect, modify, delete and copy features
@@ -1587,9 +1584,6 @@ attribute table is very large and can take a few seconds to load.  Do you want t
                     # is an editable point base layer.
                     self.mpActionSelectFeatures.setChecked(True)
                     self.enableSelectSubActions()
-            else: # not in edit mode so disable "Select Features"
-                self.mpActionSelectFeatures.setDisabled(True)
-                self.disableSelectActions()
             
             # new active vector layer loading so disable previous edit actions (these are mapToolGroup actions)
             self.disableEditActions() # actions are add points, lines, polygons
@@ -1676,7 +1670,7 @@ before taking another action!")
         
         Actions that call this method are: addVector, addRaster, removeCurrentLayer, 
         legendMousePress, startingEditing, stoppingEditing, appClosing, newScenario, 
-        openScenario, saveScenario, saveScenarioAs, exportScenario
+        openScenario, 
         
         '''
   
@@ -1685,8 +1679,11 @@ before taking another action!")
         # on those actions. Also we should check for unsaved edits when starting/stopping 
         # editing, on all scenario menu actions, or on closing the app.  In other words
         # we check for unsaved edits on all callingActions, but that behavior can be changed here. 
+        list = ["startingEditing", "stoppingEditing", "appClosing", "newScenario", "openScenario", "saveScenario", 
+        "saveScenarioAs", "exportScenario"]
         if self.editDirty:
-            if self.chkEditsState(callingAction) == "Cancel": return "Cancel"
+            if callingAction in list:
+                if self.chkEditsState(callingAction) == "Cancel": return "Cancel"
 
         # We only want to check for a dirty scenario when:
         # creating a new scenario, opening a scenario, 
