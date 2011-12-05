@@ -1,4 +1,4 @@
-#Fri Nov 25 15:50:27 EST 2011
+#Sun Dec 04 18:53:43 EST 2011
 eclipse.preferences.version=1
 encoding//src/Main/dlgscenarioedittypes.py=utf-8
 encoding//src/Main/dlgscenarioedittypes_ui.py=utf-8
@@ -14,3 +14,4 @@ encoding//src/Tools/mapcoords.py=utf-8
 encoding//src/Tools/selectfeatures.py=utf-8
 encoding//src/Tools/shared.py=utf-8
 encoding//src/config.py=utf-8
+encoding//src/make_setup.py=utf-8

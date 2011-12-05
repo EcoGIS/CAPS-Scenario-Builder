@@ -59,6 +59,8 @@ import Tools.shared
 from Main.dlgscenarioedittypes import DlgScenarioEditTypes
 import config
 
+myvar = "hello"
+
 class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def __init__(self, splash):
         QtGui.QMainWindow.__init__(self)
@@ -67,7 +69,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         # get the splash screen
         self.splash = splash
-
+        
         # LISTS
         self.originalScenarioLayers = []
         self.currentLayers = []
@@ -927,7 +929,12 @@ before you can deselect."
                     qgsPoint = feat.geometry().asPoint()
                     id = feat.id()
                     print "The point is " + str(qgsPoint) 
-                    if not shared.checkConstraints(self, qgsPoint, id): return
+                    if not shared.checkConstraints(self, qgsPoint, id): 
+                        # check constraints failed so undo the copy and disable the paste action
+                        self.copiedFeats = None
+                        self.copyFlag = False
+                        self.mpActionPasteFeatures.setDisabled(True)
+                        return
 
         # Now that we have good features and a correct layer to paste to:
         # Set self.originalFeats in case the user wants to delete pasted features
@@ -1804,7 +1811,7 @@ before taking another action!")
             # debugging
             print "msgBoxYesDiscardCancel = Discard"
             if callingAction == "exportScenario":
-                QtGui.QMessageBox.warning(self, "You must save the scenario before you can \
+                QtGui.QMessageBox.information(self, "Export Scenario Information",  "You must save the scenario before you can \
 you can export it. Please click OK and try again if you still wish to export the scenario.")
                 return "Cancel"
             
