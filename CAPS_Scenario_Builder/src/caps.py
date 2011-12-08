@@ -51,6 +51,7 @@ __version__ = "0.8"
 # Path to local QGIS install
 #qgis_prefix = "C:\\Program Files\\Quantum GIS Copiapo\\apps\\qgis"
 qgis_prefix = os.getenv("qgis_prefix")
+#qgis_prefix = "."
 
 # the below does not work on Windows in any variation
 #QgsApplication.setPrefixPath("C:\Program Files\Quantum GIS Copiapo\apps\qgis", True)
@@ -58,13 +59,13 @@ qgis_prefix = os.getenv("qgis_prefix")
 # Main entry to program.  Set up the main app and create a new window.
 def main(argv):
     # write errors to a log file
-    try:
+    '''try:
+        sys.stderr = open('error.log', 'w')
         sys.stdout = open('output.log', 'w')
-        sys.stdout = open('output.log', 'a')
     except (IOError, OSError), e:
-            error = unicode(e)
-            print "output.log write error " + error
-            '''MessageBox(0, "This is an error message related to writing debugging files \
+        error = unicode(e)
+        #print "output.log write error " + error
+        MessageBox(0, "This is an error message related to writing debugging files \
 for the CAPS Scenario Builder Beta version.  The error is: " + error, "Debug Error")'''
 
     # create Qt application

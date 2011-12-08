@@ -18,18 +18,18 @@
 # 
 # This file is part of CAPS.
 
-#CAPS is free software: you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation, either version 3 of the License, or
-#(at your option) any later version.
+# CAPS is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-#CAPS is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# CAPS is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-#You should have received a copy of the GNU General Public License
-#along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+# You should have received a copy of the GNU General Public License
+# along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
 # 
 #---------------------------------------------------------------------
 # general python built_in imports
@@ -145,6 +145,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # set the QDockWidget that holds the legend
         self.legendDock = QtGui.QDockWidget("Layers", self)
         self.legendDock.setObjectName("legend")
+        self.legendDock.setStyleSheet("background-color: white")
         # without "NoDockWidgetFeatures, the user could close the legend with no way to reopen it
         self.legendDock.setFeatures(self.legendDock.NoDockWidgetFeatures)
         self.legendDock.setContentsMargins (1, 1, 1, 1)
@@ -155,6 +156,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.legendDock.setWidget(self.legend)
         # add the dock widget to the main window and show it
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.legendDock)
+        self.legendDock.show()
         
         # now that we have self.legend, get active layer changed signal
         # connect the Python 'short circuit' signal from legend.py to the handler
@@ -218,6 +220,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.mapToolGroup.addAction(self.mpActionPan)
         self.mapToolGroup.addAction(self.mpActionZoomIn)
         self.mapToolGroup.addAction(self.mpActionZoomOut)
+
         
         # The following actions are usually disabled (8 actions of 26 total)
         self.mpActionDeselectFeatures.setDisabled(True)
@@ -233,17 +236,40 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # New Scenario, Open Scenario, Save Scenario, Save Scenario As, Edit Scenario
         # Add Vector, Add Raster and Open Raster Category Table, Exit and Zoom to Map Extent are on 
         self.mapToolGroup.setDisabled(True)
-
-        # set the map coordinates display in the status bar
-        self.mapcoords = MapCoords(self)
         
         # close splash screen
         time.sleep(2)
         self.splash.hide()
         
+        # make the mainwindow paint properly
+        self.menubar.show()
+        self.toolBar.show()
+        self.statusBar.show()
+        self.setVisible(True)
+        self.update()
+        self.activateWindow()
+        self.showMaximized()
+        
+        # set the map coordinates display in the status bar
+        self.mapcoords = MapCoords(self)
+        #time.sleep(4)
+
         # load the orienting layers
         self.openOrientingLayers()
-
+        #time.sleep(4)
+        
+        '''self.resize(400, 300)
+        self.repaint()
+        time.sleep(1)
+        self.resize(500, 375)
+        self.repaint()
+        time.sleep(1)
+        self.resize(600, 450)
+        self.repaint()
+        time.sleep(1)
+        self.resize(800, 600)
+        self.repaint()'''
+        
         # The V2 renderers get the selection color from the old renderer.
         # This sets the selection color once, when the app starts
         self.setSelectionColor()
@@ -288,7 +314,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
      
         # open file dialog to find scenarios to open
         qd = QtGui.QFileDialog()
-        filterString = QtCore.QString("CAPS Scenario (*.cap)\nAll Files(*)")
+        filterString = QtCore.QString("CAPS Scenario (*.cap)") #\nAll Files(*)")
         # get the path to the directory for the saved file using Python
         dir = QtCore.QString(os.path.dirname(config.scenariosPath))
         # change QString to unicode so Python can slice it for the directory name
@@ -346,7 +372,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 item = items[0]
                 item.setCheckState(0, QtCore.Qt.Checked)
  
-         # give the user some file info
+        # give the user some file info
         self.setWindowTitle("Conservation Assessment and \
 Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
         
@@ -416,21 +442,40 @@ scenario file is open in another program.")
         ''' GET THE FILE PATH THE USER CHOOSES '''
         
         qd = QtGui.QFileDialog()
-        filterString = QtCore.QString("CAPS Scenario (*.cap)\nAll Files(*)")
-        # get the path to the directory for the saved file (use Python)
-        dir = os.path.dirname(config.scenariosPath)
+        qd.setDefaultSuffix(QtCore.QString(".cap"))
+        filterString = QtCore.QString("CAPS Scenario (*.cap)") #\nAll Files(*)")
+        # get the path to the default scenario's directory (use Python)
+        defaultDir = config.scenariosPath
         # Get the new file path and change the QString to unicode so that Python 
         # can slice it for the directory name. 
         scenarioFilePath = unicode(qd.getSaveFileName(self, QtCore.QString
-                                    ("Save scenario as ..."), dir, filterString))
+                                    ("Save scenario as ..."), defaultDir, filterString))
         
         # debugging
         print "scenarioFilePath is: " + scenarioFilePath
-        
+        print "defaultDir is " + defaultDir
+
         # Check for cancel
         if len(scenarioFilePath) == 0: return "Cancel"
- 
-        # We have a new file path. We start by storing the old path (if one exists) for use
+        
+        # check for an incorrect directory or file extension
+        dirInfo = QtCore.QFileInfo(QtCore.QString(defaultDir))
+        defaultScenarioDirectoryPath = dirInfo.absoluteFilePath()
+        print "defaultScenarioDirectoryPath is " + defaultScenarioDirectoryPath
+        scenarioFileInfo = QtCore.QFileInfo(QtCore.QString(scenarioFilePath))
+        scenarioDirectoryPath = scenarioFileInfo.absolutePath()
+        fileName = unicode(scenarioFileInfo.fileName())
+        print "The scenarioDirectoryPath is " + scenarioDirectoryPath
+        print "The fileName is " + fileName
+
+        if defaultScenarioDirectoryPath != scenarioDirectoryPath or not fileName.endswith(".cap"):
+            QtGui.QMessageBox.warning(self, "File Save Error:", "Scenarios must be saved in the 'Scenarios' directory, \
+which the 'Save Scenario as...' dialog opens by default.  Also, the file name must end with the extension \
+'.caps'. If you save a scenario name without adding an extension, the file dialog will add the '.caps' extension for you. \n\n\
+Your scenario was not saved.  Please try again.")
+            return
+        
+        # We have a new valid file path. We start by storing the old path (if one exists) for use
         # below and storing the new file path for use in saveScenario()
         oldScenarioFilePath = self.scenarioFilePath
         oldScenarioInfo = self.scenarioInfo
@@ -1150,7 +1195,7 @@ before you can make edits.  Please save the current scenario or open an existing
             
             # add scenarioEditType to statusbar
             self.editTypeLabel = QtGui.QLabel(self.statusBar)
-            capture_string = QtCore.QString("The current scenario edit type is:  '" 
+            capture_string = QtCore.QString("The scenario edit type is:  '" 
                                                                     + self.scenarioEditType + "'")
             self.editTypeLabel.setText(capture_string)
             self.statusBar.insertPermanentWidget(0, self.editTypeLabel)        
@@ -2188,7 +2233,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         # create the file info object to get info about the vfile
         info = QtCore.QFileInfo(QtCore.QString(vfilePath))
         #create the layer
-        #QFileInfo.completeBaseName() returns just the filename
+        #QFileInfo.completeBaseName() returns just the filename without the extension
         try:
             vlayer = QgsVectorLayer(QtCore.QString(vfilePath), info.completeBaseName(), "ogr")       
         except (IOError, OSError), e:

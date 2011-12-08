@@ -5,9 +5,9 @@
         <units>degrees</units>
         <extent>
             <xmin>27000.000000</xmin>
-            <ymin>734401.283317</ymin>
+            <ymin>725879.455910</ymin>
             <xmax>336500.000000</xmax>
-            <ymax>1010598.716683</ymax>
+            <ymax>1019120.544090</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
@@ -25,7 +25,7 @@
     </mapcanvas>
     <projectlayers layercount="5">
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>USGS20111204114819002</id>
+            <id>USGS20111207215238090</id>
             <datasource>./base_layers/USGS.SID</datasource>
             <layername>USGS</layername>
             <srs>
@@ -81,7 +81,7 @@
             </rasterproperties>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>base_land20111204114819151</id>
+            <id>base_land20111207215238218</id>
             <datasource>./base_layers/base_land.tif</datasource>
             <layername>base_land</layername>
             <srs>
@@ -388,7 +388,7 @@
             </rasterproperties>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>base_streams20111204114819177</id>
+            <id>base_streams20111207215238275</id>
             <datasource>./base_layers/base_streams.tif</datasource>
             <layername>base_streams</layername>
             <srs>
@@ -695,7 +695,7 @@
             </rasterproperties>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0">
-            <id>base_towns20111204114819254</id>
+            <id>base_towns20111207215238324</id>
             <datasource>./base_layers/base_towns.shp</datasource>
             <layername>base_towns</layername>
             <srs>
@@ -758,7 +758,7 @@
             <attributeactions/>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>base_traffic20111204114819224</id>
+            <id>base_traffic20111207215238301</id>
             <datasource>./base_layers/base_traffic.tif</datasource>
             <layername>base_traffic</layername>
             <srs>

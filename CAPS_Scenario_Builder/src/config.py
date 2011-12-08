@@ -44,7 +44,7 @@ various scenario edit types.
 # the application installer. Sophisticated users could move these folders and change
 # the paths to the new locations here.  The paths can be changed to absolute paths if needed.
 baseLayersPath = u"./base_layers/"
-scenariosPath = u"./scenarios/"
+scenariosPath = u"./Scenarios/"
 scenarioExportsPath = u"./Exported Scenarios/"
 
 

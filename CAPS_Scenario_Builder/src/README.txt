@@ -4,7 +4,7 @@ Please report any issues or bugs at.
 
 https://github.com/EcoGIS/CAPS-Scenario-Builder/issues/1
 
-Please, make sure to include the Windows operating system you are using and a detailed description of the issue so that I can duplicate it.
+Please, make sure to include the Windows operating system you are using (including service pack number) and a detailed description of the issue so that I can duplicate it.
 
 Some terminology that may make descriptions easier:
 
@@ -37,4 +37,4 @@ The "Export Scenario" exports a scenario's changes in csv file format.
 etc.....
 
 Thanks,
-Bob Englsih
+Bob English
