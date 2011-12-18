@@ -2600,7 +2600,7 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             else: symbolLayer.setColor(QtGui.QColor("red"))
             # create a new symbol layer for the delete symbol (i.e. a red cross)
             newSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
-            map1 = {"name": "cross", "color": "DEFAULT_SIMPLEMARKER_COLOR", 
+            map1 = {"name": "cross", "color": "255,0,0,255", 
                    "color_border": "255,0,0,255", "size": "5.0", "angle": "45.0"}
             deleteSymbol = newSymbol.createSimple(map1)
             deleteLayer = deleteSymbol.symbolLayer(0)
