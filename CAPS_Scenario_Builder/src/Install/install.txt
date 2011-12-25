@@ -13,7 +13,7 @@ any platform.  The information below might save some time.
 2) If you don't have an existing installation of QGIS Wroclaw,
    install using QGIS-1.7.1, which can be found at http://qgis.org/downloads/
    
-3) The file CAPS_wroclaw.bat is a Windows batch file that gives pointers to the paths   of files needed to run CAPS Scenario Builder. You will have to set up the environment properly for your system.	
+3) The file CAPS_wroclaw.bat is a Windows batch file that indicates the paths of files needed to run CAPS Scenario Builder. You will have to set up the environment properly for your system.	
    
 Thanks for your interest!
 Bob English
