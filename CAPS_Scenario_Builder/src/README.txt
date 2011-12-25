@@ -1,4 +1,4 @@
- This is the Beta version of CAPS_Scenario_Builder and is intended to be used by the CAPS project team members for purposes of testing and debugging, but anyone is welcome to use the program and submit issues. 
+This is the Beta version of CAPS_Scenario_Builder and is intended to be used by the CAPS project team members for purposes of testing and debugging, but anyone is welcome to use the program and submit issues. 
 ------------------------------------------------------------------------------- 
 Please report any issues or bugs at.  
 
