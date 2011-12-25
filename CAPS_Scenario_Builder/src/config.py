@@ -143,7 +143,7 @@ editPolygonsFields = inputFieldNames5 + inputFieldNames6 # 7 fields
 # Adding a value here will NOT create a new scenario type complete with base layers
 # and editing shapefile fields.
 scenarioEditTypesList = ["Culverts/bridges (points)", "Dams (points)",  
-                          "Terrestrial passage structures (points)", "Tidal restriction (points)",
+                          "Terrestrial passage structures (points)", "Tidal restrictions (points)",
                           "Add roads (lines)", "Modify roads (polygons)",        
                           "Land cover change (polygons)"]
 

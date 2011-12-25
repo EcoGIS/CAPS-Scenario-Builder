@@ -360,7 +360,7 @@ class Legend( QtGui.QTreeWidget ):
         name = self.currentItem().canvasLayer.layer().name()
         if name in config.editLayersBaseNames:
             reply = QtGui.QMessageBox.warning(self, "Warning!", "Removing '" + name + "' \
-from the legend will cause that file and any 'Export Scenario' file to be deleted from \
+from the legend will cause all that layer's files and any associated 'Export Scenario' file to be deleted from \
 the file system. All changes to these files will be lost. Do you want to delete this file(s)?", 
                                                         QtGui.QMessageBox.No|QtGui.QMessageBox.Yes)
             if reply == QtGui.QMessageBox.No: return # user canceled so don't remove layer
