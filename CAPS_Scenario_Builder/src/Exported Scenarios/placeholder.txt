@@ -1,0 +1,1 @@
+This is the directory where exported scenario files are stored for CAPS Scenario Builder.
