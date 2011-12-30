@@ -49,8 +49,8 @@ from Main.mainwindow import MainWindow
 __version__ = "0.8"
 
 # Path to local QGIS install
-#qgis_prefix = "C:\\Program Files\\Quantum GIS Copiapo\\apps\\qgis"
-qgis_prefix = os.getenv("qgis_prefix")
+qgis_prefix = "C:\\Program Files (x86)\\Quantum GIS Wroclaw\\apps\\qgis"
+#qgis_prefix = os.getenv("qgis_prefix")
 #qgis_prefix = "."
 
 # the below does not work on Windows in any variation

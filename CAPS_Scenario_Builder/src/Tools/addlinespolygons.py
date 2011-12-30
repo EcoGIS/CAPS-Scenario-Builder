@@ -68,7 +68,7 @@ class AddLinesPolygons(QgsMapTool):
 
         # set the current geometry and some variables for the QgsRubberBand
         if self.mainwindow.geom:
-            if self.mainwindow.geom == 1: self.geom = False# line
+            if self.mainwindow.geom == 1: self.geom = False # line
             else: self.geom = True # polygon
         
         # check if the editing layer is selected but only on the first click
@@ -84,13 +84,20 @@ class AddLinesPolygons(QgsMapTool):
             if (self.started == False) and (event.button()== QtCore.Qt.RightButton):
                 # We have a right button but have not started a poly... just return
                 return
-            # mouse is down, before release initialize rubber band
+            # mouse is released so initialize rubber band
             if self.started==False:
                 # Initialize Rubber Band
                 self.rubberBand = QgsRubberBand(self.canvas, self.geom)
                 self.rubberBand.setWidth(.6)
                 self.rubberBand.show()
                 self.numberOfPoints = 0
+                            
+                ####################
+                #This is the first point of a new road, so add code for snap to new or existing roads here.
+                
+                
+                
+                ####################
 
             # getCoordinateTransform returns a QgsMapToPixel object
             # which transforms between device coordinates and map coordinates 
@@ -103,12 +110,12 @@ class AddLinesPolygons(QgsMapTool):
             self.rubberBand.addPoint(qgsPoint)
             self.started=True
             self.numberOfPoints = self.numberOfPoints + 1
-            if self.geom:
+            if self.geom: # polygon
                 if (event.button() == QtCore.Qt.RightButton) and (self.numberOfPoints > 2):
                     #self.down=False
                     #self.started=False
                     self.getNewAttributes()
-            else: 
+            else: # line
                 if (event.button() == QtCore.Qt.RightButton) and (self.numberOfPoints > 1):
                     #self.down=False
                     #self.started=False

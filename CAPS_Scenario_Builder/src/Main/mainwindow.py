@@ -59,7 +59,6 @@ import Tools.shared
 from Main.dlgscenarioedittypes import DlgScenarioEditTypes
 import config
 
-myvar = "hello"
 
 class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def __init__(self, splash):
@@ -139,7 +138,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.gridlayout.addWidget(self.canvas)
         
         self.mapRenderer = self.canvas.mapRenderer()
-        self.mapRenderer.setProjectionsEnabled(True)
+        # False disables "on the fly" projections; True enables them
+        self.mapRenderer.setProjectionsEnabled(False)
         self.mapRenderer.setDestinationCrs(self.crs)
 
         # set the QDockWidget that holds the legend
@@ -258,18 +258,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.openOrientingLayers()
         #time.sleep(4)
         
-        '''self.resize(400, 300)
-        self.repaint()
-        time.sleep(1)
-        self.resize(500, 375)
-        self.repaint()
-        time.sleep(1)
-        self.resize(600, 450)
-        self.repaint()
-        time.sleep(1)
-        self.resize(800, 600)
-        self.repaint()'''
-        
+
         # The V2 renderers get the selection color from the old renderer.
         # This sets the selection color once, when the app starts
         self.setSelectionColor()
@@ -468,7 +457,7 @@ scenario file is open in another program.")
         print "The scenarioDirectoryPath is " + scenarioDirectoryPath
         print "The fileName is " + fileName
 
-        if defaultScenarioDirectoryPath != scenarioDirectoryPath or not fileName.endswith(".cap"):
+        if scenarioDirectoryPath not in defaultScenarioDirectoryPath or not fileName.endswith(".cap"):
             QtGui.QMessageBox.warning(self, "File Save Error:", "Scenarios must be saved in the 'Scenarios' directory, \
 which the 'Save Scenario as...' dialog opens by default.  Also, the file name must end with the extension \
 '.cap'. If you save a scenario name without adding an extension, the file dialog will add the '.cap' extension for you. \n\n\
@@ -626,6 +615,7 @@ was not written.  Please check that a file with the same name is not open in ano
 Please choose 'Edit Scenario' from the Edit menu, make some edits, and then try again." )
             return
 
+        # delete any old export files before writing a new one
         self.deleteExportScenarioFile()
 
         # Get a count of the number of editing shapefiles for use below.
@@ -704,7 +694,9 @@ make some edits to your scenario and try again.")
 csv file '" + csvFileName + " could not be deleted.  Please check if the file is open in \
 another program and then try again.")
                     return
-
+                
+            vlayer = self.roundGeometryValues(vlayer)
+           
             # Create an empty datasource and errorMessage option for the 
             # QgsVectorFileWriter parameters list
             datasourceOptions = QtCore.QStringList(QtCore.QString())
@@ -835,11 +827,12 @@ before you can deselect."
         # While we have a handle to the base layer, hide it so the user can see the pasted points.
         self.legend.currentItem().setCheckState(0, QtCore.Qt.Unchecked)
         
-        # Open "edit_scenario(points).shp if it is not open. If open, make it the activeLayer
+        # Warn if "edit_scenario(points).shp if it is not open. If open, make it the activeLayer
         items = self.legend.findItems(config.editLayersBaseNames[0], QtCore.Qt.MatchFixedString, 0)
         if len(items) == 0:
-            vfilePath = config.baseLayersPath + config.editLayersBaseNames[0] + ".shp"
-            self.openVectorLayer(vfilePath)
+            QtGui.QMessageBox.warning(self, "Modify Selected Error", "The 'edit_scenario(points) layer must be open \
+for you to modify point features.  Please click the 'Edit Scenario' button twice, choose the scenario edit type that has \
+the features you wish to modify, and then try again.")
         else: 
             self.legend.setCurrentItem(items[0])
             self.legend.currentItem().setCheckState(0, QtCore.Qt.Checked)
@@ -1042,9 +1035,22 @@ before you can deselect."
         reply = None
         for count, id in enumerate(pastedFeatureIDS):
             print "feat.id is " + str(id)
-            #select the feature
+            # select the feature
             self.activeVLayer.setSelectedFeatures( [id] )
             self.canvas.zoomToSelected(self.activeVLayer)
+            # make the extents a minimum of 500 meters across
+            rect = self.canvas.extent()
+            print "The original paste extents are:"
+            print ("(" + str(rect.xMinimum()) + ", " + str(rect.yMinimum()) + ", " + 
+                     str(rect.xMaximum()) + ", " + str(rect.yMaximum()) + ")")
+            if rect.width() < 500 or rect.height < 500:
+                centerPointX = rect.center().x() 
+                rect.setXMinimum(centerPointX - 250)
+                rect.setXMaximum(centerPointX + 250)
+                print "The adjusted paste extents are:"
+                print ("(" + str(rect.xMinimum()) + ", " + str(rect.yMinimum()) + ", " + 
+                     str(rect.xMaximum()) + ", " + str(rect.yMaximum()) + ")")
+                self.canvas.setExtent(rect)
             self.canvas.refresh()
             self.dlg = DlgAddAttributes(self)
             self.dlg.setGeometry(0, 500, 200, 200)
@@ -1976,14 +1982,14 @@ Prioritization System (CAPS) Scenario Builder")
         self.mpActionDeselectFeatures.setDisabled(False)
         self.mpActionDeleteFeatures.setDisabled(False)
         
-    def disableNonNavigationMapTools(self):
+    '''def disableNonNavigationMapTools(self):
         # debugging
         print "mainwindow.enableLayerNavigationMapTools()"
         
         self.mpActionSelectFeatures.setDisabled(True)
         self.mpActionAddPoints.setDisabled(True)
         self.mpActionAddLines.setDisabled(True)
-        self.mpActionAddPolygons.setDisabled(True)
+        self.mpActionAddPolygons.setDisabled(True)'''
    
     def disableEditActions(self):
         # debugging
@@ -2071,8 +2077,6 @@ Prioritization System (CAPS) Scenario Builder")
         for name in currentLayersNames: print name
         
         return currentLayersNames
-        
-        
         
     def getLayerFromName(self, layerName):
         # debugging
@@ -2284,27 +2288,43 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         ''' Open orienting layers when the app is started '''
         path = config.baseLayersPath
         
+        # debugging
         info = QtCore.QFileInfo(QtCore.QString(path))
         path2 = info.absolutePath()
-        print "The path is " + path
-        print "The path is " + path2
+        path3 = info.absoluteFilePath()
+        path4 = info.canonicalFilePath()
+        print "The config path is " + path
+        print "The absolutePath of config is " + path2
+        print "The absoluteFilePath of config is " + path3
+        print "The canonicalFilePath of config is " + path4
+        
         vlayers = config.orientingVectorLayers
         rlayers = config.orientingRasterLayers
-
-        # layers opened first will be on the bottom
+        # layers opened first will be on the bottom of the layer list panel
         for rlayer in rlayers:
             tempPath = None
             tempPath = path + rlayer
-            info = QtCore.QFileInfo(QtCore.QString(tempPath))
-            print "The path is " + info.absoluteFilePath()
+            # QGIS is not interpreting ./ correctly on my new computer.  When the tempPath = ./base_layers/someraster.tif
+            # QGIS writes ./base_layers/someraster.tif to the scenario file (i.e. the '.cap' file).  When QGIS opens the
+            # project file, it interprets ./ to be the "Scenarios" directory where the .cap file is located rather than the
+            # program directory where the base_files are located. This is corrected when the raster files are opened using
+            # absolute file path.  In that case, QGIS writes '../' to the scenario file and layers open properly.  The two
+            # lies below convert the relative paths to absolute paths so that config.baseLayersPath can remain "./base_layers/"
+            # If there are problems with the Windows installer, I could convert all paths to absolute paths to solve the problem. 
+            #info = QtCore.QFileInfo(QtCore.QString(tempPath))
+            #tempPath = info.absoluteFilePath()
+            print "The tempPath is " + tempPath
+            #print "The absolute file path is " + info.absoluteFilePath()
             self.openingOrientingLayers = True
             self.openRasterLayer(tempPath)
  
         for vlayer in vlayers:
             tempPath = None
             tempPath = path + vlayer
-            info = QtCore.QFileInfo(QtCore.QString(tempPath))
-            print "The path is " + info.absoluteFilePath()
+            #info = QtCore.QFileInfo(QtCore.QString(tempPath))
+            #tempPath = info.absoluteFilePath()
+            print "The tempPath is " + tempPath
+            #print "The absolute file path is " + info.absoluteFilePath()
             self.openingOrientingLayers = True
             self.openVectorLayer(tempPath)
         
@@ -2346,16 +2366,17 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             item = legend.findItems(orientingLayerName, 
                                           QtCore.Qt.MatchFixedString, 0)
             print "length of item list is " + str(len(item))
-            itemToMove = item[0]
-            print "is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
-            print "item to move is " + itemToMove.text(0)
-            position = numLegendLayers - (oRLayers.index(orientingLayer) + 1) # itemToMove is the base layer
-            print "r position is " + str(position)
-            itemToMove.storeAppearanceSettings() # Store settings 
-            legend.takeTopLevelItem(legend.indexOfTopLevelItem(itemToMove))
-            legend.insertTopLevelItem(position, itemToMove)
-            legend.insertTopLevelItem(1, itemToMove)
-            itemToMove.restoreAppearanceSettings()
+            if len(item) != 0:
+                itemToMove = item[0]
+                print "is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
+                print "item to move is " + itemToMove.text(0)
+                position = numLegendLayers - (oRLayers.index(orientingLayer) + 1) # itemToMove is the base layer
+                print "r position is " + str(position)
+                itemToMove.storeAppearanceSettings() # Store settings 
+                legend.takeTopLevelItem(legend.indexOfTopLevelItem(itemToMove))
+                legend.insertTopLevelItem(position, itemToMove)
+                legend.insertTopLevelItem(1, itemToMove)
+                itemToMove.restoreAppearanceSettings()
 
         # then load the vector layers
         for orientingLayer in oVLayers:
@@ -2365,16 +2386,17 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             item = legend.findItems(orientingLayerName, 
                                           QtCore.Qt.MatchFixedString, 0)
             print "length of item list is " + str(len(item))
-            itemToMove = item[0]
-            print str(legend.isLegendLayer(itemToMove))
-            print "item to move is " + itemToMove.text(0)
-            position = (numLegendLayers - (oVLayers.index(orientingLayer)
-                                                       + (len(oRLayers) + 1)))
-            print "v position is " + str(position)
-            itemToMove.storeAppearanceSettings() # Store settings 
-            legend.takeTopLevelItem(legend.indexOfTopLevelItem(itemToMove))
-            legend.insertTopLevelItem(position, itemToMove)
-            itemToMove.restoreAppearanceSettings()
+            if len(item) != 0:
+                itemToMove = item[0]
+                print str(legend.isLegendLayer(itemToMove))
+                print "item to move is " + itemToMove.text(0)
+                position = (numLegendLayers - (oVLayers.index(orientingLayer)
+                                                           + (len(oRLayers) + 1)))
+                print "v position is " + str(position)
+                itemToMove.storeAppearanceSettings() # Store settings 
+                legend.takeTopLevelItem(legend.indexOfTopLevelItem(itemToMove))
+                legend.insertTopLevelItem(position, itemToMove)
+                itemToMove.restoreAppearanceSettings()
                 
     def setExtents(self):
         ''' Empty editing shapefiles do not have extents. We need to set extents often. '''
@@ -2462,10 +2484,10 @@ the appropriate scenario edit type, and try again.")
         print "inputFieldNames are:"
         print inputFieldNames
 
-        # Simply add an id value and set the altered field to n and the deletion field to 'y' 
+        # get a list of all the edit fields for the geometry type associated with the deleted features 
         editFields = self.getEditFields()
         a = {} # Python dictionary of attributes for the current editing layer
- 
+        # Simply add an id value and set the altered field to n and the deletion field to 'y'
         feat = QgsFeature()
         for feat in self.copiedFeats:
             subListCount = 1 # this keeps track of where we are in the inputFieldNames list
@@ -2507,7 +2529,7 @@ the appropriate scenario edit type, and try again.")
                 QtGui.QMessageBox.warning(self, "Failed to paste feature(s)", "Please check if "
                                  + vlayerName + " is open in another program and then try again.")    
         
-        # reset the id numbers
+        # reorder the id numbers
         shared.resetIdNumbers(self.provider, self.geom)
          
         # Set the editDirty flag so that the user will be prompted to save edits or not.  
@@ -2803,8 +2825,41 @@ For example. If you have chosen to edit 'dams,' then you can only " + text + " t
         self.textBrowserModifyInfo.setFontPointSize(9.0)
         self.textBrowserModifyInfo.setText(text)
         self.dlgModifyInfo.setWidget(self.textBrowserModifyInfo)
+    
+    def roundGeometryValues(self, vlayer):
+        ''' Rounds geometry values of editing layers just before converting to csv layers '''
+        # debug
+        print "Main.mainwindow.roundGeometryValues()"
+
+        provider = vlayer.dataProvider()
+        feat = QgsFeature()
+        allAttrs = provider.attributeIndexes()
+        provider.select(allAttrs)
+        if vlayer.geometryType() == 0: # point
+            roundPointGeom = None
+            while provider.nextFeature(feat):
+                fgeom = feat.geometry().asPoint()
+                roundPointGeom = QgsGeometry.fromPoint(QgsPoint(round(fgeom.x(), 2), round(fgeom.y(), 2)))
+                provider.changeGeometryValues({feat.id(): roundPointGeom})
+        elif vlayer.geometryType() == 1: # line
+            while provider.nextFeature(feat):
+                roundedLine = []
+                fgeom = feat.geometry().asPolyline()
+                for point in fgeom: 
+                    roundedLine.append(QgsPoint(round(point.x(), 2), round(point.y(), 2))) 
+                provider.changeGeometryValues({feat.id(): QgsGeometry.fromPolyline(roundedLine)})
+        '''elif vlayer.geometryType() == 2: # polygon
+            while provider.nextFeature(feat):
+                roundedPolygon = []
+                fgeom = feat.geometry().asPolygon()
+                for counter, polygon in enumerate(fgeom):
+                    for point in polygon: 
+                        roundedPolygon.append([QgsPoint(round(point.x(), 2), round(point.y(), 2)))'''
+                        
+                #provider.changeGeometryValues({feat.id(): QgsGeometry.fromPolyline(roundedLine)})
+                    
+        #return vlayer
         
-            
 #**************************************************************
     ''' Testing '''
 #**************************************************************

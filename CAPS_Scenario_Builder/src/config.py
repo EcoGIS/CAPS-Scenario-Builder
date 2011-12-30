@@ -42,10 +42,11 @@ various scenario edit types.
    
 # Paths to important files.  These cannot change for most users without altering
 # the application installer. Sophisticated users could move these folders and change
-# the paths to the new locations here.  The paths can be changed to absolute paths if needed.
-baseLayersPath = u"./base_layers/"
-scenariosPath = u"./Scenarios/"
-scenarioExportsPath = u"./Exported Scenarios/"
+# the paths to the new locations here.  The paths may be relative or absolute
+baseLayersPath =  u"C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/base_layers/"
+#baseLayersPath =  u"./base_layers/"
+scenariosPath = u"C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Scenarios/" # u"./Scenarios/" #
+scenarioExportsPath = "C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Exported Scenarios/" # u"./Exported Scenarios/"
 
 
 ''' Field names, which appear in the editing layer attribute table, for each scenario edit type. '''     
