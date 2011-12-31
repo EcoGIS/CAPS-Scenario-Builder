@@ -56,19 +56,19 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         # add the scenario types list to the combo box drop down
         self.typesComboBox.addItems(self.scenarioEditTypesList)
     
-        QtCore.QObject.connect(self, QtCore.SIGNAL("accepted()"), self.apply)
-        QtCore.QObject.connect(self, QtCore.SIGNAL("rejected()"), self.cancel)
+        QtCore.QObject.connect(self, QtCore.SIGNAL("accepted()"), self.accept)
+        QtCore.QObject.connect(self, QtCore.SIGNAL("rejected()"), self.reject)
                 
 #################################################################################
     ''' Custom slots '''
 #################################################################################    
     
-    def apply(self):
+    def accept(self):
         ''' User has chosen a scenario type to edit, so
             Open needed layers for the scenario change type 
         '''
         # debugging
-        print "DlgScenarioEditTypes.apply()"
+        print "DlgScenarioEditTypes.accept()"
         
         # we are starting a new edit type, so disable previous edit actions 
         #(i.e. Add points, lines, polygons) 
@@ -124,7 +124,12 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         # an incorrect scenario!
         if not self.editLayerOpen:
             self.writeNewEditingShapefile()
-            if not self.mainwindow.openVectorLayer(self.newEditLayerPath): return
+            if not self.mainwindow.openVectorLayer(self.newEditLayerPath): 
+                # opening the editing layer failed so exit
+                # done sets the result code for _exec() to rejected (i.e. cancel)
+                self.setResult(0)
+                self.hide()
+                return
         
         # if the base layer is not open then open it
         if not self.baseLayerOpen: self.openBaseLayer()
@@ -155,14 +160,18 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
             print "the length of items is " + str(len(items))
             if len(items) > 0:
                 item = items[0]
-                item.setCheckState(0, QtCore.Qt.Checked)    
+                item.setCheckState(0, QtCore.Qt.Checked)
+        self.setResult(1)
+        self.hide()    
 
-    def cancel(self):
-        print "closed the dialog"
+    def reject(self):
+        print "Main.DlgScenarioEditTypes.reject(): user closed the dialog"
         # reset the edit scenario button
+        self.mainwindow.mpActionEditScenario.blockSignals(True)
         self.mainwindow.mpActionEditScenario.setChecked(False)
-        self.mainwindow.scenarioEditType = None
-        return      
+        self.mainwindow.mpActionEditScenario.blockSignals(False)
+        self.hide()
+        return
     
 #################################################################################   
     ''' Core methods '''   
@@ -342,7 +351,8 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
             legend.topLevelItem(i).setForeground(0, brush)
     
         # now color the layers
-        brush.setColor(QtCore.Qt.darkGreen)
+        color = QtGui.QColor(0, 0, 255)
+        brush.setColor(color) # (QtCore.Qt.darkGreen)
         editItems = legend.findItems(self.editLayer, QtCore.Qt.MatchFixedString, 0)
         editItems[0].setForeground(0, brush)
         baseItems = legend.findItems(self.baseLayerName, QtCore.Qt.MatchFixedString, 0)

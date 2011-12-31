@@ -494,7 +494,8 @@ Your scenario was not saved.  Please try again.")
         # been deleted when the editing shapefile was removed. 
         # Note that this could be a case where we are saving the scenario
         # for the first time, or saving an existing scenario with a new 
-        # name.  In either case the needed actions are the same.
+        # name, or overwriting an existing scenario after opening the app or after clicking 
+        # "New Scenario.  In each case the needed actions are the same.
         if len(editLayerLegendItems) == 0:
             self.makeScenarioDirectory()
             self.saveScenario()
@@ -815,7 +816,7 @@ before you can deselect."
             QtGui.QMessageBox.information(self, title, text, QtGui.QMessageBox.Ok)
             return
         
-        # Check if the base layer matches the scenario type.  If it does not, we get
+        # Check if the base layer matches the scenario edit type.  If it does not, we get
         # incorrect entries in the editing shapefile attribute table!
         title = "Modify Point Error:"
         text = "modify"
@@ -825,7 +826,7 @@ before you can deselect."
         self.copyFeaturesShared()
         
         # While we have a handle to the base layer, hide it so the user can see the pasted points.
-        self.legend.currentItem().setCheckState(0, QtCore.Qt.Unchecked)
+        #self.legend.currentItem().setCheckState(0, QtCore.Qt.Unchecked)
         
         # Warn if "edit_scenario(points).shp if it is not open. If open, make it the activeLayer
         items = self.legend.findItems(config.editLayersBaseNames[0], QtCore.Qt.MatchFixedString, 0)
@@ -1043,7 +1044,7 @@ the features you wish to modify, and then try again.")
             print "The original paste extents are:"
             print ("(" + str(rect.xMinimum()) + ", " + str(rect.yMinimum()) + ", " + 
                      str(rect.xMaximum()) + ", " + str(rect.yMaximum()) + ")")
-            if rect.width() < 500 or rect.height < 500:
+            if rect.width() < 500 or rect.height() < 500:
                 centerPointX = rect.center().x() 
                 rect.setXMinimum(centerPointX - 250)
                 rect.setXMaximum(centerPointX + 250)
@@ -1166,7 +1167,7 @@ want to stop pasting?"
             
     def editScenario(self, state):
         # debugging
-        print "editScenario() " + str(state)
+        print "Main.mainwindow.editScenario() " + str(state)
 
         if state: # True if action activated
             # handle user cancel
@@ -1186,7 +1187,13 @@ before you can make edits.  Please save the current scenario or open an existing
                 self.mpActionEditScenario.blockSignals(False)
                 return
             
-            # set the edit flag
+            # open the dialog to get the scenario edit type
+            self.scenarioEditTypes = DlgScenarioEditTypes(self)
+            if not self.scenarioEditTypes.exec_():
+                print "Main.mainwindow.editScenario(): user cancelled DlgScenarioEditTypes"
+                return # if the user cancels then return
+            
+            # We have a scenario edit type, so set the edit flag
             self.editMode = True
             
             # set the select action for edit mode
@@ -1194,14 +1201,10 @@ before you can make edits.  Please save the current scenario or open an existing
 
             # set the paste action
             if self.copyFlag: self.mpActionPasteFeatures.setDisabled(False)
-          
-            # call the dialog to get the scenario edit type
-            self.scenarioEditTypes = DlgScenarioEditTypes(self)
-            self.scenarioEditTypes.exec_()
-            
+         
             # add scenarioEditType to statusbar
             self.editTypeLabel = QtGui.QLabel(self.statusBar)
-            capture_string = QtCore.QString("The scenario edit type is:  '" 
+            capture_string = QtCore.QString("Scenario edit type:  '" 
                                                                     + self.scenarioEditType + "'")
             self.editTypeLabel.setText(capture_string)
             self.statusBar.insertPermanentWidget(0, self.editTypeLabel)        
@@ -1221,7 +1224,7 @@ before you can make edits.  Please save the current scenario or open an existing
             if self.activeVLayer: self.activeVLayer.removeSelection(False)
             self.disableSelectActions()
             
-            # unset the paste action (only active in edit mode)
+            # unset the paste action (only active  in edit mode)
             self.mpActionPasteFeatures.setDisabled(True)
             # unset edit tool actions
             self.disableEditActions()
@@ -2244,7 +2247,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             error = unicode(e)
             print error
         
-        # This double checks for loading errors using qgis methods
+        # This double checks for loading errors and pops up a message box if the layer doesn't open
         if not self.checkLayerLoadError(vlayer): return False
         
         # add layer to layer registry and set extent if necessary   

@@ -68,11 +68,6 @@ class AddPoints(QgsMapTool):
         # returns a QgsPoint object in map coordinates
         self.qgsPoint = transform.toMapCoordinates(point.x(), point.y())
         
-        # This works to round the point, but I found a way to easily round all points in the final shapefile.
-        # See Main.mainwindow.exportScenario() for rounding using the shapefile module.
-        #self.qgsPoint.setX(round(self.qgsPoint.x(), 2))
-        #self.qgsPoint.setY(round(self.qgsPoint.y(), 2))
-        
         #debugging
         print "The original clicked point in map coordinates is " + str(self.qgsPoint)
         
