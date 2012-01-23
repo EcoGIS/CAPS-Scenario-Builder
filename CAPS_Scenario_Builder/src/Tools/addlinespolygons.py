@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-#---------------------------------------------------------------------
+#-----------------------------------------------------------------------
 #
 # Conservation Assessment and Prioritization System (CAPS) - An Open Source  
 # GIS tool to create scenarios for environmental modeling.
@@ -12,19 +12,20 @@
 # 
 # This file is part of CAPS.
 
-#CAPS is free software: you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation, either version 3 of the License, or
-#(at your option) any later version.
+# CAPS is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-#CAPS is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# CAPS is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-#You should have received a copy of the GNU General Public License
-#along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
-
+# You should have received a copy of the GNU General Public License
+# along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+#
+#-------------------------------------------------------------------
 # PyQt4 includes for python bindings to QT
 from PyQt4 import QtCore, QtGui 
 # QGIS bindings for mapping functions
@@ -40,7 +41,7 @@ class AddLinesPolygons(QgsMapTool):
     def __init__(self, parent):
         QgsMapTool.__init__(self, parent.canvas)
         
-        # debigging
+        # debugging
         print "Class AddLinesPolygons()"
         
         ''' 

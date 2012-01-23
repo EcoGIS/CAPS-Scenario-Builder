@@ -32,13 +32,8 @@
 # along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
 # 
 #---------------------------------------------------------------------
-# general python built_in imports
+# general python imports
 import os,  shutil, time, os.path #  copy, subprocess, sys,  stat,
-# third-party utility modules
-#from lockfile import LockFile
-# the below is a standard python library
-# from fcntl import flock
-
 # import Qt libraries
 from PyQt4 import QtCore, QtGui
 # import qgis API
@@ -55,8 +50,8 @@ from Tools.selectfeatures import SelectTool
 from Tools.dlgaddattributes import DlgAddAttributes
 from Tools.addlinespolygons import *
 from Tools.identify import Identify
-import Tools.shared
 from Main.dlgscenarioedittypes import DlgScenarioEditTypes
+import Tools.shared
 import config
 
 
@@ -69,6 +64,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # get the splash screen
         self.splash = splash
         
+        ''' Set instance variables '''
         # LISTS
         self.originalScenarioLayers = []
         self.currentLayers = []
@@ -80,8 +76,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.scenarioDirty = False
         self.origScenarioLyrsLoaded = False 
         self.copyFlag = False # True if selections copied
-        self.exportFileFlag = False
-        self.isBaseLayerDeletions = False
         # if editDirty contains activeVLayer name, edits are unsaved
         self.editDirty = False #if editDirty false edits saved
         self.editMode = False # True if "Toggle Edits" is activated
@@ -96,15 +90,10 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.scenarioInfo = None
         self.dlgDisplayIdentify = None
         self.dlgModifyInfo = None
-
         # MA State Plane coordinate system used by MassGIS
         self.crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
-        #crs = QgsCoordinateReferenceSystem(2805, QgsCoordinateReferenceSystem.EpsgCrsId)
         # The rough extents of Massachusetts
         self.rectExtentMA = QgsRectangle(26000, 747000, 350000, 989000)
-
-        # used to display data about the base layer when modifying points
-        self.currentBaseLayerId = None
         # get active vlayer to pass to edit tools
         # this variable is updated by self.activeLayerChanged
         self.activeVLayer = None
@@ -126,7 +115,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # This saves an editing layer's color so that it gets refreshed
         # when the layer loads after updating extents (see shared.updateExtents
         self.layerColor = None
-        self.windowTitle = None
+
+        ''' Begin construction of main window '''
         
         # create map canvas
         self.canvas = QgsMapCanvas()
@@ -134,12 +124,12 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         
         self.canvas.enableAntiAliasing(True)
         self.canvas.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
-        #self.canvas.setExtent(self.rectExtentMA)# MA state extents
         self.gridlayout.addWidget(self.canvas)
         
         self.mapRenderer = self.canvas.mapRenderer()
         # False disables "on the fly" projections; True enables them
         self.mapRenderer.setProjectionsEnabled(False)
+        # sets the project crs
         self.mapRenderer.setDestinationCrs(self.crs)
 
         # set the QDockWidget that holds the legend
@@ -192,8 +182,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         QtCore.QObject.connect(QgsProject.instance(), QtCore.SIGNAL("layerLoaded(int, int)"), self.getOriginalScenarioLayers)
         QtCore.QObject.connect(self.mpActionModifyPoints, QtCore.SIGNAL("triggered()"), self.modifyPoints)
         
-        # Instantiate all tools.  They are written so variables update
-        # from the main window, so there is no need to repeat the process 
+        # Instantiate all tools.  They are written so their variables update from
+        # the main window, so there is no need to repeat the instantiation process 
         # when layers or other variables change.
         self.toolPan = QgsMapToolPan(self.canvas)
         self.toolZoomIn = QgsMapToolZoom(self.canvas, False) # false = in
@@ -206,7 +196,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # Create a QActionGroup to manage map tool actions states.
         # If an action is set as "checkable" in mainwindow_ui.py and
         # the action is in a tool group, only one action in the 
-        # group can be active at a time (). All other buttons 
+        # group can be active at a time. All other buttons 
         # are deactivated.  A toolGroup also makes it possible to
         # easily set all actions in the group as enabled or disabled.
         self.mapToolGroup = QtGui.QActionGroup(self) # 8 actions of 26 total
@@ -220,8 +210,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.mapToolGroup.addAction(self.mpActionPan)
         self.mapToolGroup.addAction(self.mpActionZoomIn)
         self.mapToolGroup.addAction(self.mpActionZoomOut)
-
-        
+       
         # The following actions are usually disabled (8 actions of 26 total)
         self.mpActionDeselectFeatures.setDisabled(True)
         self.mpActionModifyPoints.setDisabled(True)
@@ -241,23 +230,22 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         time.sleep(2)
         self.splash.hide()
         
-        # make the mainwindow paint properly
+        # make sure the mainwindow paints properly
         self.menubar.show()
         self.toolBar.show()
         self.statusBar.show()
         self.setVisible(True)
         self.update()
         self.activateWindow()
-        self.showMaximized()
+        # if the mainwindow is not maximized on opening we get painting problems
+        # on all versions of MS Windows
+        self.showMaximized() 
         
         # set the map coordinates display in the status bar
         self.mapcoords = MapCoords(self)
-        #time.sleep(4)
 
         # load the orienting layers
         self.openOrientingLayers()
-        #time.sleep(4)
-        
 
         # The V2 renderers get the selection color from the old renderer.
         # This sets the selection color once, when the app starts
@@ -269,13 +257,13 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
          
     def newScenario(self):
         # debugging
-        print "newScenario()"
-        print "newScenario() start dirty? " + str(self.scenarioDirty)
+        print "Main.mainwindow.newScenario()"
+        print "Main.mainwindow.newScenario() start dirty? " + str(self.scenarioDirty)
         
         # check for unsaved edits and scenario changes
         if self.appStateChanged("newScenario") == "Cancel":
             # debugging
-            print "canceling newScenario"
+            print "canceling Main.mainwindow.newScenario()"
             return
  
         # new scenario so remove layers from the legend and the canvas layer set
@@ -287,39 +275,39 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.setInitialAppState()
                 
         # debugging
-        print "newScenario() setIntialAppState()"
-        print "newScenario() end dirty? " + str(self.scenarioDirty)
+        print "Main.mainwindow.newScenario() end dirty? " + str(self.scenarioDirty)
    
     def openScenario(self):
         # debugging
-        print "openScenario()"
+        print "Main.mainwindow.openScenario()"
         print "self.scenarioDirty begin is " + str(self.scenarioDirty)
         
         # check for unsaved edits and scenario changes
         if self.appStateChanged("openScenario") == "Cancel":
             # debugging
-            print "canceling openScenario()"
+            print "canceling Main.mainwindow.openScenario()"
             return
      
         # open file dialog to find scenarios to open
         qd = QtGui.QFileDialog()
-        filterString = QtCore.QString("CAPS Scenario (*.cap)") #\nAll Files(*)")
+        filterString = QtCore.QString("CAPS Scenario (*.cap)") # syntax for showing all files \nAll Files(*)")
         # get the path to the directory for the saved file using Python
-        dir = QtCore.QString(os.path.dirname(config.scenariosPath))
+        directory = QtCore.QString(os.path.dirname(config.scenariosPath))
         # change QString to unicode so Python can slice it for the directory name
         scenarioFilePath = unicode(qd.getOpenFileName(self, QtCore.QString
-                                                ("Open Scenario"), dir, filterString))
-        # Check for cancel
+                                                ("Open Scenario"), directory, filterString))
+        # Check for cancel of file dialog
         if len(scenarioFilePath) == 0: return
  
-        # remember the file info to use in saveScenario()
-        self.scenarioFilePath = scenarioFilePath
-        self.scenarioInfo = QtCore.QFileInfo(QtCore.QString(scenarioFilePath))
+        # Remember the file info to use elsewhere, change to unicode in case
+        # we need to use Python string operations somewhere (they do not work on QString types)
+        self.scenarioFilePath = scenarioFilePath # unicode
+        self.scenarioInfo = QtCore.QFileInfo(scenarioFilePath) # an object
         # get the filename without the path
-        self.scenarioFileName = self.scenarioInfo.fileName()
+        self.scenarioFileName = unicode(self.scenarioInfo.fileName())
         
         #debugging
-        print "openScenario() " + scenarioFilePath
+        print "Main.mainwindow.openScenario() " + scenarioFilePath
      
         # remove old layers from the legend and the canvas layer set
         self.legend.removeAll()
@@ -329,7 +317,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.originalScenarioLayers = []
         
         # debugging
-        print "openScenario() after remove registry count " + str(QgsMapLayerRegistry.instance().count())
+        print "Main.mainwindow.openScenario() after remove registry count " + str(QgsMapLayerRegistry.instance().count())
      
         # Set the self.editingPolygon flag to False because we don't know if the 
         # edit_scenario(polygons) layer is in this scenario
@@ -347,7 +335,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 scenario = None
                 return
         else: # no error so we have newly opened scenario
-            scenario = None 
+            scenario = None # close the instance of QgsProject
             self.scenarioDirty = False
              
         # The scenario file (i.e. *.cap) does not save the files in order so:
@@ -366,27 +354,27 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
 Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
         
         # debugging
-        print "openScenario() after scenario load registry count " + str(QgsMapLayerRegistry.instance().count())
-        print "openScenario() scenario filename is " + self.scenarioFileName
-        print "openScenario() end dirty? " + str(self.scenarioDirty)
+        print "Main.mainwindow.openScenario() after scenario load registry count " + str(QgsMapLayerRegistry.instance().count())
+        print "Main.mainwindow.openScenario() scenario filename is " + self.scenarioFileName
+        print "Main.mainwindow.openScenario() end dirty? " + str(self.scenarioDirty)
         
     def saveScenario(self):
         # debugging
-        print "saveScenario()"
-        print "saveScenario() start dirty? " + str(self.scenarioDirty)
+        print "Main.mainwindow.saveScenario()"
+        print "Main.mainwindow.saveScenario() start dirty? " + str(self.scenarioDirty)
         
         # check for unsaved edits
         if self.appStateChanged("saveScenario") == "Cancel":
             # debugging
-            print "canceling openScenario()"
+            print "canceling Main.mainwindow.openScenario()"
             return
-        
-        
+         
         # if there is an open project to save
         if self.scenarioFilePath:
             # check if there is a scenario directory
-            scenarioDirectoryName = self.scenarioInfo.completeBaseName()
-            if not QtCore.QDir(config.scenariosPath + scenarioDirectoryName).exists():
+            scenarioDirectoryName = self.scenarioInfo.completeBaseName() # returns a QString
+            # PyQt handles concatenating a Python string and a QString
+            if not QtCore.QDir(config.scenariosPath + scenarioDirectoryName).exists():  
                 self.makeScenarioDirectory()
             # start a project instance
             scenario = QgsProject.instance()
@@ -403,14 +391,13 @@ scenario file is open in another program.")
             else: # no error so we have saved the scenario
                 scenario = None
                 self.setScenarioSaved()
-                print "saveScenario() end dirty? " + str(self.scenarioDirty)
+                print "Main.mainwindow.saveScenario() end dirty? " + str(self.scenarioDirty)
         else: self.saveScenarioAs() # no open project so call saveScenarioAs()
 
     def saveScenarioAs(self):
         ''' 
-            Save an unsaved scenario with a new name; save the current scenario with the same name;
-            overwrite an existing scenario with a different scenario; or save an existing scenario 
-            with a new name.
+            Save an unsaved scenario with a new name; overwrite an existing scenario with a 
+            different scenario; or save an existing scenario with a new name (i.e. copy).
             
             This method includes making a copy of the scenario's '.cap' file,
             the scenario's associated directory, any editing shapefiles in the scenario's 
@@ -419,13 +406,13 @@ scenario file is open in another program.")
         '''
         
         # debugging
-        print "saveScenarioAs()"
-        print "saveScenarioAs() start dirty? " + str(self.scenarioDirty)
+        print "Main.mainwindow.saveScenarioAs()"
+        print "Main.mainwindow.saveScenarioAs() start dirty? " + str(self.scenarioDirty)
         
         # check for unsaved edits
         if self.appStateChanged("saveScenarioAs") == "Cancel":
             # debugging
-            print "canceling openScenario()"
+            print "canceling Main.mainwindow.openScenario()"
             return
         
         ''' GET THE FILE PATH THE USER CHOOSES '''
@@ -433,7 +420,7 @@ scenario file is open in another program.")
         qd = QtGui.QFileDialog()
         qd.setDefaultSuffix(QtCore.QString(".cap"))
         filterString = QtCore.QString("CAPS Scenario (*.cap)") #\nAll Files(*)")
-        # get the path to the default scenario's directory (use Python)
+        # get the path to the default scenario's directory 
         defaultDir = config.scenariosPath
         # Get the new file path and change the QString to unicode so that Python 
         # can slice it for the directory name. 
@@ -444,33 +431,20 @@ scenario file is open in another program.")
         print "scenarioFilePath is: " + scenarioFilePath
         print "defaultDir is " + defaultDir
 
-        # Check for cancel
+        # Check for cancel of the file dialog
         if len(scenarioFilePath) == 0: return "Cancel"
         
-        # check for an incorrect directory or file extension
-        dirInfo = QtCore.QFileInfo(QtCore.QString(defaultDir))
-        defaultScenarioDirectoryPath = dirInfo.absoluteFilePath()
-        print "defaultScenarioDirectoryPath is " + defaultScenarioDirectoryPath
-        scenarioFileInfo = QtCore.QFileInfo(QtCore.QString(scenarioFilePath))
-        scenarioDirectoryPath = scenarioFileInfo.absolutePath()
-        fileName = unicode(scenarioFileInfo.fileName())
-        print "The scenarioDirectoryPath is " + scenarioDirectoryPath
-        print "The fileName is " + fileName
-
-        if scenarioDirectoryPath not in defaultScenarioDirectoryPath or not fileName.endswith(".cap"):
-            QtGui.QMessageBox.warning(self, "File Save Error:", "Scenarios must be saved in the 'Scenarios' directory, \
-which the 'Save Scenario as...' dialog opens by default.  Also, the file name must end with the extension \
-'.cap'. If you save a scenario name without adding an extension, the file dialog will add the '.cap' extension for you. \n\n\
-Your scenario was not saved.  Please try again.")
-            return
-        
+        # The user can browse to anywhere and try to save the scenario with
+        # any extension, so check for an incorrect directory or file extension
+        if not self.chkScenarioDirectoryPath(defaultDir, scenarioFilePath): return
+      
         # We have a new valid file path. We start by storing the old path (if one exists) for use
         # below and storing the new file path for use in saveScenario()
-        oldScenarioFilePath = self.scenarioFilePath
-        oldScenarioInfo = self.scenarioInfo
-        self.scenarioFilePath = scenarioFilePath
-        self.scenarioInfo = QtCore.QFileInfo(QtCore.QString(scenarioFilePath))
-        scenarioDirectoryName = self.scenarioInfo.completeBaseName()
+        oldScenarioFilePath = self.scenarioFilePath # unicode
+        oldScenarioInfo = self.scenarioInfo # an object
+        self.scenarioFilePath = scenarioFilePath # unicode
+        self.scenarioInfo = QtCore.QFileInfo(scenarioFilePath)
+        scenarioDirectoryName = unicode(self.scenarioInfo.completeBaseName())
         
         ''' CHECK FOR CONDITIONS THAT ELIMINATE THE NEED TO COPY THE SCENARIO DIRECTORY CONTENTS '''
         
@@ -478,7 +452,7 @@ Your scenario was not saved.  Please try again.")
         # scenario to overwrite the scenario file. No need to do anything about editing files
         if self.scenarioFilePath == oldScenarioFilePath:
             self.saveScenario()
-            print "overwriting existing file"
+            print "Main.mainwindow.saveScenarioAs(): overwriting existing file"
             return
 
         # We are saving to a new path, so find out if there are any editing files open.
@@ -486,7 +460,7 @@ Your scenario was not saved.  Please try again.")
         for editLayer in config.editLayersBaseNames:
             # This method returns a list of matches
             items = self.legend.findItems(editLayer, QtCore.Qt.MatchFixedString, 0)
-            if len(items) > 0: editLayerLegendItems.append(items[0])  
+            if len(items) > 0: editLayerLegendItems.append(items[0]) # a list of QStrings 
 
         # If there are no editing layers open, we can just write the new editing file 
         # directory, call saveScenario, and set the variables for a successfully saved
@@ -504,112 +478,35 @@ Your scenario was not saved.  Please try again.")
 
         ''' 
             WE NEED TO COPY THE SCENARIO DIRECTORY'S CONTENTS (I.E. EDITING SHAPEFILES)
-            AND ANY EXISTING EXPORT SCENARIO FILE, SO START THE PROCESS 
+            AND ANY EXISTING EXPORT SCENARIO FILE 
         '''
         
-        # So we have editing files open so create the new scenario directory to write them to.
-        # This method deletes any old directory and any old "Scenario Export" files having the
-        # same name as the new scenario name.  So if we are overwriting an old scenario, we
-        # start fresh.
-        self.makeScenarioDirectory()
+        self.copyScenario(oldScenarioInfo, scenarioDirectoryName, editLayerLegendItems)
         
-        # Now copy any existing "Export Scenario" file 
-        oldScenarioDirectoryName = oldScenarioInfo.completeBaseName()
-        oldExportFileName = unicode(oldScenarioDirectoryName + ".csv")
-        oldExportPath = QtCore.QString(config.scenarioExportsPath + oldExportFileName)
-        newExportFileName = QtCore.QString(scenarioDirectoryName + ".csv")
-        newExportFilePath = QtCore.QString(config.scenarioExportsPath + newExportFileName)
         
-        oldExportFile = QtCore.QFile(oldExportPath)
-        error = None
-        if oldExportFile.exists():
-            try:
-                oldExportFile.copy(newExportFilePath)
-            except (IOError, OSError), e:
-                error = unicode(e)
-            if error:
-                print error
-                QtGui.QMessageBox.warning(self, 'Deletion Error:', 'The previously saved scenario '\
-+ oldExportFileName + ' could not be renamed.  Please try again.')
-        
-        # While the editing layers are open, copy them to the new scenario directory
-        # and record the paths to open them later.
-        scenarioDirectoryPath = unicode(config.scenariosPath + scenarioDirectoryName)
-        copyPaths = []
-        editLayerIds = []
-        for item in editLayerLegendItems:
-            vlayerId = item.layerId
-            editLayerIds.append(vlayerId)
-            vlayer = QgsMapLayerRegistry.instance().mapLayer(vlayerId)
-            vlayerName = vlayer.name() + ".shp"
-            copyPath = QtCore.QString(scenarioDirectoryPath + "/" + vlayerName)
-            copyPaths.append(copyPath)
-            print "copyPath is " + copyPath
-            error = QgsVectorFileWriter.writeAsVectorFormat(vlayer, copyPath , "utf-8", 
-                                                                self.crs, "ESRI Shapefile")
-            if error != QgsVectorFileWriter.NoError:
-                QtGui.QMessageBox.warning(self, "Write Error:", "The file " + vlayerName + " \
-was not written.  Please check that a file with the same name is not open in another program.")
-                return
-            else: print "Success!"
-
-        # debugging
-        print "copyPaths are:"
-        print copyPaths
-        
-        # Now we can close the editing layers associated with the old scenario path
-        # and then open the ones we wrote to the new directory.  This will allow us 
-        # to save a new scenario file (i.e. '.cap' file) that contains the correct
-        # paths to the copied editing shapefiles. No need for emitting signals here.
-        self.legend.blockSignals(True)
-        self.legend.removeLayers(editLayerIds) # this method also removes the files from the registry
-        self.legend.blockSignals(False)
-        print "CLOSED OLD EDIT SHAPEFILES"
-        
-        # The old activeVLayer may have been deleted so set all associated variables to "None"
-        #  or we would get runtime errors due to the underlying C++ object being deleted.
-        # The activeVLayer will be reset when we load the layers below.
-        self.legend.setActiveLayerVariables()
-        self.originalScenarioLayers = []
-        # Open the copied editing shapefiles (they will open at the top of the layer panel)
-        # The last one opened will become the new activeVLayer
-        for path in copyPaths:
-            if not self.openVectorLayer(path): return
-            
-        # Finally, write the project information to a scenario file using QgsProject
-        scenario = QgsProject.instance()
-        scenario.write(self.scenarioInfo)
-        # check for write error
-        if scenario.error():
-            QtGui.QMessageBox.warning(self, "Failed to save:", "Please check \
-        if this scenario file is open in another program.")
-            # QgsProject has no "close()" method, so, if error, close the project instance
-            scenario = None
-            return
-        scenario = None # if no error close the QgsProject.instance()
-     
-        ''' NOW DO SOME HOUSEKEEPING '''    
+        ''' NOW DO SOME HOUSEKEEPING '''
 
         self.setScenarioSaved()
         
         # debugging
-        print "saveScenarioAs() end dirty? " + str(self.scenarioDirty)
-   
+        print "Main.mainwindow.saveScenarioAs(): end dirty? " + str(self.scenarioDirty)
+ 
     def exportScenario(self):
         # debugging
-        print "mainwindow.exportScenario()"
+        print "Main.mainwindow.exportScenario()"
         
         # check the app state for unsaved edits and scenario changes
         if self.appStateChanged("exportScenario") == "Cancel":
             # debugging
-            print "canceling exportScenario()"
+            print "Main.mainwindow.exportScenario(): canceling exportScenario()"
             return
 
-        scenarioDirectoryName = self.scenarioInfo.completeBaseName()
-        scenarioDirectoryPath = unicode(config.scenariosPath + scenarioDirectoryName)
+        # set some variables 
+        scenarioDirectoryName = unicode(self.scenarioInfo.completeBaseName())
+        scenarioDirectoryPath = config.scenariosPath + scenarioDirectoryName
         scenarioDirectoryFileList = os.listdir(scenarioDirectoryPath) # use Python os module here
-        exportFileName = unicode(scenarioDirectoryName + ".csv")
-        exportPath = unicode(config.scenarioExportsPath + exportFileName)
+        exportFileName = scenarioDirectoryName + ".csv"
+        exportPath = config.scenarioExportsPath + exportFileName
                 
         if scenarioDirectoryFileList == []:
             QtGui.QMessageBox.warning(self, "Export Scenario Error:", "You have not made any scenario edits to export. \
@@ -624,6 +521,7 @@ Please choose 'Edit Scenario' from the Edit menu, make some edits, and then try 
         for fileName in scenarioDirectoryFileList:
             if not ".shp" in fileName: continue # only looking for the .shp files
             shapefileCount += 1
+        
         # Iterate through the editing shapefiles in the current scenario's directory.
         # Open the file if it is not already open, and write it as a csv file.  
         # Finally, append the editing shapefile csv file to the scenario export file,
@@ -633,42 +531,34 @@ Please choose 'Edit Scenario' from the Edit menu, make some edits, and then try 
         for fileName in scenarioDirectoryFileList:
             if not ".shp" in fileName: continue # only looking for the .shp files
             loopCount += 1
-            print "The loopCount begin is " + str(loopCount)
+            print "Main.mainwindow.exportScenario(): The loopCount begin is " + str(loopCount)
             # get the path to write the csv file to
             csvInfo = QtCore.QFileInfo(fileName)
-            csvBaseName = csvInfo.completeBaseName() # csvBaseName = editing shapefile BaseName
+            csvBaseName = unicode(csvInfo.completeBaseName()) # csvBaseName = editing shapefile BaseName
             csvFileName = csvBaseName + ".csv"
-            csvPath = QtCore.QString(scenarioDirectoryPath + "/" + csvFileName)
+            csvPath = scenarioDirectoryPath + "/" + csvFileName
             
             # debugging
-            print "current csvBaseName is: " + csvBaseName
-            print "current csvFileName is: " + csvFileName
-            print "current csvPath is: " + csvPath
-            print "current exportPath is: " + exportPath
+            print "Main.mainwindow.exportScenario(): current csvBaseName is: " + csvBaseName
+            print "Main.mainwindow.exportScenario(): current csvFileName is: " + csvFileName
+            print "Main.mainwindow.exportScenario(): current csvPath is: " + csvPath
+            print "Main.mainwindow.exportScenario(): current exportPath is: " + exportPath
             
-            # The app crashes when trying to open an already open vector layer.
-            # Even the "ogr" provider misses the IO error.  It seems impossible to trap this
-            # error with Python (i.e. try: except), so we need rely on checking 
-            # if the editing shapefile is open in the layer panel.
-            items = self.legend.findItems(csvBaseName, QtCore.Qt.MatchFixedString, 0)
-            print "length of items list is " + str(len(items))
-            if len(items) == 0:
-                # if not open, open the file without making it visible to the user
-                editingShapefilePath = unicode(scenarioDirectoryPath + "/" + fileName)
-                print "current editingShapefilePath is: " + editingShapefilePath
-                vlayer = self.openHiddenVectorLayer(editingShapefilePath)
-                if not vlayer: return
-            else:
-                vlayerId = items[0].layerId
-                vlayer = QgsMapLayerRegistry.instance().mapLayer(vlayerId)
+            # open the editing file so it can be converted to CSV format 
+            retval = self.getEditLayerToExport(csvBaseName, scenarioDirectoryPath, fileName)
+            if not retval:
+                return
+            else: vlayer = retval
                 
+            # refactor this to a utility export method
+            
             # Check if there are any features in the layer because the QgsVectorFileWriter fails to 
             # write the csv file if there are no features and does NOT return an error!!
             print "The vlayer feature count is " + str(vlayer.featureCount())
             if vlayer.featureCount() == 0:
                 # keep trying until the last layer in the scenarioDirectoryFileList
-                print "the shapefileCount is " + str(shapefileCount)
-                print "the loopCount is " + str(loopCount)
+                print "Main.mainwindow.exportScenario(): the shapefileCount is " + str(shapefileCount)
+                print "Main.mainwindow.exportScenario(): the loopCount is " + str(loopCount)
                 if loopCount < shapefileCount:
                     continue
                 elif exportFileWritten: # loopCount = shapefileCount and something exported
@@ -678,26 +568,17 @@ Please choose 'Edit Scenario' from the Edit menu, make some edits, and then try 
 make some edits to your scenario and try again.")
                     return    
             
-            # We need to delete any existing editing shapefile csv conversions
-            # for this editing shapefile before we write a new one. The ogr driver
-            # writes the files to the csvPath. 
-            error = None
-            currentCsvFile = QtCore.QFile(csvPath)
-            if currentCsvFile.exists():
-                print "currentCsvFile exists"
-                try:
-                    currentCsvFile.remove()
-                except (IOError, OSError), e:
-                    error = unicode(e)
-                if error:
-                    print error
-                    QtGui.QMessageBox.warning(self, "Deletion Error:", "An old editing layer \
-csv file '" + csvFileName + " could not be deleted.  Please check if the file is open in \
-another program and then try again.")
-                    return
-                
+            # Delete previously written files so current ones can take their place.
+            # Return if deletion fails (dleteOldCsvSapefile() opens msg box to inform user)
+            if not self.deleteOldCsvShapefile(csvPath, csvFileName): return
+            
+            # round values to shorten csv file output
             vlayer = self.roundGeometryValues(vlayer)
            
+            ''' Convert the editing shapefiles to CSV format '''
+            
+            # refactor this to writeCsvShapefile()
+            
             # Create an empty datasource and errorMessage option for the 
             # QgsVectorFileWriter parameters list
             datasourceOptions = QtCore.QStringList(QtCore.QString())
@@ -816,11 +697,11 @@ before you can deselect."
             QtGui.QMessageBox.information(self, title, text, QtGui.QMessageBox.Ok)
             return
         
-        # Check if the base layer matches the scenario edit type.  If it does not, we get
+        # Check if the base layer  matches the scenario edit type.  If it does not, we get
         # incorrect entries in the editing shapefile attribute table!
         title = "Modify Point Error:"
         text = "modify"
-        if not self.checkBaseLayerMatch(title, text): return
+        if not self.chkBaseLayerMatch(title, text): return
      
         # we have selected features so copy them
         self.copyFeaturesShared()
@@ -872,7 +753,7 @@ the features you wish to modify, and then try again.")
         if name in config.pointBaseLayersBaseNames:
             title = "Deletion Error:"
             text = "delete from"
-            if not self.checkBaseLayerMatch(title, text): return
+            if not self.chkBaseLayerMatch(title, text): return
             else:
                 print "Features are in a base layer that matches"
                 # We do not allow deleting features from a base layer.  Rather, we copy
@@ -1044,6 +925,7 @@ the features you wish to modify, and then try again.")
             print "The original paste extents are:"
             print ("(" + str(rect.xMinimum()) + ", " + str(rect.yMinimum()) + ", " + 
                      str(rect.xMaximum()) + ", " + str(rect.yMaximum()) + ")")
+            # Refactor this as a separate "setZoom()" method?
             if rect.width() < 500 or rect.height() < 500:
                 centerPointX = rect.center().x() 
                 rect.setXMinimum(centerPointX - 250)
@@ -1191,10 +1073,12 @@ before you can make edits.  Please save the current scenario or open an existing
             self.scenarioEditTypes = DlgScenarioEditTypes(self)
             if not self.scenarioEditTypes.exec_():
                 print "Main.mainwindow.editScenario(): user cancelled DlgScenarioEditTypes"
-                return # if the user cancels then return
-            
-            # We have a scenario edit type, so set the edit flag
-            self.editMode = True
+                # If the user cancels, or there is an error opening the editing file then
+                # uncheck the Edit Scenario button and  return
+                self.mpActionEditScenario.blockSignals(True)
+                self.mpActionEditScenario.setChecked(False)
+                self.mpActionEditScenario.blockSignals(False)
+                return 
             
             # set the select action for edit mode
             self.mpActionSelectFeatures.setDisabled(False)
@@ -1338,11 +1222,11 @@ before you can make edits.  Please save the current scenario or open an existing
 (*.csv *.CSV)\nGeography Markup Language(*.gml *.GML)\nGPX(*.gpx *.GPX)\nKML(*.kml *.KML)\
 SQLite(*.sqlite *.SQLITE)\nArc\\Info ASCII Coverage(*.e00 *.E00)\nAll Files(*)")
         # get the path to the directory containing the opened file using Python
-        dir = config.baseLayersPath
+        directory = config.baseLayersPath
                                 
         # change the QString to unicode so that Python can slice it for the directory name 
         vfilePath = unicode(qd.getOpenFileName(self, QtCore.QString("Add Vector Layer"),
-                                            dir, filterString))
+                                            directory, filterString))
         # Check for cancel
         if len(vfilePath) == 0: return
 
@@ -1357,11 +1241,11 @@ SQLite(*.sqlite *.SQLITE)\nArc\\Info ASCII Coverage(*.e00 *.E00)\nAll Files(*)")
 (*.tif *.tiff *.TIF *.TIFF)\nArc/Info Binary Grid(*.adf *.ADF)\n\
 JPEG(*.jpg *.jpeg *.JPG *.JPEG)")
         # get the path to the directory containing the opened file using Python
-        dir = config.baseLayersPath        
+        directory = config.baseLayersPath        
         
         # change QString to unicode so Python can slice it for the directory name
         rfilePath = unicode(qd.getOpenFileName(self, QtCore.QString("Add Raster Layer"),
-                                    dir, filterString))
+                                    directory, filterString))
         # Check for cancel
         if len(rfilePath) == 0: return
 
@@ -1650,7 +1534,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             self.disableEditActions() # actions are add points, lines, polygons
  
             if self.editMode:
-                self.mpActionEditScenario.setChecked(True) # to be safe, but this should not be needed
+                #self.mpActionEditScenario.setChecked(True) # to be safe, but this should not be needed
                 # loading a new active layer so enable the proper edit action if an editing layer
                 if self.activeVLayer.name() in config.editLayersBaseNames:
                     self.enablePointsOrLinesOrPolygons()
@@ -1937,13 +1821,10 @@ Prioritization System (CAPS) Scenario Builder")
         self.copyFlag = False
         self.openingOrientingLayers = False
         self.editingPolygon = False
-        self.exportFileFlag = False
-        self.isBaseLayerDeletions = False
         self.editDirty = False
         self.editMode = False 
         self.attrTable = None
         self.dwAttrTable = None
-        self.currentBaseLayerId = None
         self.dwRasterTable = None
         self.activeVLayer = None
         self.activeRLayer = None
@@ -1951,9 +1832,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.provider = None
         self.geom = None
         self.layerColor = None
-        self.windowTitle = None
         self.mapToolGroup.setDisabled(True)
-        #self.canvas.setExtent(self.extent)
         self.mpActionOpenVectorAttributeTable.setDisabled(True)
         self.mpActionSaveEdits.setDisabled(True)
         self.mpActionEditScenario.setDisabled(False)
@@ -2069,7 +1948,7 @@ Prioritization System (CAPS) Scenario Builder")
         
     def getCurrentLayersNames(self):
         # debugging
-        print "getCurrentLayersNames()"
+        print "Main.mainwindow.getCurrentLayersNames()"
         
         currentLayersNames = []
         for layer in self.getCurrentLayers().values():
@@ -2092,7 +1971,7 @@ Prioritization System (CAPS) Scenario Builder")
         print "Main.mainwindow.getOriginalScenarioLayersNames()"
         self.originalScenarioLayersNames = []
         for layer in self.originalScenarioLayers: 
-            self.originalScenarioLayersNames.append(layer.name())
+            self.originalScenarioLayersNames.append(unicode(layer.name())) # change QString to unicode
         return self.originalScenarioLayersNames
     
     def getOriginalScenarioLayers(self, i, count):                  
@@ -2248,7 +2127,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             print error
         
         # This double checks for loading errors and pops up a message box if the layer doesn't open
-        if not self.checkLayerLoadError(vlayer): return False
+        if not self.chkLayerLoadError(vlayer): return False
         
         # add layer to layer registry and set extent if necessary   
         QgsMapLayerRegistry.instance().addMapLayer(vlayer)
@@ -2269,7 +2148,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             error = unicode(e)
             print error                
         # double check for error using qgis methods
-        if not self.checkLayerLoadError(vlayer): return False
+        if not self.chkLayerLoadError(vlayer): return False
  
     def openRasterLayer(self, rfilePath):
         ''' Open a raster layer '''
@@ -2281,7 +2160,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             error = unicode(e)
             print error
         # double check for error using qgis methods    
-        if not self.checkLayerLoadError(rlayer): return False
+        if not self.chkLayerLoadError(rlayer): return False
         
         # add layer to layer registry and set extent
         reg = QgsMapLayerRegistry.instance()
@@ -2626,12 +2505,12 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             # create a new symbol layer for the delete symbol (i.e. a red cross)
             newSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
             map1 = {"name": "cross", "color": "255,0,0,255", 
-                   "color_border": "255,0,0,255", "size": "5.0", "angle": "45.0"}
+                   "color_border": "255,0,0,255", "size": "7.0", "angle": "45.0"}
             deleteSymbol = newSymbol.createSimple(map1)
             deleteLayer = deleteSymbol.symbolLayer(0)
             # create a new symbol layer for the altered symbol (i.e. a green triangle
             map2 = {"name": "equilateral_triangle", "color": "0,0,0,0", 
-                   "color_border": "255,0,0,255", "size": "5.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
+                   "color_border": "255,0,0,255", "size": "7.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
             alteredSymbol = newSymbol.createSimple(map2)
             alteredLayer = alteredSymbol.symbolLayer(0)
             
@@ -2781,14 +2660,14 @@ editing file directory could not be created. Please try to save the project agai
 different name.")
             return "Error"
        
-    def checkLayerLoadError(self, layer):
+    def chkLayerLoadError(self, layer):
         # check for error
         if not layer.isValid():
             QtGui.QMessageBox.warning(self, "File Error", "Layer failed to load!")
             return False
         else: return True
 
-    def checkBaseLayerMatch(self, title, text):
+    def chkBaseLayerMatch(self, title, text):
         name = self.activeVLayer.name()
         type = self.scenarioEditType
         if (type == config.scenarioEditTypesList[0] and name != config.pointBaseLayersBaseNames[0] or
@@ -2841,28 +2720,189 @@ For example. If you have chosen to edit 'dams,' then you can only " + text + " t
         if vlayer.geometryType() == 0: # point
             roundPointGeom = None
             while provider.nextFeature(feat):
-                fgeom = feat.geometry().asPoint()
-                roundPointGeom = QgsGeometry.fromPoint(QgsPoint(round(fgeom.x(), 2), round(fgeom.y(), 2)))
+                point = feat.geometry().asPoint()
+                roundPointGeom = QgsGeometry.fromPoint(QgsPoint(round(point.x(), 2), round(point.y(), 2)))
                 provider.changeGeometryValues({feat.id(): roundPointGeom})
         elif vlayer.geometryType() == 1: # line
             while provider.nextFeature(feat):
                 roundedLine = []
-                fgeom = feat.geometry().asPolyline()
-                for point in fgeom: 
+                line = feat.geometry().asPolyline()
+                for point in line: 
                     roundedLine.append(QgsPoint(round(point.x(), 2), round(point.y(), 2))) 
                 provider.changeGeometryValues({feat.id(): QgsGeometry.fromPolyline(roundedLine)})
-        '''elif vlayer.geometryType() == 2: # polygon
+        elif vlayer.geometryType() == 2: # polygon
             while provider.nextFeature(feat):
-                roundedPolygon = []
-                fgeom = feat.geometry().asPolygon()
-                for counter, polygon in enumerate(fgeom):
-                    for point in polygon: 
-                        roundedPolygon.append([QgsPoint(round(point.x(), 2), round(point.y(), 2)))'''
-                        
-                #provider.changeGeometryValues({feat.id(): QgsGeometry.fromPolyline(roundedLine)})
-                    
-        #return vlayer
+                # a list of lists because polygons can have nested polygons
+                allPolygons = feat.geometry().asPolygon()
+                allPolygonsRounded = [] 
+                for counter, polygon in enumerate(allPolygons):
+                    roundedPolygon = []
+                    for point in polygon[counter]: 
+                        roundedPolygon.append(QgsPoint(round(point.x(), 2), round(point.y(), 2)))
+                    allPolygonsRounded.append(roundedPolygon)        
+                provider.changeGeometryValues({feat.id(): QgsGeometry.fromPolygon(allPolygonsRounded)})
+        return vlayer
         
+    def chkScenarioDirectoryPath(self, defaultDir, scenarioFilePath):
+        # debugging
+        print "Main.mainwindow.checkScenarioDirectoryPath()"
+        
+        dirInfo = QtCore.QFileInfo(defaultDir)
+        defaultScenarioDirectoryPath = unicode(dirInfo.absoluteFilePath())
+        print "defaultScenarioDirectoryPath is " + defaultScenarioDirectoryPath # Python can concatenate QStrings
+        scenarioFileInfo = QtCore.QFileInfo(scenarioFilePath)
+        scenarioDirectoryPath = unicode(scenarioFileInfo.absolutePath())
+        fileName = unicode(scenarioFileInfo.fileName()) # change to unicode for Python string operations
+        print "The scenarioDirectoryPath is " + scenarioDirectoryPath
+        print "The fileName is " + fileName
+
+        if (scenarioDirectoryPath != defaultScenarioDirectoryPath  and 
+            scenarioDirectoryPath != defaultScenarioDirectoryPath[:-1]): # not fileName.endswith(".cap")
+            QtGui.QMessageBox.warning(self, "File Save Error:", "Scenarios must be saved in the 'Scenarios' directory, \
+which the 'Save Scenario as...' dialog opens by default.  Also, the file name must end with the extension \
+'.cap'. If you save a scenario name without adding an extension, the file dialog will add the '.cap' extension for you. \n\n\
+Your scenario was not saved.  Please try again.")
+            return False
+        else: return True
+    
+    def copyScenario(self, oldScenarioInfo, scenarioDirectoryName, editLayerLegendItems):
+        # debugging
+        print "Main.mainwindow.copyScenario()" 
+        
+        # So we have editing files open so create the new scenario directory to write them to.
+        # This method deletes any old directory and any old "Scenario Export" files having the
+        # same name as the new scenario name.  So if we are overwriting an old scenario, we
+        # start fresh.
+        self.makeScenarioDirectory()
+        
+        # Now copy any existing "Export Scenario" file 
+        oldScenarioDirectoryName = unicode(oldScenarioInfo.completeBaseName())
+        oldExportFileName = oldScenarioDirectoryName + ".csv" # Python elevates to unicode
+        oldExportPath = config.scenarioExportsPath + oldExportFileName # so unicode too
+        newExportFileName = scenarioDirectoryName + ".csv" # unicode
+        newExportFilePath = config.scenarioExportsPath + newExportFileName # unicode
+        
+        oldExportFile = QtCore.QFile(oldExportPath)
+        error = None
+        if oldExportFile.exists():
+            try:
+                oldExportFile.copy(newExportFilePath)
+            except (IOError, OSError), e:
+                error = unicode(e)
+            if error:
+                print error
+                QtGui.QMessageBox.warning(self, 'Deletion Error:', 'The previously saved scenario export file'\
++ oldExportFileName + ' could not be renamed.  Please try again.')
+        
+        # While the editing layers are open, copy them to the new scenario directory
+        # and record the paths to open them later.
+        scenarioDirectoryPath = unicode(config.scenariosPath + scenarioDirectoryName)
+        copyPaths = []
+        editLayerIds = []
+        for item in editLayerLegendItems:
+            vlayerId = item.layerId
+            editLayerIds.append(vlayerId)
+            vlayer = QgsMapLayerRegistry.instance().mapLayer(vlayerId)
+            vlayerName = vlayer.name() + ".shp"
+            copyPath = scenarioDirectoryPath + "/" + vlayerName
+            copyPaths.append(copyPath)
+            print "Main.mainwindow.copyScenario(): copyPath is " + copyPath
+            error = QgsVectorFileWriter.writeAsVectorFormat(vlayer, copyPath , "utf-8", 
+                                                                self.crs, "ESRI Shapefile")
+            if error != QgsVectorFileWriter.NoError:
+                QtGui.QMessageBox.warning(self, "Write Error:", "The file " + vlayerName + " \
+was not written.  Please check that a file with the same name is not open in another program.")
+                return
+            else: print "Main.mainwindow.copyScenario() Success, edit layers copied!"
+
+        # debugging
+        print "copyPaths are:"
+        print copyPaths
+        
+        # Now we can close the editing layers associated with the old scenario path
+        # and then open the ones we wrote to the new directory.  This will allow us 
+        # to save a new scenario file (i.e. '.cap' file) that contains the correct
+        # paths to the copied editing shapefiles. No need for emitting signals here.
+        self.legend.blockSignals(True)
+        self.legend.removeLayers(editLayerIds) # this method also removes the files from the registry
+        self.legend.blockSignals(False)
+        print "Main.mainwindow.copyScenario(): CLOSED OLD EDIT SHAPEFILES"
+        
+        # The old activeVLayer may have been deleted so set all associated variables to "None"
+        #  or we would get runtime errors due to the underlying C++ object being deleted.
+        # The activeVLayer will be reset when we load the layers below.
+        self.legend.setActiveLayerVariables()
+        self.originalScenarioLayers = []
+        # Open the copied editing shapefiles (they will open at the top of the layer panel)
+        # The last one opened will become the new activeVLayer
+        for path in copyPaths:
+            # return on error, openVectorLayer() provides the error message box
+            if not self.openVectorLayer(path): return
+            
+        # We opened new editing layers, so color the text of the editing and base layers.
+        # self.scenarioEditTypes = DlgScenarioEditTypes(self)
+        # The below works because the instance variable remains active
+        self.scenarioEditTypes.colorEditBaseLayers(self.legend)
+        # now position the editing layer and base layer for the current scenario edit type
+        self.scenarioEditTypes.moveEditLayer(self.legend)
+        if self.scenarioEditTypes.baseLayerName != config.polygonBaseLayersBaseNames[1]: 
+            self.scenarioEditTypes.moveBaseLayer(self.legend)
+                         
+        # Finally, write the project information to a scenario file using QgsProject
+        scenario = QgsProject.instance()
+        scenario.write(self.scenarioInfo)
+        # check for write error
+        if scenario.error():
+            QtGui.QMessageBox.warning(self, "Failed to save:", "Please check \
+if this scenario file is open in another program.")
+            # QgsProject has no "close()" method, so, if error, close the project instance
+            scenario = None
+            return
+        scenario = None # if no error close the QgsProject.instance()
+
+    def deleteOldCsvShapefile(self, csvPath, csvFileName):
+        ''' Deletes previously written shapefiles in CSV format so new ones can be written '''
+        # debugging
+        print "Main.mainwindow.deleteOldCsvShapefile()"
+
+        error = None
+        currentCsvFile = QtCore.QFile(csvPath)
+        if currentCsvFile.exists():
+            print "Main.mainwindow.delteOldCSVShapefile(): currentCsvFile exists"
+            try:
+                currentCsvFile.remove()
+            except (IOError, OSError), e:
+                error = unicode(e)
+            if error:
+                print error
+                QtGui.QMessageBox.warning(self, "Deletion Error:", "An old editing layer \
+csv file '" + csvFileName + " could not be deleted.  Please check if the file is open in \
+another program and then try again.")
+                return False
+            else: return True
+
+    def getEditLayerToExport(self, csvBaseName, scenarioDirectoryPath, fileName):
+        ''' Either open or get the layer id of an editing layer to convert to CSV format '''
+        # debugging
+        print "Main.mainwindow.getEditLayerToExport"
+        
+        # The app crashes when trying to open an already open vector layer.
+        # Even the "ogr" provider misses the IO error.  It seems impossible to trap this
+        # error with Python (i.e. try: except), so we need rely on checking 
+        # if the editing shapefile is open in the layer panel.
+        items = self.legend.findItems(csvBaseName, QtCore.Qt.MatchFixedString, 0)
+        print "Main.mainwindow.exportScenario(): length of items list is " + str(len(items))
+        if len(items) == 0:
+            # if not open, open the file without making it visible to the user
+            editingShapefilePath = scenarioDirectoryPath + "/" + fileName
+            print "current editingShapefilePath is: " + editingShapefilePath
+            vlayer = self.openHiddenVectorLayer(editingShapefilePath)
+            if not vlayer: return None # self.openHiddentVectorLayer() will notify user with msgbox
+        else:
+            vlayerId = items[0].layerId
+            vlayer = QgsMapLayerRegistry.instance().mapLayer(vlayerId)
+            return vlayer
+
 #**************************************************************
     ''' Testing '''
 #**************************************************************

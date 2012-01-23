@@ -59,6 +59,9 @@ def listOriginalFeatures(provider):
         return originalFeats
     
 def checkSelectedLayer(mainwindow, scenarioEditType, currentLayerName):
+        ''' Check to make sure the user has selected the correct 
+            editing layer when adding or pasting features 
+        '''
         # debugging
         scenarioEditTypesList = config.scenarioEditTypesList
         print "Tools.shared.checkSelectedLayer()"
@@ -229,7 +232,7 @@ def checkConstraints(mainwindow, geometry, id = None):
             print "base_streams return False value = " + unicode(identifyDict.get(QtCore.QString("Band 1")))
             if id != None:
                 text = "All pasted features must fall on the centerline of a stream (dark blue color) \
-in the base_streams layer. The feature in row " + str(id+1) + " in the attribute table of the layer you \
+in the base_streams layer. The feature in row " + unicode(id+1) + " in the attribute table of the layer you \
 copied from does not meet this constraint.  Please check all your points carefully and try again."
             else:
                 text = "The added feature must fall on the centerline of a stream (dark blue color) \
@@ -337,7 +340,7 @@ def resetIdNumbers(provider, geom):
                 if not attr.toString(): continue
                 else: 
                     print "We have the id field"
-                    idString = str(feat.id()+1) + append
+                    idString = unicode(feat.id()+1) + append
                     attrs[key] = QtCore.QVariant(idString)    
                     changedAttributes = {feat.id() : attrs} # create a "QgsChangedAttributesMap"
                     try:

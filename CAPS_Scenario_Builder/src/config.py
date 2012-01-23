@@ -36,21 +36,24 @@ The following are variables that might change over time.
 They can be altered throughout the application by changing values here.
 
 Changing field labels, field values and field names will be reflected in 
-the "Add Attributes" dialog and the editing shapefiles created for the 
+the 'Add Attributes' dialog and the editing shapefiles created for the 
 various scenario edit types.
 ''' 
    
 # Paths to important files.  These cannot change for most users without altering
 # the application installer. Sophisticated users could move these folders and change
 # the paths to the new locations here.  The paths may be relative or absolute
-baseLayersPath =  u"C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/base_layers/"
-#baseLayersPath =  u"./base_layers/"
-scenariosPath = u"C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Scenarios/" # u"./Scenarios/" #
-scenarioExportsPath = "C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Exported Scenarios/" # u"./Exported Scenarios/"
+#baseLayersPath =  'C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/base_layers/'
+baseLayersPath =  './base_layers/'
+#scenariosPath = 'C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Scenarios/' 
+scenariosPath = './Scenarios/' 
+#scenarioExportsPath = 'C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Exported Scenarios/' 
+scenarioExportsPath = './Exported Scenarios/'
+
 
 
 ''' Field names, which appear in the editing layer attribute table, for each scenario edit type. '''     
-# To change the data users input into the application in the "Add Attributes" dialog,
+# To change the data users input into the application in the 'Add Attributes' dialog,
 # a new field name for the editing shapefile attribute table must be inserted,
 # in the correct position, in the corresponding list here. Each field name must be unique,
 # so I recommend staying with the convention of a letter and underscore preceding any
@@ -66,9 +69,9 @@ inputFieldNames4 = ['newrd_id', 'newrd_rate', 'nrd_class', 'nrd_descr']
 inputFieldNames5 = ['modrd_id', 'modrd_rate', 'nrd_class', 'mrd_descr']
 inputFieldNames6 = ['ldcvr_id', 'ldcvr_cls', 'l_describe']
 
-''' Labels for the combo boxes in the "Add Attributes" dialog '''
+''' Labels for the combo boxes in the 'Add Attributes' dialog '''
 # If you add a new field label here, it will create a corresponding combo box
-# in the "Add Attributes" dialog for the corresponding scenarioEditType. A new "field values" 
+# in the 'Add Attributes' dialog for the corresponding scenarioEditType. A new 'field values' 
 # list for the new combobox's drop down list must also be added below. In addition, 
 # you must add a new field name to the fieldNames list above, so the field will be 
 # added to the editing layer attribute table when it is created on the fly. 
@@ -87,11 +90,11 @@ fieldLabels6 = ['Land cover class:']
 ''' Field values for the comboBox dropdown lists '''
 # If a fieldLabel is added above, a python list [] of field values for the
 # new combobox must be added, in the proper position, to the corresponding 
-# "list of lists" here. These will appear in the dropdown list for the comboboxes
+# 'list of lists' here. These will appear in the dropdown list for the comboboxes
 # corresponding to the scenario edit type. Each integer appended
-#  to "comboBoxOptions" represents a scenario edit type.  Each scenario
+#  to 'comboBoxOptions' represents a scenario edit type.  Each scenario
 # edit type must have a dropdown list for each comboBox needed for that edit type.  Thus we 
-# have a "list of lists" for each edit type
+# have a 'list of lists' for each edit type
 comboBoxOptions0 = [['', '1.0 - Full passage', '0.8 - Minor barrier', '0.6 - Moderate barrier', 
                  '0.4 - Significant barrier', '0.2 - Severe barrier'], ['', '1.0 - Full passage (bear, moose)', 
                  '0.75 - Large animals (fox, coyote, fisher, bobcat, otter)', 
@@ -139,52 +142,52 @@ editPointsFields = (inputFieldNames0 + inputFieldNames1
 editLinesFields = inputFieldNames4 # 4 fields
 editPolygonsFields = inputFieldNames5 + inputFieldNames6 # 7 fields
 
-# The list of scenario edit types for populating the "Edit Scenario" dialog.
-# Changing these values will only change the names shown in the "ScenarioEditTypes" dialog
+# The list of scenario edit types for populating the 'Edit Scenario' dialog.
+# Changing these values will only change the names shown in the 'ScenarioEditTypes' dialog
 # Adding a value here will NOT create a new scenario type complete with base layers
 # and editing shapefile fields.
-scenarioEditTypesList = ["Culverts/bridges (points)", "Dams (points)",  
-                          "Terrestrial passage structures (points)", "Tidal restrictions (points)",
-                          "Add roads (lines)", "Modify roads (polygons)",        
-                          "Land cover change (polygons)"]
+scenarioEditTypesList = ['Culverts/bridges (points)', 'Dams (points)',  
+                          'Terrestrial passage structures (points)', 'Tidal restrictions (points)',
+                          'Add roads (lines)', 'Modify roads (polygons)',        
+                          'Land cover change (polygons)']
 
 # The below are used in various places to check that correct layers are active for editing operations.
 # The spelling of these names can be changed, but not the number of them.
-pointBaseLayersBaseNames = ["base_culverts_bridges", "base_dams", "base_terrestrial_passage",
-                             "base_tidal_restrictions"]
-lineBaseLayersBaseNames = ["base_traffic"]
-polygonBaseLayersBaseNames = ["base_traffic", "base_land"]
+pointBaseLayersBaseNames = ['base_culverts_bridges', 'base_dams', 'base_terrestrial_passage',
+                             'base_tidal_restrictions']
+lineBaseLayersBaseNames = ['base_traffic']
+polygonBaseLayersBaseNames = ['base_traffic', 'base_land']
 
 # This is used to warn users of slow loading attribute tables.
-slowLoadingLayers = ["base_culverts_bridges"]
+slowLoadingLayers = ['base_culverts_bridges']
 
 # names of just the editing layers (used in Main.legend.removeCurrentLayer()
 # and Main.mainwindow.deleteFeatures()).  These should not be changed unless
 # major changes are made to the application.
-editLayersBaseNames = ["edit_scenario(points)", "edit_scenario(lines)",
-                       "edit_scenario(polygons)"]
+editLayersBaseNames = ['edit_scenario(points)', 'edit_scenario(lines)',
+                       'edit_scenario(polygons)']
 
 # These are the lists of layers that open when the app is first opened
-# or when the "New Scenario" action is clicked.  The orienting layers that
+# or when the 'New Scenario' action is clicked.  The orienting layers that
 # open can be changed by changing the lists below, assuming they exist in the 
 # config.baseLayersPath folder. Layers open in the order they appear in the lists.
 # Raster layers open before vector layers, and the layers will be stacked in 
 # the opening order with the first layer opened on the bottom in the layer panel 
 # (i.e. legend).
-orientingRasterLayers = ["USGS.SID", "base_land.tif", "base_streams.tif", "base_traffic.tif"]
-orientingVectorLayers = ["base_towns.shp"]
+orientingRasterLayers = ['USGS.SID', 'base_land.tif', 'base_streams.tif', 'base_traffic.tif']
+orientingVectorLayers = ['base_towns.shp']
 allOrientingLayers = orientingRasterLayers + orientingVectorLayers
 
 # Orienting base layer names can be added here to make them visible (i.e. checked)
 # when they are opened.
-baseLayersChecked = ["base_towns"]
+baseLayersChecked = ['base_towns']
 
 # A list of the non-orienting base layers and editing layers. 
 # Main.dlgscenarioedittypes.hideEditBaseLayers() uses this list to hide (uncheck) unneeded layers.
 # Adding a name to this list will hide (uncheck) that layer if not needed when opening a
 # new scenario edit type. 
-hideEditLayers = ["edit_scenario(points)", "edit_scenario(lines)",
-                       "edit_scenario(polygons)", "base_culverts_bridges", "base_dams",
-                        "base_terrestrial_passage", "base_tidal_restrictions", "base_traffic"]
+hideEditLayers = ['edit_scenario(points)', 'edit_scenario(lines)',
+                       'edit_scenario(polygons)', 'base_culverts_bridges', 'base_dams',
+                        'base_terrestrial_passage', 'base_tidal_restrictions', 'base_traffic']
 
 ############################################################################################

@@ -12,19 +12,20 @@
 # 
 # This file is part of CAPS.
 
-#CAPS is free software: you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation, either version 3 of the License, or
-#(at your option) any later version.
+# CAPS is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-#CAPS is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# CAPS is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-#You should have received a copy of the GNU General Public License
-#along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
-
+# You should have received a copy of the GNU General Public License
+# along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+#---------------------------------------------------------------------------
+ 
 # PyQt4 includes for python bindings to QT
 from PyQt4 import QtCore, QtGui 
 # QGIS bindings for mapping functions
@@ -69,13 +70,13 @@ class Identify(QgsMapTool):
         # debugging
         print "identify.rasterIdentifyTool()"
 
-        text = "The clicked x,y point is (" + str(qgsPoint.x()) + ", " + str(qgsPoint.y()) + ")\n"
+        text = "The clicked x,y point is (" + unicode(round(qgsPoint.x(), 2)) + ", " + u(round(qgsPoint.y(), 2)) + ")\n"
         # this QgsVectorLayer method returns a tuple consisting of the bool result (success = True) 
         # and a dictionary with the key being the band names of the raster and the values
         # being the values at the clicked point.
         result, identifyDict = self.mainwindow.activeRLayer.identify(qgsPoint)
         for (k,v) in identifyDict.iteritems():
-            text += str(k) + " value: " + str(v) + "\n"
+            text += unicode(k) + " value: " + unicode(v) + "\n"
         if not result: # if the identify method fails
             print "Identify raster layer failed"
         

@@ -14,21 +14,20 @@
 # 
 # This file is part of CAPS.
 
-#CAPS is free software: you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation, either version 3 of the License, or
-#(at your option) any later version.
+# CAPS is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-#CAPS is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# CAPS is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-#You should have received a copy of the GNU General Public License
-#along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+# You should have received a copy of the GNU General Public License
+# along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
 # 
 #---------------------------------------------------------------------
-
 # import Qt libraries
 from PyQt4 import QtCore, QtGui
 # import qgis API
@@ -70,9 +69,11 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         # debugging
         print "DlgScenarioEditTypes.accept()"
         
+        # The user has clicked "OK," so we have entered edit mode
+        self.mainwindow.editMode = True
+        
         # we are starting a new edit type, so disable previous edit actions 
-        #(i.e. Add points, lines, polygons) 
-        self.mainwindow.disableEditActions()
+        self.mainwindow.disableEditActions() #(i.e. Add points, lines, polygons) 
         
         # set needed variables
         self.editLayer = None
@@ -81,10 +82,10 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         self.editLayerOpen = False
         self.baseLayerOpen = False
         legend = self.mainwindow.legend
-
+        
         # Get the scenario type chosen from the dialog and save
         # to a main window variable for use in other modules
-        scenarioEditType = unicode(self.typesComboBox.currentText())
+        scenarioEditType = unicode(self.typesComboBox.currentText()) # convert the QString
         self.mainwindow.scenarioEditType = scenarioEditType
 
         # get the needed editingLayer and baseLayer names for the current scenarioEditType
@@ -92,16 +93,13 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         
         # set paths (edit file directory has same name as the scenario file (i.e. somedirectory.caps))
         self.baseLayersPath = config.baseLayersPath
-        #self.dataDirectoryPath = config.dataDirectoryPath
         self.scenariosPath = config.scenariosPath
+
         # the QFileInfo for the scenario file path
-        self.scenarioInfo = self.mainwindow.scenarioInfo
-        self.scenarioDirectory = unicode(self.mainwindow.scenarioInfo.completeBaseName()) 
-        self.baseFilePath = unicode(self.baseLayersPath + self.baseLayerFileName)
-        #self.editLayerPath = unicode(self.scenariosPath + self.scenarioDirectory
-        #                                                     + self.editLayer + ".shp")
-        self.newEditLayerPath = unicode(config.scenariosPath + 
-                                 self.scenarioDirectory + "/" + self.editLayer + ".shp")
+        self.scenarioInfo = self.mainwindow.scenarioInfo # is an object
+        self.scenarioDirectory = unicode(self.mainwindow.scenarioInfo.completeBaseName()) # was a QString
+        self.baseFilePath = (self.baseLayersPath + self.baseLayerFileName)
+        self.newEditLayerPath = (config.scenariosPath + self.scenarioDirectory + "/" + self.editLayer + ".shp")
 
         # see if the editLayer or baseLayer is open in the layer panel
         self.isEditLayerOpen(legend)
@@ -165,11 +163,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         self.hide()    
 
     def reject(self):
-        print "Main.DlgScenarioEditTypes.reject(): user closed the dialog"
-        # reset the edit scenario button
-        self.mainwindow.mpActionEditScenario.blockSignals(True)
-        self.mainwindow.mpActionEditScenario.setChecked(False)
-        self.mainwindow.mpActionEditScenario.blockSignals(False)
+        print "DlgScenarioEditTypes.reject(): user closed the dialog"
         self.hide()
         return
     
@@ -182,7 +176,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         if scenarioEditType == self.scenarioEditTypesList[0]:
             self.editLayer = config.editLayersBaseNames[0]
             self.baseLayerName = config.pointBaseLayersBaseNames[0]
-            self.baseLayerFileName = config.pointBaseLayersBaseNames[0] + ".shp"
+            self.baseLayerFileName = config.pointBaseLayersBaseNames[0] + ".shp" 
         elif scenarioEditType == self.scenarioEditTypesList[1]:
             self.editLayer = config.editLayersBaseNames[0]
             self.baseLayerName = config.pointBaseLayersBaseNames[1]
@@ -212,7 +206,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
     def isEditLayerOpen(self, legend):
         ''' Check if editLayer or baseLayer is open in the layer panel '''
         # debugging
-        print "isEditLayerOpen()"
+        print "DlgScenarioEditTypes.isEditLayerOpen()"
         
         items = legend.findItems(self.editLayer, QtCore.Qt.MatchFixedString, 0)
         print "length of item list is " + str(len(items))
@@ -221,7 +215,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
     def isBaseLayerOpen(self, legend):
         ''' Check if editLayer or baseLayer is open in the layer panel '''
         # debugging
-        print "isBaseLayerOpen()"
+        print "DlgScenarioEditTypes.isBaseLayerOpen()"
         
         items = legend.findItems(self.baseLayerName, QtCore.Qt.MatchFixedString, 0)
         print "length of item list is " + str(len(items))
@@ -230,9 +224,9 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
     def writeNewEditingShapefile(self):
         ''' Write a new editing shapefile for the current scenario type '''
         # debugging
-        print "writeNewEditingShapefile()"
+        print "DlgScenarioEditTypes.writeNewEditingShapefile()"
         
-        if "points" in self.editLayer:
+        if "points" in self.editLayer: 
             values = config.editPointsFields
             keys = range(len(config.editPointsFields))
             geometry = QGis.WKBPoint
@@ -261,7 +255,8 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         print "the fields dictionary is "
         for field in fields.values(): print field.name()
 
-        path = QtCore.QString(self.newEditLayerPath)
+        #path = QtCore.QString(self.newEditLayerPath)
+        path = self.newEditLayerPath
         writer = QgsVectorFileWriter(path, "utf-8", fields, geometry, self.mainwindow.crs, "ESRI Shapefile")
         
         if writer.hasError() != QgsVectorFileWriter.NoError:
@@ -270,7 +265,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
     def openBaseLayer(self):
         ''' Open the baseLayer needed for the current scenarioEditType '''
         # debugging
-        print "openBaseLayer()"
+        print "DlgScenarioEditTypes.openBaseLayer()"
         
         # if the file exists, open it (automatically goes to the top of the layer panel)
         baseFile = QtCore.QFile(self.baseFilePath)
@@ -302,13 +297,15 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         ''' Move the needed editLayer to the top of the layer panel
             and select, check and make visible.
         '''
-        # debugging
-        print "moveEditLayer()" 
         items = legend.findItems(self.editLayer, QtCore.Qt.MatchFixedString, 0)
-        print "length of item list is " + str(len(items))
         itemToMove = items[0]
+        
+        # debugging
+        print "DlgScenarioEditTypes.moveEditLayer()" 
+        print "length of item list is " + str(len(items))
         print "is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
         print "item to move is " + itemToMove.text(0)
+        
         # just moving edit layer, no need for signals
         legend.blockSignals(True)
         itemToMove.storeAppearanceSettings() # Store settings 
@@ -323,14 +320,15 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         ''' Move the needed baseLayer to second the layer panel, 
             check and make visible.
         '''
-        # debugging
-        print "moveBaseLayer()"
-
         items = legend.findItems(self.baseLayerName, QtCore.Qt.MatchFixedString, 0)
-        print "length of item list is " + str(len(items))
         itemToMove = items[0]
+        
+        # debugging
+        print "DlgScenarioEditTypes.moveBaseLayer()"
+        print "length of item list is " + str(len(items))
         print "is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
         print "item to move is " + itemToMove.text(0)
+        
         # just moving base layer, no need for signals 
         legend.blockSignals(True) # just moving layers, no need to signal
         itemToMove.storeAppearanceSettings() # Store settings 
@@ -338,15 +336,15 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         legend.insertTopLevelItem(1, itemToMove)
         itemToMove.restoreAppearanceSettings()
         legend.blockSignals(False)
-        #itemToMove.setCheckState(0, QtCore.Qt.Checked)
+        itemToMove.setCheckState(0, QtCore.Qt.Checked)
         
     def colorEditBaseLayers(self, legend):
         ''' A method to highlight the edit layer and base layer for the
             current scenario edit type.
         '''
+        # First remove any previous highlighting
         brush = QtGui.QBrush()
         brush.setColor(QtCore.Qt.black)
-        # First remove any previous highlighting
         for i in range(legend.topLevelItemCount()):
             legend.topLevelItem(i).setForeground(0, brush)
     

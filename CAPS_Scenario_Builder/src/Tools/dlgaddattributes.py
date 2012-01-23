@@ -55,10 +55,9 @@ class DlgAddAttributes(QtGui.QDialog):
         i = 0
         while i < len(scenarioEditTypesList):
             if scenarioEditTypesList[i] == scenarioEditType:
-                self.fieldLabels = eval("config.fieldLabels" + str(i))
-                self.comboBoxOptions = eval("config.comboBoxOptions" + str(i))
-                self.inputFieldNames = eval("config.inputFieldNames" + str(i))
-                #self.valuesDictionaryList = eval("config.valuesDictionaryList" + str(i))
+                self.fieldLabels = eval("config.fieldLabels" + unicode(i))
+                self.comboBoxOptions = eval("config.comboBoxOptions" + unicode(i))
+                self.inputFieldNames = eval("config.inputFieldNames" + unicode(i))
                 break
             i += 1
         else:
@@ -93,6 +92,7 @@ class DlgAddAttributes(QtGui.QDialog):
             
             # make each combo box
             self.comboBoxWidgets[c] = QtGui.QComboBox(self)
+            self.comboBoxWidgets[c].setEditable(True)
             self.comboBoxWidgets[c].setObjectName(comboBoxName)
             self.comboBoxWidgets[c].addItems(self.comboBoxOptions[c])
             self.gridLayout.addWidget(self.comboBoxWidgets[c], c, 1, 1, 1)
