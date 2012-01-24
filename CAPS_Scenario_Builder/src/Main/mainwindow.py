@@ -603,7 +603,7 @@ make some edits to your scenario and try again.")
         QtGui.QMessageBox.information(self, 'Export Succeeded:', "The export file is named "\
  + exportFileName + ". It can be found in " + findExportPath)
      
-# Methods -----------------------------------------------------------------------------------------------    
+    # Scenario Methods -----------------------------------------------------------------------------------------------    
     
     def getEditLayerToExport(self, csvBaseName, scenarioDirectoryPath, fileName):
         '''Scenario method to get the layer id of an editing layer to convert to CSV format '''

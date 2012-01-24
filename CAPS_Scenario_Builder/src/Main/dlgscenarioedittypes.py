@@ -49,7 +49,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         self.scenarioEditTypesList = config.scenarioEditTypesList
 
         # debugging
-        print "Class DlgScenarioEditTypes() scenarioEditTypesList is: "
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes() scenarioEditTypesList is: "
         print self.scenarioEditTypesList
         
         # add the scenario types list to the combo box drop down
@@ -64,10 +64,10 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
     
     def accept(self):
         ''' User has chosen a scenario type to edit, so
-            Open needed layers for the scenario change type 
+            open needed layers for the scenario change type 
         '''
         # debugging
-        print "DlgScenarioEditTypes.accept()"
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().accept()"
         
         # The user has clicked "OK," so we have entered edit mode
         self.mainwindow.editMode = True
@@ -76,11 +76,15 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         self.mainwindow.disableEditActions() #(i.e. Add points, lines, polygons) 
         
         # set needed variables
-        self.editLayer = None
-        self.baseLayerName = None
+        self.editLayerBaseName = None
+        self.editLayerFileName = None
+        self.baseLayerBaseName = None
         self.baseLayerFileName = None
+        self.constraintLayerBaseName = None
+        self.constraintLayerFileName = None
         self.editLayerOpen = False
         self.baseLayerOpen = False
+        self.constraintLayerOpen = False
         legend = self.mainwindow.legend
         
         # Get the scenario type chosen from the dialog and save
@@ -88,33 +92,47 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         scenarioEditType = unicode(self.typesComboBox.currentText()) # convert the QString
         self.mainwindow.scenarioEditType = scenarioEditType
 
-        # get the needed editingLayer and baseLayer names for the current scenarioEditType
-        self.getEditAndBaseLayerNames(scenarioEditType)
+        # get the needed editingLayer, baseLayer and constraintLayer names for the current scenarioEditType
+        # note that some names may have a value of None
+        self.getEditBaseConstraintLayerNames(scenarioEditType)
         
         # set paths (edit file directory has same name as the scenario file (i.e. somedirectory.caps))
         self.baseLayersPath = config.baseLayersPath
         self.scenariosPath = config.scenariosPath
 
+        # I convert QStrings to unicode unless they are used immediately in a Qt method. 
+        # This ensures that we never ask Python to slice a QString, which produces a type error.
         # the QFileInfo for the scenario file path
         self.scenarioInfo = self.mainwindow.scenarioInfo # is an object
-        self.scenarioDirectory = unicode(self.mainwindow.scenarioInfo.completeBaseName()) # was a QString
-        self.baseFilePath = (self.baseLayersPath + self.baseLayerFileName)
-        self.newEditLayerPath = (config.scenariosPath + self.scenarioDirectory + "/" + self.editLayer + ".shp")
+        self.scenarioDirectory = unicode(self.mainwindow.scenarioInfo.completeBaseName())
+        self.newEditLayerPath = (config.scenariosPath + self.scenarioDirectory + "/" + self.editLayerFileName) 
+        self.baseFilePath = None
+        if self.baseLayerFileName: # The Add roads (lines) scenario edit type has no base layer
+            self.baseFilePath = (self.baseLayersPath + self.baseLayerFileName)
+        self.constraintFilePath = None
+        if self.constraintLayerFileName: # The polygon scenario edit types do not have constraints
+            self.constraintFilePath = (self.baseLayersPath + self.constraintLayerFileName)
 
-        # see if the editLayer or baseLayer is open in the layer panel
-        self.isEditLayerOpen(legend)
-        self.isBaseLayerOpen(legend)
-        
+        # see if the editLayer, baseLayer or constraintLayer is open in the layer panel
+        self.editLayerOpen = self.isLayerOpen(legend, self.editLayerBaseName)
+        self.baseLayerOpen = self.isLayerOpen(legend, self.baseLayerBaseName)
+        self.constraintLayerOpen = self.isLayerOpen(legend, self.constraintLayerBaseName)
+ 
         # debugging
-        print "The self.scenarioEditType is " + scenarioEditType 
-        print "The self.editingLayer is " + self.editLayer
-        print "The self.baseLayerName is " + self.baseLayerName
-        print "The self.baseLayerFileName is " + self.baseLayerFileName
-        print "The self.editLayerOpen flag is " + str(self.editLayerOpen)
-        print "The self.baseLayerOpen flag is " + str(self.editLayerOpen)
-        print "self.newEditLayerPath is " + self.newEditLayerPath
-        print "The self.baseFilePath is " + self.baseFilePath
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.scenarioEditType is " + scenarioEditType 
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.editLayerBaseName is " + self.editLayerBaseName
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.baseLayerBaseName is " + str(self.baseLayerBaseName)
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.constraintLayerBaseName is " + str(self.constraintLayerBaseName)
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.baseLayerFileName is " + str(self.baseLayerFileName)
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.constraintLayerFileName is " + str(self.constraintLayerFileName)
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.editLayerOpen flag is " + str(self.editLayerOpen)
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.baseLayerOpen flag is " + str(self.baseLayerOpen)
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.constraintLayerOpen flag is " + str(self.constraintLayerOpen)
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.newEditLayerPath is " + self.newEditLayerPath
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.baseFilePath is " + str(self.baseFilePath)
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.constraintFilePath is " + str(self.constraintFilePath)
       
+        
         # if the edit layer is not open, create it
         # note: If the edit layer is not open in the scenario, then it does not exist because
         # the edit layer is deleted if removed from the scenario. This is done to ensure that 
@@ -129,36 +147,40 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
                 self.hide()
                 return
         
-        # if the base layer is not open then open it
-        if not self.baseLayerOpen: self.openBaseLayer()
+        # if the base or constraint layer is not open then open it
+        if not self.baseLayerOpen and self.baseFilePath:
+            self.openBaseOrConstaintsLayer(self.baseFilePath)
+        if not self.constraintLayerOpen and self.constraintFilePath: 
+            self.openConstraintLayer(self.constraintFilePath)
  
         # now that the layers are open, highlight them
-        self.colorEditBaseLayers(legend)
+        self.colorEditBaseConstraintLayers(legend)
             
         ''' Set the position and visibility of needed edit and base layers '''      
         
         # First, hide all edit layers and base layers not used for orientation.
         self.hideEditBaseLayers(legend)
-
                     
         # Move the needed editing layer to the top, select, check and make visible.
         # The edit layer goes to position 0, and must be moved before the 
         # baselayer (position 1).  If the base layer is moved to position 1 first, 
         # and a layer other than the correct editLayer is at position 0, then the
         # baseLayer will end up at position 3 when the correct edit layer is inserted.
-        self.moveEditLayer(legend)
+        self.moveLayer(legend, self.editLayerBaseName, 0)
    
-        # Move the needed base layer to second in list, check and make visible
+        # If it exists in this scenario edit type, move the needed base layer to second in list, 
+        # check and make visible.
         # We do not want to change position or visibility of the orienting base layer, "base_land"
-        if self.baseLayerName != config.polygonBaseLayersBaseNames[1]: self.moveBaseLayer(legend)
-      
-        # I like the towns layer to be selected so if it is open, I do it here.
-        for checked in config.baseLayersChecked:
-            items = legend.findItems(checked, QtCore.Qt.MatchFixedString, 0)
-            print "the length of items is " + str(len(items))
-            if len(items) > 0:
-                item = items[0]
-                item.setCheckState(0, QtCore.Qt.Checked)
+        if self.baseLayerBaseName and self.baseLayerBaseName != config.polygonBaseLayersBaseNames[1]: 
+            self.moveLayer(legend, self.baseLayerBaseName, 1)
+        
+        # If it exists in this scenario edit type, move the needed constraint layer 
+        # to third in list, check and make visible
+        if self.constraintLayerBaseName:
+            if self.baseLayerBaseName: position = 2
+            else: position = 1 
+            self.moveLayer(legend, self.constraintLayerBaseName, position)
+
         self.setResult(1)
         self.hide()    
 
@@ -171,72 +193,80 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
     ''' Core methods '''   
 #################################################################################
     
-    def getEditAndBaseLayerNames(self, scenarioEditType):
+    def getEditBaseConstraintLayerNames(self, scenarioEditType):
         ''' Get the needed editingLayer and baseLayer file names '''
         if scenarioEditType == self.scenarioEditTypesList[0]:
-            self.editLayer = config.editLayersBaseNames[0]
-            self.baseLayerName = config.pointBaseLayersBaseNames[0]
-            self.baseLayerFileName = config.pointBaseLayersBaseNames[0] + ".shp" 
+            self.editLayerBaseName = config.editLayersBaseNames[0]
+            self.editLayerFileName = config.editLayersFileNames[0]
+            self.baseLayerBaseName = config.pointBaseLayersBaseNames[0]
+            self.baseLayerFileName = config.pointBaseLayersFileNames[0]
+            self.constraintLayerBaseName = config.scenarioConstraintLayersBaseNames[0]
+            self.constraintLayerFileName = config.scenarioConstraintLayersFileNames[0]
         elif scenarioEditType == self.scenarioEditTypesList[1]:
-            self.editLayer = config.editLayersBaseNames[0]
-            self.baseLayerName = config.pointBaseLayersBaseNames[1]
-            self.baseLayerFileName = config.pointBaseLayersBaseNames[1] + ".shp"
+            self.editLayerBaseName = config.editLayersBaseNames[0]
+            self.editLayerFileName = config.editLayersFileNames[0]
+            self.baseLayerBaseName = config.pointBaseLayersBaseNames[1]
+            self.baseLayerFileName = config.pointBaseLayersFileNames[1]
+            self.constraintLayerBaseName = config.scenarioConstraintLayersBaseNames[0]
+            self.constraintLayerFileName = config.scenarioConstraintLayersFileNames[0]
         elif scenarioEditType == self.scenarioEditTypesList[2]:
-            self.editLayer = config.editLayersBaseNames[0]
-            self.baseLayerName = config.pointBaseLayersBaseNames[2]
-            self.baseLayerFileName = config.pointBaseLayersBaseNames[2] + ".shp"
+            self.editLayerBaseName = config.editLayersBaseNames[0]
+            self.editLayerFileName = config.editLayersFileNames[0]
+            self.baseLayerBaseName = config.pointBaseLayersBaseNames[2]
+            self.baseLayerFileName = config.pointBaseLayersFileNames[2]
+            self.constraintLayerBaseName = config.scenarioConstraintLayersBaseNames[1]
+            self.constraintLayerFileName = config.scenarioConstraintLayersFileNames[1]
         elif scenarioEditType == self.scenarioEditTypesList[3]:
-            self.editLayer = config.editLayersBaseNames[0]
-            self.baseLayerName = config.pointBaseLayersBaseNames[3]
-            self.baseLayerFileName = config.pointBaseLayersBaseNames[3] + ".shp"
+            self.editLayerBaseName = config.editLayersBaseNames[0]
+            self.editLayerFileName = config.editLayersFileNames[0]
+            self.baseLayerBaseName = config.pointBaseLayersBaseNames[3]
+            self.baseLayerFileName = config.pointBaseLayersFileNames[3]
+            self.constraintLayerBaseName = config.scenarioConstraintLayersBaseNames[0]
+            self.constraintLayerFileName = config.scenarioConstraintLayersFileNames[0]
         elif scenarioEditType == self.scenarioEditTypesList[4]:
-            self.editLayer = config.editLayersBaseNames[1]
-            self.baseLayerName = config.lineBaseLayersBaseNames[0]
-            self.baseLayerFileName = config.lineBaseLayersBaseNames[0] + ".tif"
+            self.editLayerBaseName = config.editLayersBaseNames[1]
+            self.editLayerFileName = config.editLayersFileNames[1]
+            self.constraintLayerBaseName = config.scenarioConstraintLayersBaseNames[1]
+            self.constraintLayerFileName = config.scenarioConstraintLayersFileNames[1]
         elif scenarioEditType == self.scenarioEditTypesList[5]:
-            self.editLayer = config.editLayersBaseNames[2]
-            self.baseLayerName = config.polygonBaseLayersBaseNames[0]
-            self.baseLayerFileName = config.polygonBaseLayersBaseNames[0] + ".tif"
+            self.editLayerBaseName = config.editLayersBaseNames[2]
+            self.editLayerFileName = config.editLayersFileNames[2]
+            self.baseLayerBaseName = config.polygonBaseLayersBaseNames[0]
+            self.baseLayerFileName = config.polygonBaseLayersFileNames[0]
         elif scenarioEditType == self.scenarioEditTypesList[6]:
-            self.editLayer = config.editLayersBaseNames[2]    
-            self.baseLayerName = config.polygonBaseLayersBaseNames[1]
-            self.baseLayerFileName = config.polygonBaseLayersBaseNames[1] + ".tif"
+            self.editLayerBaseName = config.editLayersBaseNames[2]
+            self.editLayerFileName = config.editLayersFileNames[2]    
+            self.baseLayerBaseName = config.polygonBaseLayersBaseNames[1]
+            self.baseLayerFileName = config.polygonBaseLayersFileNames[1]
         else: print "No baseLayer Found"    
 
-    def isEditLayerOpen(self, legend):
+    def isLayerOpen(self, legend, layerBaseName):
         ''' Check if editLayer or baseLayer is open in the layer panel '''
         # debugging
         print "DlgScenarioEditTypes.isEditLayerOpen()"
         
-        items = legend.findItems(self.editLayer, QtCore.Qt.MatchFixedString, 0)
+        if not layerBaseName: return False # if this layers name is None
+        items = legend.findItems(layerBaseName, QtCore.Qt.MatchFixedString, 0)
         print "length of item list is " + str(len(items))
-        if len(items) > 0: self.editLayerOpen = True # set the editLayerOpen flag
-
-    def isBaseLayerOpen(self, legend):
-        ''' Check if editLayer or baseLayer is open in the layer panel '''
-        # debugging
-        print "DlgScenarioEditTypes.isBaseLayerOpen()"
-        
-        items = legend.findItems(self.baseLayerName, QtCore.Qt.MatchFixedString, 0)
-        print "length of item list is " + str(len(items))
-        if len(items) > 0: self.baseLayerOpen = True # set the editLayerOpen flag
-   
+        if len(items) > 0: return True
+        else: return False # set the editLayerOpen flag
+  
     def writeNewEditingShapefile(self):
         ''' Write a new editing shapefile for the current scenario type '''
         # debugging
         print "DlgScenarioEditTypes.writeNewEditingShapefile()"
         
-        if "points" in self.editLayer: 
+        if "points" in self.editLayerBaseName: 
             values = config.editPointsFields
             keys = range(len(config.editPointsFields))
             geometry = QGis.WKBPoint
             print "points"
-        elif "lines" in self.editLayer:
+        elif "lines" in self.editLayerBaseName:
             values = config.editLinesFields
             keys = range(len(config.editLinesFields))
             geometry = QGis.WKBLineString
             print "lines"
-        elif "polygons" in self.editLayer:
+        elif "polygons" in self.editLayerBaseName:
             values = config.editPolygonsFields
             keys = range(len(config.editPolygonsFields))
             geometry = QGis.WKBPolygon
@@ -262,24 +292,24 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         if writer.hasError() != QgsVectorFileWriter.NoError:
             print "Error when creating shapefile: ", writer.hasError()
     
-    def openBaseLayer(self):
+    def openBaseOrConstaintsLayer(self, filePath):
         ''' Open the baseLayer needed for the current scenarioEditType '''
         # debugging
-        print "DlgScenarioEditTypes.openBaseLayer()"
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().openBaseLayer()"
         
         # if the file exists, open it (automatically goes to the top of the layer panel)
-        baseFile = QtCore.QFile(self.baseFilePath)
-        baseFileName = baseFile.fileName()
-        print "baseFile.fileName() is " + baseFile.fileName()
+        qFile = QtCore.QFile(filePath)
+        fileName = qFile.fileName()
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().openBaseLayer(): the fileName is " + fileName
         
-        if baseFile.exists():
-            print "baseFile exists is True"
-            if ".shp" in baseFileName: self.mainwindow.openVectorLayer(self.baseFilePath)
-            else: self.mainwindow.openRasterLayer(self.baseFilePath)
+        if qFile.exists():
+            print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().openBaseLayer(): file exists is True"
+            if ".shp" in fileName: self.mainwindow.openVectorLayer(filePath)
+            else: self.mainwindow.openRasterLayer(filePath)
         else:
             QtGui.QMessageBox.warning(self, "File Error", "The needed base file, "\
-                                                + self.baseLayerFileName + ", could not be found.")
-        
+                                                + self.fileName + ", could not be found.")
+       
     def hideEditBaseLayers(self, legend):
         ''' Hide all edit layers and base layers not used for orientation '''
         hideList = config.hideEditLayers
@@ -293,52 +323,30 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
                 legend.blockSignals( False )
                 print "unchecked " + str(items[0].canvasLayer.layer().name())
 
-    def moveEditLayer(self, legend):
+    def moveLayer(self, legend, layerBaseName, position):
         ''' Move the needed editLayer to the top of the layer panel
             and select, check and make visible.
         '''
-        items = legend.findItems(self.editLayer, QtCore.Qt.MatchFixedString, 0)
+        items = legend.findItems(layerBaseName, QtCore.Qt.MatchFixedString, 0)
         itemToMove = items[0]
         
         # debugging
-        print "DlgScenarioEditTypes.moveEditLayer()" 
-        print "length of item list is " + str(len(items))
-        print "is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
-        print "item to move is " + itemToMove.text(0)
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveEditLayer()" 
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveEditLayer(): length of item list is " + str(len(items))
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveEditLayer(): is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveEditLayer(): item to move is " + itemToMove.text(0)
         
         # just moving edit layer, no need for signals
         legend.blockSignals(True)
         itemToMove.storeAppearanceSettings() # Store settings 
         legend.takeTopLevelItem(legend.indexOfTopLevelItem(itemToMove))
-        legend.insertTopLevelItem(0, itemToMove)
+        legend.insertTopLevelItem(position, itemToMove)
         itemToMove.restoreAppearanceSettings()
         legend.blockSignals(False)
         legend.setCurrentItem(itemToMove)
         itemToMove.setCheckState(0, QtCore.Qt.Checked)
-    
-    def moveBaseLayer(self, legend):
-        ''' Move the needed baseLayer to second the layer panel, 
-            check and make visible.
-        '''
-        items = legend.findItems(self.baseLayerName, QtCore.Qt.MatchFixedString, 0)
-        itemToMove = items[0]
         
-        # debugging
-        print "DlgScenarioEditTypes.moveBaseLayer()"
-        print "length of item list is " + str(len(items))
-        print "is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
-        print "item to move is " + itemToMove.text(0)
-        
-        # just moving base layer, no need for signals 
-        legend.blockSignals(True) # just moving layers, no need to signal
-        itemToMove.storeAppearanceSettings() # Store settings 
-        legend.takeTopLevelItem(legend.indexOfTopLevelItem(itemToMove))
-        legend.insertTopLevelItem(1, itemToMove)
-        itemToMove.restoreAppearanceSettings()
-        legend.blockSignals(False)
-        itemToMove.setCheckState(0, QtCore.Qt.Checked)
-        
-    def colorEditBaseLayers(self, legend):
+    def colorEditBaseConstraintLayers(self, legend):
         ''' A method to highlight the edit layer and base layer for the
             current scenario edit type.
         '''
@@ -351,15 +359,22 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         # now color the layers
         color = QtGui.QColor(0, 0, 255)
         brush.setColor(color) # (QtCore.Qt.darkGreen)
-        editItems = legend.findItems(self.editLayer, QtCore.Qt.MatchFixedString, 0)
+        editItems = legend.findItems(self.editLayerBaseName, QtCore.Qt.MatchFixedString, 0)
         editItems[0].setForeground(0, brush)
-        baseItems = legend.findItems(self.baseLayerName, QtCore.Qt.MatchFixedString, 0)
-        baseItems[0].setForeground(0, brush)
+        if self.baseLayerBaseName:
+            baseItems = legend.findItems(self.baseLayerBaseName, QtCore.Qt.MatchFixedString, 0)
+            baseItems[0].setForeground(0, brush)
+        if self.constraintLayerBaseName:
+            constraintItems = legend.findItems(self.constraintLayerBaseName, QtCore.Qt.MatchFixedString, 0)
+            constraintItems[0].setForeground(0, brush)
         
         #debugging
         print "Main.dlgscenariotypes.colorEditBaseLayers()"
         print "The edit layer name is: " + editItems[0].text(0)
-        print "The base layer name is: " + baseItems[0].text(0)
+        if self.baseLayerBaseName:
+            print "The base layer name is: " + baseItems[0].text(0)
+        if self.constraintLayerBaseName:
+            print "The constraint layer name is: " + constraintItems[0].text(0) 
         print "The brush color is: " + str(brush.color())
         
         

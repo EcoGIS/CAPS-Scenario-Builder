@@ -50,8 +50,6 @@ scenariosPath = './Scenarios/'
 #scenarioExportsPath = 'C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Exported Scenarios/' 
 scenarioExportsPath = './Exported Scenarios/'
 
-
-
 ''' Field names, which appear in the editing layer attribute table, for each scenario edit type. '''     
 # To change the data users input into the application in the 'Add Attributes' dialog,
 # a new field name for the editing shapefile attribute table must be inserted,
@@ -148,15 +146,22 @@ editPolygonsFields = inputFieldNames5 + inputFieldNames6 # 7 fields
 # and editing shapefile fields.
 scenarioEditTypesList = ['Culverts/bridges (points)', 'Dams (points)',  
                           'Terrestrial passage structures (points)', 'Tidal restrictions (points)',
-                          'Add roads (lines)', 'Modify roads (polygons)',        
+                          'Add roads (lines)', 'Modify roads (polygons)',       
                           'Land cover change (polygons)']
+
+# This list is used to open the proper constraint layer for the scenario edit type
+scenarioConstraintLayersBaseNames = ['base_streams', 'base_traffic']
+scenarioConstraintLayersFileNames = ['base_streams.tif', 'base_traffic.tif']
+
 
 # The below are used in various places to check that correct layers are active for editing operations.
 # The spelling of these names can be changed, but not the number of them.
 pointBaseLayersBaseNames = ['base_culverts_bridges', 'base_dams', 'base_terrestrial_passage',
                              'base_tidal_restrictions']
-lineBaseLayersBaseNames = ['base_traffic']
+pointBaseLayersFileNames = ['base_culverts_bridges.shp', 'base_dams.shp', 'base_terrestrial_passage.shp',
+                             'base_tidal_restrictions.shp']
 polygonBaseLayersBaseNames = ['base_traffic', 'base_land']
+polygonBaseLayersFileNames   = ['base_traffic.tif', 'base_land.tif']
 
 # This is used to warn users of slow loading attribute tables.
 slowLoadingLayers = ['base_culverts_bridges']
@@ -166,6 +171,8 @@ slowLoadingLayers = ['base_culverts_bridges']
 # major changes are made to the application.
 editLayersBaseNames = ['edit_scenario(points)', 'edit_scenario(lines)',
                        'edit_scenario(polygons)']
+editLayersFileNames = ['edit_scenario(points).shp', 'edit_scenario(lines).shp',
+                       'edit_scenario(polygons).shp']
 
 # These are the lists of layers that open when the app is first opened
 # or when the 'New Scenario' action is clicked.  The orienting layers that
@@ -188,6 +195,6 @@ baseLayersChecked = ['base_towns']
 # new scenario edit type. 
 hideEditLayers = ['edit_scenario(points)', 'edit_scenario(lines)',
                        'edit_scenario(polygons)', 'base_culverts_bridges', 'base_dams',
-                        'base_terrestrial_passage', 'base_tidal_restrictions', 'base_traffic']
+                        'base_terrestrial_passage', 'base_tidal_restrictions', 'base_traffic', 'base_streams']
 
 ############################################################################################

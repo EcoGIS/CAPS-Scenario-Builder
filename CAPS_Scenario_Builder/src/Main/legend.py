@@ -299,7 +299,7 @@ class Legend(QtGui.QTreeWidget):
     def updateLayerStatus(self, item):
         """ Update the layer status """
         # debugging
-        print "legend.updateLayerStatus()"
+        print "Main.legend.updateLayerStatus()"
         print item
         
         if (item):

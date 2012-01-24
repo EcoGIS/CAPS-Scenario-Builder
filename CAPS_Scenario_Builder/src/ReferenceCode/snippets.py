@@ -11,6 +11,75 @@ from qgis.gui import *
 self = "some class"
 parent = "some widget's parent"
 
+    
+    def moveEditLayer(self, legend):
+        ''' Move the needed editLayer to the top of the layer panel
+            and select, check and make visible.
+        '''
+        items = legend.findItems(self.editLayerBaseName, QtCore.Qt.MatchFixedString, 0)
+        itemToMove = items[0]
+        
+        # debugging
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveEditLayer()" 
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveEditLayer(): length of item list is " + str(len(items))
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveEditLayer(): is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveEditLayer(): item to move is " + itemToMove.text(0)
+        
+        # just moving edit layer, no need for signals
+        legend.blockSignals(True)
+        itemToMove.storeAppearanceSettings() # Store settings 
+        legend.takeTopLevelItem(legend.indexOfTopLevelItem(itemToMove))
+        legend.insertTopLevelItem(0, itemToMove)
+        itemToMove.restoreAppearanceSettings()
+        legend.blockSignals(False)
+        legend.setCurrentItem(itemToMove)
+        itemToMove.setCheckState(0, QtCore.Qt.Checked)
+    
+    def moveBaseLayer(self, legend):
+        ''' Move the needed baseLayer to second the layer panel, 
+            check and make visible.
+        '''
+        items = legend.findItems(self.baseLayerBaseName, QtCore.Qt.MatchFixedString, 0)
+        itemToMove = items[0]
+        
+        # debugging
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveBaseLayer()"
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveBaseLayer(): length of item list is " + str(len(items))
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveBaseLayer(): is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveBaseLayer(): item to move is " + itemToMove.text(0)
+        
+        # just moving base layer, no need for signals 
+        legend.blockSignals(True)
+        itemToMove.storeAppearanceSettings() # Store settings 
+        legend.takeTopLevelItem(legend.indexOfTopLevelItem(itemToMove))
+        legend.insertTopLevelItem(1, itemToMove)
+        itemToMove.restoreAppearanceSettings()
+        legend.blockSignals(False)
+        itemToMove.setCheckState(0, QtCore.Qt.Checked)
+        
+    def moveConstraintLayer(self, legend):
+        ''' Move the needed constraint layer to third in the layer panel, 
+            check and make visible.
+        '''
+        items = legend.findItems(self.constraintLayerBaseName, QtCore.Qt.MatchFixedString, 0)
+        itemToMove = items[0]
+        
+        # debugging
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveBaseLayer()"
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveBaseLayer(): length of item list is " + str(len(items))
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveBaseLayer(): is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveBaseLayer(): item to move is " + itemToMove.text(0)
+        
+        # just moving base layer, no need for signals 
+        legend.blockSignals(True)
+        itemToMove.storeAppearanceSettings() # Store settings 
+        legend.takeTopLevelItem(legend.indexOfTopLevelItem(itemToMove))
+        legend.insertTopLevelItem(2, itemToMove)
+        itemToMove.restoreAppearanceSettings()
+        legend.blockSignals(False)
+        itemToMove.setCheckState(0, QtCore.Qt.Checked)        
+
+
 ''' OLD CODE THAT WORKED TO UPDATE EXTENTS ON MAP CANVAS 
     ELIMINATED WHEN I FIGURED OUT HOW TO USE mainwindow.canvas.map().render()
 '''
