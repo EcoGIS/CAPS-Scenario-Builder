@@ -239,4 +239,3 @@ class AddLinesPolygons(QgsMapTool):
             # note: the QgsAttribute map is a Python dictionary (key = field id : field value)
             for (key, attr) in attrs.iteritems():
                 print "%d: %s" % (key, attr.toString())       
-      

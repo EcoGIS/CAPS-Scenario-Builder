@@ -70,7 +70,7 @@ class Identify(QgsMapTool):
         # debugging
         print "identify.rasterIdentifyTool()"
 
-        text = "The clicked x,y point is (" + unicode(round(qgsPoint.x(), 2)) + ", " + u(round(qgsPoint.y(), 2)) + ")\n"
+        text = "The clicked x,y point is (" + unicode(round(qgsPoint.x(), 2)) + ", " + unicode(round(qgsPoint.y(), 2)) + ")\n"
         # this QgsVectorLayer method returns a tuple consisting of the bool result (success = True) 
         # and a dictionary with the key being the band names of the raster and the values
         # being the values at the clicked point.

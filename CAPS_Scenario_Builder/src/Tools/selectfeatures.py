@@ -32,6 +32,7 @@ from qgis.core import *
 from qgis.gui import *
 # CAPS application imports
 import shared
+import config
 
 # Select tool class - Used to select features
 class SelectTool(QgsMapTool):
@@ -51,7 +52,14 @@ class SelectTool(QgsMapTool):
  
     def canvasPressEvent(self, event):
         if self.mainwindow.activeVLayer == None: return
-            
+        
+        # do not allow selecting or deleting from an orientingBaseLayer (i.e. base_towns)
+        name = self.mainwindow.activeVLayer.name()
+        fileName = name + '.shp'
+        if fileName in config.orientingVectorLayers:
+            QtGui.QMessageBox.warning(self.mainwindow, "Selection Error:", 
+                     "You cannot select or delete features from the " + name + " base layer." )
+            return
         point = event.pos()
         self.transform = self.mainwindow.canvas.getCoordinateTransform()
         self.selectFeat(point)

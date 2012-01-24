@@ -99,7 +99,7 @@ def getFeatsToDelete(provider, originalFeats):
     
 def deleteEdits(mainwindow, provider, activeVLayer, canvas, originalFeats):
         ''' Delete scenario edits added to editing layers since the last save.
-            This method is only called from Main.mainwindow.chkEditsState()
+            This method is only called from Main.mainwindow.checkEditsState()
         '''
         
         vlayerName = mainwindow.activeVLayer.name()
@@ -180,7 +180,8 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
 
             # now highlight the layer as it was before
             brush = QtGui.QBrush()
-            brush.setColor(QtCore.Qt.darkGreen)
+            color = QtGui.QColor(0, 0, 255)
+            brush.setColor(color)
             editItems = mainwindow.legend.findItems(name, QtCore.Qt.MatchFixedString, 0)
             editItems[0].setForeground(0, brush)
             # Make the layer visible.  This will cause a signal to be sent
@@ -209,10 +210,10 @@ def checkConstraints(mainwindow, geometry, id = None):
     print "The id is " + str(id)
     
     basePath = config.baseLayersPath
-    type = mainwindow.scenarioEditType
-    list = config.scenarioEditTypesList
-    pointsList = [list[0], list[1], list[3]]
-    if type in pointsList: # crossing, dam removal or tidal restriction
+    editType = mainwindow.scenarioEditType
+    typesList = config.scenarioEditTypesList
+    pointsList = [typesList[0], typesList[1], typesList[3]]
+    if editType in pointsList: # crossing, dam removal or tidal restriction
         # Load the raster layer, but do not add it to the registry
         # so that it doesn't appear to the user
         point = geometry # The geometry is a point for these scenario edit types.
@@ -250,7 +251,7 @@ on the toolbar or in the 'Layer' menu."
         print "The raster value for base_streams.tif is " + unicode(identifyDict.get(QtCore.QString("Band 1")))
         print "The constraints were met and the return value is 'True'"
         
-    elif type == list[2]: # a terrestrial wildlife crossing
+    elif editType == list[2]: # a terrestrial wildlife crossing
         point = geometry
         rfilePath = basePath + "base_traffic.tif"
         rlayer = openHiddenRasterLayer(mainwindow, rfilePath) # returns false if the file failed to open

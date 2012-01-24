@@ -613,7 +613,7 @@ Please check if it is open in another program and try again.")
             inOriginalScenario = True
         
         # This method is called by self.removeCurrentLayer() and Tools.shared.updateExtents().
-        # The method is also called by Main.mainwindow.chkScenarioState(), where the layer to 
+        # The method is also called by Main.mainwindow.checkScenarioState(), where the layer to 
         # be removed is probably not the activeVLayer. In fact the activeVLayer
         # could be "None," or the active layer could be a raster. If the layer is the 
         # activeVLayer, we need to reset activeVLayer variables after removing the layer from the 

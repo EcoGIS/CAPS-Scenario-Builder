@@ -282,8 +282,8 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         
     def hideEditBaseLayers(self, legend):
         ''' Hide all edit layers and base layers not used for orientation '''
-        list = config.hideEditLayers
-        for layer in list:
+        hideList = config.hideEditLayers
+        for layer in hideList:
             items = legend.findItems(layer, QtCore.Qt.MatchFixedString, 0)
             if len(items) > 0:
                 item = items[0]
