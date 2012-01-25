@@ -300,24 +300,23 @@ class Legend(QtGui.QTreeWidget):
         """ Update the layer status """
         # debugging
         print "Main.legend.updateLayerStatus()"
-        print item
         
         if (item):
             if self.isLegendLayer(item): # Is the item a layer item?
-                print "This is a legend layer item" 
+                print "Main.legend.updateLayerStatus(): This is a legend layer item" 
                 for i in self.layers:
                     if i.layer().id() == item.layerId:
                         if item.checkState(0) == QtCore.Qt.Unchecked:
-                            print "is not checked"
+                            print "Main.legend.updateLayerStatus(): is not checked"
                             i.setVisible(False)
                         else:
-                            print "is checked"
+                            print "Main.legend.updateLayerStatus(): is checked"
                             i.setVisible(True)
                         self.canvas.setLayerSet(self.layers)
                         return
               
-                print "This is not a legend layer item"
-                print "The item's text is " + str(item.text)
+                print "Main.legend.updateLayerStatus(): This is not a legend layer item"
+                print "Main.legend.updateLayerStatus(): The item's text is " + str(item.text)
                   
     def currentItemChanged(self, newItem, oldItem):
         """ Slot. Capture a new currentItem and emit a SIGNAL to inform the new type 

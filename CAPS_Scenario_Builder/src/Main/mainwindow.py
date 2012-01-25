@@ -351,11 +351,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             if len(items) > 0:
                 item = items[0]
                 item.setCheckState(0, QtCore.Qt.Checked)
-        
-                
-                
-                
- 
+
         # give the user some file info
         self.setWindowTitle("Conservation Assessment and \
 Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
@@ -510,19 +506,29 @@ scenario file is open in another program.")
             print "Main.mainwindow.exportScenario(): canceling exportScenario()"
             return
 
+        # The exportScenario() method action is only enabled if a scenario is open
         # set some needed variables 
         scenarioDirectoryName = unicode(self.scenarioInfo.completeBaseName())
         scenarioDirectoryPath = config.scenariosPath + scenarioDirectoryName
-        scenarioDirectoryFileList = os.listdir(scenarioDirectoryPath) # use Python os module here
         exportFileName = scenarioDirectoryName + ".csv"
         exportPath = config.scenarioExportsPath + exportFileName
-                
+        error = None
+        try: # trap error if directory is missing for some reason
+            scenarioDirectoryFileList = os.listdir(scenarioDirectoryPath) # use Python os module here
+        except (IOError, OSError), e:
+            error = unicode(e)
+            if error:
+                print error
+                QtGui.QMessageBox.warning(self, "Export Scenario Error:", "The files in this \
+scenario's directory could not be listed.  Please save the scenario and try again")
+                return
+              
         if scenarioDirectoryFileList == []:
             QtGui.QMessageBox.warning(self, "Export Scenario Error:", "You have not made any scenario edits to export. \
 Please choose 'Edit Scenario' from the Edit menu, make some edits, and then try again." )
             return
 
-        # delete any old export files before writing a new one
+        # delete any old export files before writing a new one, this method traps and warns on errors
         self.deleteExportScenarioFile()
 
         # Get a count of the number of editing shapefiles for use below.
@@ -553,13 +559,11 @@ Please choose 'Edit Scenario' from the Edit menu, make some edits, and then try 
             print "Main.mainwindow.exportScenario(): current csvPath is: " + csvPath
             print "Main.mainwindow.exportScenario(): current exportPath is: " + exportPath
             
-            # get a handle to the editing file so it can be converted to CSV format 
-            retval = self.getEditLayerToExport(csvBaseName, scenarioDirectoryPath, fileName)
-            if not retval: 
-                # If the layer exists in the scenario's directory but is not open in the
-                # legend, the user is prompted with a warning.
-                return
-            else: vlayer = retval
+            # get a handle to the editing file (returns a maplayer) so it can be converted to CSV format
+            # If the layer exists in the scenario's directory but is not open in the
+            # legend, the user is prompted with a warning, and the return value = False.
+            vlayer = self.getEditLayerToExport(csvBaseName, scenarioDirectoryPath, fileName)
+            if not vlayer:  return
 
             # Check if there are any features in the layer because the QgsVectorFileWriter fails to 
             # write the csv file if there are no features and does NOT return an error!!
@@ -577,30 +581,28 @@ Please choose 'Edit Scenario' from the Edit menu, make some edits, and then try 
 make some edits to your scenario and try again.")
                     return   
             
-            # Delete previously written files so current ones can take their place.
-            # Return if deletion fails (deleteOldCsvSapefile() opens msg box to inform user)
+            # Delete previously written shapefiles so current ones can take their place.
+            # Return if deletion fails (deleteOldCsvSapefile() warns on error)
             if not self.deleteOldCsvShapefile(csvPath, csvFileName): return
             
-            # round values to shorten csv file output
+            # round values to shorten csv file output (roundGeometryValues() warns on error)
             vlayer = self.roundGeometryValues(vlayer)
-           
+            if not vlayer: return
+        
             ''' Convert the editing shapefiles to CSV format '''
-
-            if not self.writeCsvShapefile(vlayer, csvPath, csvFileName):
-                # the write operation failed and writeCsvShapefile warned the user
-                return
+            # Returns False if the write operation failed and writeCsvShapefile warns on error
+            if not self.writeCsvShapefile(vlayer, csvPath, csvFileName): return
         
             ''' Now write the csv to the file to be exported to UMass using python '''
             
-            if not self.writeCsvExportFile(exportPath, csvPath, exportFileName):
-                # the write operation failed and the user was warned
-                return
-            else: exportFileWritten = True
+            # writeCsvExportFile returns True if successful False if not and warns user on error
+            exportFileWritten = self.writeCsvExportFile(exportPath, csvPath, exportFileName)
+            if not exportFileWritten: return
             
         # Exited the for loop, so let the user know things worked
         exportFileInfo = QtCore.QFileInfo(exportPath)
         findExportPath = exportFileInfo.absolutePath()
-        QtGui.QMessageBox.information(self, 'Export Succeeded:', "The export file is named "\
+        QtGui.QMessageBox.information(self, 'Export Scenario Succeeded:', "The export file is named "\
  + exportFileName + ". It can be found in " + findExportPath)
      
     # Scenario Methods -----------------------------------------------------------------------------------------------    
@@ -616,8 +618,7 @@ make some edits to your scenario and try again.")
             # This should never happen.  If an editing layer exists in the scenario's directory
             # then it should be open because removing an editing layer from the legend deletes
             # it from the file system. This would be some sort of user error, if it happened.
-            
-            QtGui.QMessageBox.warning(self, 'Export Error:', "An editing shapefile named " \
+            QtGui.QMessageBox.warning(self, 'Export Scenario Error:', "An editing shapefile named " \
 + fileName + " exists in " + scenarioDirectoryPath + " , but is not open in the layer list panel. \
 You must either delete this editing layer, or open it if it contains features you wish to be part \
 of your scenario export file.") 
@@ -642,7 +643,7 @@ of your scenario export file.")
                 error = unicode(e)
             if error:
                 print error
-                QtGui.QMessageBox.warning(self, "Deletion Error:", "An old editing layer \
+                QtGui.QMessageBox.warning(self, "Export Scenario Error:", "An old editing layer \
 csv file '" + csvFileName + " could not be deleted.  Please check if the file is open in \
 another program and then try again.")
                 return False
@@ -664,7 +665,7 @@ another program and then try again.")
         error = QgsVectorFileWriter.writeAsVectorFormat(vlayer, csvPath, "utf-8", 
                     self.crs, "CSV", False, errorMessage, datasourceOptions, creationOptions)
         if error: # != QgsVectorFileWriter.NoError:
-            QtGui.QMessageBox.warning(self, "Write Error:", "The file " + csvFileName + " \
+            QtGui.QMessageBox.warning(self, "Export Scenario Error:", "The file " + csvFileName + " \
 was not written.  Please check that a file with the same name is not open in another program.")
             return False
         else: 
@@ -688,7 +689,7 @@ was not written.  Please check that a file with the same name is not open in ano
             error = unicode(e)
         if error:
             print e
-            QtGui.QMessageBox.warning(self, 'Export Error:', 'The export file, ' \
+            QtGui.QMessageBox.warning(self, 'Export Scenario Error:', 'The export file, ' \
 + exportFileName + ' could not be written.  Please try again.')
             return False
         return True
@@ -1152,8 +1153,11 @@ before you can make edits.  Please save the current scenario or open an existing
                 self.mpActionEditScenario.blockSignals(False)
                 return 
             
+            # The scenarioEditDialog has been accepted, so layers will be opened
+            # or activated.  There is no need to set the select action here.  It
+            # is better to let it be set by activeLayerChanged() according to layer type
             # set the select action for edit mode
-            self.mpActionSelectFeatures.setDisabled(False)
+            #self.mpActionSelectFeatures.setDisabled(False)
 
             # set the paste action
             if self.copyFlag: self.mpActionPasteFeatures.setDisabled(False)
@@ -1448,7 +1452,6 @@ attribute table is very large and can take a few seconds to load.  Do you want t
         print "alc Crs Transform is enabled? " + str(self.canvas.hasCrsTransformEnabled())
         print "alc The destination crs description is " + str(self.canvas.mapRenderer().destinationCrs().description())
         print "alc The destination authority identifier is " + str(self.canvas.mapRenderer().destinationCrs().authid())
-        print "alc The QgsProject.isDirty() flag is " + str(QgsProject.instance().isDirty())
         print "alc self.openingOrientingLayers is " + str(self.openingOrientingLayers)
         
         #**************************************************************************        
@@ -1469,9 +1472,9 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             self.activeRLayer = self.legend.activeLayer().layer()
             
             # debugging
-            print "The layer's authority id is " + str(self.activeRLayer.crs().authid())
-            print "The description of the layer crs is " + str(self.activeRLayer.crs().description())
-            print "The activeRLayer name is " + self.activeRLayer.name()
+            print "alc The layer's authority id is " + str(self.activeRLayer.crs().authid())
+            print "alc The description of the layer crs is " + str(self.activeRLayer.crs().description())
+            print "ALC THE ACTIVE RLAYER NAME IS " + self.activeRLayer.name()
             
             # add filename to statusbar
             capture_string = QtCore.QString(self.activeRLayer.source())
@@ -1486,10 +1489,6 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # set the layer geometry
             self.geom = None
             self.provider = None
-            
-            # debugging
-            print "alc opened active layer is " + self.activeRLayer.name()
-            print "alc self.editDirty is " + str(self.editDirty)
             
             ''' 
                 A new raster layer has been selected or opened so set action states. 
@@ -1525,21 +1524,22 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # is dirty, the policy is it stays dirty until the user saves it.
             if not self.scenarioDirty: self.setScenarioDirty()
           
-            # if there could be something to export
-            if self.scenarioDirty or self.scenarioFilePath:
+            # There could be something to export if a scenario is open so enable Export Scenario
+            # A user could open a scenario that has edits to editing layers and export it.
+            if self.scenarioFilePath:
                 self.mpActionExportScenario.setDisabled(False)
 
             # debugging
-            print "alc self.scenarioDirty is " + str(self.scenarioDirty)
+            print "alc self.scenarioDirty end is " + str(self.scenarioDirty)
             print "alc originalScenarioLayers are "
             for layer in self.originalScenarioLayers: print layer.name()
             print "alc currentLayers are "
-            for layer in self.getCurrentLayers().values(): print layer.name()
+            #for layer in self.getCurrentLayers().values(): print layer.name()
       
         elif layerType == 0: #vector
             # debugging
             print "alc Setting app state for vector layer" 
-            print "copyFlag is " + str(self.copyFlag)
+            print "alc copyFlag is " + str(self.copyFlag)
             
             # set the active vector layer
             self.activeVLayer = self.legend.activeLayer().layer()
@@ -1552,9 +1552,9 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             if not self.scenarioDirty: self.setScenarioDirty()
             
             # debugging 
-            print "The activeVLayer name is " + self.activeVLayer.name()
-            print "The layers authid is " + str(self.activeVLayer.crs().authid())
-            print "The description of the srs is " + str(self.activeVLayer.crs().description())
+            print "ALC THE ACTIVE VLAYER NAME IS " + self.activeVLayer.name()
+            print "alc The layers authid is " + str(self.activeVLayer.crs().authid())
+            print "alc The description of the srs is " + str(self.activeVLayer.crs().description())
             
             # add filename to statusbar
             capture_string = QtCore.QString(self.activeVLayer.source())
@@ -1568,7 +1568,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             self.provider = self.activeVLayer.dataProvider()
            
             # This method sets colors, marker types and other properties for certain vector layers
-            print "The activeVLayer renderer type is " + self.activeVLayer.rendererV2().type()
+            print "alc The activeVLayer renderer type is " + self.activeVLayer.rendererV2().type()
             self.setRendererV2()
             
             # refresh attribute table if open
@@ -1626,22 +1626,20 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # enable the  "Open Vector Attribute Table" action    
             self.mpActionOpenVectorAttributeTable.setDisabled(False)
     
-            # if there could be something to export
-            if self.scenarioDirty or self.scenarioFilePath:
+            # There could be something to export if a scenario is open so enable Export Scenario
+            # A user could open a scenario that has edits to editing layers and export it.
+            if  self.scenarioFilePath:
                 self.mpActionExportScenario.setDisabled(False)
                 
-            # last thing to do is check whether the layer is 'checked' for visibility
-            #self.legend.updateLayerStatus(self.legend.currentItem())    
-                
             # debugging
-            print "alc self.scenarioDirty is " + str(self.scenarioDirty)
+            print "alc self.scenarioDirty end is " + str(self.scenarioDirty)
             print "alc originalScenarioLayers are "
             for layer in self.originalScenarioLayers: print layer.name()
             print "alc currentLayers are "
-            for layer in self.getCurrentLayers().values(): print layer.name()
+            #for layer in self.getCurrentLayers().values(): print layer.name()
                        
         # debugging
-        else: print "Geometry type unknown"
+        else: print "alc Geometry type unknown"
         
     def closeEvent(self, event):
         ''' Slot to handle signal emitted when user exits app '''
@@ -1934,15 +1932,6 @@ Prioritization System (CAPS) Scenario Builder")
         else: self.mpActionCopyFeatures.setDisabled(False)
         self.mpActionDeselectFeatures.setDisabled(False)
         self.mpActionDeleteFeatures.setDisabled(False)
-        
-    '''def disableNonNavigationMapTools(self):
-        # debugging
-        print "mainwindow.enableLayerNavigationMapTools()"
-        
-        self.mpActionSelectFeatures.setDisabled(True)
-        self.mpActionAddPoints.setDisabled(True)
-        self.mpActionAddLines.setDisabled(True)
-        self.mpActionAddPolygons.setDisabled(True)'''
    
     def disableEditActions(self):
         # debugging
@@ -1958,10 +1947,9 @@ Prioritization System (CAPS) Scenario Builder")
         
     def disableSelectActions(self):
         # debugging
-        print "disableSelectActions()"
+        print "Main.mainwindow.disableSelectActions()"
         
         self.canvas.unsetMapTool(self.toolSelect)
-        #if self.activeVLayer: self.activeVLayer.removeSelection(False)
         self.mpActionSelectFeatures.setChecked(False)
         self.mpActionDeselectFeatures.setDisabled(True)
         self.mpActionDeselectFeatures.setChecked(False)
@@ -2053,8 +2041,8 @@ Prioritization System (CAPS) Scenario Builder")
         '''
         # debugging
         print "Main.mainwindow.getOriginalScenarioLayers()"
-        print "int begin " + str(i)
-        print "count " + str(count)
+        print "Main.mainwindow.getOriginalScenarioLayers(): int begin " + str(i)
+        print "Main.mainwindow.getOriginalScenarioLayers(): count " + str(count)
     
         # QgsProject SIGNAL starts with i = 0, and no layer has been loaded yet.
         # The SIGNAL emits a count of the number of layers to be loaded (say = 3) 
@@ -2080,7 +2068,8 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         print "getOriginalScenarioLayers() originalScenarioLayers are " 
         for layer in self.originalScenarioLayers: print layer.name()
         print "getOriginalScenarioLayers() currentLayers are " 
-        for layer in self.getCurrentLayers().values(): print layer.name()
+        if i > 0:
+            for layer in self.getCurrentLayers().values(): print layer.name()
    
     def getEditFields(self):
         # debugging
@@ -2096,22 +2085,22 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
     def setScenarioDirty(self):
         ''' Set the scenarioDirty flag '''
         # debugging
-        print "setScenarioDirty()"
-        print "self.origScenarioLyrsLoaded is " + str(self.origScenarioLyrsLoaded)
-        print "self.setScenarioDirty() begin is " + str(self.scenarioDirty)
-        print "self.scenarioFileName is " + str(self.scenarioFileName)
-        print "self.openingOrientingLayers is " + str(self.openingOrientingLayers)
+        print "Main.mainwindow.setScenarioDirty()"
+        print "Main.mainwindow.setScenarioDirty(): self.origScenarioLyrsLoaded is " + str(self.origScenarioLyrsLoaded)
+        print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() begin is " + str(self.scenarioDirty)
+        print "Main.mainwindow.setScenarioDirty(): self.scenarioFileName is " + str(self.scenarioFileName)
+        print "Main.mainwindow.setScenarioDirty(): self.openingOrientingLayers is " + str(self.openingOrientingLayers)
         
         # The line below fails because it returns false if the layer order changes
         # self.originalScenarioLayers == self.currentLayers.values()
 
         self.getCurrentLayersCount()
-        print "self.currentLayersCount is " + str(self.currentLayersCount)
+        print "Main.mainwindow.setScenarioDirty(): self.currentLayersCount is " + str(self.currentLayersCount)
         
         # if in the process of opening the orienting layers, just return
         if self.openingOrientingLayers:
             self.scenarioDirty = False
-            print "self.setScenarioDirty() end is " + str(self.scenarioDirty)
+            print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() end is " + str(self.scenarioDirty)
             return
         
         # If no scenario is open and the loaded layers are the orienting baselayers,
@@ -2121,7 +2110,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         # Under these conditions, the user will only be prompted to save the scenario when the 
         # "Edit Scenario" function is checked. 
         if self.currentLayersCount == len(config.allOrientingLayers) and self.scenarioFileName == None:
-            print "Entered length = allOrientingLayers loop"
+            print "Main.mainwindow.setScenarioDirty(): Entered length = allOrientingLayers loop"
             orientingLayerNames = []
             for fileName in config.allOrientingLayers:
                 info = QtCore.QFileInfo(fileName)  
@@ -2131,28 +2120,28 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             # legendLayers are QgsMapCanvasLayers
             legendLayers = self.legend.getLayerSet()
             for layer in legendLayers: legendLayerNames.append(layer.layer().name())
-            print "orientingLayerNames are"
+            print "Main.mainwindow.setScenarioDirty(): orientingLayerNames are"
             for name in orientingLayerNames: print name.toUtf8()  
-            print "legendLayerNames are "
+            print "Main.mainwindow.setScenarioDirty(): legendLayerNames are "
             for name in legendLayerNames: print name.toUtf8()
             difference = [name for name in orientingLayerNames if name not in legendLayerNames]
-            print "difference is"
+            print "Main.mainwindow.setScenarioDirty(): difference is"
             print difference
             if difference == []:
                 self.scenarioDirty = False
-                print "setScenarioDirty() difference == []"
-                print "self.setScenarioDirty() end is " + str(self.scenarioDirty)
+                print "Main.mainwindow.setScenarioDirty(): setScenarioDirty() difference == []"
+                print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() end is " + str(self.scenarioDirty)
                 return
  
         
-        # If the above is not true and if the layer count is > 0 and there is no scenario loaded 
+        # If the above is not true and if the layer count is > 0 and there is no scenario open 
         # then the scenario is dirty. This would and should be true even
         # if the user removed all the intially loaded layers and then loaded an orienting
         # baselayer, because that might be a scenario they want to save for some reason.  
         if self.currentLayersCount > 0 and self.scenarioFileName == None:
             self.scenarioDirty = True
-            print "layer count > 0 if statement"
-            print "self.setScenarioDirty() end is " + str(self.scenarioDirty)
+            print "Main.mainwindow.setScenarioDirty(): layer count > 0 if statement"
+            print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() end is " + str(self.scenarioDirty)
             return
     
         # Now we handle if a scenario is open
@@ -2162,6 +2151,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             if len(self.originalScenarioLayers) != self.currentLayersCount:
                 # if they are not the same length, the scenario is dirty
                 self.scenarioDirty = True
+                print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() end is " + str(self.scenarioDirty)
                 return
             
             # the layers are the same length but do they have the same members?
@@ -2170,18 +2160,18 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             differences = [name for name in self.getCurrentLayersNames() if name not in 
                                                             self.originalScenarioLayersNames]
             # debugging
-            print "currentLayersNames are"
+            print "Main.mainwindow.setScenarioDirty(): currentLayersNames are"
             for name in self.getCurrentLayersNames(): print name
-            print "self.originalScenarioLayersNames are"
+            print "Main.mainwindow.setScenarioDirty(): self.originalScenarioLayersNames are"
             for name in self.originalScenarioLayersNames: print name
-            print "differences are "
+            print "Main.mainwindow.setScenarioDirty(): differences are "
             for name in differences: print name
             
             if differences: self.scenarioDirty = True # if there are differences
             else: self.scenarioDirty = False
         
         # debugging
-        print "self.scenarioDirty end is " + str(self.scenarioDirty)
+        print "Main.mainwindow.setScenarioDirty(): self.scenarioDirty end is " + str(self.scenarioDirty)
              
     def openVectorLayer(self, vfilePath):
         ''' Open a vector layer '''
@@ -2248,10 +2238,10 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         path2 = info.absolutePath()
         path3 = info.absoluteFilePath()
         path4 = info.canonicalFilePath()
-        print "The config path is " + path
-        print "The absolutePath of config is " + path2
-        print "The absoluteFilePath of config is " + path3
-        print "The canonicalFilePath of config is " + path4
+        print "Main.mainwindow.openOrientingLayers(): The config path is " + path
+        print "Main.mainwindow.openOrientingLayers(): The absolutePath of config is " + path2
+        print "Main.mainwindow.openOrientingLayers(): The absoluteFilePath of config is " + path3
+        print "Main.mainwindow.openOrientingLayers(): The canonicalFilePath of config is " + path4
         
         vlayers = config.orientingVectorLayers
         rlayers = config.orientingRasterLayers
@@ -2268,7 +2258,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             # If there are problems with the Windows installer, I could convert all paths to absolute paths to solve the problem. 
             #info = QtCore.QFileInfo(QtCore.QString(tempPath))
             #tempPath = info.absoluteFilePath()
-            print "The tempPath is " + tempPath
+            print "Main.mainwindow.openOrientingLayers(): The tempPath is " + tempPath
             #print "The absolute file path is " + info.absoluteFilePath()
             self.openingOrientingLayers = True
             self.openRasterLayer(tempPath)
@@ -2278,7 +2268,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             tempPath = path + vlayer
             #info = QtCore.QFileInfo(QtCore.QString(tempPath))
             #tempPath = info.absoluteFilePath()
-            print "The tempPath is " + tempPath
+            print "Main.mainwindow.openOrientingLayers(): The tempPath is " + tempPath
             #print "The absolute file path is " + info.absoluteFilePath()
             self.openingOrientingLayers = True
             self.openVectorLayer(tempPath)
@@ -2286,7 +2276,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         # In config.py you, can set the baselyer(s) of your choice to be visible 
         for checked in config.baseLayersChecked:
             items = self.legend.findItems(checked, QtCore.Qt.MatchFixedString, 0)
-            print "the length of items is " + str(len(items))
+            print "Main.mainwindow.openOrientingLayers(): the length of items is " + str(len(items))
             if len(items) > 0:
                 item = items[0]
                 item.setCheckState(0, QtCore.Qt.Checked)
@@ -2529,9 +2519,9 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
         ''' Delete the scenario's export file.  Used by mainwindow.exportScenario()
             and legend.Legend.deleteEditingLayer()
         '''
-        scenarioDirectoryName = self.scenarioInfo.completeBaseName()
-        exportFileName = unicode(scenarioDirectoryName + ".csv")
-        exportPath = unicode(config.scenarioExportsPath + exportFileName)
+        scenarioDirectoryName = unicode(self.scenarioInfo.completeBaseName())
+        exportFileName = scenarioDirectoryName + ".csv"
+        exportPath = config.scenarioExportsPath + exportFileName
  
         # if the scenario export file exists
         exportFile = QtCore.QFile(exportPath)
@@ -2543,7 +2533,7 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
                 error = unicode(e)
             if error:
                 print error
-                QtGui.QMessageBox.warning(self, 'Deletion Error:', 'The previously saved scenario '\
+                QtGui.QMessageBox.warning(self, 'Export Scenario Error:', 'The previously saved scenario '\
 + exportFileName + ' could not be deleted.  Please try again.')
           
     def setRendererV2(self):
@@ -2790,19 +2780,20 @@ For example. If you have chosen to edit 'dams,' then you can only " + text + " t
         feat = QgsFeature()
         allAttrs = provider.attributeIndexes()
         provider.select(allAttrs)
+        retval = False
         if vlayer.geometryType() == 0: # point
             roundPointGeom = None
             while provider.nextFeature(feat):
                 point = feat.geometry().asPoint()
                 roundPointGeom = QgsGeometry.fromPoint(QgsPoint(round(point.x(), 2), round(point.y(), 2)))
-                provider.changeGeometryValues({feat.id(): roundPointGeom})
+                retval = provider.changeGeometryValues({feat.id(): roundPointGeom})
         elif vlayer.geometryType() == 1: # line
             while provider.nextFeature(feat):
                 roundedLine = []
                 line = feat.geometry().asPolyline()
                 for point in line: 
                     roundedLine.append(QgsPoint(round(point.x(), 2), round(point.y(), 2))) 
-                provider.changeGeometryValues({feat.id(): QgsGeometry.fromPolyline(roundedLine)})
+                retval = provider.changeGeometryValues({feat.id(): QgsGeometry.fromPolyline(roundedLine)})
         elif vlayer.geometryType() == 2: # polygon
             while provider.nextFeature(feat):
                 # a list of lists because polygons can have nested polygons
@@ -2813,9 +2804,13 @@ For example. If you have chosen to edit 'dams,' then you can only " + text + " t
                     for point in polygon:
                         roundedPolygon.append(QgsPoint(round(point.x(), 2), round(point.y(), 2)))
                     allPolygonsRounded.append(roundedPolygon)        
-                provider.changeGeometryValues({feat.id(): QgsGeometry.fromPolygon(allPolygonsRounded)})
+                retval = provider.changeGeometryValues({feat.id(): QgsGeometry.fromPolygon(allPolygonsRounded)})
                 print allPolygonsRounded
-        return vlayer
+        if retval: return vlayer
+        else: 
+            QtGui.QMessageBox.warning(self, "Export Scenario Error:", "Rounding the coordinate values in the \
+CSV export file failed. Please try again.")
+            return False
         
     def checkScenarioDirectoryPath(self, defaultDir, scenarioFilePath):
         # debugging

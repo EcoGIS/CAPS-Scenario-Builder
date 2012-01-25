@@ -243,7 +243,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
     def isLayerOpen(self, legend, layerBaseName):
         ''' Check if editLayer or baseLayer is open in the layer panel '''
         # debugging
-        print "DlgScenarioEditTypes.isEditLayerOpen()"
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.isEditLayerOpen()"
         
         if not layerBaseName: return False # if this layers name is None
         items = legend.findItems(layerBaseName, QtCore.Qt.MatchFixedString, 0)
@@ -285,7 +285,6 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         print "the fields dictionary is "
         for field in fields.values(): print field.name()
 
-        #path = QtCore.QString(self.newEditLayerPath)
         path = self.newEditLayerPath
         writer = QgsVectorFileWriter(path, "utf-8", fields, geometry, self.mainwindow.crs, "ESRI Shapefile")
         
@@ -295,15 +294,15 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
     def openBaseOrConstaintsLayer(self, filePath):
         ''' Open the baseLayer needed for the current scenarioEditType '''
         # debugging
-        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().openBaseLayer()"
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().openBaseOrConstraintsLayer()"
         
         # if the file exists, open it (automatically goes to the top of the layer panel)
         qFile = QtCore.QFile(filePath)
         fileName = qFile.fileName()
-        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().openBaseLayer(): the fileName is " + fileName
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().openBaseOrConstraintsLayer(): the fileName is " + fileName
         
         if qFile.exists():
-            print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().openBaseLayer(): file exists is True"
+            print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().openBaseOrConstraintsLayer(): file exists is True"
             if ".shp" in fileName: self.mainwindow.openVectorLayer(filePath)
             else: self.mainwindow.openRasterLayer(filePath)
         else:
@@ -331,10 +330,10 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         itemToMove = items[0]
         
         # debugging
-        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveEditLayer()" 
-        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveEditLayer(): length of item list is " + str(len(items))
-        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveEditLayer(): is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
-        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveEditLayer(): item to move is " + itemToMove.text(0)
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveLayer()" 
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveLayer(): length of item list is " + str(len(items))
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveLayer(): is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveLayer(): item to move is " + itemToMove.text(0)
         
         # just moving edit layer, no need for signals
         legend.blockSignals(True)
@@ -343,8 +342,10 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         legend.insertTopLevelItem(position, itemToMove)
         itemToMove.restoreAppearanceSettings()
         legend.blockSignals(False)
-        legend.setCurrentItem(itemToMove)
         itemToMove.setCheckState(0, QtCore.Qt.Checked)
+        if 'edit' in layerBaseName:
+            legend.setCurrentItem(itemToMove)
+        
         
     def colorEditBaseConstraintLayers(self, legend):
         ''' A method to highlight the edit layer and base layer for the
@@ -353,28 +354,40 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         # First remove any previous highlighting
         brush = QtGui.QBrush()
         brush.setColor(QtCore.Qt.black)
+        
+        legend.blockSignals(True)
         for i in range(legend.topLevelItemCount()):
             legend.topLevelItem(i).setForeground(0, brush)
+        
     
         # now color the layers
         color = QtGui.QColor(0, 0, 255)
         brush.setColor(color) # (QtCore.Qt.darkGreen)
+        
         editItems = legend.findItems(self.editLayerBaseName, QtCore.Qt.MatchFixedString, 0)
+        legend.blockSignals(True)
         editItems[0].setForeground(0, brush)
+        legend.blockSignals(False)
+        
         if self.baseLayerBaseName:
             baseItems = legend.findItems(self.baseLayerBaseName, QtCore.Qt.MatchFixedString, 0)
+            legend.blockSignals(True)
             baseItems[0].setForeground(0, brush)
+            legend.blockSignals(False)
+            
         if self.constraintLayerBaseName:
             constraintItems = legend.findItems(self.constraintLayerBaseName, QtCore.Qt.MatchFixedString, 0)
+            legend.blockSignals(True)
             constraintItems[0].setForeground(0, brush)
-        
+            legend.blockSignals(False)
+            
         #debugging
-        print "Main.dlgscenariotypes.colorEditBaseLayers()"
-        print "The edit layer name is: " + editItems[0].text(0)
+        print "Main.dlgscenariotypes.colorEditBaseConstraintLayers()"
+        print "Main.dlgscenariotypes.colorEditBaseConstraintLayers(): The edit layer name is: " + editItems[0].text(0)
         if self.baseLayerBaseName:
-            print "The base layer name is: " + baseItems[0].text(0)
+            print "Main.dlgscenariotypes.colorEditBaseConstraintLayers(): The base layer name is: " + baseItems[0].text(0)
         if self.constraintLayerBaseName:
-            print "The constraint layer name is: " + constraintItems[0].text(0) 
-        print "The brush color is: " + str(brush.color())
+            print "Main.dlgscenariotypes.colorEditBaseConstraintLayers(): The constraint layer name is: " + constraintItems[0].text(0) 
+        print "Main.dlgscenariotypes.colorEditBaseConstraintLayers(): The brush color is: " + str(brush.color())
         
         
