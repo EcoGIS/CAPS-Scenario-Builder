@@ -133,9 +133,9 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.constraintFilePath is " + str(self.constraintFilePath)
       
         
-        # if the edit layer is not open, create it
-        # note: If the edit layer is not open in the scenario, then it does not exist because
-        # the edit layer is deleted if removed from the scenario. This is done to ensure that 
+        # if the editing layer is not open, create it
+        # note: If the editing layer is not open in the scenario, then it does not exist because
+        # the editing layer is deleted if removed from the scenario. This is done to ensure that 
         # the user cannot forget that he has made edits to an editing layer and unknowingly submit
         # an incorrect scenario!
         if not self.editLayerOpen:
@@ -158,14 +158,14 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
             
         ''' Set the position and visibility of needed edit and base layers '''      
         
-        # First, hide all edit layers and base layers not used for orientation.
+        # First, hide all editing layers and base layers not used for orientation.
         self.hideEditBaseLayers(legend)
                     
         # Move the needed editing layer to the top, select, check and make visible.
-        # The edit layer goes to position 0, and must be moved before the 
+        # The editing layer goes to position 0, and must be moved before the 
         # baselayer (position 1).  If the base layer is moved to position 1 first, 
         # and a layer other than the correct editLayer is at position 0, then the
-        # baseLayer will end up at position 3 when the correct edit layer is inserted.
+        # baseLayer will end up at position 3 when the correct editing layer is inserted.
         self.moveLayer(legend, self.editLayerBaseName, 0)
    
         # If it exists in this scenario edit type, move the needed base layer to second in list, 
@@ -310,7 +310,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
                                                 + self.fileName + ", could not be found.")
        
     def hideEditBaseLayers(self, legend):
-        ''' Hide all edit layers and base layers not used for orientation '''
+        ''' Hide all editing layers and base layers not used for orientation '''
         hideList = config.hideEditLayers
         for layer in hideList:
             items = legend.findItems(layer, QtCore.Qt.MatchFixedString, 0)
@@ -335,7 +335,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveLayer(): is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
         print "Main.dlgscenarioedittypes.DlgScenarioEditTypes.moveLayer(): item to move is " + itemToMove.text(0)
         
-        # just moving edit layer, no need for signals
+        # just moving editing layer, no need for signals
         legend.blockSignals(True)
         itemToMove.storeAppearanceSettings() # Store settings 
         legend.takeTopLevelItem(legend.indexOfTopLevelItem(itemToMove))
@@ -348,7 +348,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         
         
     def colorEditBaseConstraintLayers(self, legend):
-        ''' A method to highlight the edit layer and base layer for the
+        ''' A method to highlight the editing layer and base layer for the
             current scenario edit type.
         '''
         # First remove any previous highlighting
@@ -383,7 +383,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
             
         #debugging
         print "Main.dlgscenariotypes.colorEditBaseConstraintLayers()"
-        print "Main.dlgscenariotypes.colorEditBaseConstraintLayers(): The edit layer name is: " + editItems[0].text(0)
+        print "Main.dlgscenariotypes.colorEditBaseConstraintLayers(): The editing layer name is: " + editItems[0].text(0)
         if self.baseLayerBaseName:
             print "Main.dlgscenariotypes.colorEditBaseConstraintLayers(): The base layer name is: " + baseItems[0].text(0)
         if self.constraintLayerBaseName:

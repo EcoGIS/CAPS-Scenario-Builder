@@ -59,27 +59,29 @@ def listOriginalFeatures(provider):
         return originalFeats
     
 def checkSelectedLayer(mainwindow, scenarioEditType, currentLayerName):
-        ''' Check to make sure the user has selected the correct 
+        ''' 
+            Check to make sure the user has selected the correct 
             editing layer when adding or pasting features 
         '''
-        # debugging
         scenarioEditTypesList = config.scenarioEditTypesList
+        
+        # debugging
         print "Tools.shared.checkSelectedLayer()"
-        print "scenarioEditType is " + scenarioEditType
-        print "currentLayerName is " + currentLayerName
+        print "Tools.shared.checkSelectedLayer(): scenarioEditType is " + scenarioEditType
+        print "Tools.shared.checkSelectedLayer(): currentLayerName is " + currentLayerName
 
         if scenarioEditType in scenarioEditTypesList[:4] and currentLayerName != config.editLayersBaseNames[0]:
-            print "edit points"
+            print "Tools.shared.checkSelectedLayer(): edit points"
             QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
 named 'edit_scenario(points)' in the layer list panel to make the scenario edit type you have chosen.")
             return "Cancel"
         elif scenarioEditType == scenarioEditTypesList[4] and currentLayerName != config.editLayersBaseNames[1]:
-            print "edit lines"
+            print "Tools.shared.checkSelectedLayer(): edit lines"
             QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
 named 'edit_scenario(lines)' in the layer list panel to make the scenario edit type you have chosen.")
             return "Cancel"
         elif scenarioEditType in scenarioEditTypesList[5:7] and currentLayerName != config.editLayersBaseNames[2]:
-            print "edit polygons"
+            print "Tools.shared.checkSelectedLayer(): edit polygons"
             QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
 named 'edit_scenario(polygons)' in the layer list panel to make the scenario edit type you have chosen.") 
             return "Cancel"           
@@ -148,17 +150,17 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
         # debugging
         print "Tools.shared.updateExtents()"
         print "The active layer feature count is " + str(activeVLayer.featureCount())
-        vfilePath = activeVLayer.source()
+        vfilePath = unicode(activeVLayer.source())
         # I tried every update method I could find, but nothing other than closing
         # and reopening the layer seems to reset the layer extents on the canvas.  
         # So I do that here.
-        name = activeVLayer.name()
+        name = unicode(activeVLayer.name())
         if name in config.editLayersBaseNames:
             layerId = activeVLayer.id()
             # save the color so we can keep the same color when reopening the layer
             mainwindow.layerColor = mainwindow.activeVLayer.rendererV2().symbols()[0].color()
             # The method below removes the layer from the originalScenarioLayers list if the 
-            # edit layer was in self.originalScenarioLayers and returns True if it was
+            # editing layer was in self.originalScenarioLayers and returns True if it was
             # or False if it was not.  The method resets the 
             # variables associated with the layer we are removing (to avoid runtime errors
             # associated with deleting underlying C++ objects)
@@ -173,7 +175,7 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
                 mainwindow.originalScenarioLayers.append(mainwindow.activeVLayer)
                 # although layer names shouldn't have changed, update anyway
                 mainwindow.getOriginalScenarioLayersNames()
-                print "Tools.shared.updateExtents() appended edit layer"
+                print "Tools.shared.updateExtents() appended editing layer"
             
             # debugging
             for layer in mainwindow.originalScenarioLayers: print layer.name()

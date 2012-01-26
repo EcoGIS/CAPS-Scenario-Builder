@@ -76,7 +76,7 @@ class AddPoints(QgsMapTool):
         if shared.checkSelectedLayer(self.mainwindow, self.mainwindow.scenarioEditType, 
                                                          currentLayerName) == "Cancel":
             self.qgsPoint = None
-            return # if wrong edit layer cancel drawing
+            return # if wrong editing layer cancel drawing
         
         ''' 
             Check constraints on the added point for the scenario edit type, 
