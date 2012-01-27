@@ -292,9 +292,9 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
      
         # open file dialog to find scenarios to open
         qd = QtGui.QFileDialog()
-        filterString = QtCore.QString("CAPS Scenario (*.cap)") # syntax for showing all files \nAll Files(*)")
+        filterString = "CAPS Scenario (*.cap)" # syntax for showing all files \nAll Files(*)")
         # get the path to the directory for the saved file using Python
-        directory = QtCore.QString(os.path.dirname(config.scenariosPath))
+        directory = os.path.dirname(config.scenariosPath)
         # change QString to unicode so Python can slice it for the directory name
         scenarioFilePath = unicode(qd.getOpenFileName(self, QtCore.QString
                                                 ("Open Scenario"), directory, filterString))
@@ -421,8 +421,8 @@ scenario file is open in another program.")
         ''' GET THE FILE PATH THE USER CHOOSES '''
         
         qd = QtGui.QFileDialog()
-        qd.setDefaultSuffix(QtCore.QString(".cap"))
-        filterString = QtCore.QString("CAPS Scenario (*.cap)") #\nAll Files(*)")
+        qd.setDefaultSuffix(".cap")
+        filterString = "CAPS Scenario (*.cap)" #\nAll Files(*)")
         # get the path to the default scenario's directory 
         defaultDir = config.scenariosPath
         # Get the new file path and change the QString to unicode so that Python 
@@ -652,7 +652,7 @@ another program and then try again.")
         datasourceOptions = QtCore.QStringList(QtCore.QString())
         errorMessage = QtCore.QString()
         # Need to include the creationOptions or the geometry will not be written.
-        creationOptions = QtCore.QStringList(QtCore.QString("GEOMETRY=AS_WKT"))
+        creationOptions = QtCore.QStringList("GEOMETRY=AS_WKT")
         # write csv file in MA State Plane coordinates and check for error
         error = QgsVectorFileWriter.writeAsVectorFormat(vlayer, csvPath, "utf-8", 
                     self.crs, "CSV", False, errorMessage, datasourceOptions, creationOptions)
@@ -1164,20 +1164,13 @@ before you can make edits.  Please save the current scenario or open an existing
                 self.mpActionEditScenario.setChecked(False)
                 self.mpActionEditScenario.blockSignals(False)
                 return 
-            
-            # The scenarioEditDialog has been accepted, so layers will be opened
-            # or activated.  There is no need to set the select action here.  It
-            # is better to let it be set by activeLayerChanged() according to layer type
-            # set the select action for edit mode
-            #self.mpActionSelectFeatures.setDisabled(False)
 
             # set the paste action
             if self.copyFlag: self.mpActionPasteFeatures.setDisabled(False)
          
             # add scenarioEditType to statusbar
             self.editTypeLabel = QtGui.QLabel(self.statusBar)
-            capture_string = QtCore.QString("Scenario edit type:  '" 
-                                                                    + self.scenarioEditType + "'")
+            capture_string = "Scenario edit type:  '" + self.scenarioEditType + "'"
             self.editTypeLabel.setText(capture_string)
             self.statusBar.insertPermanentWidget(0, self.editTypeLabel)        
         else: #False action deactivated
@@ -1200,27 +1193,27 @@ before you can make edits.  Please save the current scenario or open an existing
             self.mpActionPasteFeatures.setDisabled(True)
             # unset edit tool actions
             self.disableEditActions()
-            print "setDisabled = True"
+            print "Main.mainwindow.editScenario(): setDisabled = True"
             
             # remove the 'editTypeLabel' permanent message from the statusBar
             self.statusBar.removeWidget(self.editTypeLabel)
 
     def addPoints(self, state):
         # debugging
-        print "addPoints() " + str(state)
+        print "Main.mainwindow.addPoints() " + str(state)
         
         if state: self.canvas.setMapTool(self.toolAddPoints)
         else: self.canvas.unsetMapTool(self.toolAddPoints)
     
     def addLines(self, state):
         # debugging
-        print "addLines()"
+        print "Main.mainwindow.addLines()"
         if state: self.canvas.setMapTool(self.toolAddLinesPolygons)
         else:  self.canvas.unsetMapTool(self.toolAddLinesPolygons)
           
     def addPolygons(self, state):
         # debugging
-        print "addPolygons()"
+        print "Main.mainwindow.addPolygons()"
         
         self.addLines(state)
         
@@ -1253,19 +1246,19 @@ before you can make edits.  Please save the current scenario or open an existing
 ############################################################################################   
     
     def zoomIn(self, state):
-        print "zoomIn() " + str(state)
+        print "Main.mainwindow.zoomIn() " + str(state)
         
         if state: self.canvas.setMapTool(self.toolZoomIn) 
         else: self.canvas.unsetMapTool(self.toolZoomIn)    
 
     def zoomOut(self, state):
-        print "zoomOut() "  + str(state)
+        print "Main.mainwindow.zoomOut() "  + str(state)
         
         if state: self.canvas.setMapTool(self.toolZoomOut)
         else: self.canvas.unsetMapTool(self.toolZoomOut)
                     
     def pan(self, state):
-        print "pan " + str(state)
+        print "Main.mainwindow.pan " + str(state)
         
         if state: self.canvas.setMapTool(self.toolPan)
         else: self.canvas.unsetMapTool(self.toolPan)
@@ -1273,7 +1266,7 @@ before you can make edits.  Please save the current scenario or open an existing
     def zoomToMapExtent(self):
         """ set zoom to full extent """
         # debugging
-        print "zoomToMapExtent()"
+        print "Main.mainwindow.zoomToMapExtent()"
         
         extent = self.canvas.fullExtent()
         # without this some of the layer is off the canvas
@@ -1283,14 +1276,14 @@ before you can make edits.  Please save the current scenario or open an existing
         
     def identifyFeatures(self, state):
         # debugging
-        print "mainwindow.identifyFeatures()"
+        print "Main.mainwindow.identifyFeatures()"
         
         if state: # for action selected state = True
-            print "mainwindow.identifyFeatures() state is True"
+            print "Main.mainwindow.identifyFeatures() state is True"
             # identifyFeatures action is selected so enable this tool
             self.canvas.setMapTool(self.toolIdentify)
         else: # action deselected (state = False)
-            print "mainwindow.identifyFeatures() state is false"
+            print "Main.mainwindow.identifyFeatures() state is false"
             self.canvas.unsetMapTool(self.toolIdentify)
        
 ############################################################################################  
@@ -1298,6 +1291,8 @@ before you can make edits.  Please save the current scenario or open an existing
 ############################################################################################
                
     def addVectorLayer(self):
+        # debugging
+        print "Main.mainwindow.addVectorLayer()"
         # check app state and handle user cancel
         if self.appStateChanged("addVector") == "Cancel":
             # debugging
@@ -1305,14 +1300,14 @@ before you can make edits.  Please save the current scenario or open an existing
             return
         # open the file dialog
         qd = QtGui.QFileDialog()
-        filterString = QtCore.QString("ESRI Shapefile(*.shp *.SHP)\nComma Separated Value\
+        filterString = "ESRI Shapefile(*.shp *.SHP)\nComma Separated Value\
 (*.csv *.CSV)\nGeography Markup Language(*.gml *.GML)\nGPX(*.gpx *.GPX)\nKML(*.kml *.KML)\
-SQLite(*.sqlite *.SQLITE)\nArc\\Info ASCII Coverage(*.e00 *.E00)\nAll Files(*)")
+SQLite(*.sqlite *.SQLITE)\nArc\\Info ASCII Coverage(*.e00 *.E00)\nAll Files(*)"
         # get the path to the directory containing the opened file using Python
         directory = config.baseLayersPath
                                 
         # change the QString to unicode so that Python can slice it for the directory name 
-        vfilePath = unicode(qd.getOpenFileName(self, QtCore.QString("Add Vector Layer"),
+        vfilePath = unicode(qd.getOpenFileName(self, "Add Vector Layer",
                                             directory, filterString))
         # Check for cancel
         if len(vfilePath) == 0: return
@@ -1320,18 +1315,20 @@ SQLite(*.sqlite *.SQLITE)\nArc\\Info ASCII Coverage(*.e00 *.E00)\nAll Files(*)")
         self.openVectorLayer(vfilePath)
             
     def addRasterLayer(self):
+        # debugging
+        print "Main.mainwindow.addRasterLayer()"
         # check app state and handle user cancel
         if self.appStateChanged("addRaster") == "Cancel": return
         # open file dialog
         qd = QtGui.QFileDialog()
-        filterString = QtCore.QString("All Files(*)\nMrSID(*.sid *.SID)\nGeoTIFF\
+        filterString = "All Files(*)\nMrSID(*.sid *.SID)\nGeoTIFF\
 (*.tif *.tiff *.TIF *.TIFF)\nArc/Info Binary Grid(*.adf *.ADF)\n\
-JPEG(*.jpg *.jpeg *.JPG *.JPEG)")
+JPEG(*.jpg *.jpeg *.JPG *.JPEG)"
         # get the path to the directory containing the opened file using Python
         directory = config.baseLayersPath        
         
         # change QString to unicode so Python can slice it for the directory name
-        rfilePath = unicode(qd.getOpenFileName(self, QtCore.QString("Add Raster Layer"),
+        rfilePath = unicode(qd.getOpenFileName(self, "Add Raster Layer",
                                     directory, filterString))
         # Check for cancel
         if len(rfilePath) == 0: return
@@ -1340,8 +1337,11 @@ JPEG(*.jpg *.jpeg *.JPG *.JPEG)")
         self.openRasterLayer(rfilePath)
           
     def openRasterCategoryTable(self):
+        # debugging
+        print "Main.mainwindow.openRasterCategoryTable()"
+        
         # Raster Categories file kept in the Base_layers folder
-        fname = QtCore.QString("./RasterCategoryTable.htm")
+        fname = "./RasterCategoryTable.htm"
         
         # use a QDockWidget to create floating window 
         # with the MainWindow as parent 
@@ -1373,8 +1373,7 @@ JPEG(*.jpg *.jpeg *.JPG *.JPEG)")
         
     def openVectorAttributeTable(self):
         # debugging
-        print "openVectorAttributeTable()"
-        print "openVectorAttributeTable() type is " + str(type(self.dwAttrTable))
+        print "Main.mainwindow.openVectorAttributeTable()"
         
         if self.activeVLayer.name() == config.slowLoadingLayers[0]:
             reply = QtGui.QMessageBox.question(self, "Vector Attribute Table", "This layer's \
@@ -1424,7 +1423,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
         # if it is already open don't open another window
         if self.dwAttrTable == None:  
             # debugging
-            print "dwAttrTable not open"
+            print "Main.mainwindow.openVectorAttributeTable(): dwAttrTable not open"
             self.dwAttrTable = QtGui.QDockWidget("Vector Attribute Table", self)
             self.dwAttrTable.setFloating(True)
             self.dwAttrTable.setAllowedAreas(QtCore.Qt.NoDockWidgetArea)
@@ -1448,11 +1447,14 @@ attribute table is very large and can take a few seconds to load.  Do you want t
     
     # this Pythono short-circuit signal found in legend.currentItemChanged()
     def activeLayerChanged(self, layerType):
-        ''' A controller for handling app state changes from the legend '''
+        ''' 
+            A controller for handling app state changes originating from the legend.
+            This method is called whenever the "current item" in the legend has changed.
+        '''
 
         #**************************************************************************     
         ''' Debugging Code '''
-        print "ALC() STARTING"
+        print "MAIN.MAINWINDOW.ALC() STARTING"
         print "alc layer type is " + str(layerType)
         if not self.activeVLayer: print "alc no active vlayer"
         else: print "alc old active vlayer " + self.activeVLayer.name()
@@ -1489,7 +1491,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             print "ALC THE ACTIVE RLAYER NAME IS " + self.activeRLayer.name()
             
             # add filename to statusbar
-            capture_string = QtCore.QString(self.activeRLayer.source())
+            capture_string = self.activeRLayer.source()
             self.statusBar.showMessage(capture_string)
     
             # For some reason, the USGS.sid will not render unless we include this line of code.
@@ -1569,7 +1571,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             print "alc The description of the srs is " + str(self.activeVLayer.crs().description())
             
             # add filename to statusbar
-            capture_string = QtCore.QString(self.activeVLayer.source())
+            capture_string = self.activeVLayer.source()
             self.statusBar.showMessage(capture_string)
             
             # set the geometry of the layer
@@ -1593,9 +1595,6 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             
             # Enable map navigation tools
             self.mapToolGroup.setDisabled(False) # map tools can't be enabled if the group is off
-            # Select tool only enabled if in editMode
-            self.mpActionSelectFeatures.setDisabled(True)
-            self.disableSelectActions()
             
             # We are changing the activeVLayer, so we need to handle editMode
             if self.editMode: 
@@ -1612,6 +1611,10 @@ attribute table is very large and can take a few seconds to load.  Do you want t
                     # is an editable point base layer.
                     self.mpActionSelectFeatures.setChecked(True)
                     self.enableSelectSubActions()
+            else:
+                # Select tool only enabled if in editMode
+                self.mpActionSelectFeatures.setDisabled(True)
+                self.disableSelectActions()
             
             # new active vector layer loading so disable previous edit actions (these are mapToolGroup actions)
             self.disableEditActions() # actions are add points, lines, polygons
@@ -1663,21 +1666,21 @@ attribute table is very large and can take a few seconds to load.  Do you want t
 ############################################################################################
     
     def appStateChanged(self, callingAction):
-        ''' Manage the application state changes from all user actions '''
+        ''' Manage the application state changes from user actions '''
         # If no layer is loaded then user is loading first layer after app start (num layers = 0),
         # or loading first layer after deleting the only layer in the legend (num layers = 0).
         # If there are no layers in the scenario, no need to scave the scenario or edits.
         if len(self.legend.getLayerIDs()) == 0:  return
 
-        # If user in the middle of a line or polygon edit, warn
+        # If user in the middle of a line or polygon edit, warn when they choose another action.
         if self.toolAddLinesPolygons and self.toolAddLinesPolygons.started:
             QtGui.QMessageBox.warning(self, "Editing Error", "Please complete your edit \
 before taking another action!")
             return "Cancel" 
         
         #**********************************************************       
-        ''' Debug code '''
-        print "APP_STATE_CHANGED() STARTING: callingAction is " + callingAction
+        ''' Debugging code '''
+        print "MAIN.MAINWINDOW.APP_STATE_CHANGED() STARTING: callingAction is " + callingAction
         if self.activeVLayer == None: print "asc no active vlayer" 
         else: print "asc current active " + self.activeVLayer.name()
         if self.activeRLayer == None: print "asc no active rlayer"
@@ -1696,15 +1699,12 @@ before taking another action!")
         
         Actions that call this method are: addVector, addRaster, removeCurrentLayer, 
         legendMousePress, startingEditing, stoppingEditing, appClosing, newScenario, 
-        openScenario, exportScenario, saveScenarioAs , selectFeatures
+        openScenario, exportScenario, saveScenarioAs and selectFeatures.
         
         '''
   
-        # Changing layers (legendMousePress, removeCurrentLayer, addVector, addRaster)
-        # requires editing tools to be reset, so it is wise to check for unsaved edits
-        # on those actions. Also we should check for unsaved edits when starting/stopping 
-        # editing, on all scenario menu actions, or on closing the app.  In other words
-        # we check for unsaved edits on all callingActions, but that behavior can be changed here. 
+        # We should check for unsaved edits when starting/stopping editing,
+        # on all scenario menu actions, or on closing the app.  
         callingList = ["startingEditing", "stoppingEditing", "appClosing", "newScenario", "openScenario", "saveScenario", 
         "saveScenarioAs", "exportScenario"]
         if self.editDirty:
@@ -1728,7 +1728,7 @@ before taking another action!")
             return
         
         # debugging
-        print "appStateChanged has returned nothing"
+        print "Main.mainwindow.appStateChanged() has returned nothing"
 
     def checkEditsState(self, callingAction):
         ''' Prompt the user about unsaved edits '''
@@ -1759,7 +1759,7 @@ before taking another action!")
             # If user deletes one of their own layers, there is no need to disable editing
             elif callingAction in callingList: self.saveEdits()
             # if opening new layer or changing layers just disable edit actions
-            elif callingAction in ["addVector" or "addRaster" or "legendMousePress"]:
+            elif callingAction in ["addVector", "addRaster", "legendMousePress"]:
                 self.saveEdits()
                 self.disableEditActions()
             else:
@@ -1778,8 +1778,8 @@ before taking another action!")
                 if self.attrTable != None and self.attrTable.isVisible():
                     self.openVectorAttributeTable()
                 self.editDirty = False
-                print "asc set app to initial state"
                 self.setInitialAppState()
+                print "Main.mainwindow.checkEditsState(): asc set app to initial state"
             # under these situation just discard edits and leave editing state as is
             elif callingAction in callingList:
                 shared.deleteEdits(self, self.provider, self.activeVLayer, 
@@ -1788,10 +1788,9 @@ before taking another action!")
                     self.openVectorAttributeTable()
                 self.editDirty = False
             # if opening new layer or changing layers just disable edit actions
-            elif callingAction == ("addVector" or "addRaster" or 
-                                    "legendMousePress"):
+            elif callingAction in ["addVector", "addRaster", "legendMousePress"]:
                 shared.deleteEdits(self, self.provider, self.activeVLayer, 
-                                                    self.canvas, self.originalFeats)
+                                                           self.canvas, self.originalFeats)
                 if self.attrTable != None and self.attrTable.isVisible():
                     self.openVectorAttributeTable()
                 self.editDirty = False
@@ -1807,7 +1806,7 @@ before taking another action!")
                     self.mpActionEditScenario.blockSignals(True)
                     self.mpActionEditScenario.setChecked(True)
                     self.mpActionEditScenario.blockSignals(False) 
-            print "checkEditsState() returning cancel"
+            print "Main.mainwindow.checkEditsState(): returning 'cancel'"
             return "Cancel"
         
     def checkScenarioState(self, callingAction):
@@ -1870,13 +1869,14 @@ editing layer will not appear when you reopen this scenario, but it could be mis
 choose 'Export Scenario' for this scenario in the future.")
                         return "Cancel"
         elif reply == QtGui.QMessageBox.Cancel:
-            print "Main.mainwindow.checkScenarioState() returning cancel"
+            print "Main.mainwindow.checkScenarioState() returning 'cancel'"
             return "Cancel"
  
     def setInitialAppState(self):
         ''' Set the app state to be its first opened state '''
         # debugging
-        print "setInitialAppState()"
+        print "Main.mainwindow.setInitialAppState()"
+        
         if self.toolSelect: self.canvas.unsetMapTool(self.toolSelect)
         if self.toolIdentify: self.canvas.unsetMapTool(self.toolIdentify)
         if self.toolAddPoints: self.canvas.unsetMapTool(self.toolAddPoints)
@@ -1926,19 +1926,21 @@ Prioritization System (CAPS) Scenario Builder")
 ############################################################################################
        
     def enablePointsOrLinesOrPolygons(self):
-        if "base" in self.activeVLayer.name(): return
+        if "base" in unicode(self.activeVLayer.name()): return
         if self.geom == 0:  #0 point, 1 line, 2 polygon
             self.mpActionAddPoints.setDisabled(False)
-            print "enablePointsOrLinesOrPolygons() geom 0" 
+            print "Main.mainwindow.enablePointsOrLinesOrPolygons(): geom 0" 
         elif self.geom == 1:
             self.mpActionAddLines.setDisabled(False)
-            print "enablePointsOrLinesOrPolygons() geom 1"
+            print "Main.mainwindow.enablePointsOrLinesOrPolygons(): geom 1"
         elif self.geom == 2:
             self.mpActionAddPolygons.setDisabled(False)
-            print "enablePointsOrLinesOrPolygons() geom 2"
+            print "Main.mainwindow.enablePointsOrLinesOrPolygons(): geom 2"
 
     def enableSelectSubActions(self):
-        if self.activeVLayer.name() in config.pointBaseLayersBaseNames:
+        # debugging
+        print "Main.mainwindow.enableSelectSubActions()"
+        if unicode(self.activeVLayer.name()) in (config.pointBaseLayersBaseNames + config.editLayersBaseNames):
             self.mpActionModifyPoints.setDisabled(False)
             self.mpActionCopyFeatures.setDisabled(True)
         else: self.mpActionCopyFeatures.setDisabled(False)
@@ -1972,13 +1974,6 @@ Prioritization System (CAPS) Scenario Builder")
         self.mpActionCopyFeatures.setDisabled(True)
         self.mpActionCopyFeatures.setChecked(False)
         
-    
-    '''def disableSelectSubActions(self):
-        self.mpActionModifyPoints.setDisabled(True)
-        self.mpActionDeselectFeatures.setDisabled(True)
-        self.mpActionCopyFeatures.setDisabled(True)
-        self.mpActionDeleteFeatures.setDisabled(True)'''
-        
     def disableEditing(self):
         # debugging
         print "Main.mainwindow.disableEditing()"
@@ -1994,13 +1989,15 @@ Prioritization System (CAPS) Scenario Builder")
         
     def getCurrentLayersCount(self):
         # debugging
-        print "getCurrentLayersCount()"
+        print "Main.mainwindow.getCurrentLayersCount()"
         
         self.currentLayersCount = None
         self.currentLayersCount = QgsMapLayerRegistry.instance().count()
         return self.currentLayersCount
  
     def getGeometryName(self, layerGeom):
+        # debugging
+        print "Main.mainwindow.getGeometryName()"
         geometry = "No Geometry"
         if layerGeom != None: # None if raster loaded
             if layerGeom == 0: geometry = "point(s)"
@@ -2012,7 +2009,7 @@ Prioritization System (CAPS) Scenario Builder")
     def getCurrentLayers(self):
         ''' Get the layers currently registered in the QgsMapLayerRegistry '''
         # debugging
-        print "getCurrentLayers()"
+        print "Main.mainwindow.getCurrentLayers()"
         
         self.currentLayers = {}
         # note: returns a dictionary of QgsMapLayers
@@ -2021,7 +2018,7 @@ Prioritization System (CAPS) Scenario Builder")
         
     def getCurrentLayersNames(self):
         # debugging
-        print ""
+        print "Main.mainwindow.getCurrentLayersNames()"
         
         currentLayersNames = []
         for layer in self.getCurrentLayers().values():
@@ -2032,12 +2029,14 @@ Prioritization System (CAPS) Scenario Builder")
     def getLayerFromName(self, layerName):
         # debugging
         print "Main.mainwindow.getLayerFromName()"
+        
         for layer in self.getCurrentLayers().values():
             if layerName == layer.name(): return layer
  
     def getOriginalScenarioLayersNames(self):
         # debugging
         print "Main.mainwindow.getOriginalScenarioLayersNames()"
+        
         self.originalScenarioLayersNames = []
         for layer in self.originalScenarioLayers: 
             self.originalScenarioLayersNames.append(unicode(layer.name())) # change QString to unicode
@@ -2073,15 +2072,15 @@ failed to load. Either the file name or the location of the file has probably ch
 missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
    
         # debugging
-        print "getOriginalScenarioLayers() originalScenarioLayers are " 
+        print "Main.mainwindow.getOriginalScenarioLayers(): originalScenarioLayers are " 
         for layer in self.originalScenarioLayers: print layer.name()
-        print "getOriginalScenarioLayers() currentLayers are " 
+        print "Main.mainwindow.getOriginalScenarioLayers() currentLayers are " 
         if i > 0:
             for layer in self.getCurrentLayers().values(): print layer.name()
    
     def getEditFields(self):
         # debugging
-        print "mainwindow.getEditFields()"
+        print "Main.mainwindow.getEditFields()"
         
         geom = self.geom #0 point, 1 line, 2 polygon
         if geom == 0: editFields = config.editPointsFields  
@@ -2140,7 +2139,6 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
                 print "Main.mainwindow.setScenarioDirty(): setScenarioDirty() difference == []"
                 print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() end is " + str(self.scenarioDirty)
                 return
- 
         
         # If the above is not true and if the layer count is > 0 and there is no scenario open 
         # then the scenario is dirty. This would and should be true even
@@ -2184,15 +2182,15 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
     def openVectorLayer(self, vfilePath):
         ''' Open a vector layer '''
         # debugging
-        print "openVectorLayer()"
-        print "vfilePath is " + vfilePath
+        print "Main.mainwindow.openVectorLayer()"
+        print "Main.mainwindow.openVectorLayer(): vfilePath is " + vfilePath
         
         # create the file info object to get info about the vfile
-        info = QtCore.QFileInfo(QtCore.QString(vfilePath))
+        info = QtCore.QFileInfo(vfilePath)
         #create the layer
         #QFileInfo.completeBaseName() returns just the filename without the extension
         try:
-            vlayer = QgsVectorLayer(QtCore.QString(vfilePath), info.completeBaseName(), "ogr")       
+            vlayer = QgsVectorLayer(vfilePath, info.completeBaseName(), "ogr")       
         except (IOError, OSError), e:
             error = unicode(e)
             print error
@@ -2207,14 +2205,14 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
     
     def openHiddenVectorLayer(self, vfilePath):
         # debugging
-        print "mainwindow.openHiddenVectorLayer()"
+        print "Main.mainwindow.openHiddenVectorLayer()"
         
         # create the file info object to get info about the vfile
-        info = QtCore.QFileInfo(QtCore.QString(vfilePath))
+        info = QtCore.QFileInfo(vfilePath)
         #create the layer
         #QFileInfo.completeBaseName() returns just the filename
         try:
-            vlayer = QgsVectorLayer(QtCore.QString(vfilePath), info.completeBaseName(), "ogr")
+            vlayer = QgsVectorLayer(vfilePath, info.completeBaseName(), "ogr")
         except (IOError, OSError), e:
             error = unicode(e)
             print error                
@@ -2223,7 +2221,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
  
     def openRasterLayer(self, rfilePath):
         ''' Open a raster layer '''
-        info = QtCore.QFileInfo(QtCore.QString(rfilePath))
+        info = QtCore.QFileInfo(rfilePath)
         
         try:
             rlayer = QgsRasterLayer(info.filePath(), info.completeBaseName())
@@ -2242,7 +2240,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         path = config.baseLayersPath
         
         # debugging
-        info = QtCore.QFileInfo(QtCore.QString(path))
+        info = QtCore.QFileInfo(path)
         path2 = info.absolutePath()
         path3 = info.absoluteFilePath()
         path4 = info.canonicalFilePath()
@@ -2257,15 +2255,13 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         for rlayer in rlayers:
             tempPath = None
             tempPath = path + rlayer
-            # QGIS is not interpreting ./ correctly on my new computer.  When the tempPath = ./base_layers/someraster.tif
+            # QGIS 1.73 was not interpreting ./ correctly.  When the tempPath = ./base_layers/someraster.tif
             # QGIS writes ./base_layers/someraster.tif to the scenario file (i.e. the '.cap' file).  When QGIS opens the
             # project file, it interprets ./ to be the "Scenarios" directory where the .cap file is located rather than the
             # program directory where the base_files are located. This is corrected when the raster files are opened using
             # absolute file path.  In that case, QGIS writes '../' to the scenario file and layers open properly.  The two
             # lies below convert the relative paths to absolute paths so that config.baseLayersPath can remain "./base_layers/"
             # If there are problems with the Windows installer, I could convert all paths to absolute paths to solve the problem. 
-            #info = QtCore.QFileInfo(QtCore.QString(tempPath))
-            #tempPath = info.absoluteFilePath()
             print "Main.mainwindow.openOrientingLayers(): The tempPath is " + tempPath
             #print "The absolute file path is " + info.absoluteFilePath()
             self.openingOrientingLayers = True
@@ -2274,8 +2270,6 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         for vlayer in vlayers:
             tempPath = None
             tempPath = path + vlayer
-            #info = QtCore.QFileInfo(QtCore.QString(tempPath))
-            #tempPath = info.absoluteFilePath()
             print "Main.mainwindow.openOrientingLayers(): The tempPath is " + tempPath
             #print "The absolute file path is " + info.absoluteFilePath()
             self.openingOrientingLayers = True
@@ -2296,7 +2290,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             so we set it here.
         '''
         # debugging
-        print "arrangeOrientingLayers()"
+        print "Main.mainwindow.arrangeOrientingLayers()"
 
         legend = self.legend
         legendLayers = legend.getLayerIDs()
@@ -2309,22 +2303,21 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         # For a legend having 10 layers the indexes run from 0 to 9.
         # If you try to insert a layer  into the QTreeWidget at an index
         # that doesn't exist, the layer will not be inserted and will not appear.
-        print "numLegendLayers is " + str(numLegendLayers)
+        print "Main.mainwindow.arrangeOrientingLayers(): numLegendLayers is " + str(numLegendLayers)
  
         # First load the raster layers
         for orientingLayer in oRLayers:
             info = QtCore.QFileInfo(orientingLayer)
             orientingLayerName = info.completeBaseName()
-            print "orientingLayerName is " + orientingLayerName
-            item = legend.findItems(orientingLayerName, 
-                                          QtCore.Qt.MatchFixedString, 0)
-            print "length of item list is " + str(len(item))
+            print "Main.mainwindow.arrangeOrientingLayers(): orientingLayerName is " + orientingLayerName
+            item = legend.findItems(orientingLayerName, QtCore.Qt.MatchFixedString, 0) 
+            print "Main.mainwindow.arrangeOrientingLayers(): length of item list is " + str(len(item))
             if len(item) != 0:
                 itemToMove = item[0]
-                print "is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
-                print "item to move is " + itemToMove.text(0)
+                print "Main.mainwindow.arrangeOrientingLayers(): is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
+                print "Main.mainwindow.arrangeOrientingLayers(): item to move is " + itemToMove.text(0)
                 position = numLegendLayers - (oRLayers.index(orientingLayer) + 1) # itemToMove is the base layer
-                print "r position is " + str(position)
+                print "Main.mainwindow.arrangeOrientingLayers(): r position is " + str(position)
                 itemToMove.storeAppearanceSettings() # Store settings 
                 legend.takeTopLevelItem(legend.indexOfTopLevelItem(itemToMove))
                 legend.insertTopLevelItem(position, itemToMove)
@@ -2335,17 +2328,17 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         for orientingLayer in oVLayers:
             info = QtCore.QFileInfo(orientingLayer)
             orientingLayerName = info.completeBaseName()
-            print "orientingLayerName is " + orientingLayerName
+            print "Main.mainwindow.arrangeOrientingLayers(): orientingLayerName is " + orientingLayerName
             item = legend.findItems(orientingLayerName, 
                                           QtCore.Qt.MatchFixedString, 0)
-            print "length of item list is " + str(len(item))
+            print "Main.mainwindow.arrangeOrientingLayers(): length of item list is " + str(len(item))
             if len(item) != 0:
                 itemToMove = item[0]
                 print str(legend.isLegendLayer(itemToMove))
-                print "item to move is " + itemToMove.text(0)
+                print "Main.mainwindow.arrangeOrientingLayers(): item to move is " + itemToMove.text(0)
                 position = (numLegendLayers - (oVLayers.index(orientingLayer)
                                                            + (len(oRLayers) + 1)))
-                print "v position is " + str(position)
+                print "Main.mainwindow.arrangeOrientingLayers(): v position is " + str(position)
                 itemToMove.storeAppearanceSettings() # Store settings 
                 legend.takeTopLevelItem(legend.indexOfTopLevelItem(itemToMove))
                 legend.insertTopLevelItem(position, itemToMove)
@@ -2360,29 +2353,29 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         rectExtentMA = self.rectExtentMA
         smallRectExtentMA = QgsRectangle(27000, 780050, 336500, 964950)
         
-        print "The canvas extents on loading are:"
+        print "Main.mainwindow.setExtents(): The canvas extents on loading are:"
         print ("(" + str(rect.xMinimum()) + ", " + str(rect.yMinimum()) + ", " + 
                      str(rect.xMaximum()) + ", " + str(rect.yMaximum()) + ")")
-        print "rectExtentMA is "
+        print "Main.mainwindow.setExtents(): rectExtentMA is "
         print ("(" + str(rectExtentMA.xMinimum()) + ", " + str(rectExtentMA.yMinimum()) + ", " + 
                      str(rectExtentMA.xMaximum()) + ", " + str(rectExtentMA.yMaximum()) + ")")
         # set extents no bigger than MA state extents
         if rect.contains(rectExtentMA) or not rect.intersects(rectExtentMA):
-            print "canvas extent contains or does not intersect MA"
+            print "Main.mainwindow.setExtents(): canvas extent contains or does not intersect MA"
             # set the canvas extents to be a little smaller than the MA Extent
             self.canvas.setExtent(smallRectExtentMA)
             self.canvas.updateFullExtent()
             self.canvas.refresh()
-            print "SET CANVAS TO MA EXTENT"
-        else: print "THE EXTENTS WERE NOT CHANGED" 
+            print "Main.mainwindow.setExtents(): SET CANVAS TO MA EXTENT"
+        else: print "Main.mainwindow.setExtents(): THE EXTENTS WERE NOT CHANGED" 
         
        
         # debugging
         rect = self.canvas.extent()
-        print "The canvas extents after loading are:"
+        print "Main.mainwindow.setExtents(): The canvas extents after loading are:"
         print ("(" + str(rect.xMinimum()) + ", " + str(rect.yMinimum()) + ", " + 
                      str(rect.xMaximum()) + ", " + str(rect.yMaximum()) + ")")
-        print "The scaled rectangle is "
+        print "Main.mainwindow.setExtents(): The scaled rectangle is "
         print ("(" + str(smallRectExtentMA.xMinimum()) + ", " + str(smallRectExtentMA.yMinimum()) + ", " + 
                      str(smallRectExtentMA.xMaximum()) + ", " + str(smallRectExtentMA.yMaximum()) + ")")
   
@@ -2410,7 +2403,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         # debugging
         print "Main.mainwindow.pasteBaseLayerDeletions()"
         # Check if "edit_scenario(points) is open, and if not then warn.
-        editingLayerName = QtCore.QString(config.editLayersBaseNames[0])
+        editingLayerName = config.editLayersBaseNames[0]
         items = self.legend.findItems(editingLayerName, QtCore.Qt.MatchFixedString, 0)
         print "Main.mainwindow.pasteBaseLayerDeletions(): length of item list is " + str(len(items))
         if len(items) > 0:
@@ -2507,6 +2500,8 @@ the appropriate scenario edit type, and try again.")
                  
     def setScenarioSaved(self):
         ''' Do the housekeeping for a successfully saved scenario '''
+        # debugging
+        print "Main.mainwindow.setScenarioSaved()"
         # no errors so scenario saved and not dirty
         self.scenarioDirty = False
         # all scenario layers are loaded so set flag
@@ -2528,6 +2523,9 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
         ''' Delete the scenario's export file.  Used by mainwindow.exportScenario()
             and legend.Legend.deleteEditingLayer()
         '''
+        # debugging
+        print "Main.mainwindow.deleteExportScenarioFile()"
+        
         scenarioDirectoryName = unicode(self.scenarioInfo.completeBaseName())
         exportFileName = scenarioDirectoryName + ".csv"
         exportPath = config.scenarioExportsPath + exportFileName
@@ -2547,14 +2545,14 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
           
     def setRendererV2(self):
         # debugging
-        print "main.MainWindow.setRendererV2()"
-        print "self.geom is :" + str(self.geom)
+        print "Main.mainWindow.setRendererV2()"
+        print "Main.mainWindow.setRendererV2(): self.geom is :" + str(self.geom)
       
         if self.activeVLayer.name() == config.editLayersBaseNames[0]: # edit_scenario(points) layer
-            print "Setting Rule Based Renderer for 'edit_scenario(points).shp"
+            print "Main.mainWindow.setRendererV2(): Setting Rule Based Renderer for 'edit_scenario(points).shp"
             # if rule renderer is already set then no need to do anything, just return
             if self.activeVLayer.rendererV2().type() == "RuleRenderer": 
-                print "RuleRenderer returned"
+                print "Main.mainWindow.setRendererV2(): RuleRenderer returned"
                 return
             # This returns a QgsSymbolV2().  In particular a QgsMarkerSymbolV2()
             # This also returns a QgsMarkerSymbolLayerV2() layer.
@@ -2588,10 +2586,10 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             
             # make the rule, using the delete symbol, and add it
             rule1 = rendererV2.Rule(deleteSymbol, 0, 0, 
-                QtCore.QString("c_deleted='y' or d_deleted='y' or w_deleted='y' or r_deleted='y'"))
+                "c_deleted='y' or d_deleted='y' or w_deleted='y' or r_deleted='y'")
             rendererV2.addRule(rule1)
             rule2 = rendererV2.Rule(alteredSymbol, 0, 0, 
-                QtCore.QString("c_altered = 'y' or d_altered = 'y' or w_altered = 'y' or r_altered = 'y'"))
+                "c_altered = 'y' or d_altered = 'y' or w_altered = 'y' or r_altered = 'y'")
             rendererV2.addRule(rule2)
             # associate the new renderer with the activeVLayer
             self.activeVLayer.setRendererV2(rendererV2)
@@ -2600,25 +2598,25 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
 
             # debugging
             #print "The delete layers name is: " + deleteLayer.name()
-            print "The number of symbols is: " + str(len(rendererV2.symbols()))
-            print "The number of rules is: " + str(rendererV2.ruleCount())
-            print "The symbolLayer properties are: "
+            print "Main.mainWindow.setRendererV2(): The number of symbols is: " + str(len(rendererV2.symbols()))
+            print "Main.mainWindow.setRendererV2(): The number of rules is: " + str(rendererV2.ruleCount())
+            print "Main.mainWindow.setRendererV2(): The symbolLayer properties are: "
             for k, v in symbolLayer.properties().iteritems():
                 print "%s: %s" % (k, v)
-            print "The deleteLayer properties are: "
+            print "Main.mainWindow.setRendererV2(): The deleteLayer properties are: "
             for k, v in deleteLayer.properties().iteritems():
                 print "%s: %s" % (k, v)
-            print "The alteredLayer properties are: "
+            print "Main.mainWindow.setRendererV2(): The alteredLayer properties are: "
             for k, v in alteredLayer.properties().iteritems():
                 print "%s: %s" % (k, v)    
         elif self.activeVLayer.name() == config.editLayersBaseNames[1]: # edit_scenario(lines).shp
-            print "Setting color and line width for edit_scenario(lines).shp"
+            print "Main.mainWindow.setRendererV2(): Setting color and line width for edit_scenario(lines).shp"
             # this is a QgsLineSymbolLayerV2()
             symbolLayer = self.activeVLayer.rendererV2().symbols()[0].symbolLayer(0)
             if symbolLayer.width() == (0.4): # if line width and color already set then return
                 return
             if self.layerColor: # we saved color in Tools.shared.setExtents()
-                print "THERE IS A LINE COLOR"
+                print "Main.mainWindow.setRendererV2(): THERE IS A LINE COLOR"
                 symbolLayer.setColor(self.layerColor)
                 self.layerColor = None
                 # color the preview icon
@@ -2628,12 +2626,12 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             # color the preview icon
             self.legend.currentItem().vectorLayerSymbology(self.activeVLayer) 
         elif self.activeVLayer.name() == config.editLayersBaseNames[2]: #edit_scenario(polygons).shp
-            print "Setting color for edit_scenario(polygons).shp"
+            print "Main.mainWindow.setRendererV2(): Setting color for edit_scenario(polygons).shp"
         
             symbolLayer = self.activeVLayer.rendererV2().symbols()[0].symbolLayer(0)
             # if the layer is being reloaded by update extents after editing then set the color
             if self.layerColor: # we saved color in Tools.shared.setExtents()
-                print "THERE IS A POLYGON COLOR"
+                print "Main.mainWindow.setRendererV2(): THERE IS A POLYGON COLOR"
                 symbolLayer.setColor(self.layerColor)
                 self.layerColor = None
                 # color the preview icon
@@ -2642,7 +2640,7 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             # If the layer is being loaded from a scenario file return so that the
             #  layer color will be set to the color property in the scenario file.
             if self.origScenarioLyrsLoaded == False:
-                print"The " + config.editLayersBaseNames[2] + "is loading from a scenario"
+                print "Main.mainWindow.setRendererV2(): The " + config.editLayersBaseNames[2] + "is loading from a scenario"
                 self.editingPolygon = True
                 return
             # If the layer was loaded from a scenario file then return because
@@ -2654,7 +2652,7 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             # color the preview icon
             self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
         elif self.activeVLayer.name() == config.baseLayersChecked[0]: # the base_towns layer
-            print "This is the base_towns layer"
+            print "Main.mainWindow.setRendererV2(): This is the base_towns layer"
             # Set the base_towns layer fill color to none
             rendererV2 = self.activeVLayer.rendererV2()
             symbol = rendererV2.symbols()[0]
@@ -2667,11 +2665,11 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
         elif self.geom == 1: # set line width for all line layers
             # debugging
-            print "geometry = 1"
+            print "Main.mainWindow.setRendererV2(): geometry = 1"
             symbolLayer = self.activeVLayer.rendererV2().symbols()[0].symbolLayer(0)
-            print "The line width before setting is: " + str(symbolLayer.width())
+            print "Main.mainWindow.setRendererV2(): The line width before setting is: " + str(symbolLayer.width())
             symbolLayer.setWidth(0.4)
-            print "The line width after setting is: " + str(symbolLayer.width())
+            print "Main.mainWindow.setRendererV2(): The line width after setting is: " + str(symbolLayer.width())
  
         # debugging
         if self.activeVLayer.isUsingRendererV2():
@@ -2682,18 +2680,18 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
             # only 1 symbol in symbols and only one layer
             symbol = symbols[0]
             symbolLayer = symbol.symbolLayer(0)
-            print "rendererV2.dump is:" + rendererV2.dump()
-            print "The layer properties are: "
+            print "Main.mainWindow.setRendererV2(): rendererV2.dump is:" + rendererV2.dump()
+            print "Main.mainWindow.setRendererV2(): The layer properties are: "
             for k, v in symbolLayer.properties().iteritems():
                 print "%s: %s" % (k, v)
-            print "The number of symbols is: " + str(len(symbols))
-            print "The number of layers in symbols[0] is: " + str(symbol.symbolLayerCount())
-            print "The layer type is: " + str(symbolLayer.layerType())
+            print "Main.mainWindow.setRendererV2(): The number of symbols is: " + str(len(symbols))
+            print "Main.mainWindow.setRendererV2(): The number of layers in symbols[0] is: " + str(symbol.symbolLayerCount())
+            print "Main.mainWindow.setRendererV2(): The layer type is: " + str(symbolLayer.layerType())
 
     def makeScenarioDirectory(self):
         ''' Create a directory to store a scenario's editing files '''
         # debugging
-        print "makeScenarioDirectory()"
+        print "Main.mainwindow.makeScenarioDirectory()"
         
         # We are creating a new scenario, so remove any old edit files directory 
         # (and files), or exported scenarios with same name.
@@ -2703,8 +2701,8 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
         exportPath = unicode(config.scenarioExportsPath + exportFileName)
 
         # debugging
-        print "scenarioDirectoryName is " + str(scenarioDirectoryName)
-        print "directoryPath is " + str(dirPath)
+        print "Main.mainwindow.makeScenarioDirectory(): scenarioDirectoryName is " + str(scenarioDirectoryName)
+        print "Main.mainwindow.makeScenarioDirectory(): directoryPath is " + str(dirPath)
         
         error = None
         if QtCore.QDir(config.scenariosPath + scenarioDirectoryName).exists():    
@@ -2725,7 +2723,7 @@ files in the scenario is open in another program and then try again.")
                 return "Error"
         # now make the new directory        
         if QtCore.QDir().mkdir(config.scenariosPath + scenarioDirectoryName):
-                print "directory made"
+                print "Main.mainwindow.makeScenarioDirectory(): directory made"
         else: 
             QtGui.QMessageBox.warning(self, "Failed to create directory:", "The scenario \
 editing file directory could not be created. Please try to save the project again, or save it with a \
@@ -2733,6 +2731,8 @@ different name.")
             return "Error"
        
     def checkLayerLoadError(self, layer):
+        # debugging
+        print "Main.mainwindow.checkLayerLoadError()"
         # check for error
         if not layer.isValid():
             QtGui.QMessageBox.warning(self, "File Error", "Layer failed to load!")
@@ -2740,7 +2740,9 @@ different name.")
         else: return True
 
     def checkBaseLayerMatch(self, title, text):
-        name = self.activeVLayer.name()
+        # debugging
+        print 'Main.mainwindow.checkBaseLayerMatch()'
+        name = unicode(self.activeVLayer.name())
         editType = self.scenarioEditType
         if (editType == config.scenarioEditTypesList[0] and name != config.pointBaseLayersBaseNames[0] or
              editType == config.scenarioEditTypesList[1] and name != config.pointBaseLayersBaseNames[1] or
@@ -2754,19 +2756,18 @@ For example. If you have chosen to edit 'dams,' then you can only " + text + " t
         else: return True
 
     def setSelectionColor(self):
+        # debugging
+        print 'Main.mainwindow.setSelectionColor()'
         renderer = QgsSingleSymbolRenderer(QGis.Point)
         color = QtGui.QColor("yellow")
         renderer.setSelectionColor(color)
-        print "The renderer name is: " + renderer.name()
-        print "The renderer.selectionColor() is: " + renderer.selectionColor().name()
+        print "Main.mainwindow.setSelectionColor(): The renderer name is: " + renderer.name()
+        print "Main.mainwindow.setSelectionColor(): The renderer.selectionColor() is: " + renderer.selectionColor().name()
     
     def displayModifyPointsInformation(self, title, text):
         ''' Display the information about the vector or raster '''
         # debugging
-        print "identify.displayInformation()"
-        
-        title = QtCore.QString(title)
-        text = QtCore.QString(text)
+        print "Main.mainwindow.identify.displayInformation()"
         
         # See Main.mainwindow.openRasterCategoryTable() for a description of the following code: 
         self.dlgModifyInfo = QtGui.QDockWidget(title, self.dlg)
@@ -2827,12 +2828,12 @@ CSV export file failed. Please try again.")
         
         dirInfo = QtCore.QFileInfo(defaultDir)
         defaultScenarioDirectoryPath = unicode(dirInfo.absoluteFilePath())
-        print "defaultScenarioDirectoryPath is " + defaultScenarioDirectoryPath # Python can concatenate QStrings
+        print "Main.mainwindow.checkScenarioDirectoryPath(): defaultScenarioDirectoryPath is " + defaultScenarioDirectoryPath # Python can concatenate QStrings
         scenarioFileInfo = QtCore.QFileInfo(scenarioFilePath)
         scenarioDirectoryPath = unicode(scenarioFileInfo.absolutePath())
         fileName = unicode(scenarioFileInfo.fileName()) # change to unicode for Python string operations
-        print "The scenarioDirectoryPath is " + scenarioDirectoryPath
-        print "The fileName is " + fileName
+        print "Main.mainwindow.checkScenarioDirectoryPath(): The scenarioDirectoryPath is " + scenarioDirectoryPath
+        print "Main.mainwindow.checkScenarioDirectoryPath(): The fileName is " + fileName
 
         if (scenarioDirectoryPath != defaultScenarioDirectoryPath  and 
             scenarioDirectoryPath != defaultScenarioDirectoryPath[:-1]): # not fileName.endswith(".cap")
@@ -2891,10 +2892,10 @@ Your scenario was not saved.  Please try again.")
                 QtGui.QMessageBox.warning(self, "Write Error:", "The file " + vlayerName + " \
 was not written.  Please check that a file with the same name is not open in another program.")
                 return
-            else: print "Main.mainwindow.copyScenario() Success, editing layers copied!"
+            else: print "Main.mainwindow.copyScenario(): Success, editing layers copied!"
 
         # debugging
-        print "copyPaths are:"
+        print "Main.mainwindow.copyScenario(): copyPaths are:"
         print copyPaths
         
         # Now we can close the editing layers associated with the old scenario path

@@ -22,17 +22,6 @@ class Ui_DlgScenarioEditTypes(object):
         self.horizontalLayout.addWidget(self.typesLabel)
         self.typesComboBox = QtGui.QComboBox(DlgScenarioEditTypes)
         self.typesComboBox.setObjectName("typesComboBox")
-        # add the items from the ScenarioTypesList 
-        #found at the beginning of the mainwindow
-        '''
-        self.typesComboBox.addItems(ScenarioTypesList)
-        self.typesComboBox.addItem(QtCore.QString())
-        self.typesComboBox.addItem(QtCore.QString())
-        self.typesComboBox.addItem(QtCore.QString())
-        self.typesComboBox.addItem(QtCore.QString())
-        self.typesComboBox.addItem(QtCore.QString())
-        self.typesComboBox.addItem(QtCore.QString())
-        self.typesComboBox.addItem(QtCore.QString())'''
         self.horizontalLayout.addWidget(self.typesComboBox)
         self.gridLayout.addLayout(self.horizontalLayout, 0, 0, 1, 1)
         spacerItem = QtGui.QSpacerItem(20, 152, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
@@ -51,11 +40,4 @@ class Ui_DlgScenarioEditTypes(object):
         DlgScenarioEditTypes.setWindowTitle(QtGui.QApplication.translate("DlgScenarioEditTypes", "Edit Scenario", None, QtGui.QApplication.UnicodeUTF8))
         self.typesLabel.setText(QtGui.QApplication.translate("DlgScenarioEditTypes", "Choose a scenario edit type:", None, QtGui.QApplication.UnicodeUTF8))
         # set above from the scenario types list
-        '''self.typesComboBox.setItemText(0, QtGui.QApplication.translate("DlgScenarioEditTypes", "Road stream crossing", None, QtGui.QApplication.UnicodeUTF8))
-        self.typesComboBox.setItemText(1, QtGui.QApplication.translate("DlgScenarioEditTypes", "Dam addition or removal", None, QtGui.QApplication.UnicodeUTF8))
-        self.typesComboBox.setItemText(2, QtGui.QApplication.translate("DlgScenarioEditTypes", "Wildlife crossing", None, QtGui.QApplication.UnicodeUTF8))
-        self.typesComboBox.setItemText(3, QtGui.QApplication.translate("DlgScenarioEditTypes", "Tidal restriction", None, QtGui.QApplication.UnicodeUTF8))
-        self.typesComboBox.setItemText(4, QtGui.QApplication.translate("DlgScenarioEditTypes", "Land use change (add points)", None, QtGui.QApplication.UnicodeUTF8))
-        self.typesComboBox.setItemText(5, QtGui.QApplication.translate("DlgScenarioEditTypes", "Land use change (add lines)", None, QtGui.QApplication.UnicodeUTF8))
-        self.typesComboBox.setItemText(6, QtGui.QApplication.translate("DlgScenarioEditTypes", "Land use change (add polygons)", None, QtGui.QApplication.UnicodeUTF8))'''
 

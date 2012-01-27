@@ -120,9 +120,6 @@ class Identify(QgsMapTool):
         # debugging
         print "identify.displayInformation()"
         
-        title = QtCore.QString(title)
-        text = QtCore.QString(text)
-        
         # See Main.mainwindow.openRasterCategoryTable() for a description of the following code: 
         if not self.mainwindow.dlgDisplayIdentify:
             self.mainwindow.dlgDisplayIdentify = QtGui.QDockWidget(title, self.mainwindow)

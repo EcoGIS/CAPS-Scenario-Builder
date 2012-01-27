@@ -278,7 +278,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         fieldObjects = [0]*len(values)
         for (counter, value) in enumerate(values):
             print "counter is " + str(counter)
-            fieldObjects[counter] = QgsField(QtCore.QString(value), QtCore.QVariant.String)
+            fieldObjects[counter] = QgsField(value, QtCore.QVariant.String)
         
         # create a dictionary from the current fields list
         fields = dict(zip(keys, fieldObjects))

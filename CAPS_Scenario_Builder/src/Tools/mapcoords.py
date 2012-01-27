@@ -52,7 +52,7 @@ class MapCoords(object):
 
     # Signal handler for updating coord display
     def updateCoordsDisplay(self, p):
-        capture_string = QtCore.QString("%.3f" % float(p.x()) + " , " + "%.3f" % float(p.y()))
+        capture_string = "%.3f" % float(p.x()) + " , " + "%.3f" % float(p.y())
         self.latlon.setText(capture_string)
 
   
