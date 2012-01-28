@@ -39,6 +39,8 @@ class Identify(QgsMapTool):
     def __init__(self, parent):
         QgsMapTool.__init__(self, parent.canvas)
     
+        print "Tools.identify.Identify()"
+        
         # Make handle to mainwindow and call all variables needed for methods from mainwindow.
         # This allows variables to be updated when the active layer changes so that 
         # re-instantiating the class every time a layer changes is not necessary.
@@ -55,8 +57,8 @@ class Identify(QgsMapTool):
         self.transform = self.mainwindow.canvas.getCoordinateTransform()
         # returns a QgsPoint object in map coordinates
         qgsPoint = self.transform.toMapCoordinates(point.x(), point.y())
-        if self.mainwindow.activeVLayer: self.vectorIdentifyTool(point, qgsPoint)
-        elif self.mainwindow.activeRLayer: self.rasterIdentifyTool(qgsPoint)
+        if self.mainwindow.layerType == 0: self.vectorIdentifyTool(point, qgsPoint)
+        elif self.mainwindow.layerType == 1: self.rasterIdentifyTool(qgsPoint)
      
     def canvasReleaseEvent(self, event):
         pass
@@ -68,7 +70,7 @@ class Identify(QgsMapTool):
     def rasterIdentifyTool(self, qgsPoint):
         ''' Get text for the clicked point and raster value at that point '''
         # debugging
-        print "identify.rasterIdentifyTool()"
+        print "Tools.identify.Identify().rasterIdentifyTool()"
 
         text = "The clicked x,y point is (" + unicode(round(qgsPoint.x(), 2)) + ", " + unicode(round(qgsPoint.y(), 2)) + ")\n"
         # this QgsVectorLayer method returns a tuple consisting of the bool result (success = True) 
@@ -78,7 +80,7 @@ class Identify(QgsMapTool):
         for (k,v) in identifyDict.iteritems():
             text += unicode(k) + " value: " + unicode(v) + "\n"
         if not result: # if the identify method fails
-            print "Identify raster layer failed"
+            print "Tools.identify.Identify().rasterIdentifyTool(): Identify raster layer failed"
         
         # now display the text to the user
         title = "Raster Information"
@@ -87,7 +89,7 @@ class Identify(QgsMapTool):
     def vectorIdentifyTool(self, point, qgsPoint):
         ''' Get text for the coordinates and attributes of vector features '''
         # debugging
-        print "identify.vectorIdentifyTool()"
+        print "Tools.identify.Identify().vectorIdentifyTool()"
         
         provider = self.mainwindow.provider
         # fields() returns a dictionary with the field key and the name of the field
@@ -100,7 +102,7 @@ class Identify(QgsMapTool):
             # fetch the feature geometry, which is the feature's spatial coordinates
             fgeom = feat.geometry()
             # This records the feature's ID and its spatial coordinates
-            text = "Feature ID %d: %s\n" % (feat.id()+1, fgeom.exportToWkt()) 
+            text = "Feature ID %d: %s\n" % (feat.id()+1, unicode(fgeom.exportToWkt())) 
             #A QgsAttribute map is a Python dictionary (key = field id : value = 
             # the field's value as a QtCore.QVariant()object 
             attrs = feat.attributeMap() 
@@ -109,7 +111,7 @@ class Identify(QgsMapTool):
             # records the field name and field value for the selected feature
             # note: t
             for (key, attr) in attrs.iteritems():
-                text += "%s: %s\n" % (fieldNamesDict.get(key).name(), attr.toString())
+                text += "%s: %s\n" % (unicode(fieldNamesDict.get(key).name()), unicode(attr.toString()))
                 
             # display the text to the user
             title = "Vector Feature Information"
@@ -118,7 +120,7 @@ class Identify(QgsMapTool):
     def displayInformation(self, title, text):
         ''' Display the information about the vector or raster '''
         # debugging
-        print "identify.displayInformation()"
+        print "Tools.identify.Identify().displayInformation()"
         
         # See Main.mainwindow.openRasterCategoryTable() for a description of the following code: 
         if not self.mainwindow.dlgDisplayIdentify:

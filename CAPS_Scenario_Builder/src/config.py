@@ -185,9 +185,8 @@ orientingRasterLayers = ['USGS.SID', 'base_land.tif', 'base_streams.tif', 'base_
 orientingVectorLayers = ['base_towns.shp']
 allOrientingLayers = orientingRasterLayers + orientingVectorLayers
 
-# Orienting base layer names can be added here to make them visible (i.e. checked)
-# when they are opened.
-baseLayersChecked = ['base_towns']
+# Orienting base layer names can be added here to make them visible (i.e. checked) when they are opened.
+orientingLayersChecked = ['base_towns']
 
 # A list of the non-orienting base layers and editing layers. 
 # Main.dlgscenarioedittypes.hideEditBaseLayers() uses this list to hide (uncheck) unneeded layers.

@@ -48,6 +48,10 @@ class LegendItem(QtGui.QTreeWidgetItem):
     """ Provide a widget to show and manage the properties of one single layer """
     def __init__(self, parent, canvasLayer):
         QtGui.QTreeWidgetItem.__init__(self)
+        
+        # debugging
+        print "Main.legend.LegendItem() class"
+        
         self.legend = parent
         self.canvasLayer = canvasLayer
         self.canvasLayer.layer().setLayerName(self.legend.normalizeLayerName(unicode(self.canvasLayer.layer().name())))
@@ -55,34 +59,50 @@ class LegendItem(QtGui.QTreeWidgetItem):
         self.isVect = (self.canvasLayer.layer().type() == 0) # 0: Vector, 1: Raster
         self.layerId = self.canvasLayer.layer().id()
 
-        if self.isVect:
-            geom = self.canvasLayer.layer().dataProvider().geometryType()
+        #if self.isVect:
+        # geom = self.canvasLayer.layer().dataProvider().geometryType()
 
-        ''' The 4 lines below set whether layers are visible when first opened '''
-        #self.setCheckState(0, QtCore.Qt.Checked)
-        self.setCheckState(0, QtCore.Qt.Unchecked)
-        #self.canvasLayer.setVisible(True)
-        self.canvasLayer.setVisible(False)
-
+        ''' 
+            This class is instantiated by the Legend() class  after a layer is registered by QGIS,
+            and creates a legend item that is a map layer.  
+            This is the first chance to set visibility for layers, so set visibility for all
+            newly opened layers here 
+        '''
+ 
+        # handle opening the app, "New Scenario" or "Open Scenario."
+        if self.legend.mainwindow.openingScenario or self.legend.mainwindow.openingOrientingLayers:
+            # Make any layer in config.orientingLayersChecked visible
+            if unicode(self.canvasLayer.layer().name()) in config.orientingLayersChecked:
+                self.setCheckState(0, QtCore.Qt.Checked)
+                self.canvasLayer.setVisible(True)
+            else: # all other layers loaded will be hidden
+                self.setCheckState(0, QtCore.Qt.Unchecked) 
+                self.canvasLayer.setVisible(False)     
+        else: #  User chose "Add Vector Layer" or "Add Raster Layer" to add a single layer, so make visible.
+            self.setCheckState(0, QtCore.Qt.Checked)    
+            self.canvasLayer.setVisible(True)
+        
+        ''' Now set icons etc. for legend item '''
+        
         pm = QtGui.QPixmap(20, 20)
         icon = QtGui.QIcon()
 
         if self.isVect:
-            if geom == 1 or geom == 4 or geom == 8 or geom == 11: # Point
+            '''if geom == 1 or geom == 4 or geom == 8 or geom == 11: # Point
                 icon.addPixmap(QtGui.QPixmap(resources_prefix + "mIconPointLayer.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
             elif geom == 2 or geom == 5 or geom == 9 or geom == 12: # Polyline
                 icon.addPixmap(QtGui.QPixmap(resources_prefix + "mIconLineLayer.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
             elif geom == 3 or geom == 6 or geom == 10 or geom == 13: # Polygon
                 icon.addPixmap(QtGui.QPixmap(resources_prefix + "mIconPolygonLayer.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-            else: # Not a valid WKT Geometry
-                geom = self.canvasLayer.layer().geometryType() # QGis Geometry
-                if geom == 0: # Point
-                    icon.addPixmap(QtGui.QPixmap(resources_prefix + "mIconPointLayer.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-                elif geom == 1: # Line
-                    icon.addPixmap(QtGui.QPixmap(resources_prefix + "mIconLineLayer.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-                elif geom == 2: # Polygon
-                    icon.addPixmap(QtGui.QPixmap(resources_prefix + "mIconPolygonLayer.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-                else: raise RuntimeError, u'Unknown geometry: ' + unicode(geom)
+            else: # Not a valid WKT Geometry'''
+            geom = self.canvasLayer.layer().geometryType() # QGis Geometry
+            if geom == 0: # Point
+                icon.addPixmap(QtGui.QPixmap(resources_prefix + "mIconPointLayer.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+            elif geom == 1: # Line
+                icon.addPixmap(QtGui.QPixmap(resources_prefix + "mIconLineLayer.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+            elif geom == 2: # Polygon
+                icon.addPixmap(QtGui.QPixmap(resources_prefix + "mIconPolygonLayer.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+            else: print 'Unknown geometry: ' + unicode(geom)
             self.vectorLayerSymbology(self.canvasLayer.layer())
         else:
             self.canvasLayer.layer().thumbnailAsPixmap(pm)
@@ -145,6 +165,9 @@ class Legend(QtGui.QTreeWidget):
     """
     def __init__(self, parent):
         QtGui.QTreeWidget.__init__(self, parent)
+        
+        # debugging
+        print "Main.legend.Legend() class"
         
         self.mainwindow = parent
         self.canvas = parent.canvas
@@ -347,7 +370,7 @@ class Legend(QtGui.QTreeWidget):
         if self.mainwindow.appStateChanged("removeCurrentLayer") == "Cancel": return
             
         # Check and warn on removing an editing layer
-        name = self.currentItem().canvasLayer.layer().name()
+        name = unicode(self.currentItem().canvasLayer.layer().name())
         if name in config.editLayersBaseNames:
             reply = QtGui.QMessageBox.warning(self, "Warning!", "Removing '" + name + "' \
 from the legend will cause all that layer's files and any associated 'Export Scenario' file to be deleted from \
@@ -357,10 +380,10 @@ the file system. All changes to these files will be lost. Do you want to delete 
             else: 
                 # user chose ok so we can delete the file but must remove from registry first!
                 layer = self.currentItem().canvasLayer.layer()
-                name = layer.name() 
+                name = unicode(layer.name()) 
                 layerId = self.currentItem().canvasLayer.layer().id()
                 # get the path before we set the activeVLayer to none
-                editFilePath = self.mainwindow.activeVLayer.source()
+                editFilePath = unicode(self.mainwindow.activeVLayer.source())
                 # since we are deleting an editing layer we should be safe and 
                 # remove any exported scenario files.
                 self.mainwindow.deleteExportScenarioFile()
@@ -378,11 +401,13 @@ the file system. All changes to these files will be lost. Do you want to delete 
         # set the scenario as dirty, since it has been changed.
         if self.currentItem().canvasLayer.layer() in self.mainwindow.originalScenarioLayers:
             layerToDelete = self.currentItem().canvasLayer.layer()
-            print "length originalScenarioLayers before removal " + str(len(self.mainwindow.originalScenarioLayers))
+            print ("Mainwindow.legend.removeCurrentLayer(): length originalScenarioLayers before removal " 
+                                                                    + str(len(self.mainwindow.originalScenarioLayers)))
             self.mainwindow.originalScenarioLayers.remove(layerToDelete)
-            print "length originalScenarioLayers after removal " + str(len(self.mainwindow.originalScenarioLayers))
+            print ("Mainwindow.legend.removeCurrentLayer(): length originalScenarioLayers after removal " 
+                                                                    + str(len(self.mainwindow.originalScenarioLayers)))
             self.mainwindow.scenarioDirty = True
-            print "layer was removed from originalScenarioLayers"
+            print "Mainwindow.legend.removeCurrentLayer(): layer was removed from originalScenarioLayers"
             
         # be Layer ready to be removed so reset active layer variables to none or we could
         #  get C++ object deleted runtime errors from deleting an object underlying a python variable.
@@ -584,11 +609,11 @@ the file system. All changes to these files will be lost. Do you want to delete 
         ''' Removes an editing shapefile and any associated "Export Scenario" file. '''
         # debugging
         print "Main.legend.deleteEditingLayer()"
-        print "editFilePath is " + editFilePath
+        print "Main.legend.deleteEditingLayer(): editFilePath is " + editFilePath
 
         editFile = QtCore.QFile(editFilePath)
         if editFile.exists():
-            print "editFile exists is True"
+            print "Main.legend.deleteEditingLayer(): editFile exists is True"
             writer = QgsVectorFileWriter.deleteShapeFile(editFilePath)
         if not writer: # writer returns true if delete successful
             QtGui.QMessageBox.warning(self, "File Error", "The editing shapefile could not be deleted. \
@@ -604,11 +629,13 @@ Please check if it is open in another program and try again.")
         inOriginalScenario = False
         originalScenarioLayers = self.mainwindow.originalScenarioLayers
         if layer in originalScenarioLayers:
-            print "length originalScenarioLayers before removal " + str(len(originalScenarioLayers))
+            print ("Main.legend.removeEditLayerFrom Registry(): length originalScenarioLayers before removal "
+                                                                                        + str(len(originalScenarioLayers)))
             originalScenarioLayers.remove(layer)
             self.mainwindow.scenarioDirty = True
-            print 'The activeVLayer was removed from the originalScenarioLayers'
-            print 'length originalScenarioLayers after removal ' + str(len(originalScenarioLayers))
+            print 'Main.legend.removeEditLayerFrom Registry(): The activeVLayer was removed from the originalScenarioLayers'
+            print ('Main.legend.removeEditLayerFrom Registry(): length originalScenarioLayers after removal ' 
+                                                                                        + str(len(originalScenarioLayers)))
             inOriginalScenario = True
         
         # This method is called by self.removeCurrentLayer() and Tools.shared.updateExtents().

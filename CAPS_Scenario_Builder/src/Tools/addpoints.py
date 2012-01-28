@@ -158,7 +158,7 @@ class AddPoints(QgsMapTool):
             self.mainwindow.openVectorAttributeTable()
         
         # set the edit flag to unsaved
-        self.mainwindow.editDirty = self.activeVLayer.name()
+        self.mainwindow.editDirty = unicode(self.activeVLayer.name())
         
         # debugging
         print "the edit flag was set to " + self.activeVLayer.name() + " by MarkPoint."

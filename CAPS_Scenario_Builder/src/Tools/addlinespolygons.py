@@ -42,7 +42,7 @@ class AddLinesPolygons(QgsMapTool):
         QgsMapTool.__init__(self, parent.canvas)
         
         # debugging
-        print "Class AddLinesPolygons()"
+        print "Tools.addlinespolygons.AddLinesPolygons() class"
         
         ''' 
         This class is instantiated once when Main.mainwindow is instantiated. The instance 
@@ -74,7 +74,7 @@ class AddLinesPolygons(QgsMapTool):
         
         # check if the editing layer is selected but only on the first click
         if self.started == False:
-            currentLayerName = self.mainwindow.legend.currentItem().canvasLayer.layer().name()
+            currentLayerName = unicode(self.mainwindow.legend.currentItem().canvasLayer.layer().name())
             if shared.checkSelectedLayer(self.mainwindow, self.mainwindow.scenarioEditType, 
                                                                currentLayerName) == "Cancel":    
                 return # return without starting to draw
@@ -135,7 +135,7 @@ class AddLinesPolygons(QgsMapTool):
     def getNewAttributes(self):
         ''' Dialog to get attribute information for the current scenario edit type '''
         # debugging
-        print "Class AddLinesPolygons() getNewAttributes()"
+        print "Tools.addlinespolygons.AddLinesPolygons().getNewAttributes()"
         
         self.dlg = DlgAddAttributes(self.mainwindow)
 
@@ -146,7 +146,7 @@ class AddLinesPolygons(QgsMapTool):
         else: # User has clicked "Cancel"
             
             # debugging
-            print "Canceled"
+            print "Tools.addlinespolygons.AddLinesPolygons().getNewAttributes(): Canceled"
             # just set the point to nothing
             self.qgsPoint = None
             self.rubberBand.reset(self.geom)
@@ -155,7 +155,7 @@ class AddLinesPolygons(QgsMapTool):
     def addLinePolygon(self, attributes):
         ''' Add the new line or polygon and display '''
         # debugging
-        print "AddLinesPolygons.addLinePolygon() starting"
+        print "Tools.addlinespolygons.AddLinesPolygons.addLinePolygon()"
         
         # Set the data provider
         self.provider = self.mainwindow.provider
@@ -166,7 +166,7 @@ class AddLinesPolygons(QgsMapTool):
         self.mainwindow.originalFeats = self.originalFeats
         
         feat = QgsFeature()
-        vlayerName = self.mainwindow.activeVLayer.name()
+        vlayerName = unicode(self.mainwindow.activeVLayer.name())
         # add the line or polygon geometry to the feature
         feat.setGeometry(self.rubberBand.asGeometry())
         feat.setAttributeMap(attributes)
@@ -192,14 +192,15 @@ class AddLinesPolygons(QgsMapTool):
         self.resetDraw()
 
         #set the edit flag to unsaved
-        self.mainwindow.editDirty = self.activeVLayer.name()
+        self.mainwindow.editDirty = unicode(self.activeVLayer.name())
         # enable the save edits button
         self.mainwindow.mpActionSaveEdits.setDisabled(False)
         
         # debugging
-        print "the edit flag was set to " + self.activeVLayer.name() + " by addLinePolygon()."
-        print "the number of features added is " + str(shared.numberFeaturesAdded
-                                                       (self.activeVLayer, self.originalFeats))
+        print "Tools.addlinespolygons.AddLinesPolygons.addLinePolygon(): the edit flag was set to "\
+                                                             + self.activeVLayer.name() + " by addLinePolygon()."
+        print "Tools.addlinespolygons.AddLinesPolygons.addLinePolygon(): the number of features added is "\
+                                                     + str(shared.numberFeaturesAdded(self.activeVLayer, self.originalFeats))
         
         # update layer extents
         shared.updateExtents(self.mainwindow, self.provider, self.activeVLayer, self.canvas)
@@ -207,7 +208,7 @@ class AddLinesPolygons(QgsMapTool):
     def resetDraw(self):
         ''' Resets drawing if user cancels "Add Attributes" dialog '''
         # debugging 
-        print "AddLinesPolygons.resetDraw"
+        print "Tools.addlinespolygons.AddLinesPolygons().resetDraw"
         
         self.down = False
         self.started = False
