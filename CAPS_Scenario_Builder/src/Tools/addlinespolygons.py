@@ -73,10 +73,12 @@ class AddLinesPolygons(QgsMapTool):
             else: self.geom = True # polygon
         
         # check if the editing layer is selected but only on the first click
+        # Convert QStrings to unicode unless they are used immediately in a Qt method. 
+        # This ensures that we never ask Python to slice a QString, which produces a type error.
         if self.started == False:
             currentLayerName = unicode(self.mainwindow.legend.currentItem().canvasLayer.layer().name())
-            if shared.checkSelectedLayer(self.mainwindow, self.mainwindow.scenarioEditType, 
-                                                               currentLayerName) == "Cancel":    
+            # Check if user has chosen the correct editing shapefile. This method warns the user and returns False on error.
+            if not shared.checkSelectedLayer(self.mainwindow, self.mainwindow.scenarioEditType, currentLayerName):    
                 return # return without starting to draw
         self.down = True # starts the drawing process
 
@@ -197,9 +199,9 @@ class AddLinesPolygons(QgsMapTool):
         self.mainwindow.mpActionSaveEdits.setDisabled(False)
         
         # debugging
-        print "Tools.addlinespolygons.AddLinesPolygons.addLinePolygon(): the edit flag was set to "\
+        print "Tools.addlinespolygons.AddLinesPolygons().addLinePolygon(): the edit flag was set to "\
                                                              + self.activeVLayer.name() + " by addLinePolygon()."
-        print "Tools.addlinespolygons.AddLinesPolygons.addLinePolygon(): the number of features added is "\
+        print "Tools.addlinespolygons.AddLinesPolygons().addLinePolygon(): the number of features added is "\
                                                      + str(shared.numberFeaturesAdded(self.activeVLayer, self.originalFeats))
         
         # update layer extents
@@ -220,7 +222,8 @@ class AddLinesPolygons(QgsMapTool):
 #**************************************************************
 
     def printFeatures(self):       
-        "startingPrintFeatures"
+        # debugging
+        print "Tools.addlinespolygons.AddLinesPolygons().printFeatures: Testing"
         #self.provider.reloadData()
         feat = QgsFeature()
         allAttrs = self.provider.attributeIndexes()

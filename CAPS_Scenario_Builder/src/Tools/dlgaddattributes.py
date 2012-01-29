@@ -14,26 +14,27 @@
 # 
 # This file is part of CAPS.
 
-#CAPS is free software: you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation, either version 3 of the License, or
-#(at your option) any later version.
+# CAPS is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-#CAPS is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# CAPS is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-#You should have received a copy of the GNU General Public License
-#along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+# You should have received a copy of the GNU General Public License
+# along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
 # 
 #---------------------------------------------------------------------
-
+# PyQt4 includes for python bindings to QT
 from PyQt4 import QtCore, QtGui
 # CAPS application imports
 import config
 
 class DlgAddAttributes(QtGui.QDialog):
+    ''' Create the dialog to get needed attribute data from users '''
     def __init__(self, mainwindow):
         QtGui.QDialog.__init__(self, mainwindow)
         
@@ -45,7 +46,7 @@ class DlgAddAttributes(QtGui.QDialog):
         scenarioEditType = self.mainwindow.scenarioEditType
         
         # debugging
-        print "DlgAddAttributes class initiated: scenario type is " + scenarioEditType
+        print "Tools.dlgaddattributes.DlgAddAttributes() class initiated: scenario type is " + scenarioEditType
      
         # Get the lists of field labels, combobox drop down values, and 
         # input field names for the current scenarioEditType.
@@ -61,7 +62,7 @@ class DlgAddAttributes(QtGui.QDialog):
                 break
             i += 1
         else:
-            print "Scenario Edit Type not found"
+            print "Tools.dlgaddattributes.DlgAddAttributes(): Scenario Edit Type not found"
 
 #######################################################################
         ''' Dynamically create the "Add Attributes" dialog '''
@@ -105,10 +106,10 @@ class DlgAddAttributes(QtGui.QDialog):
             self.gridLayout.addItem(self.spacerItems[c], c, 3, 1, 1)
             
             # debugging
-            print labelName
-            print comboBoxName
-            print "count is " + str(c)
-        print "The final count is + " + str(c)
+            print "Tools.dlgaddattributes.DlgAddAttributes(): Label Name is: " + labelName
+            print "Tools.dlgaddattributes.DlgAddAttributes(): comboBoxName is: " + comboBoxName
+            print "Tools.dlgaddattributes.DlgAddAttributes(): count is " + str(c)
+        print "Tools.dlgaddattributes.DlgAddAttributes(): The final count is + " + str(c)
       
         # every scenario type change needs a description line edit input
         self.labelDescription = QtGui.QLabel(self)
@@ -151,12 +152,12 @@ class DlgAddAttributes(QtGui.QDialog):
     
     def accept(self):
         # debugging 
-        print "accept()"
+        print "Tools.dlgaddattributes.DlgAddAttributes().accept()"
         # validation 
         
         for widget in self.comboBoxWidgets:
-            print "the length of comboBoxWidgets is " + str(len(self.comboBoxWidgets))
-            print "current text is " + widget.currentText()
+            print "Tools.dlgaddattributes.DlgAddAttributes().accept(): the length of comboBoxWidgets is " + str(len(self.comboBoxWidgets))
+            print "Tools.dlgaddattributes.DlgAddAttributes().accept(): current text is " + widget.currentText()
             if not widget.currentText():
                 QtGui.QMessageBox.warning(self, "Value Error:", "You must enter a \
 value for every item except the 'Description':") 
@@ -165,7 +166,7 @@ value for every item except the 'Description':")
         
     def cancel(self):
         # debugging
-        print "DlgAddAttributes.cancel()"
+        print "Tools.dlgaddattributes.DlgAddAttributes().cancel()"
         if self.mainwindow.toolAddLinesPolygons.rubberBand:
             self.mainwindow.toolAddLinesPolygons.resetDraw()
         #return True
@@ -176,8 +177,8 @@ value for every item except the 'Description':")
 
     def getNewAttributes(self, modifyFlag = False):
         # debugging
-        print "DlgAddAttributes.getNewAttributes()"
-        print "The modifyFlag is " + str(modifyFlag)
+        print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes()"
+        print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): The modifyFlag is " + str(modifyFlag)
         
         geom = self.mainwindow.geom # geometry of the active layer
 
@@ -185,7 +186,7 @@ value for every item except the 'Description':")
         editFields = self.mainwindow.getEditFields()
         
         # debugging
-        print "The editing fields are " + str(editFields)
+        print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): The editing fields are " + str(editFields)
         
         # Get the field values from the "Add Attributes" dialog.
         # note: We need to set all the field values in the editing layer,
@@ -198,47 +199,49 @@ value for every item except the 'Description':")
             # the current scenario type are set to empty values here.
             if field not in self.inputFieldNames:
                 a[count] = QtCore.QVariant()
-                print "not in field names k = " + str(count)
+                print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): not in field names k = " + str(count)
                 continue
             # set the id field first, will be renumbered later
             if subListCount == 1:
                 a[count] = QtCore.QVariant(1)
                 subListCount = 2
-                print "first field (id) k = " + str(count)
+                print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): first field (id) k = " + str(count)
                 continue
             # if a point layer, set the altered and deleted fields
             if geom == 0 and subListCount == 2:
                 if modifyFlag: a[count] = QtCore.QVariant("y")
                 else: a[count] = QtCore.QVariant("n")
                 subListCount = 3
-                print "second field (altered) k = " + str(count)
+                print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): second field (altered) k = " + str(count)
                 continue
             if geom == 0 and subListCount == 3:
                 a[count] = QtCore.QVariant("n")
                 subListCount = 4
-                print "third field (deleted) k = " + str(count)
+                print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): third field (deleted) k = " + str(count)
                 continue
-            # Finally, set the values for the user input fields     
+            # Finally, set the values for the user input fields
+            # Convert QStrings to unicode unless they are used immediately in a Qt method. 
+            # This ensures that we never ask Python to slice a QString, which produces a type error.     
             if subListCount < len(self.inputFieldNames):
                 text = unicode(self.comboBoxWidgets[i].currentText())
                 # returns the value associated with the option chosen by the user
                 value = text[:text.find('-')-1]
                 # value = self.valuesDictionaryList[i].get(text)
-                print "The type is "
-                print "is value a string? " + str(isinstance(value, str))
-                print "Value is " + value
-                print "The index for this item is " + str(self.comboBoxWidgets[i].currentIndex())
+                print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): The type is "
+                print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): is value a string? " + str(isinstance(value, str))
+                print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): Value is " + value
+                print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): The index for this item is " + str(self.comboBoxWidgets[i].currentIndex())
                 a[count] = QtCore.QVariant(value)
                 subListCount += 1
                 i += 1
-                print "user input field k = " + str(count)
-                print unicode(text)
+                print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): user input field k = " + str(count)
+                print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): " + unicode(text)
                 continue
             else:
                 # this is the last field for all scenario types, the description field
                 a[count] = QtCore.QVariant(self.lineEditDescription.text())
-                print "user input field count = " + str(count)
-                print "Description Field"
+                print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): user input field count = " + str(count)
+                print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): Description Field"
         return a
    
     

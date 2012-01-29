@@ -1,6 +1,6 @@
 INSTALL CAPS SCENARIO BUILDER
 
-The specifications for CAPS Scenario Builder only require it to run on MS Windows, and there is a stand alone windows installer for the application available at 
+The specifications for CAPS Scenario Builder only require it to run on MS Windows, and there is a standalone windows installer for the application available at 
 https://sourceforge.net/projects/osscripts/files/ or 
 https://github.com/EcoGIS/CAPS-Scenario-Builder/downloads
 

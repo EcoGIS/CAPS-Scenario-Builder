@@ -12,19 +12,20 @@
 # 
 # This file is part of CAPS.
 
-#CAPS is free software: you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation, either version 3 of the License, or
-#(at your option) any later version.
+# CAPS is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-#CAPS is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# CAPS is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-#You should have received a copy of the GNU General Public License
-#along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
-
+# You should have received a copy of the GNU General Public License
+# along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+#
+#--------------------------------------------------------------------------------------------
 # PyQt4 includes for python bindings to QT
 from PyQt4 import QtGui, QtCore 
 # QGIS bindings for mapping functions
@@ -33,8 +34,7 @@ from qgis.gui import *
 # CAPS application imports
 import config
 
-
-   
+  
 def listOriginalFeatures(provider):
         ''' Track original features so we can delete unsaved added features '''
         # debugging
@@ -43,7 +43,7 @@ def listOriginalFeatures(provider):
         originalFeats = []
         
         # debugging
-        print "Tools.shared originalFeats begin "
+        print "Tools.shared.listOriginalFeatures(): begin "
         print originalFeats
         
         feat = QgsFeature()
@@ -53,7 +53,7 @@ def listOriginalFeatures(provider):
             originalFeats.append(feat.id())
             
         # debugging     
-        print "Tools.shared.originalFeats end " 
+        print "Tools.shared.listOriginalFeatures():  end, originalFeats are" 
         print originalFeats
         
         return originalFeats
@@ -74,21 +74,22 @@ def checkSelectedLayer(mainwindow, scenarioEditType, currentLayerName):
             print "Tools.shared.checkSelectedLayer(): edit points"
             QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
 named 'edit_scenario(points)' in the layer list panel to make the scenario edit type you have chosen.")
-            return "Cancel"
+            return False
         elif scenarioEditType == scenarioEditTypesList[4] and currentLayerName != config.editLayersBaseNames[1]:
             print "Tools.shared.checkSelectedLayer(): edit lines"
             QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
 named 'edit_scenario(lines)' in the layer list panel to make the scenario edit type you have chosen.")
-            return "Cancel"
+            return False
         elif scenarioEditType in scenarioEditTypesList[5:7] and currentLayerName != config.editLayersBaseNames[2]:
             print "Tools.shared.checkSelectedLayer(): edit polygons"
             QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
 named 'edit_scenario(polygons)' in the layer list panel to make the scenario edit type you have chosen.") 
-            return "Cancel"           
+            return False
+        else: return True           
 
 def getFeatsToDelete(provider, originalFeats):
         # debugging
-        print "Tools.shared.getFeatsToDelete"
+        print "Tools.shared.getFeatsToDelete()"
         
         feat = QgsFeature()
         currentFeats = []
@@ -103,16 +104,20 @@ def deleteEdits(mainwindow, provider, activeVLayer, canvas, originalFeats):
         ''' Delete scenario edits added to editing layers since the last save.
             This method is only called from Main.mainwindow.checkEditsState()
         '''
-        
-        vlayerName = mainwindow.activeVLayer.name()
-        
+
         # getFeatsToDelete returns a python list
         toDelete = getFeatsToDelete(provider, originalFeats)
         
         # debugging
         print "Tools.shared.deleteEdits()"
-        print "original features are: ", originalFeats
-        print "features toDelete are:", toDelete
+        print "Tools.shared.deleteEdits(): original features are: ", originalFeats
+        print "Tools.shared.deleteEdits(): features toDelete are:", toDelete
+                
+        vlayerName = unicode(activeVLayer.name())
+        if vlayerName not in config.editLayersBaseNames:
+            QtGui.QMessageBox.warning(mainwindow, "deletion Error", "Tools.shared.deleteEdits() is attempting to delete edits \
+from a vector layer other than an editing layer.  FIX THIS BUG!!") 
+            return 
         
         # provider.deleteFeatures only works with a Python list as a parameter
         # AND the spaces must be in the parameter list!
@@ -135,13 +140,13 @@ def deleteEdits(mainwindow, provider, activeVLayer, canvas, originalFeats):
         mainwindow.originalFeats = listOriginalFeatures(provider)
         
         # debugging  
-        print "the remaining features are"
+        print "Tools.shared.deleteEdits(): the remaining features are"
         printFeatures(provider)
         updateExtents(mainwindow, provider, activeVLayer, canvas)
         
 def numberFeaturesAdded(activeVLayer, originalFeats):
         # debugging
-        print "Tools.shared.numberFeaturesAdded"
+        print "Tools.shared.numberFeaturesAdded()"
         
         newFeats = activeVLayer.featureCount()- len(originalFeats)
         return newFeats
@@ -154,8 +159,8 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
         # I tried every update method I could find, but nothing other than closing
         # and reopening the layer seems to reset the layer extents on the canvas.  
         # So I do that here.
-        name = unicode(activeVLayer.name())
-        if name in config.editLayersBaseNames:
+        vlayerName = unicode(activeVLayer.name())
+        if vlayerName in config.editLayersBaseNames:
             layerId = activeVLayer.id()
             # save the color so we can keep the same color when reopening the layer
             mainwindow.layerColor = mainwindow.activeVLayer.rendererV2().symbols()[0].color()
@@ -184,7 +189,7 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
             brush = QtGui.QBrush()
             color = QtGui.QColor(0, 0, 255)
             brush.setColor(color)
-            editItems = mainwindow.legend.findItems(name, QtCore.Qt.MatchFixedString, 0)
+            editItems = mainwindow.legend.findItems(vlayerName, QtCore.Qt.MatchFixedString, 0)
             editItems[0].setForeground(0, brush)
             # Make the layer visible.  This will cause a signal to be sent
             # and the legend will update the layer's status if not visible.
@@ -203,15 +208,16 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
         #canvas.map().render()
         canvas.refresh()
 
-def checkConstraints(mainwindow, geometry, id = None):
+def checkConstraints(mainwindow, geometry, featId = None):
     ''' Checks constraints on scenario edits.  Currently only point edits are checked, 
         but this could change in the future, so the geometry parameter is generic.
     '''
     # debugging
-    print "shared.checkConstraints()"
-    print "The id is " + str(id)
+    print "Tools.shared.checkConstraints()"
+    print "Tools.shared.checkConstraints(): The featId is " + str(featId)
     
     basePath = config.baseLayersPath
+    streamsFileName = config.scenarioConstraintLayersFileNames[0]
     editType = mainwindow.scenarioEditType
     typesList = config.scenarioEditTypesList
     pointsList = [typesList[0], typesList[1], typesList[3]]
@@ -219,7 +225,7 @@ def checkConstraints(mainwindow, geometry, id = None):
         # Load the raster layer, but do not add it to the registry
         # so that it doesn't appear to the user
         point = geometry # The geometry is a point for these scenario edit types.
-        rfilePath = basePath + "base_streams.tif"
+        rfilePath = basePath + streamsFileName
         rlayer = openHiddenRasterLayer(mainwindow, rfilePath) # returns false if the file failed to open
         if rlayer == False:    # if the file failed to open, the constraints have not be met.
             # if the file failed to open, the constraints have not be met.
@@ -229,13 +235,14 @@ def checkConstraints(mainwindow, geometry, id = None):
         # key = "Band 1"
         result, identifyDict = rlayer.identify(point) 
         if not result: # if the identify method fails, we have not met constraints
-            print "base_streams.tif identify failed"
+            print "Tools.shared.checkConstraints(): base_streams.tif identify failed"
             return False
         if unicode(identifyDict.get(QtCore.QString("Band 1"))) != u"1": # stream centerlines have a value of 1
-            print "base_streams return False value = " + unicode(identifyDict.get(QtCore.QString("Band 1")))
-            if id != None:
+            print "Tools.shared.checkConstraints(): base_streams return False value = " \
+                                                            + unicode(identifyDict.get(QtCore.QString("Band 1")))
+            if featId != None:
                 text = "All pasted features must fall on the centerline of a stream (dark blue color) \
-in the base_streams layer. The feature in row " + unicode(id+1) + " in the attribute table of the layer you \
+in the base_streams layer. The feature in row " + unicode(featId+1) + " in the attribute table of the layer you \
 copied from does not meet this constraint.  Please check all your points carefully and try again."
             else:
                 text = "The added feature must fall on the centerline of a stream (dark blue color) \
@@ -249,26 +256,29 @@ on the toolbar or in the 'Layer' menu."
             return True # base file opened and constraints have been met.'''
         
         # debugging
-        print "The rfilePath is " + rfilePath
-        print "The raster value for base_streams.tif is " + unicode(identifyDict.get(QtCore.QString("Band 1")))
-        print "The constraints were met and the return value is 'True'"
+        print "Tools.shared.checkConstraints(): The rfilePath is " + rfilePath
+        print "Tools.shared.checkConstraints(): The raster value for base_streams.tif is " \
+                                                            + unicode(identifyDict.get(QtCore.QString("Band 1")))
+        print "Tools.shared.checkConstraints(): The constraints were met and the return value is 'True'"
         
-    elif editType == list[2]: # a terrestrial wildlife crossing
+    elif editType == typesList[2]: # a terrestrial wildlife crossing
         point = geometry
-        rfilePath = basePath + "base_traffic.tif"
+        trafficLayerName = config.scenarioConstraintLayersFileNames[1]
+        rfilePath = basePath + trafficLayerName
         rlayer = openHiddenRasterLayer(mainwindow, rfilePath) # returns false if the file failed to open
         if rlayer == False: # if the file failed to open, the constraints have not be met.
             return False
         result, identifyDict = rlayer.identify(point)
-        print "The raster value for base_traffic.tif is " + unicode(identifyDict.get(QtCore.QString("Band 1"))) 
+        print "Tools.shared.checkConstraints(): The raster value for base_traffic.tif is " \
+                                                                + unicode(identifyDict.get(QtCore.QString("Band 1"))) 
         if not result: # if the identify method fails, we have not met constraints
-            print "base_traffic.tif identify failed"
+            print "Tools.shared.checkConstraints(): base_traffic.tif identify failed"
             return False
         if unicode(identifyDict.get(QtCore.QString("Band 1"))) == u"null (no data)": # value for areas not on roads is null 
             print "base_traffic return False value = " + unicode(identifyDict.get(QtCore.QString("Band 1")))
-            if id != None:
+            if featId != None:
                 text = "All pasted features must fall on a road in the 'base_traffic' layer. \
-The feature in row " + str(id+1) + " in the attribute table of the layer you copied from does not meet \
+The feature in row " + str(featId+1) + " in the attribute table of the layer you copied from does not meet \
 this constraint.  Please check all your points carefully and try again."
             else:
                 text = "The added feature must fall on a road in the 'base_traffic' layer. Please make \
@@ -280,19 +290,22 @@ in your scenario, you may open it by clicking 'Add Raster' on the toolbar or in 
         else: return True # base file opened and constraints have been met.
     
         # debugging
-        "The rfilePath is " + rfilePath
-        "The raster value for base_traffic.tif is " + unicode(identifyDict.get(QtCore.QString("Band 1")))
-        "The constraints were met and the return value is 'True'"
-    else: print "Layer does not need constraints checked"
+        "Tools.shared.checkConstraints(): The rfilePath is " + rfilePath
+        "Tools.shared.checkConstraints(): The raster value for base_traffic.tif is " \
+                                                        + unicode(identifyDict.get(QtCore.QString("Band 1")))
+        "Tools.shared.checkConstraints(): The constraints were met and the return value is 'True'"
+    else: print "Tools.shared.checkConstraints(): Layer does not need constraints checked"
     
-def openHiddenRasterLayer(mainwindow, rfilePath):    
-    info = QtCore.QFileInfo(QtCore.QString(rfilePath))
+def openHiddenRasterLayer(mainwindow, rfilePath):
+    ''' Open a raster layer without adding to the registry, so it is not visible to the user '''    
+    info = QtCore.QFileInfo(rfilePath)
     rlayer = QgsRasterLayer(info.filePath(), info.completeBaseName())
     
     if not mainwindow.checkLayerLoadError(rlayer): return False
     else: return rlayer
 
 def makeSelectRect (geom, point, transform):
+        ''' Make a rectangle to use for selecting features '''
         # make rectangle in display pixels
         if geom == 0 or geom == 1:
             boxSize = 5
@@ -306,7 +319,7 @@ def makeSelectRect (geom, point, transform):
             yTopLeft = point.y() - boxSize 
             xBottomRight = point.x() + boxSize
             yBottomRight = point.y() + boxSize
-        else: print "Main.mainwindow.geometry unknown or None"
+        else: print "Tools.shared.makeSelectRect(): .geometry unknown or None"
         
         # then convert to map coordinates
         topLeft = transform.toMapCoordinates(xTopLeft, yTopLeft)
@@ -314,13 +327,12 @@ def makeSelectRect (geom, point, transform):
         selectRect = QgsRectangle(topLeft, bottomRight)
         return selectRect
 
-
 def resetIdNumbers(provider, geom):
         ''' Set the values of id field to start at 1 and finish with the number of features
             in the current editing shapefile.  Append p, l, pg for point, line and polygon.
         '''    
         # debugging
-        print "shared.resetIDNumbers()"
+        print "Tools.shared.resetIDNumbers()"
         
         # get the geometry of the layer and set the 'append' variable
         if geom == 0: append = 'P'
@@ -334,15 +346,15 @@ def resetIdNumbers(provider, geom):
         provider.select(allAttrs)
         # the nextFeature() method operates on a select initialized provider
         while provider.nextFeature(feat):
-            print "The current feature id is " + str(feat.id())
+            print "Tools.shared.resetIDNumbers(): The current feature id is " + str(feat.id())
             # A QgsAttributeMap is a pointer to a python dictionary where the key is
             # the feature id and the values are QtCore.QVariant objects.
             attrs = feat.attributeMap()
             for key, attr in attrs.iteritems():
-                print "The attribute value is " + attr.toString()
+                print "Tools.shared.resetIDNumbers(): The attribute value is " + attr.toString()
                 if not attr.toString(): continue
                 else: 
-                    print "We have the id field"
+                    print "Tools.shared.resetIDNumbers(): We have the id field"
                     idString = unicode(feat.id()+1) + append
                     attrs[key] = QtCore.QVariant(idString)    
                     changedAttributes = {feat.id() : attrs} # create a "QgsChangedAttributesMap"
@@ -360,16 +372,16 @@ def newRoadExists(mainwindow):
     
     newRoadEditFileName = config.editLayersBaseNames[1] + ".shp"
     scenarioDirectoryName = mainwindow.scenarioInfo.completeBaseName()
-    newRoadEditFilePath = QtCore.QString(config.scenariosPath + scenarioDirectoryName + "/" + newRoadEditFileName)
+    newRoadEditFilePath = config.scenariosPath + scenarioDirectoryName + "/" + newRoadEditFileName
     newRoadEditFile = QtCore.QFile(newRoadEditFilePath)
-    print "The newRoadEditFileName is " + newRoadEditFileName
-    print "The newRoadEditFilePath is " + newRoadEditFilePath
+    print "Tools.shared.newRoadExists(): The newRoadEditFileName is " + newRoadEditFileName
+    print "Tools.shared.newRoadExists(): The newRoadEditFilePath is " + newRoadEditFilePath
     
     if newRoadEditFile.exists(): 
-        print "The new road exists"
+        print "Tools.shared.newRoadExists(): The new road exists"
         return True 
     else: 
-        print "The new road does not exist"
+        print "Tools.shared.newRoadExists(): The new road does not exist"
         return False
         
 def snapToNewRoad(mainwindow, point):
@@ -380,14 +392,14 @@ def snapToNewRoad(mainwindow, point):
     pointsEditLayer = mainwindow.activeVLayer
     
     # set the editing shapefile for new roads to be the active layer
-    newRoadEditFileBaseName = QtCore.QString(config.editLayersBaseNames[1])
+    newRoadEditFileBaseName = config.editLayersBaseNames[1]
     items = mainwindow.legend.findItems(newRoadEditFileBaseName, QtCore.Qt.MatchFixedString, 0)
     if len(items) > 0:
         item = items[0]
         newRoadEditFileId = item.layerId
         layer = QgsMapLayerRegistry.instance().mapLayer(newRoadEditFileId)
         mainwindow.canvas.setCurrentLayer(layer)
-    else: print "Could not find the new roads editing shapefile in the legend, although it exists!"
+    else: print "Tools.shared.snapToNewRoad(): Could not find the new roads editing shapefile in the legend, although it exists!"
     
     # Now that the line layer is the active layer, snap the wildlife crossing point to the line.
     snapper = QgsMapCanvasSnapper(mainwindow.canvas)
@@ -396,19 +408,19 @@ def snapToNewRoad(mainwindow, point):
     mainwindow.canvas.setCurrentLayer(pointsEditLayer)
     
     # debugging
-    print "the length of items is " + str(len(items))
-    print "retval is " + str(retval)
-    print "result is "
+    print "Tools.shared.newRoadExists(): the length of items is " + str(len(items))
+    print "Tools.shared.newRoadExists(): retval is " + str(retval)
+    print "Tools.shared.newRoadExists(): result is "
     print result
-    print "The clicked points in device coordinates is " + str(point)
+    print "Tools.shared.newRoadExists(): The clicked points in device coordinates is " + str(point)
     transform = mainwindow.canvas.getCoordinateTransform()
     qgsPoint = transform.toMapCoordinates(point.x(), point.y())
-    print "The clicked point in map coords is " + str(qgsPoint)
+    print "Tools.shared.newRoadExists(): The clicked point in map coords is " + str(qgsPoint)
     
     if result:
-        print "The snapped layer is " + str(result[0].layer.name())
-        print "The snapped point is " +  str(result[0].snappedVertex)
-        print "The snapped geometry is " + str(result[0].snappedAtGeometry)
+        print "Tools.shared.newRoadExists(): The snapped layer is " + str(result[0].layer.name())
+        print "Tools.shared.newRoadExists(): The snapped point is " +  str(result[0].snappedVertex)
+        print "Tools.shared.newRoadExists(): The snapped geometry is " + str(result[0].snappedAtGeometry)
         # Note that the result object will be destroyed by QGIS when this method ends,
         # so we need to make a new variable that contains deep copies of the information
         # we want.  !!It took a while for me to figure this out!!
@@ -423,7 +435,8 @@ def snapToNewRoad(mainwindow, point):
 #**************************************************************
 
 def printFeatures(provider):       
-        "starting printFeatures()"
+        # debugging
+        print "Tools.shared.printFeatures(): Testing"
         #self.provider.reloadData()
         feat = QgsFeature()
         allAttrs = provider.attributeIndexes()

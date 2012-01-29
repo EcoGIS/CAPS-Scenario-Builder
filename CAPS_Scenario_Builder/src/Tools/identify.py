@@ -24,8 +24,8 @@
 
 # You should have received a copy of the GNU General Public License
 # along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+#
 #---------------------------------------------------------------------------
- 
 # PyQt4 includes for python bindings to QT
 from PyQt4 import QtCore, QtGui 
 # QGIS bindings for mapping functions
@@ -72,6 +72,8 @@ class Identify(QgsMapTool):
         # debugging
         print "Tools.identify.Identify().rasterIdentifyTool()"
 
+        # Convert QStrings to unicode unless they are used immediately in a Qt method. 
+        # This ensures that we never ask Python to slice a QString, which produces a type error.
         text = "The clicked x,y point is (" + unicode(round(qgsPoint.x(), 2)) + ", " + unicode(round(qgsPoint.y(), 2)) + ")\n"
         # this QgsVectorLayer method returns a tuple consisting of the bool result (success = True) 
         # and a dictionary with the key being the band names of the raster and the values

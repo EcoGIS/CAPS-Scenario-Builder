@@ -54,6 +54,8 @@ class LegendItem(QtGui.QTreeWidgetItem):
         
         self.legend = parent
         self.canvasLayer = canvasLayer
+        # Convert QStrings to unicode unless they are used immediately in a Qt method. 
+        # This ensures that we never ask Python to slice a QString, which produces a type error.
         self.canvasLayer.layer().setLayerName(self.legend.normalizeLayerName(unicode(self.canvasLayer.layer().name())))
         self.setText(0, self.canvasLayer.layer().name())
         self.isVect = (self.canvasLayer.layer().type() == 0) # 0: Vector, 1: Raster

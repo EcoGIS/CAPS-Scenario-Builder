@@ -56,6 +56,7 @@ import config
 
 
 class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
+    ''' Display the main window and manage all user actions '''
     def __init__(self, splash):
         QtGui.QMainWindow.__init__(self)
     
@@ -296,7 +297,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         filterString = "CAPS Scenario (*.cap)" # syntax for showing all files \nAll Files(*)")
         # get the path to the directory for the saved file using Python
         directory = os.path.dirname(config.scenariosPath)
-        # I convert QStrings to unicode unless they are used immediately in a Qt method. 
+        # Convert QStrings to unicode unless they are used immediately in a Qt method. 
         # This ensures that we never ask Python to slice a QString, which produces a type error.
         scenarioFilePath = unicode(qd.getOpenFileName(self, QtCore.QString
                                                 ("Open Scenario"), directory, filterString))
@@ -916,12 +917,12 @@ the features you wish to modify, and then try again.")
   
         ''' CHECK FOR USER ERROR AND SET INTIAL CONDITIONS '''
  
-        # If we are modifying a point, we have already programatically selected the correct layer.
+        # If we are modifying a point, we have already programatically selected the correct edit layer to paste to.
         # Otherwise, check if user has chosen the correct editing shapefile to paste to
         if not modifyFlag:
             vlayerName = unicode(self.activeVLayer.name())
-            # This method warns the user on error and returns "Cancel"
-            if shared.checkSelectedLayer(self, self.scenarioEditType, vlayerName) == "Cancel":
+            # This method warns the user on error and returns False on error
+            if not shared.checkSelectedLayer(self, self.scenarioEditType, vlayerName):
                 return
         else: # if we are modifying a base layer then set some base layer variables
             baseLayer = QgsMapLayerRegistry.instance().mapLayer(self.baseLayerId)
@@ -998,7 +999,7 @@ the features you wish to modify, and then try again.")
         # In other words, we compare the editing layer's feature ids before and after 
         # pasting and then return the difference between the two.
         # pastedFeatureIDS is a python list.
-        pastedFeatureIDS = shared.getFeatsToDelete(self.provider, self.originalFeats)        # now get the difference
+        pastedFeatureIDS = shared.getFeatsToDelete(self.provider, self.originalFeats)
           
         # debugging
         print "Main.mainwindow.pasteFeatures(): The empty attributes are:"
@@ -1063,7 +1064,6 @@ the features you wish to modify, and then try again.")
                 title = "Unmodified Feature's Geometry and Attribute Information"
                 self.displayModifyPointsInformation(title, text)
             if self.dlg.exec_(): # open DlgAddAttributes and then if user clicks OK returns true
-                # validate user input
                 if modifyFlag: # if user is modifying a point, set the altered field to 'y'
                     attributes = self.dlg.getNewAttributes(True)
                 else: attributes = self.dlg.getNewAttributes()
@@ -1072,7 +1072,7 @@ the features you wish to modify, and then try again.")
                     self.provider.changeAttributeValues(changedAttributes)
                 except (IOError, OSError), e:
                     error = unicode(e)
-                    print error 
+                    print "Main.mainwindow.pasteFeatures(): error is " + error 
                     if modifyFlag: title = "Failed to modify feature(s)"
                     else: title = "Failed to delete feature(s)"
                     vlayerName = unicode(self.activeVLayer.name())    
@@ -1519,8 +1519,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             self.statusBar.showMessage(capture_string)
     
             # For some reason, the USGS.sid will not render unless we include this line of code.
-            # The USGS.sid layer reports that it is in geographic coordinates WGS 84.  Transformation
-            # on the fly should convert it to MA State Plane, but it does not for some reason.
+            # The USGS.sid layer reports that it is in geographic coordinates WGS 84.
             self.activeRLayer.setCrs(self.crs)
             # set extents
             self.setExtents()
@@ -1581,7 +1580,16 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             
             # set the active vector layer
             self.activeVLayer = self.legend.activeLayer().layer()
-            
+            # set the data provider
+            self.provider = self.activeVLayer.dataProvider()
+            # set the geometry of the layer
+            self.geom = self.activeVLayer.geometryType() #0 point, 1 line, 2 polygon
+            # set extents if not within MA state extents
+            self.setExtents()
+            # add filename to statusbar
+            capture_string = self.activeVLayer.source() # a QString
+            self.statusBar.showMessage(capture_string)
+          
             # New layer loaded so set the scenarioDirty flag.  Note: This gets called
             # unnecessarily when a different layer is selected in the layer panel.
             # However, it returns immediately if the layer count has not changed. 
@@ -1593,18 +1601,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             print "ALC THE ACTIVE VLAYER NAME IS " + self.activeVLayer.name()
             print "alc The layers authid is " + str(self.activeVLayer.crs().authid())
             print "alc The description of the srs is " + str(self.activeVLayer.crs().description())
-            
-            # add filename to statusbar
-            capture_string = self.activeVLayer.source()
-            self.statusBar.showMessage(capture_string)
-            
-            # set the geometry of the layer
-            self.geom = self.activeVLayer.geometryType() #0 point, 1 line, 2 polygon
-            # set extents if not within MA state extents
-            self.setExtents()
-            # set the data provider
-            self.provider = self.activeVLayer.dataProvider()
-           
+
             # This method sets colors, marker types and other properties for certain vector layers
             print "alc The activeVLayer renderer type is " + self.activeVLayer.rendererV2().type()
             self.setRendererV2()
@@ -2982,6 +2979,9 @@ if this scenario file is open in another program.")
                    
     def printFields(self):
         ''' Testing '''
+        # debugging
+        print "Main.mainwindow.printFields(): Testing"
+        
         #field = QgsField()
         names = []
         provider = self.activeVLayer.dataProvider()
@@ -3000,6 +3000,9 @@ if this scenario file is open in another program.")
  
     def printFeatures(self):
         ''' Testing '''
+        # debugging
+        print "Main.mainwindow.printFields(): Testing"
+        
         provider = self.activeVLayer.dataProvider()
         provider.reloadData()
         feat = QgsFeature()

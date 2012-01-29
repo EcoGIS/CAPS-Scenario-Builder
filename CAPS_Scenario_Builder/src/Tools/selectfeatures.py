@@ -12,19 +12,20 @@
 # 
 # This file is part of CAPS.
 
-#CAPS is free software: you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation, either version 3 of the License, or
-#(at your option) any later version.
+# CAPS is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-#CAPS is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# CAPS is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-#You should have received a copy of the GNU General Public License
-#along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
-
+# You should have received a copy of the GNU General Public License
+# along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+#
+#--------------------------------------------------------------------------------------------
 # PyQt4 includes for python bindings to QT
 from PyQt4 import QtGui, QtCore 
 # QGIS bindings for mapping functions
@@ -39,6 +40,9 @@ class SelectTool(QgsMapTool):
     ''' Provide a tool to select features '''
     def __init__(self, parent):
         QgsMapTool.__init__(self, parent.canvas)
+        
+        # debugging
+        print "Tools.selectfeatures.SelectTool()"
      
         # Make handle to mainwindow and call all variables needed for methods from mainwindow.
         # This allows variables to be updated when the active layer changes so that 
@@ -54,7 +58,9 @@ class SelectTool(QgsMapTool):
         if self.mainwindow.activeVLayer == None: return
         
         # do not allow selecting or deleting from an orientingBaseLayer (i.e. base_towns)
-        name = self.mainwindow.activeVLayer.name()
+        # Convert QStrings to unicode unless they are used immediately in a Qt method. 
+        # This ensures that we never ask Python to slice a QString, which produces a type error.
+        name = unicode(self.mainwindow.activeVLayer.name())
         fileName = name + '.shp'
         if fileName in config.orientingVectorLayers:
             QtGui.QMessageBox.warning(self.mainwindow, "Selection Error:", 
@@ -73,11 +79,7 @@ class SelectTool(QgsMapTool):
 
     def selectFeat(self, point):
         # debugging
-        print "SelectTool(): selectFeat"
+        print "Tools.selectfeatures.SelectTool().selectFeat()"
         activeVLayer = self.mainwindow.activeVLayer
         selectRect = shared.makeSelectRect(self.mainwindow.geom, point, self.transform)        
         activeVLayer.select(selectRect, True)
-        #self.mainwindow.canvas.refresh()
-
-
-        

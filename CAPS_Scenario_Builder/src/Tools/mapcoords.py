@@ -1,7 +1,7 @@
 ## -*- coding:utf-8 -*-
 #--------------------------------------------------------------------- 
 #
-#Conservation Assessment and Prioritization System (CAPS) - An Open Source  
+# Conservation Assessment and Prioritization System (CAPS) - An Open Source  
 # GIS tool to create scenarios for environmental modeling.
 #
 #---------------------------------------------------------------------- 
@@ -14,18 +14,18 @@
 # 
 # This file is part of CAPS.
 
-#CAPS is free software: you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation, either version 3 of the License, or
-#(at your option) any later version.
+# CAPS is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-#CAPS is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# CAPS is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-#You should have received a copy of the GNU General Public License
-#along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+# You should have received a copy of the GNU General Public License
+# along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
 # 
 #---------------------------------------------------------------------
 # General system includes
@@ -37,10 +37,13 @@ from PyQt4 import QtGui
 from qgis.core import *
 from qgis.gui import *
   
-# Coordinates display in statusbar
 class MapCoords(object):
+    ''' Display mouse position in map coordinates in the statusbar '''
     def __init__(self, parent):
         self.parent = parent
+        
+        # debugging
+        print "Tools.mapcoords.MapCoords()"
     
         # This captures the mouse move for coordinate display
         QtCore.QObject.connect(parent.canvas, QtCore.SIGNAL("xyCoordinates(const QgsPoint &)"),
@@ -52,7 +55,7 @@ class MapCoords(object):
 
     # Signal handler for updating coord display
     def updateCoordsDisplay(self, p):
-        capture_string = "%.3f" % float(p.x()) + " , " + "%.3f" % float(p.y())
+        capture_string = "%.2f" % float(p.x()) + " , " + "%.2f" % float(p.y())
         self.latlon.setText(capture_string)
 
   

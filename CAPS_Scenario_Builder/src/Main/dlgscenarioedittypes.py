@@ -92,6 +92,8 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         
         # Get the scenario type chosen from the dialog and save
         # to a main window variable for use in other modules
+        # Convert QStrings to unicode unless they are used immediately in a Qt method. 
+        # This ensures that we never ask Python to slice a QString, which produces a type error.
         scenarioEditType = unicode(self.typesComboBox.currentText()) # convert the QString
         self.mainwindow.scenarioEditType = scenarioEditType
 
