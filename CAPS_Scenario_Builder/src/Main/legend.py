@@ -237,9 +237,9 @@ class Legend(QtGui.QTreeWidget):
         p = QtCore.QPoint(event.pos())
         item = self.itemAt(p)
  
-        if (item and item != self.currentItem()): 
+        '''if (item and item != self.currentItem()): 
             print "legend.mousePressEvent" 
-            if self.mainwindow.appStateChanged("legendMousePress") == "Cancel": return
+            if self.mainwindow.appStateChanged("legendMousePress") == "Cancel": return'''
         if (event.button() == QtCore.Qt.LeftButton):
             self.lastPressPos = event.pos()
             self.bMousePressedFlag = True

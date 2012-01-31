@@ -184,7 +184,7 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
         if vlayerName in config.editLayersBaseNames:
             layerId = activeVLayer.id()
             # save the color so we can keep the same color when reopening the layer
-            mainwindow.layerColor = mainwindow.activeVLayer.rendererV2().symbols()[0].color()
+            mainwindow.layerColor = activeVLayer.rendererV2().symbols()[0].color()
             # The method below removes the layer from the originalScenarioLayers list if the 
             # editing layer was in self.originalScenarioLayers and returns True if it was
             # or False if it was not.  The method resets the 
@@ -201,10 +201,10 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
                 mainwindow.originalScenarioLayers.append(mainwindow.activeVLayer)
                 # although layer names shouldn't have changed, update anyway
                 mainwindow.getOriginalScenarioLayersNames()
-                print "Tools.shared.updateExtents() appended editing layer"
+                print " appended editing layer"
             
             # debugging
-            for layer in mainwindow.originalScenarioLayers: print layer.name()
+            for layer in mainwindow.originalScenarioLayers: print "Tools.shared.updateExtents(): " + layer.name()
 
             # now highlight the layer as it was before
             brush = QtGui.QBrush()

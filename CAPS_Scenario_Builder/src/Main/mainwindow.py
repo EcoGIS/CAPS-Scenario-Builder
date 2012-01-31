@@ -104,6 +104,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.toolSelect = None
         self.toolAddPoints = None
         self.toolAddLinesPolygons = None
+        self.editTypeLabel = None
      
         # VALUES
         self.scenarioFilePath = None
@@ -800,9 +801,6 @@ sure that the layer you want to modify is the currently active layer."
             QtGui.QMessageBox.information(self, title, text, QtGui.QMessageBox.Ok)
             return
         
-        # **so now can be edit or base layer**
-        self.baseLayerId = self.activeVLayer.id()
-        
         # Check if the base layer  matches the scenario edit type.  If it does not, we get
         # incorrect entries in the editing shapefile attribute table!
         title = "Modify Point Error:"
@@ -851,13 +849,16 @@ the features you wish to modify, and then try again.")
             return
         
         vfileName = unicode(self.activeVLayer.name())
-        
-        # Check if the user is deleting editing layer edits and set appropriate warning
+        # Check what the user is deleting and set appropriate message
         if vfileName in config.editLayersBaseNames:
-            title = "Delete Scenario Edits"
+            title = "Delete Scenario Edits:"
             text = "Do you want to delete, that is undo, "  + unicode(count) + \
 " scenario edit(s)?  Please note that no changes will be made to any base layer."
-        else: # either deleting points from user's layer or a base layer
+        elif vfileName in config.pointBaseLayersBaseNames: # deleting points from a base layer
+            title = "Delete Selected Features:"
+            text = "Delete " + unicode(count) + " feature(s)? Please note that no \
+changes will be made to the base layer."
+        else: # deleting points from a user's layer
             title = "Delete Selected Features"
             text = "Permanently delete " + unicode(count) + " feature(s)?"
         
@@ -865,7 +866,8 @@ the features you wish to modify, and then try again.")
         reply = QtGui.QMessageBox.question(self, title, text, QtGui.QMessageBox.Cancel|QtGui.QMessageBox.Ok)
         if reply == QtGui.QMessageBox.Ok: # if yes, then do the deletion
             if vfileName in config.pointBaseLayersBaseNames: # deleting base layer features
-                # This method warns the user and returns false on error (title = "Deletion Error:" text = "dlete from")
+                # This method warns the user and returns false on error (title = "Deletion Error:" 
+                # (title = "Deletion Error:" text = "delete from")
                 if not self.checkBaseLayerMatch("Deletion Error:", "delete from"): return
                 else:
                     # We do not allow deleting features from a base layer.  Rather, we copy
@@ -873,7 +875,7 @@ the features you wish to modify, and then try again.")
                     self.copyFeaturesShared()
                     self.pasteBaseLayerDeletions(vfileName)
                     return
-            else: # this handles the case where we are deleting editing layer features or features on a user's layer
+            else: # handles the cases where we are deleting editing layer features or features on a user's layer
                 pyList = [] # make a Python list of features to delete
                 feat = QgsFeature()
                 for feat in selectedFeats:
@@ -889,27 +891,28 @@ the features you wish to modify, and then try again.")
                                                                     " is open in another program and then try again.")
                     return # delete failed so return
                
-                # features successfully deleted so reset the original features count for the layer
+                ''' Features successfully deleted '''
                 
-                # if this is an editing layer, reset the id numbers for the layer and the original features
+                # if this is an editing layer, reset the id numbers for the layer
                 if vfileName in config.editLayersBaseNames:
                     shared.resetIdNumbers(self.provider, self.geom)
-                    self.originalEditLayerFeats = shared.listOriginalFeatures(self, vfileName)
+                    self.editDirty = True
                 # empty the selections cache when done or it stays at 'count'
                 self.activeVLayer.removeSelection(False) # false indicates whether to emit a signal
                 # reset the select tool
                 self.disableSelectActions()
-                # update all the extents for the user's layer
+                # update all the extents for the user's layer (will close and reopen editing layer to set extents)
                 shared.updateExtents(self, self.provider, self.activeVLayer, self.canvas)
                 # update Vector Attribute Table if open
                 if self.attrTable != None and self.attrTable.isVisible():
                     self.openVectorAttributeTable()
-        else: return # user has cancelled deletions        
+        else: return # user has cancelled in the dialog       
          
     def pasteFeatures(self, modifyFlag=False):
         ''' 
             Edit menu SLOT.  Pasting features can only be done in "Edit Scenario" mode.  Features 
-            can be copied from any file, but can only be pasted into an editing shapefile.
+            can be copied from any user's file, but can only be pasted into an editing shapefile.
+            This method also handles pasting modified base layer features into an editing shapefile.
         ''' 
         # debugging
         print "Main.mainwindow.pasteFeatures()"
@@ -927,10 +930,11 @@ the features you wish to modify, and then try again.")
             # This method warns the user on error and returns False on error
             if not shared.checkSelectedLayer(self, self.scenarioEditType, editLayerName):
                 return
-        else: # if we are modifying a base layer then set some base layer variables
-            baseLayer = QgsMapLayerRegistry.instance().mapLayer(self.baseLayerId)
-            baseLayerName = unicode(baseLayer.name())
-            baseLayerProvider = baseLayer.dataProvider()
+            
+        # if we are modifying a base layer then set some base layer variables
+        copyLayer = QgsMapLayerRegistry.instance().mapLayer(self.copyLayerId)
+        copyLayerName = unicode(copyLayer.name())
+        copyLayerProvider = copyLayer.dataProvider()
         
         # Inform user if attempting to paste into incompatible layer type. This can happen if the user
         # copies features from a layer with different geometry than the current scenario edit type.
@@ -1033,33 +1037,35 @@ the features you wish to modify, and then try again.")
             self.canvas.refresh()
             self.dlg = DlgAddAttributes(self)
             self.dlg.setGeometry(0, 500, 200, 200)
-            if modifyFlag: # open the dialog with existing feature data if user is modifying the point
-                # get all the attributes for the point base layer
-                allAttrs = baseLayerProvider.attributeIndexes()
-                # get the data for the current feature
-                copiedFeatId = self.copiedFeats[count].id()
-                copiedFeat = QgsFeature()
-                baseLayerProvider.featureAtId(copiedFeatId, copiedFeat, True, allAttrs)
-                # A QgsAttributeMap is a Python dictionary (key = field id : value = 
-                # the field's value as a QtCore.QVariant()object
-                attrs = copiedFeat.attributeMap()
-                print "Main.mainwindow.pasteFeatures(): length of attrs is " + str(len(attrs))
-                # return the features geometry as coordinates
-                featGeom = copiedFeat.geometry()
-                # create the text for the geometry in display window
-                text = "Feature ID %d: %s\n" % (copiedFeat.id()+1, featGeom.exportToWkt())
-                print "Main.mainwindow.pasteFeatures(): The Feat ID and Wkt is " + text
-                # get the field name and attribute data for each attribue and add to the text
-                # fields() returns a dictionary with the field key and the name of the field
-                fieldNamesDict = baseLayerProvider.fields()
-                print "Main.mainwindow.pasteFeatures(): The field names dict is "
-                print fieldNamesDict
-                for (key, attr) in attrs.iteritems():
-                    print "Main.mainwindow.pasteFeatures(): key is: " + str(key)
-                    text += "%s: %s\n" % (fieldNamesDict.get(key).name(), attr.toString())
-                # set the title for the display window
-                title = "Unmodified Feature's Geometry and Attribute Information"
-                self.displayModifyPointsInformation(title, text)
+            
+            '''if modifyFlag: # open the dialog with existing feature data if user is modifying the point'''
+            # get all the attributes for the point base layer
+            allAttrs = copyLayerProvider.attributeIndexes()
+            # get the data for the current feature
+            copiedFeatId = self.copiedFeats[count].id()
+            copiedFeat = QgsFeature()
+            copyLayerProvider.featureAtId(copiedFeatId, copiedFeat, True, allAttrs)
+            # A QgsAttributeMap is a Python dictionary (key = field id : value = 
+            # the field's value as a QtCore.QVariant()object
+            attrs = copiedFeat.attributeMap()
+            print "Main.mainwindow.pasteFeatures(): length of attrs is " + str(len(attrs))
+            # return the features geometry as coordinates
+            featGeom = copiedFeat.geometry()
+            # create the text for the geometry in display window
+            text = "Feature ID %d: %s\n" % (copiedFeat.id()+1, featGeom.exportToWkt())
+            print "Main.mainwindow.pasteFeatures(): The Feat ID and Wkt is " + text
+            # get the field name and attribute data for each attribue and add to the text
+            # fields() returns a dictionary with the field key and the name of the field
+            fieldNamesDict = copyLayerProvider.fields()
+            print "Main.mainwindow.pasteFeatures(): The field names dict is "
+            print fieldNamesDict
+            for (key, attr) in attrs.iteritems():
+                print "Main.mainwindow.pasteFeatures(): key is: " + str(key)
+                text += "%s: %s\n" % (fieldNamesDict.get(key).name(), attr.toString())
+            # set the title for the display window
+            title = "Unmodified Feature's Geometry and Attribute Information"
+            self.displayModifyPointsInformation(title, text)
+            
             if self.dlg.exec_(): # open DlgAddAttributes and then if user clicks OK returns true
                 if modifyFlag: # if user is modifying a point, set the altered field to 'y'
                     attributes = self.dlg.getNewAttributes(True)
@@ -1103,8 +1109,8 @@ want to stop pasting?"
                         self.dlgModifyInfo.close()
                         # reset the active layer to the base layer being modified
                         # reset the base layer to be the active layer
-                        items = self.legend.findItems(baseLayerName, QtCore.Qt.MatchFixedString, 0)
-                        print "Main.mainwindow.pasteBaseLayerDeletions(): baseLayerName is: " + baseLayerName
+                        items = self.legend.findItems(copyLayerName, QtCore.Qt.MatchFixedString, 0)
+                        print "Main.mainwindow.pasteFeatures(): copyLayerName is: " + copyLayerName
                         if len(items) > 0:
                             self.legend.setCurrentItem(items[0])
                             self.legend.currentItem().setCheckState(0, QtCore.Qt.Checked)
@@ -1145,8 +1151,8 @@ want to stop pasting?"
         shared.updateExtents(self, self.provider, self.activeVLayer, self.canvas)
         
         if modifyFlag: # reset the base layer we were modifying to be the active layer
-            items = self.legend.findItems(baseLayerName, QtCore.Qt.MatchFixedString, 0)
-            print "Main.mainwindow.pasteBaseLayerDeletions(): baseLayerName is: " + baseLayerName
+            items = self.legend.findItems(copyLayerName, QtCore.Qt.MatchFixedString, 0)
+            print "Main.mainwindow.pasteFeatures(): copyLayerName is: " + copyLayerName
             if len(items) > 0:
                 self.legend.setCurrentItem(items[0])
                 self.legend.currentItem().setCheckState(0, QtCore.Qt.Checked)
@@ -1188,6 +1194,8 @@ before you can make edits.  Please save the current scenario or open an existing
             if self.copyFlag: self.mpActionPasteFeatures.setDisabled(False)
          
             # add scenarioEditType to statusbar
+            if self.editTypeLabel: # for insurance
+                self.statusBar.removeWidget(self.editTypeLabel)
             self.editTypeLabel = QtGui.QLabel(self.statusBar)
             captureString = "Scenario edit type:  '" + self.scenarioEditType + "'"
             self.editTypeLabel.setText(captureString)
@@ -1200,9 +1208,9 @@ before you can make edits.  Please save the current scenario or open an existing
                 self.mpActionEditScenario.setChecked(True)
                 self.mpActionEditScenario.blockSignals(False)
                 return
+            
             self.editMode = False
             self.editLayerName = None
-           
             # unset the select tool
             self.mpActionSelectFeatures.setDisabled(True)
             # remove any selections
@@ -1633,8 +1641,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
                 self.mpActionSelectFeatures.setDisabled(True)
                 self.disableSelectActions()
             
-            # new active vector layer loading so disable previous edit actions (these are mapToolGroup actions)
-            self.disableEditActions() # actions are add points, lines, polygons
+            # This could be combined with the above, but for clarity, keep separate.
             if self.editMode: # now handle enabling add points, lines or polygons
                 # loading a new active layer so enable the proper edit action if an editing layer
                 if unicode(self.activeVLayer.name()) in config.editLayersBaseNames: # so is an editing layer
@@ -1643,9 +1650,15 @@ attribute table is very large and can take a few seconds to load.  Do you want t
                     if shared.checkSelectedLayer(self, self.scenarioEditType, currentLayerName):
                         # So the editing tool will ONLY be enabled if the editing layer is the correct
                         # layer for the current scenario edit type.
-                        self.enablePointsOrLinesOrPolygons() 
+                        self.enablePointsOrLinesOrPolygons()
+                    else: # so is an editing layer but not the right one for the scenario edit type  
+                        self.disableEditActions() # disable add points, lines, polygons
+                else: # we are in edit mode and a non-editing vector layer has been selected
+                    self.disableEditActions()
+                     
             else: # not in edit mode
-                self.mpActionEditScenario.setChecked(False) # to be safe, but this should not be needed
+                # to be safe, but this should have already been called by the editScenario action
+                self.disableEditActions() 
                       
             # handle the paste action
             if self.copyFlag and self.editMode:
@@ -1759,8 +1772,7 @@ before taking another action!")
         # and deactivate the action if necessary.
         title = "Save Edits"
         text = "Do you want to save your edits to " + unicode(self.editDirty) + "?"
-        callingList = ["saveScenario", "saveScenarioAs", "selectFeatures", 
-                    "deleteFeatures", "removeCurrentLayer", "exportScenario"]
+        callingList = ["saveScenario", "saveScenarioAs", "removeCurrentLayer", "exportScenario"]
         # Once in edit mode, it is impossible to exit edit mode, or do anything else, without
         # either saving or discarding changes. So, this dialog is only called when in edit mode.
         reply = QtGui.QMessageBox.question(self, title, text, 
@@ -1783,7 +1795,7 @@ before taking another action!")
                 self.saveEdits()
                 self.disableEditActions()
             else:
-                # opening new scenario, closing app
+                # stopping editing, opening new scenario, closing app
                 # save the edits and disable "Edit Scenario" mode
                 self.saveEdits()
                 self.disableEditing()                
@@ -1812,11 +1824,11 @@ before taking another action!")
                     self.openVectorAttributeTable()
                 self.editDirty = False
                 self.disableEditActions()
-            # if opening new scenario, exporting scenario or closing the app
+            # if stopping editing, new scenario, opening scenario,closing the app
             # discard the edits and disable editing mode
             else:
                 shared.deleteEdits(self, self.editLayerName, self.originalEditLayerFeats)
-                self.disableEditing()
+                #self.disableEditing()
         elif reply == QtGui.QMessageBox.Cancel:
             if callingAction == "stoppingEditing" and self.editMode:
                     self.mpActionEditScenario.blockSignals(True)
@@ -1925,6 +1937,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.attrTable = None
         self.dwAttrTable = None
         self.dwRasterTable = None
+        self.editTypeLabel = None
         self.activeVLayer = None
         self.activeRLayer = None
         self.layerType = None
@@ -2005,6 +2018,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.canvas.unsetMapTool(self.toolAddPoints)
         self.canvas.unsetMapTool(self.toolAddLinesPolygons)
         self.editMode = False
+        self.statusBar.removeWidget(self.editTypeLabel)
         
     def getCurrentLayersCount(self):
         # debugging
@@ -2403,6 +2417,10 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             This method copies features and is used by mainwindow.copyFeatures and
             mainwindow.deleteFeatures (when deleting from config.pointBaseLayersBaseNames)
         '''
+        # **so now can be edit or base layer**
+        # get the id of the layer we are copying from for use in paste features
+        self.copyLayerId = self.activeVLayer.id()
+        
         # make copy as instance variable so we can paste features into another layer
         # "selectedFeatures" is a QgsFeatureList (a Python list of QgsFeature objects)
         self.copiedFeats = self.activeVLayer.selectedFeatures()
@@ -2492,10 +2510,7 @@ the appropriate scenario edit type, and try again.")
                 vlayerName = self.activeVLayer.name()
                 QtGui.QMessageBox.warning(self, "Failed to paste feature(s)", "Please check if "
                                  + vlayerName + " is open in another program and then try again.")    
-        
-        # paste is successful so reset the originalEditLayerFeats
-        shared.listOriginalFeatures(self, editingLayerName) 
-        
+
         # reorder the id numbers
         shared.resetIdNumbers(self.provider, self.geom)
         
