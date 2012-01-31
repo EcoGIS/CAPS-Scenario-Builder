@@ -63,7 +63,8 @@ class AddLinesPolygons(QgsMapTool):
    
     def canvasPressEvent(self, event):
         ''' Record the mouse down event '''
-        # set the active vector layer
+        # Set the active vector layer. Note that this method cannot be called unless the
+        # currently active layer is the correct editing layer for the scenario edit type.
         self.activeVLayer = self.mainwindow.activeVLayer
         if self.activeVLayer == None: return
 
@@ -72,14 +73,14 @@ class AddLinesPolygons(QgsMapTool):
             if self.mainwindow.geom == 1: self.geom = False # line
             else: self.geom = True # polygon
         
-        # check if the editing layer is selected but only on the first click
+        '''# check if the editing layer is selected but only on the first click
         # Convert QStrings to unicode unless they are used immediately in a Qt method. 
         # This ensures that we never ask Python to slice a QString, which produces a type error.
         if self.started == False:
             currentLayerName = unicode(self.mainwindow.legend.currentItem().canvasLayer.layer().name())
             # Check if user has chosen the correct editing shapefile. This method warns the user and returns False on error.
             if not shared.checkSelectedLayer(self.mainwindow, self.mainwindow.scenarioEditType, currentLayerName):    
-                return # return without starting to draw
+                return # return without starting to draw'''
         self.down = True # starts the drawing process
 
     def canvasReleaseEvent(self, event):
@@ -161,11 +162,6 @@ class AddLinesPolygons(QgsMapTool):
         
         # Set the data provider
         self.provider = self.mainwindow.provider
-        # make a list of the original points in the active layer
-        self.originalFeats = shared.listOriginalFeatures(self.provider)
-        # need to update the mainwindow instance variable 
-        # in case the user deletes the added point (i.e. call to Tools.shared.deleteEdits)
-        self.mainwindow.originalFeats = self.originalFeats
         
         feat = QgsFeature()
         vlayerName = unicode(self.mainwindow.activeVLayer.name())
@@ -194,7 +190,7 @@ class AddLinesPolygons(QgsMapTool):
         self.resetDraw()
 
         #set the edit flag to unsaved
-        self.mainwindow.editDirty = unicode(self.activeVLayer.name())
+        self.mainwindow.editDirty = True
         # enable the save edits button
         self.mainwindow.mpActionSaveEdits.setDisabled(False)
         
@@ -202,7 +198,7 @@ class AddLinesPolygons(QgsMapTool):
         print "Tools.addlinespolygons.AddLinesPolygons().addLinePolygon(): the edit flag was set to "\
                                                              + self.activeVLayer.name() + " by addLinePolygon()."
         print "Tools.addlinespolygons.AddLinesPolygons().addLinePolygon(): the number of features added is "\
-                                                     + str(shared.numberFeaturesAdded(self.activeVLayer, self.originalFeats))
+                                    + str(shared.numberFeaturesAdded(self.activeVLayer, self.mainwindow.originalEditLayerFeats))
         
         # update layer extents
         shared.updateExtents(self.mainwindow, self.provider, self.activeVLayer, self.canvas)

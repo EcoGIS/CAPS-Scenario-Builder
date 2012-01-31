@@ -36,6 +36,7 @@ from qgis.core import *
 from dlgscenarioedittypes_ui import Ui_DlgScenarioEditTypes
 # CAPS application imports
 import config
+import Tools.shared
 
 
 class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
@@ -143,7 +144,9 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         # the editing layer is deleted if removed from the scenario. This is done to ensure that 
         # the user cannot forget that he has made edits to an editing layer and unknowingly submit
         # an incorrect scenario!
-        if not self.editLayerOpen:
+        if self.editLayerOpen:
+            self.mainwindow.editLayerName = self.editLayerBaseName
+        else:    
             self.writeNewEditingShapefile()
             if not self.mainwindow.openVectorLayer(self.newEditLayerPath): # warns user on error
                 # opening the editing layer failed so exit
@@ -151,7 +154,13 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
                 self.setResult(0)
                 self.hide()
                 return
-        
+            self.mainwindow.editLayerName = self.editLayerBaseName
+            
+        # So we have a new editing layer.  If it has been reopened then we have previously saved any edits.
+        # If it has just been created then it has no edits.  In either case, we should set the
+        # originalEditLayerFeats now.
+        self.mainwindow.originalEditLayerFeats = Tools.shared.listOriginalFeatures(self.mainwindow, self.editLayerBaseName)
+
         # if the base or constraint layer is not open then open it
         if not self.baseLayerOpen and self.baseFilePath:
             self.openBaseOrConstaintsLayer(self.baseFilePath)

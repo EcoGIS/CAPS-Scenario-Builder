@@ -35,28 +35,34 @@ from qgis.gui import *
 import config
 
   
-def listOriginalFeatures(provider):
+def listOriginalFeatures(mainwindow, editingLayerName):
         ''' Track original features so we can delete unsaved added features '''
         # debugging
         print "Tools.shared.listOriginalFeatures()"
         
-        originalFeats = []
+        legend = mainwindow.legend
+        originalEditLayerFeats = []
+        
+        editingLayer = getEditingLayer(mainwindow, legend, editingLayerName)
+        if not editingLayer:
+            return
+        provider = editingLayer.dataProvider()
         
         # debugging
         print "Tools.shared.listOriginalFeatures(): begin "
-        print originalFeats
+        print originalEditLayerFeats
         
         feat = QgsFeature()
         allAttrs = provider.attributeIndexes()
         provider.select(allAttrs)
         while provider.nextFeature(feat):
-            originalFeats.append(feat.id())
+            originalEditLayerFeats.append(feat.id())
             
         # debugging     
-        print "Tools.shared.listOriginalFeatures():  end, originalFeats are" 
-        print originalFeats
+        print "Tools.shared.listOriginalFeatures():  end, originalEditLayerFeats are" 
+        print originalEditLayerFeats
         
-        return originalFeats
+        return originalEditLayerFeats
     
 def checkSelectedLayer(mainwindow, scenarioEditType, currentLayerName):
         ''' 
@@ -87,7 +93,7 @@ named 'edit_scenario(polygons)' in the layer list panel to make the scenario edi
             return False
         else: return True           
 
-def getFeatsToDelete(provider, originalFeats):
+def getFeatsToDelete(provider, originalEditLayerFeats):
         # debugging
         print "Tools.shared.getFeatsToDelete()"
         
@@ -97,27 +103,40 @@ def getFeatsToDelete(provider, originalFeats):
         provider.select(allAttrs)
         while provider.nextFeature(feat):
             currentFeats.append(feat.id())
-        featsToDelete = [i for i in currentFeats if i not in originalFeats]
+        featsToDelete = [i for i in currentFeats if i not in originalEditLayerFeats]
         return featsToDelete
-    
-def deleteEdits(mainwindow, provider, activeVLayer, canvas, originalFeats):
+      
+def deleteEdits(mainwindow, editingLayerName, originalEditLayerFeats):
         ''' Delete scenario edits added to editing layers since the last save.
-            This method is only called from Main.mainwindow.checkEditsState()
+            This method is called from Main.mainwindow.checkEditsState() and
+            Main.mainwindow.pasteFeatures().
         '''
-
-        # getFeatsToDelete returns a python list
-        toDelete = getFeatsToDelete(provider, originalFeats)
-        
         # debugging
         print "Tools.shared.deleteEdits()"
-        print "Tools.shared.deleteEdits(): original features are: ", originalFeats
-        print "Tools.shared.deleteEdits(): features toDelete are:", toDelete
-                
-        vlayerName = unicode(activeVLayer.name())
-        if vlayerName not in config.editLayersBaseNames:
-            QtGui.QMessageBox.warning(mainwindow, "deletion Error", "Tools.shared.deleteEdits() is attempting to delete edits \
-from a vector layer other than an editing layer.  FIX THIS BUG!!") 
+        print "Tools.shared.deleteEdits(): editingLayerName is :" + editingLayerName
+        print "Tools.shared.deleteEdits(): original features are: ", originalEditLayerFeats
+        
+        # Tools.shared.deleteEdits should be impossible to call with an editingLayerName that is not
+        # an editing layer; however, if it ever were to be called, we could accidentally delete users' data.
+        # The code below is insurance against such a serious bug. 
+        if editingLayerName not in config.editLayersBaseNames:
+            QtGui.QMessageBox.warning(mainwindow, "Deletion Error", "Tools.shared.deleteEdits() is attempting \
+to delete edits from a vector layer other than an editing layer.")
             return 
+        
+        legend = mainwindow.legend
+        canvas = mainwindow.canvas
+        # Now that we know we have an editing layer, get the provider from the name
+        editingLayer = getEditingLayer(mainwindow, legend, editingLayerName)
+        if not editingLayer:
+            return
+        provider = editingLayer.dataProvider()
+        
+        # getFeatsToDelete returns a python list
+        toDelete = getFeatsToDelete(provider, originalEditLayerFeats)
+        
+        # debugging
+        print "Tools.shared.deleteEdits(): features toDelete are:", toDelete
         
         # provider.deleteFeatures only works with a Python list as a parameter
         # AND the spaces must be in the parameter list!
@@ -127,28 +146,30 @@ from a vector layer other than an editing layer.  FIX THIS BUG!!")
             error = unicode(e)
             print error                    
             QtGui.QMessageBox.warning(mainwindow, "Failed to delete edit(s)", "Please check if "
-                                 + vlayerName + " is open in another program and then try again.")
+                                 + editingLayerName + " is open in another program and then try again.")
 
-        activeVLayer.triggerRepaint()
+        editingLayer.triggerRepaint()
         
         # update the attribute table if open
         if mainwindow.attrTable != None and mainwindow.attrTable.isVisible():
             mainwindow.openVectorAttributeTable()
+        
+        # we are back to the originalEditLayerFeats so
         mainwindow.editDirty = False
         
-        # update the originalFeats list to be safe
-        mainwindow.originalFeats = listOriginalFeatures(provider)
+        # features have been deleted, so update the originalEditLayerFeats list to be safe
+        mainwindow.originalEditLayerFeats = listOriginalFeatures(mainwindow, editingLayerName)
         
         # debugging  
         print "Tools.shared.deleteEdits(): the remaining features are"
         printFeatures(provider)
-        updateExtents(mainwindow, provider, activeVLayer, canvas)
-        
-def numberFeaturesAdded(activeVLayer, originalFeats):
+        updateExtents(mainwindow, provider, editingLayer, canvas)
+
+def numberFeaturesAdded(activeVLayer, originalEditLayerFeats):
         # debugging
         print "Tools.shared.numberFeaturesAdded()"
         
-        newFeats = activeVLayer.featureCount()- len(originalFeats)
+        newFeats = activeVLayer.featureCount()- len(originalEditLayerFeats)
         return newFeats
     
 def updateExtents(mainwindow, provider, activeVLayer, canvas):
@@ -455,4 +476,14 @@ def printFeatures(provider):
             # then it prints the field key (starting with 0 for the first field) and the field's value.
             # note: the QgsAttribute map is a Python dictionary (key = field id : field value)
             for (key, attr) in attrs.iteritems():
-                print "%d: %s" % (key, attr.toString())                    
+                print "%d: %s" % (key, attr.toString())
+                
+def getEditingLayer(mainwindow, legend, editingLayerName):
+    items = legend.findItems(editingLayerName, QtCore.Qt.MatchFixedString, 0)
+    if len(items) == 0:
+        QtGui.QMessageBox.warning(mainwindow, "Editing Layer Error:", "The editing layer "
+                                                    + editingLayerName + " is not open in the layer list panel.")
+        return False
+    else: 
+        return items[0].canvasLayer.layer()
+                        

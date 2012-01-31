@@ -396,6 +396,9 @@ the file system. All changes to these files will be lost. Do you want to delete 
                 # if the editing layer is edit_scenario(polygons) then reset the flag
                 if name ==config.editLayersBaseNames[2]:
                     self.mainwindow.editingPolygon = False
+                # reset the editLayerName to none if we have deleted it
+                if name == self.mainwindow.editLayerName:
+                    self.mainwindow.editLayerName = None
                 return # we are done deleting the layer so return
         # Note that this section handles a layer whether it is a raster or vector
         # and not an editing layer.

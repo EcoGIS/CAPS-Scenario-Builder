@@ -60,10 +60,11 @@ class AddPoints(QgsMapTool):
 
     def canvasPressEvent(self, event):
         ''' Get point and transform to map coordinates '''
-        # get the current activeVLayer from mainwindow
+        # Set the active vector layer. Note that this method cannot be called unless the
+        # currently active layer is the correct editing layer for the scenario edit type.
         self.activeVLayer = self.mainwindow.activeVLayer
         if self.activeVLayer == None: return
-        
+       
         point = event.pos()
         transform = self.canvas.getCoordinateTransform()
         # returns a QgsPoint object in map coordinates
@@ -71,14 +72,6 @@ class AddPoints(QgsMapTool):
         
         #debugging
         print "Tools.addpoints.AddPoints().canvasPressEvent(): The original clicked point in map coordinates is " + str(self.qgsPoint)
-        
-        # # Check if user has chosen the correct editing shapefile. This method warns the user and returns False on error.
-        # Convert QStrings to unicode unless they are used immediately in a Qt method. 
-        # This ensures that we never ask Python to slice a QString, which produces a type error.
-        currentLayerName = unicode(self.mainwindow.legend.currentItem().canvasLayer.layer().name())
-        if not shared.checkSelectedLayer(self.mainwindow, self.mainwindow.scenarioEditType, currentLayerName):
-            self.qgsPoint = None
-            return # if wrong editing layer cancel drawing
         
         ''' 
             Check constraints on the added point for the scenario edit type, 
@@ -130,14 +123,11 @@ class AddPoints(QgsMapTool):
         
         # set the current provider
         self.provider = self.mainwindow.provider
-        # make a list of the original points in the active layer
-        self.originalFeats = shared.listOriginalFeatures(self.provider)
-        # need to update the mainwindow instance variable 
-        # in case the user deletes the added point (i.e. call to Tools.shared.deleteEdits)
-        self.mainwindow.originalFeats = self.originalFeats
         
         feat = QgsFeature()
         geometry = QgsGeometry()
+        # Convert QStrings to unicode unless they are used immediately in a Qt method. 
+        # This ensures that we never ask Python to slice a QString, which produces a type error.
         vlayerName = unicode(self.activeVLayer.name())
         # add the point geometry to the feature
         feat.setGeometry(geometry.fromPoint(self.qgsPoint))
@@ -160,13 +150,13 @@ class AddPoints(QgsMapTool):
             self.mainwindow.openVectorAttributeTable()
         
         # set the edit flag to unsaved
-        self.mainwindow.editDirty = vlayerName
+        self.mainwindow.editDirty = True
         
         # debugging
         print "Tools.addpoints.AddPoints().markPoint(): the edit flag was set to " + vlayerName 
         print "Tools.addpoints.AddPoints().markPoint(): The vlayer name is " + vlayerName
         print "Tools.addpoints.AddPoints().markPoint(): the number of features added is " + str(
-                                                shared.numberFeaturesAdded(self.activeVLayer, self.originalFeats))
+                                                shared.numberFeaturesAdded(self.activeVLayer, self.mainwindow.originalEditLayerFeats))
         
         # enable the save edits action
         self.mainwindow.mpActionSaveEdits.setDisabled(False)

@@ -33,7 +33,7 @@
 # 
 #---------------------------------------------------------------------
 # general python imports
-import os,  shutil, time, os.path #  copy, subprocess, sys,  stat,
+import os, shutil, time, os.path #  copy, subprocess, sys,  stat,
 # import Qt libraries
 from PyQt4 import QtCore, QtGui
 # import qgis API
@@ -70,15 +70,14 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.originalScenarioLayers = []
         self.currentLayers = []
         self.copiedFeats = []
-        self.originalFeats = []
+        self.originalEditLayerFeats = []
         self.originalScenarioLayersNames = []
         
         # FLAGS
         self.scenarioDirty = False
         self.origScenarioLyrsLoaded = False 
         self.copyFlag = False # True if selections copied
-        # if editDirty contains activeVLayer name, edits are unsaved
-        self.editDirty = False #if editDirty false edits saved
+        self.editDirty = False # True if edits unsaved, false if no unsaved edits
         self.editMode = False # True if "Toggle Edits" is activated
         # used to remember if edit_scenario(polygons).shp was loaded from a scenario file
         self.editingPolygon = False
@@ -117,6 +116,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # This saves an editing layer's color so that it gets refreshed
         # when the layer loads after updating extents (see shared.updateExtents
         self.layerColor = None
+        self.editLayerName = None
 
         ''' Begin construction of main window '''
         
@@ -347,6 +347,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             scenario = None # close the instance of QgsProject
             self.scenarioDirty = False
             self.editMode = False
+            self.editLayerName = None
             self.openingScenario = False
              
         # The scenario file (i.e. *.cap) does not save the files in order so:
@@ -850,29 +851,29 @@ the features you wish to modify, and then try again.")
             return
         
         vfileName = unicode(self.activeVLayer.name())
-        # Check if the user is deleting scenario edits and set appropriate warning
+        
+        # Check if the user is deleting editing layer edits and set appropriate warning
         if vfileName in config.editLayersBaseNames:
             title = "Delete Scenario Edits"
             text = "Do you want to delete, that is undo, "  + unicode(count) + \
 " scenario edit(s)?  Please note that no changes will be made to any base layer."
         else: # either deleting points from user's layer or a base layer
             title = "Delete Selected Features"
-            text = "Delete " + unicode(count) + " feature(s)?" 
+            text = "Permanently delete " + unicode(count) + " feature(s)?"
         
         # Now check with the user about deleting the features 
         reply = QtGui.QMessageBox.question(self, title, text, QtGui.QMessageBox.Cancel|QtGui.QMessageBox.Ok)
         if reply == QtGui.QMessageBox.Ok: # if yes, then do the deletion
             if vfileName in config.pointBaseLayersBaseNames: # deleting base layer features
-                title = "Deletion Error:"
-                text = "delete from"
-                if not self.checkBaseLayerMatch(title, text): return
+                # This method warns the user and returns false on error (title = "Deletion Error:" text = "dlete from")
+                if not self.checkBaseLayerMatch("Deletion Error:", "delete from"): return
                 else:
                     # We do not allow deleting features from a base layer.  Rather, we copy
                     # the features the user wants to delete, and paste them into an editing shapefile.
                     self.copyFeaturesShared()
                     self.pasteBaseLayerDeletions(vfileName)
                     return
-            else: # this handles the case where a user is deleting features on their own layer
+            else: # this handles the case where we are deleting editing layer features or features on a user's layer
                 pyList = [] # make a Python list of features to delete
                 feat = QgsFeature()
                 for feat in selectedFeats:
@@ -889,19 +890,21 @@ the features you wish to modify, and then try again.")
                     return # delete failed so return
                
                 # features successfully deleted so reset the original features count for the layer
-                self.originalFeats = shared.listOriginalFeatures(self.provider)
-                # if this is an editing layer, reset the id numbers for the layer
+                
+                # if this is an editing layer, reset the id numbers for the layer and the original features
                 if vfileName in config.editLayersBaseNames:
                     shared.resetIdNumbers(self.provider, self.geom)
+                    self.originalEditLayerFeats = shared.listOriginalFeatures(self, vfileName)
                 # empty the selections cache when done or it stays at 'count'
                 self.activeVLayer.removeSelection(False) # false indicates whether to emit a signal
                 # reset the select tool
                 self.disableSelectActions()
-                # update all the extents (this will close and reopen editing layers)
+                # update all the extents for the user's layer
                 shared.updateExtents(self, self.provider, self.activeVLayer, self.canvas)
                 # update Vector Attribute Table if open
                 if self.attrTable != None and self.attrTable.isVisible():
                     self.openVectorAttributeTable()
+        else: return # user has cancelled deletions        
          
     def pasteFeatures(self, modifyFlag=False):
         ''' 
@@ -919,10 +922,10 @@ the features you wish to modify, and then try again.")
  
         # If we are modifying a point, we have already programatically selected the correct edit layer to paste to.
         # Otherwise, check if user has chosen the correct editing shapefile to paste to
+        editLayerName = unicode(self.activeVLayer.name())
         if not modifyFlag:
-            vlayerName = unicode(self.activeVLayer.name())
             # This method warns the user on error and returns False on error
-            if not shared.checkSelectedLayer(self, self.scenarioEditType, vlayerName):
+            if not shared.checkSelectedLayer(self, self.scenarioEditType, editLayerName):
                 return
         else: # if we are modifying a base layer then set some base layer variables
             baseLayer = QgsMapLayerRegistry.instance().mapLayer(self.baseLayerId)
@@ -955,14 +958,8 @@ the features you wish to modify, and then try again.")
                         return
 
         # Now that we have good features and a correct layer to paste to:
-        # Set self.originalFeats in case the user wants to delete pasted features
-        # The self.originalFeats list is only set when the AddPoints or AddLinesPolygons
-        # tools are initiated, at the end of self.deleteFeatures(), and when self.saveEdits is called.
-        # In other words, self.originalFeats is set before the features in a layer might change,
-        # and after the user has accepted feature changes to a layer.
-        # The AddPoints or AddLinesPolygons tools are initiated whenever an edit action
-        # is selected (i.e edit points, lines or polygons).  
-        self.originalFeats = shared.listOriginalFeatures(self.provider)
+        # Set tempOriginalFeats (the current features) in case the user wants to delete pasted features below
+        tempOriginalFeats = shared.listOriginalFeatures(self, editLayerName)
         
         ''' 
             PASTE THE FEATURES WITH EMPTY ATTRIBUTE DATA SO THEY CAN BE SELECTED ON THE 
@@ -991,7 +988,7 @@ the features you wish to modify, and then try again.")
                 error = unicode(e)
                 print error                    
                 QtGui.QMessageBox.warning(self, "Failed to paste feature(s)", "Please check if "
-                            + vlayerName + " is open in another program and then try again.")
+                            + editLayerName + " is open in another program and then try again.")
 
         # The provider gives the pasted features new id's when they are added
         # to the editing shapefile.  Here we use the same method as we use
@@ -999,7 +996,7 @@ the features you wish to modify, and then try again.")
         # In other words, we compare the editing layer's feature ids before and after 
         # pasting and then return the difference between the two.
         # pastedFeatureIDS is a python list.
-        pastedFeatureIDS = shared.getFeatsToDelete(self.provider, self.originalFeats)
+        pastedFeatureIDS = shared.getFeatsToDelete(self.provider, tempOriginalFeats)
           
         # debugging
         print "Main.mainwindow.pasteFeatures(): The empty attributes are:"
@@ -1075,9 +1072,8 @@ the features you wish to modify, and then try again.")
                     print "Main.mainwindow.pasteFeatures(): error is " + error 
                     if modifyFlag: title = "Failed to modify feature(s)"
                     else: title = "Failed to delete feature(s)"
-                    vlayerName = unicode(self.activeVLayer.name())    
                     QtGui.QMessageBox.warning(self, title, "Please check if "
-                                + vlayerName + " is open in another program and then try again.")
+                                + editLayerName + " is open in another program and then try again.")
                 self.activeVLayer.removeSelection(False) # false means do not emit signal
                 self.canvas.refresh()
                 if self.dlgModifyInfo and count == len(pastedFeatureIDS) - 1:
@@ -1098,8 +1094,7 @@ want to stop pasting?"
                                                     QtGui.QMessageBox.No|QtGui.QMessageBox.Yes)
                 if reply == QtGui.QMessageBox.Yes:
                     # reverse the edits
-                    shared.deleteEdits(self, self.provider, self.activeVLayer, 
-                                                        self.canvas, self.originalFeats)
+                    shared.deleteEdits(self, editLayerName, self.originalEditLayerFeats)
                     # Nothing has been pasted/changed so just do housekeeping and return
                     self.copiedFeats = None
                     self.copyFlag = False
@@ -1127,7 +1122,7 @@ want to stop pasting?"
         # Set the editDirty flag.  Note that shared.listOriginalFeatures()
         # will be called when the edits (i.e. pasted features) are saved, so 
         # we don't need to do that here.
-        self.editDirty = (self.activeVLayer.name())
+        self.editDirty = True
         
         # enable the save edits button
         self.mpActionSaveEdits.setDisabled(False)    
@@ -1206,7 +1201,8 @@ before you can make edits.  Please save the current scenario or open an existing
                 self.mpActionEditScenario.blockSignals(False)
                 return
             self.editMode = False
-            
+            self.editLayerName = None
+           
             # unset the select tool
             self.mpActionSelectFeatures.setDisabled(True)
             # remove any selections
@@ -1245,12 +1241,6 @@ before you can make edits.  Please save the current scenario or open an existing
         # debugging
         print "Main.mainwindow.saveEdits(): self.scenarioDirty begin is " + str(self.scenarioDirty)
         print "Main.mainwindow.saveEdits(): self.editDirty begin is " + str(self.editDirty)
-        
-        # The editing tools save the edits to disk as they are made. So, to delete
-        # new features, we list the original features when editing starts and delete
-        # any feature not in the list.  To save features, we just run listOriginalFeatures
-        # again.
-        self.originalFeats = shared.listOriginalFeatures(self.provider)
              
         # This gives a save message only if the user clicks the Save Edits action
         # or if there are no edtis to save.
@@ -1258,6 +1248,12 @@ before you can make edits.  Please save the current scenario or open an existing
         if not self.editDirty: 
             text = "You have not made any edits to save!"
             QtGui.QMessageBox.information(self, title, text, QtGui.QMessageBox.Ok)
+            
+        # The editing tools save the edits to disk as they are made. So, to delete
+        # new features, we list the original features when editing starts and delete
+        # any feature not in the list.  To save features, we just run listOriginalFeatures
+        # again with the editing layer provider
+        self.originalEditLayerFeats = shared.listOriginalFeatures(self, self.editLayerName)
 
         # Set "Save Edits" action to disabled to let user know edits are saved.
         # Clean up
@@ -1618,7 +1614,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             self.mapToolGroup.setDisabled(False) # map tools can't be enabled if the group is off
             
             # We are changing the activeVLayer, so we need to handle editMode
-            if self.editMode: 
+            if self.editMode: # handle select actions first
                 self.mpActionSelectFeatures.setDisabled(False) # select always enabled in edit mode
                 if self.mpActionSelectFeatures.isChecked():
                     # The user has checked Select Features, so leave select features activated.
@@ -1639,12 +1635,15 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             
             # new active vector layer loading so disable previous edit actions (these are mapToolGroup actions)
             self.disableEditActions() # actions are add points, lines, polygons
- 
-            if self.editMode:
-                #self.mpActionEditScenario.setChecked(True) # to be safe, but this should not be needed
+            if self.editMode: # now handle enabling add points, lines or polygons
                 # loading a new active layer so enable the proper edit action if an editing layer
-                if unicode(self.activeVLayer.name()) in config.editLayersBaseNames:
-                    self.enablePointsOrLinesOrPolygons()
+                if unicode(self.activeVLayer.name()) in config.editLayersBaseNames: # so is an editing layer
+                    # But is the editing layer the correct layer for the scenario edit type?
+                    currentLayerName = unicode(self.activeVLayer.name())
+                    if shared.checkSelectedLayer(self, self.scenarioEditType, currentLayerName):
+                        # So the editing tool will ONLY be enabled if the editing layer is the correct
+                        # layer for the current scenario edit type.
+                        self.enablePointsOrLinesOrPolygons() 
             else: # not in edit mode
                 self.mpActionEditScenario.setChecked(False) # to be safe, but this should not be needed
                       
@@ -1794,8 +1793,7 @@ before taking another action!")
             # so handle as above but discard edits 
             if callingAction == "removeCurrentLayer" and len(self.legend.getLayerIDs()) == 1:
                 # A layer has been loaded previously so user deleting only layer in legend
-                shared.deleteEdits(self, self.provider, self.activeVLayer, 
-                                                            self.canvas, self.originalFeats)
+                shared.deleteEdits(self, self.editLayerName, self.originalEditLayerFeats)
                 if self.attrTable != None and self.attrTable.isVisible():
                     self.openVectorAttributeTable()
                 self.editDirty = False
@@ -1803,15 +1801,13 @@ before taking another action!")
                 print "Main.mainwindow.checkEditsState(): asc set app to initial state"
             # under these situation just discard edits and leave editing state as is
             elif callingAction in callingList:
-                shared.deleteEdits(self, self.provider, self.activeVLayer, 
-                                                    self.canvas, self.originalFeats)
+                shared.deleteEdits(self, self.editLayerName, self.originalEditLayerFeats)
                 if self.attrTable != None and self.attrTable.isVisible():
                     self.openVectorAttributeTable()
                 self.editDirty = False
             # if opening new layer or changing layers just disable edit actions
             elif callingAction in ["addVector", "addRaster", "legendMousePress"]:
-                shared.deleteEdits(self, self.provider, self.activeVLayer, 
-                                                           self.canvas, self.originalFeats)
+                shared.deleteEdits(self, self.editLayerName, self.originalEditLayerFeats)
                 if self.attrTable != None and self.attrTable.isVisible():
                     self.openVectorAttributeTable()
                 self.editDirty = False
@@ -1819,8 +1815,7 @@ before taking another action!")
             # if opening new scenario, exporting scenario or closing the app
             # discard the edits and disable editing mode
             else:
-                shared.deleteEdits(self, self.provider, self.activeVLayer, 
-                                                    self.canvas, self.originalFeats)
+                shared.deleteEdits(self, self.editLayerName, self.originalEditLayerFeats)
                 self.disableEditing()
         elif reply == QtGui.QMessageBox.Cancel:
             if callingAction == "stoppingEditing" and self.editMode:
@@ -1919,7 +1914,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.currentLayers = []
         self.currentLayersCount = None
         self.copiedFeats = []
-        self.originalFeats = []
+        self.originalEditLayerFeats = []
         self.scenarioEditType = None
         self.copyFlag = False
         self.openingOrientingLayers = False
@@ -1936,6 +1931,7 @@ Prioritization System (CAPS) Scenario Builder")
         self.provider = None
         self.geom = None
         self.layerColor = None
+        self.editLayerName = None
         self.mapToolGroup.setDisabled(True)
         self.mpActionOpenVectorAttributeTable.setDisabled(True)
         self.mpActionSaveEdits.setDisabled(True)
@@ -2438,9 +2434,7 @@ must be open for you to complete this action.  Please click 'Edit Scenario' twic
 the appropriate scenario edit type, and try again.")
             return
         
-        # get the original features in case the user wants to cancel the paste                                                                                                 
-        shared.listOriginalFeatures(self.provider)
-        
+        # debugging
         print "Main.mainwindow.pasteBaseLayerDeletions(): featureCount begin = " + str(self.copiedFeatCount)
       
         # get the list of fields for the current scenario edit type
@@ -2499,13 +2493,16 @@ the appropriate scenario edit type, and try again.")
                 QtGui.QMessageBox.warning(self, "Failed to paste feature(s)", "Please check if "
                                  + vlayerName + " is open in another program and then try again.")    
         
+        # paste is successful so reset the originalEditLayerFeats
+        shared.listOriginalFeatures(self, editingLayerName) 
+        
         # reorder the id numbers
         shared.resetIdNumbers(self.provider, self.geom)
         
         # Set the editDirty flag so that the user will be prompted to save edits or not.  
         # will be called when the edits (i.e. pasted features) are saved, so 
         # we don't need to do that here.
-        self.editDirty = self.activeVLayer.name()
+        self.editDirty = True
         self.mpActionSaveEdits.setDisabled(False)
         # set the edit dirty flag
         # reset the copy flag
@@ -2544,7 +2541,7 @@ the appropriate scenario edit type, and try again.")
         self.getOriginalScenarioLayersNames()
         
         # get the complete filename without the path
-        self.scenarioFileName = self.scenarioInfo.fileName()
+        self.scenarioFileName = unicode(self.scenarioInfo.fileName())
         # give the user some info
         self.setWindowTitle("Conservation Assessment and \
 Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
