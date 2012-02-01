@@ -107,7 +107,8 @@ def getFeatsToDelete(provider, originalEditLayerFeats):
         return featsToDelete
       
 def deleteEdits(mainwindow, editingLayerName, originalEditLayerFeats):
-        ''' Delete scenario edits added to editing layers since the last save.
+        ''' 
+            Delete scenario edits added to editing layers since the last save.
             This method is called from Main.mainwindow.checkEditsState() and
             Main.mainwindow.pasteFeatures().
         '''
@@ -154,7 +155,7 @@ to delete edits from a vector layer other than an editing layer.")
         if mainwindow.attrTable != None and mainwindow.attrTable.isVisible():
             mainwindow.openVectorAttributeTable()
         
-        # we are back to the originalEditLayerFeats so
+        # we are back to the originalEditLayerFeats (i.e. state of last save) so
         mainwindow.editDirty = False
         
         # features have been deleted, so update the originalEditLayerFeats list to be safe

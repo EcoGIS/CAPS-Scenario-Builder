@@ -234,12 +234,10 @@ class Legend(QtGui.QTreeWidget):
 
     def mousePressEvent(self, event):
         """ Mouse press event to manage the layers drag """
-        p = QtCore.QPoint(event.pos())
-        item = self.itemAt(p)
- 
-        '''if (item and item != self.currentItem()): 
-            print "legend.mousePressEvent" 
-            if self.mainwindow.appStateChanged("legendMousePress") == "Cancel": return'''
+        
+        # Need this to stop user from clicking the legend while making line or polygon edits.
+        if self.mainwindow.appStateChanged("legendMousePress") == "Cancel": return
+        
         if (event.button() == QtCore.Qt.LeftButton):
             self.lastPressPos = event.pos()
             self.bMousePressedFlag = True
@@ -368,10 +366,8 @@ class Legend(QtGui.QTreeWidget):
         # debugging
         print "Mainwindow.legend.removeCurrentLayer()"
        
-        # be Check app state and give user a chance to cancel.
-        if self.mainwindow.appStateChanged("removeCurrentLayer") == "Cancel": return
-            
-        # Check and warn on removing an editing layer
+        ''' Check and warn on removing an editing layer '''
+        
         name = unicode(self.currentItem().canvasLayer.layer().name())
         if name in config.editLayersBaseNames:
             reply = QtGui.QMessageBox.warning(self, "Warning!", "Removing '" + name + "' \
@@ -396,12 +392,18 @@ the file system. All changes to these files will be lost. Do you want to delete 
                 # if the editing layer is edit_scenario(polygons) then reset the flag
                 if name ==config.editLayersBaseNames[2]:
                     self.mainwindow.editingPolygon = False
-                # reset the editLayerName to none if we have deleted it
+                # If we have deleted the edit layer for current scenario edit type, then
+                # reset the editLayerName and the editDirty flag.
                 if name == self.mainwindow.editLayerName:
                     self.mainwindow.editLayerName = None
+                    self.mainwindow.editDirty = False
                 return # we are done deleting the layer so return
-        # Note that this section handles a layer whether it is a raster or vector
-        # and not an editing layer.
+        
+        ''' 
+            Note that this section handles a layer whether it is a raster or vector
+            and NOT an editing layer.
+        '''
+           
         # Remove the layer from the "mainwindow.originalScenarioLayers" list and 
         # set the scenario as dirty, since it has been changed.
         if self.currentItem().canvasLayer.layer() in self.mainwindow.originalScenarioLayers:
@@ -635,7 +637,7 @@ Please check if it is open in another program and try again.")
         originalScenarioLayers = self.mainwindow.originalScenarioLayers
         if layer in originalScenarioLayers:
             print ("Main.legend.removeEditLayerFrom Registry(): length originalScenarioLayers before removal "
-                                                                                        + str(len(originalScenarioLayers)))
+                                                                                + str(len(originalScenarioLayers)))
             originalScenarioLayers.remove(layer)
             self.mainwindow.scenarioDirty = True
             print 'Main.legend.removeEditLayerFrom Registry(): The activeVLayer was removed from the originalScenarioLayers'

@@ -155,7 +155,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
                 self.hide()
                 return
             self.mainwindow.editLayerName = self.editLayerBaseName
-            
+            self.mainwindow.scenarioDirty = True
         # So we have a new editing layer.  If it has been reopened then we have previously saved any edits.
         # If it has just been created then it has no edits.  In either case, we should set the
         # originalEditLayerFeats now.
@@ -165,7 +165,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         if not self.baseLayerOpen and self.baseFilePath:
             self.openBaseOrConstaintsLayer(self.baseFilePath)
         if not self.constraintLayerOpen and self.constraintFilePath: 
-            self.openConstraintLayer(self.constraintFilePath)
+            self.openBaseOrConstaintsLayer(self.constraintFilePath)
  
         # now that the layers are open, highlight them
         self.colorEditBaseConstraintLayers(legend)
@@ -195,6 +195,9 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
             else: position = 1 
             self.moveLayer(legend, self.constraintLayerBaseName, position)
 
+        # now update the layer set to ensure proper rendering by QGIS
+        legend.updateLayerSet()
+        
         self.setResult(1)
         self.hide()    
 
@@ -319,6 +322,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
             print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().openBaseOrConstraintsLayer(): file exists is True"
             if ".shp" in fileName: self.mainwindow.openVectorLayer(filePath)
             else: self.mainwindow.openRasterLayer(filePath)
+            self.mainwindow.scenarioDirty = True
         else:
             QtGui.QMessageBox.warning(self, "File Error", "The needed base file, " + self.fileName + ", could not be found.")
        

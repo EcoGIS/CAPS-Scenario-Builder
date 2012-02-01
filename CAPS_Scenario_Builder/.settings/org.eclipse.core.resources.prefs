@@ -1,10 +1,11 @@
-#Mon Jan 30 12:01:11 EST 2012
+#Tue Jan 31 23:15:31 EST 2012
 eclipse.preferences.version=1
 encoding//src/Main/dlgscenarioedittypes.py=utf-8
 encoding//src/Main/dlgscenarioedittypes_ui.py=utf-8
 encoding//src/Main/legend.py=utf-8
 encoding//src/Main/mainwindow.py=utf-8
 encoding//src/Main/mainwindow_ui.py=utf-8
+encoding//src/ReferenceCode/legend_annotated.py=utf-8
 encoding//src/Tools/addlinespolygons.py=utf-8
 encoding//src/Tools/addpoints.py=utf-8
 encoding//src/Tools/dlgaddattributes.py=utf-8
