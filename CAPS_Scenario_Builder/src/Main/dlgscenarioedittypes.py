@@ -275,7 +275,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
             keys = range(len(config.editPointsFields))
             geometry = QGis.WKBPoint
             print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().writeNewEditingShapefile(): points"
-        elif "Main.dlgscenarioedittypes.DlgScenarioEditTypes().writeNewEditingShapefile(): lines" in self.editLayerBaseName:
+        elif "lines" in self.editLayerBaseName:
             values = config.editLinesFields
             keys = range(len(config.editLinesFields))
             geometry = QGis.WKBLineString

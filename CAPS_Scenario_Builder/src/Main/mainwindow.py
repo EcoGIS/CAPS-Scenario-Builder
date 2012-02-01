@@ -1085,7 +1085,7 @@ changes will be made to the base layer."
                 if self.dlgModifyInfo and count == len(pastedFeatureIDS) - 1:
                     self.dlgModifyInfo.close()
                 continue
-            else: #if user clicks "Cancel"
+            else: #if user clicks "Cancel" in dlgAddAttributes()
                 if modifyFlag:
                     title = "Modify Features Warning"
                     text = "If you click 'Yes' in this dialog, any modifications you have made \
@@ -1104,21 +1104,21 @@ want to stop pasting?"
                     # Nothing has been pasted/changed so just do housekeeping and return
                     self.copiedFeats = None
                     self.copyFlag = False
-                    if modifyFlag: 
-                        self.mpActionModifyPoints.setDisabled(True)
-                        self.dlgModifyInfo.close()
-                        # reset the active layer to the base layer being modified
-                        # reset the base layer to be the active layer
+                    #if modifyFlag: 
+                    self.mpActionModifyPoints.setDisabled(True)
+                    self.dlgModifyInfo.close()
+                    # reset the active layer to the base layer being modified
+                    # reset the base layer to be the active layer
+                    if modifyFlag:
                         items = self.legend.findItems(copyLayerName, QtCore.Qt.MatchFixedString, 0)
                         print "Main.mainwindow.pasteFeatures(): copyLayerName is: " + copyLayerName
                         if len(items) > 0:
                             self.legend.setCurrentItem(items[0])
                             self.legend.currentItem().setCheckState(0, QtCore.Qt.Checked)
                     else: self.mpActionPasteFeatures.setDisabled(True)
-                    # set the active layer to be the base layer we started with
-                    return 
                 else: continue # if reply is no, self.dlg remains active and the loop continues
-        '''PASTING COMPLETED, SO NOW WE DO SOME HOUSEKEEPING '''
+        
+        '''PASTING COMPLETED, SO DO SOME HOUSEKEEPING '''
         
         # Note that when features are deleted, the id numbers can become inconsistent.
         # Also we could have the same id number in different editing layers.
@@ -1180,8 +1180,8 @@ before you can make edits.  Please save the current scenario or open an existing
                 return
             
             # open the dialog to get the scenario edit type
-            self.scenarioEditTypes = DlgScenarioEditTypes(self)
-            if not self.scenarioEditTypes.exec_():
+            self.dlgScenarioEditTypes = DlgScenarioEditTypes(self)
+            if not self.dlgScenarioEditTypes.exec_():
                 print "Main.mainwindow.editScenario(): user cancelled DlgScenarioEditTypes"
                 # If the user cancels, or there is an error opening the editing file then
                 # uncheck the Edit Scenario button and  return
@@ -1518,10 +1518,6 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             print "alc The description of the layer crs is " + str(self.activeRLayer.crs().description())
             print "ALC THE ACTIVE RLAYER NAME IS " + self.activeRLayer.name()
             
-            # add filename to statusbar
-            capture_string = self.activeRLayer.source()
-            self.statusBar.showMessage(capture_string)
-    
             # For some reason, the USGS.sid will not render unless we include this line of code.
             # The USGS.sid layer reports that it is in geographic coordinates WGS 84.
             self.activeRLayer.setCrs(self.crs)
@@ -1590,10 +1586,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             self.geom = self.activeVLayer.geometryType() #0 point, 1 line, 2 polygon
             # set extents if not within MA state extents
             self.setExtents()
-            # add filename to statusbar
-            capture_string = self.activeVLayer.source() # a QString
-            self.statusBar.showMessage(capture_string)
-          
+                      
             # New layer loaded so set the scenarioDirty flag.  Note: This gets called
             # unnecessarily when a different layer is selected in the layer panel.
             # However, it returns immediately if the layer count has not changed. 
@@ -1771,7 +1764,7 @@ before taking another action!")
         # Prompt the user about clearing selections/edits
         # and deactivate the action if necessary.
         title = "Save Edits"
-        text = "Do you want to save your edits to " + unicode(self.editDirty) + "?"
+        text = "Do you want to save your edits to " + self.editLayerName + "?"
         callingList = ["saveScenario", "saveScenarioAs", "removeCurrentLayer", "exportScenario"]
         # Once in edit mode, it is impossible to exit edit mode, or do anything else, without
         # either saving or discarding changes. So, this dialog is only called when in edit mode.
@@ -2962,13 +2955,19 @@ was not written.  Please check that a file with the same name is not open in ano
             if not self.openVectorLayer(path): return
             
         # We opened new editing layers, so color the text of the editing and base layers.
-        # self.scenarioEditTypes = DlgScenarioEditTypes(self)
+        # self.dlgScenarioEditTypes = DlgScenarioEditTypes(self)
         # The below works because the instance variable remains active
-        self.scenarioEditTypes.colorEditBaseLayers(self.legend)
-        # now position the editing layer and base layer for the current scenario edit type
-        self.scenarioEditTypes.moveEditLayer(self.legend)
-        if self.scenarioEditTypes.baseLayerName != config.polygonBaseLayersBaseNames[1]: 
-            self.scenarioEditTypes.moveBaseLayer(self.legend)
+        self.dlgScenarioEditTypes.colorEditBaseConstraintLayers(self.legend)
+        # Now we position the editing layer and any base layer or constraings layer that exists
+        # for the current scenario edit type.
+        self.dlgScenarioEditTypes.moveLayer(self.legend, self.dlgScenarioEditTypes.editLayerBaseName, 0)
+        if (self.dlgScenarioEditTypes.baseLayerBaseName and 
+                        self.dlgScenarioEditTypes.baseLayerBaseName != config.polygonBaseLayersBaseNames[1]): 
+            self.dlgScenarioEditTypes.moveLayer(self.legend, self.dlgScenarioEditTypes.baseLayerBaseName, 1)
+        if self.dlgScenarioEditTypes.constraintLayerBaseName:
+            if self.dlgScenarioEditTypes.baseLayerBaseName: position = 2
+            else: position = 1 
+            self.dlgScenarioEditTypes.moveLayer(self.legend, self.dlgScenarioEditTypes.constraintLayerBaseName, position)
                          
         # Finally, write the project information to a scenario file using QgsProject
         scenario = QgsProject.instance()
