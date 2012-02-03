@@ -996,12 +996,12 @@ changes will be made to the base layer."
         
         # This method opens the Add Attributes dialog and a window to provide the user with information about the 
         # feature she is pasting.  It warns the user and returns False on error
-        if not self.getAttsForPastedOrModifiedFeats(pastedFeatureIds, editLayer, tempOriginalEditFeats, modifyFlag = False):
+        if not self.getAttsForPastedOrModifiedFeats(pastedFeatureIds, editLayer, tempOriginalEditFeats, "userlayer", False):
             return
         
         '''PASTING COMPLETED, SO DO SOME HOUSEKEEPING '''
         
-        self.setPasteModifySuccess(editLayer)
+        self.setPasteModifySuccess()
             
     def editScenario(self, state):
         # debugging
@@ -1119,11 +1119,11 @@ before you can make edits.  Please save the current scenario or open an existing
         self.scenarioDirty = True
         self.editDirty = False
 
-    def getAttsForPastedOrModifiedFeats(self, pastedFeatureIds, editLayer, tempOriginalEditFeats, modifyFlag):
+    def getAttsForPastedOrModifiedFeats(self, pastedFeatureIds, editLayer, tempOriginalEditFeats, msgFlag, modifyFlag):
         '''
-            This method gets attributes for features that the user is pasting from their own layers.
-            It also gets attributes for base layer features that are being modified.
-            Finally, this method will get attributes for editing layer features that the user wants to change.
+            This method gets and writes attributes for features that the user is pasting from their own layer.
+            It also gets and writes attributes for base layer features that are being modified.
+            Finally, this method will get and write attributes for editing layer features that the user wants to modify.
             
             This method also calls methods that provide the user with information about features being modified.
         '''
@@ -1131,18 +1131,23 @@ before you can make edits.  Please save the current scenario or open an existing
         # debugging
         print "Main.mainwindow.getAttsForPastedOrModifiedFeats()" 
         
+        self.msgFlag = msgFlag
+        self.tempOriginalEditFeats = tempOriginalEditFeats
+        self.modifyFlag = modifyFlag
+       
         # set some variables based on recording the id of the layer features were copied from
         # The id was recorded in Main.mainwindow.copyFeaturesShared().
         editLayerProvider = editLayer.dataProvider()
         copyLayer = QgsMapLayerRegistry.instance().mapLayer(self.copyLayerId)
         copyLayerName = unicode(copyLayer.name())
+        #self.copyLayerName = unicode(copyLayer.name())
         # this is the same as the editLayerProvider if edit layer features are being modified
         copyLayerProvider = copyLayer.dataProvider()
         allCopyAttrs = copyLayerProvider.attributeIndexes()
-        reply = None
+        self.reply = None
         # pastedFeatureIds are actually selected feature ids when modifying edit layer features
         for count, featId in enumerate(pastedFeatureIds):
-            print "Main.mainwindow.pasteFeatures(): feat.id is " + str(featId)
+            print "Main.mainwindow.getAttsForPastedOrModifiedFeats(): feat.id is " + str(featId)
             # select the feature
             editLayer.setSelectedFeatures( [featId] )
             self.canvas.zoomToSelected(self.activeVLayer)
@@ -1153,18 +1158,21 @@ before you can make edits.  Please save the current scenario or open an existing
             self.dlgAddAtts.setGeometry(0, 500, 200, 200)
             # display information about the copied feature for reference when adding new attributes
             self.displayCopiedFeatInfo(copyLayerProvider, allCopyAttrs, count)
-          
-            if self.dlgAddAtts.exec_(): # open DlgAddAttributes and then if user clicks OK returns true
+            # This dialog's "reject()" method is overridden to warn the user about aborting the paste or 
+            # modify operation.  If the user choses NOT to abort the method returns to the dialog and the
+            # user can continue where they left off.  If the user chooses to abort,
+            #  the reject() method closes the dialog and returns False.
+            if self.dlgAddAtts.exec_(): # open DlgAddAttributes and then if user clicks OK it returns true
                 if modifyFlag: 
                     # if user is modifying a point, set the altered field to 'y' by passing 'True' flag
                     attributes = self.dlgAddAtts.getNewAttributes(True)
-                else: attributes = self.dlgAddAtts.getNewAttributes()
+                else: attributes = self.dlgAddAtts.getNewAttributes() # flag false for pasting user feats, modifying edits
                 changedAttributes = {featId : attributes} # create a "QgsChangedAttributesMap"
                 try:
-                    editLayerProvider.changeAttributeValues(changedAttributes)
+                    editLayerProvider.changeAttributeValues(changedAttributes) # here is the "write" operation
                 except (IOError, OSError), e:
                     error = unicode(e)
-                    print "Main.mainwindow.pasteFeatures(): error is " + error 
+                    print "Main.mainwindow.getAttsForPastedOrModifiedFeats(): error is " + error 
                     title = "Failed to modify attributes:"
                     editLayerName = editLayer.name()
                     QtGui.QMessageBox.warning(self, title, "Please check if "
@@ -1173,7 +1181,8 @@ before you can make edits.  Please save the current scenario or open an existing
                     # In the case of modifying editing layer features, the tempOriginalEditFeats are the same as
                     # the current features on the editing layer so nothing will be deleted.
                     shared.deleteEdits(self, editLayerName, tempOriginalEditFeats)
-                    self.setPasteModifyDone()
+                    if msgFlag == "editlayer": self.setPasteModifySuccess(True) # some features may have been modified
+                    else: self.setPasteModifyDone() # all pastes have been deleted
                     self.windModifyInfo.close()
                     # reset the active layer to the base layer being modified
                     if modifyFlag: self.setBaseLayerActive(copyLayerName)
@@ -1183,31 +1192,21 @@ before you can make edits.  Please save the current scenario or open an existing
                 if self.windModifyInfo and count == len(pastedFeatureIds) - 1:
                     self.windModifyInfo.close()
                 continue
-            else: # if user clicks "Cancel" in dlgAddAttributes()
-                if modifyFlag:
-                    title = "Modify Features Warning"
-                    text = "If you click 'Yes' in this dialog, any modifications you have made \
-will be lost. If you still want to modify features, you will will need to start over. Do you \
-want to stop modifying features?"
-                else:
-                    title = "Paste Features Warning"
-                    text = "If you click 'Yes' in this dialog, any features you have pasted \
-will be lost. If you still want to paste features, you will will need to start over. Do you \
-want to stop pasting?"
-                reply = QtGui.QMessageBox.warning(self, title, text, 
-                                                    QtGui.QMessageBox.No|QtGui.QMessageBox.Yes)
-                if reply == QtGui.QMessageBox.Yes:
-                    # reverse the edits
-                    editLayerName = editLayer.name()
-                    shared.deleteEdits(self, editLayerName, tempOriginalEditFeats)
-                    # Nothing has been pasted/changed so just do housekeeping and return
-                    self.setPasteModifyDone()
-                    #self.mpActionModifyPoints.setDisabled(True)
-                    self.windModifyInfo.close()
-                    # reset the active layer to the base layer being modified
-                    if modifyFlag: self.setBaseLayerActive(copyLayerName)
-                    return False
-                else: continue # if reply is no, self.dlgAddAtts remains active and the loop continues        
+            else : # dlgAddAtts.reject() returns False (user chose to discard changes)
+                # reverse the edits
+                editLayerName = editLayer.name()
+                # Make sure we delete any features that may have been added to the editing layer and clean up.
+                # In the case of modifying editing layer features, the tempOriginalEditFeats are the same as
+                # the current features on the editing layer so nothing will be deleted.
+                shared.deleteEdits(self, editLayerName, tempOriginalEditFeats)
+                if msgFlag == "editlayer": self.setPasteModifySuccess(True) # some features have been modified
+                else: self.setPasteModifyDone() # all pastes have been deleted
+                #self.mpActionModifyPoints.setDisabled(True)
+                self.windModifyInfo.close()
+                # reset the active layer to the base layer being modified
+                if modifyFlag: self.setBaseLayerActive(copyLayerName)
+                return False
+                #else: continue # if reply is no, self.dlgAddAtts remains active and the loop continues        
         # loop ended successfully so
         return True
             
@@ -1216,7 +1215,7 @@ want to stop pasting?"
         print "Main.mainwindow.setBaseLayerActive()"   
         
         items = self.legend.findItems(copyLayerName, QtCore.Qt.MatchFixedString, 0)
-        print "Main.mainwindow.pasteFeatures(): copyLayerName is: " + copyLayerName
+        print "Main.mainwindow.setBaseLayerActive(): copyLayerName is: " + copyLayerName
         if len(items) > 0:
             self.legend.setCurrentItem(items[0])
             self.legend.currentItem().setCheckState(0, QtCore.Qt.Checked)
@@ -1230,26 +1229,33 @@ want to stop pasting?"
         # the paste action is turned on in copyFeatures and it is turned off here.
         self.mpActionPasteFeatures.setDisabled(True)
         
-    def setPasteModifySuccess(self, editLayer):
+    def setPasteModifySuccess(self, modifyEdit=False):
         # debugging
         print "Main.mainwindow.setPasteModifySuccess()"
         
         # Note that when features are deleted, the id numbers can become inconsistent.
         # So, reset the id values.
+        editLayer = self.getLayerFromName(self.editLayerName)
         editLayerProvider = editLayer.dataProvider()
         shared.resetIdNumbers(editLayerProvider, self.geom)
-        # Set the editDirty flag.  Note that shared.listOriginalFeatures() will be called when the edits
+        # Set the editDirty flag to True on pasting base layer modifications or user's 
+        # features. Leave it (should be false) if modifying editing layer features.
+        # Note that shared.listOriginalFeatures() will be called when the edits
         # (i.e. pasted features) are saved, so we don't need to do that here.
-        self.editDirty = True
-        # enable the save edits button
-        self.mpActionSaveEdits.setDisabled(False)    
+        if not modifyEdit:
+            self.editDirty = True
+        # enable the save edits button for all cases but modifying edits
+        if not modifyEdit:
+            self.mpActionSaveEdits.setDisabled(False)    
         # clean up copy variables and paste action
         self.setPasteModifyDone()
         # update Vector Attribute Table if open
         if self.attrTable != None and self.attrTable.isVisible():
             self.openVectorAttributeTable()
-        # update all the extents and refresh to show features
-        shared.updateExtents(self, editLayer, self.canvas)
+        # update all the extents and refresh to show features for all cases but modifying edits
+        # since we do not add or remove any features when modifying edits, extents have not changed
+        if not modifyEdit:
+            shared.updateExtents(self, editLayer, self.canvas)
                                 
 ############################################################################################  
     ''' VIEW MENU SLOTS '''
@@ -3010,7 +3016,7 @@ if this scenario file is open in another program.")
         attributes = dict(zip(keys, values))
         
         # debugging
-        print "Main.mainwindow.pasteFeatures(): The empty attributes are:"
+        print "Main.mainwindow.pasteEmptyFeatures(): The empty attributes are:"
         print attributes
         
         # Set the attributes of the features to empty and paste.
@@ -3035,14 +3041,14 @@ if this scenario file is open in another program.")
         
         # make the extents a minimum of 500 meters across
         rect = self.canvas.extent()
-        print "Main.mainwindow.pasteFeatures(): The original paste extents are:"
+        print "Main.mainwindow.setPastingExtent(): The original paste extents are:"
         print ("(" + str(rect.xMinimum()) + ", " + str(rect.yMinimum()) + ", " + 
                  str(rect.xMaximum()) + ", " + str(rect.yMaximum()) + ")")
         if rect.width() < 500 or rect.height() < 500:
             centerPointX = rect.center().x() 
             rect.setXMinimum(centerPointX - 250)
             rect.setXMaximum(centerPointX + 250)
-            print "Main.mainwindow.pasteFeatures(): The adjusted paste extents are:"
+            print "Main.mainwindow.setPastingExtent(): The adjusted paste extents are:"
             print ("(" + str(rect.xMinimum()) + ", " + str(rect.yMinimum()) + ", " + 
                  str(rect.xMaximum()) + ", " + str(rect.yMaximum()) + ")")
             self.canvas.setExtent(rect)
@@ -3050,7 +3056,7 @@ if this scenario file is open in another program.")
             
     def displayCopiedFeatInfo(self, copyLayerProvider, allCopyAttrs, count):
         # debugging
-        print "Main.mainwindow.displayOriginalFeatInfo"
+        print "Main.mainwindow.displayCopiedFeatInfo()"
         
         # get the data for the current feature
         copiedFeatId = self.copiedFeats[count].id()
@@ -3059,19 +3065,19 @@ if this scenario file is open in another program.")
         # A QgsAttributeMap is a Python dictionary (key = field id : value = 
         # the field's value as a QtCore.QVariant()object
         attrs = copiedFeat.attributeMap()
-        print "Main.mainwindow.pasteFeatures(): length of attrs is " + str(len(attrs))
+        print "Main.mainwindow.displayCopiedFeatInfo(): length of attrs is " + str(len(attrs))
         # return the features geometry as coordinates
         featGeom = copiedFeat.geometry()
         # create the text for the geometry in display window
         text = "Feature ID %d: %s\n" % (copiedFeat.id()+1, featGeom.exportToWkt())
-        print "Main.mainwindow.pasteFeatures(): The Feat ID and Wkt is " + text
+        print "Main.mainwindow.displayCopiedFeatInfo(): The Feat ID and Wkt is " + text
         # get the field name and attribute data for each attribue and add to the text
         # fields() returns a dictionary with the field key and the name of the field
         fieldNamesDict = copyLayerProvider.fields()
-        print "Main.mainwindow.pasteFeatures(): The field names dict is "
+        print "Main.mainwindow.displayCopiedFeatInfo(): The field names dict is "
         print fieldNamesDict
         for (key, attr) in attrs.iteritems():
-            print "Main.mainwindow.pasteFeatures(): key is: " + str(key)
+            print "Main.mainwindow.displayCopiedFeatInfo(): key is: " + str(key)
             text += "%s: %s\n" % (fieldNamesDict.get(key).name(), attr.toString())
         # set the title for the display window
         title = "Unmodified Feature's Geometry and Attribute Information"
@@ -3133,16 +3139,16 @@ if this scenario file is open in another program.")
             AND GET THE USER INPUT DATA FOR EACH FEATURE. 
         '''
         
-        # This method opens the Add Attributes dialog and a window to provide the user with information about the 
-        # feature she is pasting.  It warns the user and returns False on error
-        if not self.getAttsForPastedOrModifiedFeats(pastedFeatureIds, editLayer, tempOriginalEditFeats, modifyFlag = True):
+        # This method opens the Add Attributes dialog and a window to provide the user with information  
+        # about the feature she is pasting.  It warns the user and returns False on error
+        if not self.getAttsForPastedOrModifiedFeats(pastedFeatureIds, editLayer, tempOriginalEditFeats, "baselayer", True):
             return
         
         '''PASTING COMPLETED, SO DO SOME HOUSEKEEPING '''
         
         # reset the layer we were copying or modifying to be the active layer
         self.setBaseLayerActive(copyLayerName)        
-        self.setPasteModifySuccess(editLayer)         
+        self.setPasteModifySuccess()         
         
     def modifyEditLayerFeatures(self):
         # debugging
@@ -3163,10 +3169,15 @@ if this scenario file is open in another program.")
         editLayer = self.getLayerFromName(self.editLayerName)        
         
         # Now call this method, which gives the user info about the features they are modifying,
-        # and also allows them to input the attribute changes.
+        # and also opens the Add Attributes dialog, which allows them to input the attribute changes.
         # Setting the self.originalEditLayerFeats parameter, which is the current state of editing layer features,
-        # ensures that no features will be deleted if the user chooses "cancel" when modifying attributes.            
-        self.getAttsForPastedOrModifiedFeats(copiedFeatIds, editLayer, self.originalEditLayerFeats, False)
+        # ensures that no features will be deleted if the user chooses "cancel" when modifying attributes.
+        # This method warns the user and returns False on error            
+        if not self.getAttsForPastedOrModifiedFeats(copiedFeatIds, editLayer, self.originalEditLayerFeats, "editlayer", False):
+            return
+        
+        # now clean up and renumber the features
+        self.setPasteModifySuccess(True)
           
 #**************************************************************
     ''' Testing '''

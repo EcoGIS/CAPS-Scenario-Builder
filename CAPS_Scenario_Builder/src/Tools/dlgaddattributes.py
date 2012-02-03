@@ -32,6 +32,7 @@
 from PyQt4 import QtCore, QtGui
 # CAPS application imports
 import config
+import shared
 
 class DlgAddAttributes(QtGui.QDialog):
     ''' Create the dialog to get needed attribute data from users '''
@@ -167,10 +168,38 @@ value for every item except the 'Description':")
     def cancel(self):
         # debugging
         print "Tools.dlgaddattributes.DlgAddAttributes().cancel()"
+        
         if self.mainwindow.toolAddLinesPolygons.rubberBand:
             self.mainwindow.toolAddLinesPolygons.resetDraw()
-        #return True
     
+    def reject(self):
+        # debugging
+        print "Tools.dlgaddattributes.DlgAddAttributes().reject()"
+                
+        if self.mainwindow.msgFlag == "baselayer":
+            title = "Modify Features Warning"
+            text = "If you click 'Yes' in this dialog, any modifications you have made \
+will be lost. If you still want to modify base layer features, you will will need to start over. Do you \
+want to stop modifying features?"
+        elif self.mainwindow.msgFlag == "userlayer":
+            title = "Paste Features Warning"
+            text = "If you click 'Yes' in this dialog, any features you have pasted \
+will be lost. If you still want to paste features, you will will need to start over. Do you \
+want to stop pasting?"
+        elif self.mainwindow.msgFlag == "editlayer": # just for clarity
+            title = "Modify Features Warning"
+            text = "If you click 'Yes' in this dialog, any edit layer modifications you have already \
+made will be saved, but any remaining features you have selected will not be modified. If \
+you still want to modify the remaining features, you will will need to select them again and choose \
+'Modify Features'. Do you want to stop modifying features?"
+        reply = QtGui.QMessageBox.warning(self, title, text, 
+                                                    QtGui.QMessageBox.No|QtGui.QMessageBox.Yes)
+        
+        if reply == QtGui.QMessageBox.No:
+            # in effect cancels the "Cancel"
+            return
+        else: QtGui.QDialog.reject(self) # returns false to self.mainwindow.dlgAddAtts.exec_()
+     
 #######################################################################
     ''' Core Method '''
 #######################################################################
