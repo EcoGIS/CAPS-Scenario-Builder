@@ -161,7 +161,7 @@ class AddPoints(QgsMapTool):
         # enable the save edits action
         self.mainwindow.mpActionSaveEdits.setDisabled(False)
         # refresh the extents of the map on the canvas
-        shared.updateExtents(self.mainwindow, self.provider, self.activeVLayer, self.canvas)
+        shared.updateExtents(self.mainwindow, self.activeVLayer, self.canvas)
 
 #**************************************************************
     ''' Testing '''

@@ -201,7 +201,7 @@ class AddLinesPolygons(QgsMapTool):
                                     + str(shared.numberFeaturesAdded(self.activeVLayer, self.mainwindow.originalEditLayerFeats))
         
         # update layer extents
-        shared.updateExtents(self.mainwindow, self.provider, self.activeVLayer, self.canvas)
+        shared.updateExtents(self.mainwindow, self.activeVLayer, self.canvas)
  
     def resetDraw(self):
         ''' Resets drawing if user cancels "Add Attributes" dialog '''

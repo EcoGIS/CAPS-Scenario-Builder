@@ -482,6 +482,9 @@ the file system. All changes to these files will be lost. Do you want to delete 
 
     def updateLayerSet(self):
         """ Update the LayerSet and set it to canvas """
+        # debugging
+        print "Main.legend.updateLayerSet()"
+        
         self.layers = self.getLayerSet()
         self.canvas.setLayerSet(self.layers)
  

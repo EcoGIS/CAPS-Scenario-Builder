@@ -26,6 +26,8 @@
 # along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
 #
 #--------------------------------------------------------------------------------------------
+# general python imports
+import time
 # PyQt4 includes for python bindings to QT
 from PyQt4 import QtGui, QtCore 
 # QGIS bindings for mapping functions
@@ -64,49 +66,59 @@ def listOriginalFeatures(mainwindow, editingLayerName):
         
         return originalEditLayerFeats
     
-def checkSelectedLayer(mainwindow, scenarioEditType, currentLayerName):
+def checkSelectedLayer(mainwindow, scenarioEditType, activeLayerName, msgFlag=True):
         ''' 
             Check to make sure the user has selected the correct 
             editing layer when adding or pasting features 
         '''
         scenarioEditTypesList = config.scenarioEditTypesList
-        
+
         # debugging
         print "Tools.shared.checkSelectedLayer()"
         print "Tools.shared.checkSelectedLayer(): scenarioEditType is " + scenarioEditType
-        print "Tools.shared.checkSelectedLayer(): currentLayerName is " + currentLayerName
+        print "Tools.shared.checkSelectedLayer(): activeLayerName is " + activeLayerName
 
-        if scenarioEditType in scenarioEditTypesList[:4] and currentLayerName != config.editLayersBaseNames[0]:
+        if scenarioEditType in scenarioEditTypesList[:4] and activeLayerName != config.editLayersBaseNames[0]:
             print "Tools.shared.checkSelectedLayer(): edit points"
-            QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
+            if msgFlag:
+                QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
 named 'edit_scenario(points)' in the layer list panel to make the scenario edit type you have chosen.")
             return False
-        elif scenarioEditType == scenarioEditTypesList[4] and currentLayerName != config.editLayersBaseNames[1]:
+        elif scenarioEditType == scenarioEditTypesList[4] and activeLayerName != config.editLayersBaseNames[1]:
             print "Tools.shared.checkSelectedLayer(): edit lines"
-            QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
+            if msgFlag:
+                QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
 named 'edit_scenario(lines)' in the layer list panel to make the scenario edit type you have chosen.")
             return False
-        elif scenarioEditType in scenarioEditTypesList[5:7] and currentLayerName != config.editLayersBaseNames[2]:
+        elif scenarioEditType in scenarioEditTypesList[5:7] and activeLayerName != config.editLayersBaseNames[2]:
             print "Tools.shared.checkSelectedLayer(): edit polygons"
-            QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
+            if msgFlag:
+                QtGui.QMessageBox.warning(mainwindow, "Scenario Editing Error", "You must select the layer \
 named 'edit_scenario(polygons)' in the layer list panel to make the scenario edit type you have chosen.") 
             return False
         else: return True           
+
+def getCurrentFeats(provider):
+    # debugging
+    print "Tools.shared.getCurrentFeats()"
+    
+    feat = QgsFeature()
+    currentFeats = []
+    allAttrs = provider.attributeIndexes()
+    provider.select(allAttrs)
+    while provider.nextFeature(feat):
+        currentFeats.append(feat.id())
+    return currentFeats
 
 def getFeatsToDelete(provider, originalEditLayerFeats):
         # debugging
         print "Tools.shared.getFeatsToDelete()"
         
-        feat = QgsFeature()
-        currentFeats = []
-        allAttrs = provider.attributeIndexes()
-        provider.select(allAttrs)
-        while provider.nextFeature(feat):
-            currentFeats.append(feat.id())
+        currentFeats = getCurrentFeats(provider)
         featsToDelete = [i for i in currentFeats if i not in originalEditLayerFeats]
         return featsToDelete
       
-def deleteEdits(mainwindow, editingLayerName, originalEditLayerFeats):
+def deleteEdits(mainwindow, editingLayerName, currentEditLayerFeats):
         ''' 
             Delete scenario edits added to editing layers since the last save.
             This method is called from Main.mainwindow.checkEditsState() and
@@ -115,7 +127,7 @@ def deleteEdits(mainwindow, editingLayerName, originalEditLayerFeats):
         # debugging
         print "Tools.shared.deleteEdits()"
         print "Tools.shared.deleteEdits(): editingLayerName is :" + editingLayerName
-        print "Tools.shared.deleteEdits(): original features are: ", originalEditLayerFeats
+        print "Tools.shared.deleteEdits(): original features are: ", currentEditLayerFeats
         
         # Tools.shared.deleteEdits should be impossible to call with an editingLayerName that is not
         # an editing layer; however, if it ever were to be called, we could accidentally delete users' data.
@@ -123,10 +135,9 @@ def deleteEdits(mainwindow, editingLayerName, originalEditLayerFeats):
         if editingLayerName not in config.editLayersBaseNames:
             QtGui.QMessageBox.warning(mainwindow, "Deletion Error", "Tools.shared.deleteEdits() is attempting \
 to delete edits from a vector layer other than an editing layer.")
-            return 
-        
+            return
+
         legend = mainwindow.legend
-        canvas = mainwindow.canvas
         # Now that we know we have an editing layer, get the provider from the name
         editingLayer = getEditingLayer(mainwindow, legend, editingLayerName)
         if not editingLayer:
@@ -134,7 +145,10 @@ to delete edits from a vector layer other than an editing layer.")
         provider = editingLayer.dataProvider()
         
         # getFeatsToDelete returns a python list
-        toDelete = getFeatsToDelete(provider, originalEditLayerFeats)
+        # If the currentEditLayer feats include some added since the last save then
+        # this method will return the difference between the current edit layer state
+        # and the state that was passed to this method.
+        toDelete = getFeatsToDelete(provider, currentEditLayerFeats)
         
         # debugging
         print "Tools.shared.deleteEdits(): features toDelete are:", toDelete
@@ -155,16 +169,21 @@ to delete edits from a vector layer other than an editing layer.")
         if mainwindow.attrTable != None and mainwindow.attrTable.isVisible():
             mainwindow.openVectorAttributeTable()
         
-        # we are back to the originalEditLayerFeats (i.e. state of last save) so
-        mainwindow.editDirty = False
-        
-        # features have been deleted, so update the originalEditLayerFeats list to be safe
-        mainwindow.originalEditLayerFeats = listOriginalFeatures(mainwindow, editingLayerName)
-        
+        # If we are back to the originalEditLayerFeats (i.e. state of last save) then 
+        # set editDirty = False, otherwise set it to true
+        currentFeats = getCurrentFeats(provider)
+        if currentFeats == mainwindow.originalEditLayerFeats:
+            mainwindow.editDirty = False
+            print "Tools.shared.deleteEdits(): currentEditLayerFeats = originalEditLayerFeats; editDirty = False"
+        else: 
+            mainwindow.editDirty = True
+            print "Tools.shared.deleteEdits(): currentEditLayerFeats != originalEditLayerFeats; editDirty = True"
+            
         # debugging  
         print "Tools.shared.deleteEdits(): the remaining features are"
         printFeatures(provider)
-        updateExtents(mainwindow, provider, editingLayer, canvas)
+        
+        updateExtents(mainwindow, editingLayer, mainwindow.canvas)
 
 def numberFeaturesAdded(activeVLayer, originalEditLayerFeats):
         # debugging
@@ -173,11 +192,12 @@ def numberFeaturesAdded(activeVLayer, originalEditLayerFeats):
         newFeats = activeVLayer.featureCount()- len(originalEditLayerFeats)
         return newFeats
     
-def updateExtents(mainwindow, provider, activeVLayer, canvas):
+def updateExtents(mainwindow, activeVLayer, canvas):
         # debugging
         print "Tools.shared.updateExtents()"
         print "The active layer feature count is " + str(activeVLayer.featureCount())
         vfilePath = unicode(activeVLayer.source())
+        provider = activeVLayer.dataProvider()
         # I tried every update method I could find, but nothing other than closing
         # and reopening the layer seems to reset the layer extents on the canvas.  
         # So I do that here.
@@ -194,10 +214,11 @@ def updateExtents(mainwindow, provider, activeVLayer, canvas):
             # and removes the layer from the registry.  Finally it removes the layer 
             # from the legend and updates the legend's layer set.
             inOriginalScenario = mainwindow.legend.removeEditLayerFromRegistry(activeVLayer, layerId)
-            # now reopen the layer
+            # now reopen the layer but give some time to be removed first
+            time.sleep(0.1)
             mainwindow.openVectorLayer(vfilePath)
             
-            # if the layer was in self.originalSceenarioLayers then add it back 
+            # if the layer was in self.originalScenarioLayers then add it back 
             if inOriginalScenario:
                 mainwindow.originalScenarioLayers.append(mainwindow.activeVLayer)
                 # although layer names shouldn't have changed, update anyway
