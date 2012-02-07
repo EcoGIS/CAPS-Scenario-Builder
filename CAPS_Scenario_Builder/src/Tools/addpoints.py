@@ -65,10 +65,10 @@ class AddPoints(QgsMapTool):
         self.activeVLayer = self.mainwindow.activeVLayer
         if self.activeVLayer == None: return
        
-        point = event.pos()
+        qPoint = event.pos()
         transform = self.canvas.getCoordinateTransform()
         # returns a QgsPoint object in map coordinates
-        self.qgsPoint = transform.toMapCoordinates(point.x(), point.y())
+        self.qgsPoint = transform.toMapCoordinates(qPoint.x(), qPoint.y())
         
         #debugging
         print "Tools.addpoints.AddPoints().canvasPressEvent(): The original clicked point in map coordinates is " + str(self.qgsPoint)
@@ -78,7 +78,7 @@ class AddPoints(QgsMapTool):
             and prompt the user if constraints are not met.
         '''
  
-        # First check if the point can be snapped to a new road in the scenario
+        '''# First check if the point can be snapped to a new road in the scenario
         if shared.newRoadExists(self.mainwindow):
             snappedQgsPoint = shared.snapToNewRoad(self.mainwindow, point)
             print "Tools.addpoints.AddPoints().canvasPressEvent(): The returned snappedPoint is " + str(snappedQgsPoint)
@@ -87,16 +87,14 @@ class AddPoints(QgsMapTool):
                 # set the new wildlife crossing's point to be the point on the new road
                 self.qgsPoint = snappedQgsPoint
                 self.getNewAttributes()
-                return    
+                return '''   
         # If not editing a new road check constraints.
         # This method returns False if the constraints are not met.
-        if not shared.checkConstraints(self.mainwindow, self.qgsPoint):
+        if not shared.checkConstraints(self.mainwindow, self.qgsPoint, qPoint):
             self.qgsPoint = None
             return
-        else: pass
-        
         # correct editing layer selected and constraints check OK so get the new attributes
-        self.getNewAttributes()
+        else: self.getNewAttributes()
 
     def canvasReleaseEvent(self, event):
         pass

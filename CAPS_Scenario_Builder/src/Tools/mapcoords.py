@@ -49,7 +49,7 @@ class MapCoords(object):
         QtCore.QObject.connect(parent.canvas, QtCore.SIGNAL("xyCoordinates(const QgsPoint &)"),
                         self.updateCoordsDisplay)
         self.latlon = QtGui.QLabel("0.0 , 0.0")
-        self.latlon.setFixedWidth(200)
+        self.latlon.setFixedWidth(150)
         self.latlon.setAlignment(QtCore.Qt.AlignHCenter)
         self.parent.statusBar.addPermanentWidget(self.latlon)
 

@@ -1006,7 +1006,6 @@ was not written.  Please check that a file with the same name is not open in ano
             if not self.openVectorLayer(path): return
             
         # We opened new editing layers, so color the text of the editing and base layers.
-        # self.dlgScenarioEditTypes = DlgScenarioEditTypes(self)
         # The below works because the instance variable remains active
         self.dlgScenarioEditTypes.colorEditBaseConstraintLayers(self.legend)
         # Now we position the editing layer and any base layer or constraints layer that exists
@@ -1044,7 +1043,7 @@ if this scenario file is open in another program.")
         if state: # for action selected state = True
             # debugging
             print "Main.mainwindow.selectFeatures() state is True"
-                    # Need this to stop user from taking this action if making line or polygon edits
+            # Need this to stop user from taking this action if making line or polygon edits
             if self.appStateChanged("selectFeatures") == "Cancel":
                 #self.mpActionSelectFeatures.blockSignals(True)
                 #self.mpActionSelectFeatures.setChecked(False)
@@ -1559,6 +1558,7 @@ before you can make edits.  Please save the current scenario or open an existing
         print "Main.mainwindow.setPasteMofifyDone()"
         
         self.copiedFeats = None
+        self.copiedFeatGeom = None
         self.copyFlag = False
         # the paste action is turned on in copyFeatures and it is turned off here.
         self.mpActionPasteFeatures.setDisabled(True)
@@ -1636,6 +1636,8 @@ before you can make edits.  Please save the current scenario or open an existing
         print "Main.mainwindow.disableSelectActions()"
         
         self.canvas.unsetMapTool(self.toolSelect)
+        # Apparently mpActionSelectFeatures--a toggled action that is part of a QActionGroup--
+        # does not emit a signal if the action's state has not changed. 
         self.mpActionSelectFeatures.setChecked(False)
         self.mpActionDeselectFeatures.setDisabled(True)
         self.mpActionDeselectFeatures.setChecked(False)
@@ -1646,8 +1648,8 @@ before you can make edits.  Please save the current scenario or open an existing
         self.mpActionCopyFeatures.setDisabled(True)
         self.mpActionCopyFeatures.setChecked(False)
         
-    def disableEditing(self):
-        ''' Edit method to set action states '''
+        '''def disableEditing(self):
+        Edit method to set action states 
         # debugging
         print "Main.mainwindow.disableEditing()"
         # We need to block the signals or we get a feedback loop
@@ -1659,7 +1661,7 @@ before you can make edits.  Please save the current scenario or open an existing
         self.canvas.unsetMapTool(self.toolAddPoints)
         self.canvas.unsetMapTool(self.toolAddLinesPolygons)
         self.editMode = False
-        self.statusBar.removeWidget(self.editTypeLabel)
+        self.statusBar.removeWidget(self.editTypeLabel)'''
 
     def copyFeaturesShared(self):
         ''' 
@@ -1703,8 +1705,7 @@ the appropriate scenario edit type, and try again.")
             return
         
         # even though we know the active layer is edit_scenario(points) and self.provider is the correct provider
-        # let's set the provider from self.editLayerName just to guard against any bugs and be sure not to 
-        # alter user's data.
+        # let's set the provider from self.editLayerName just to guard against any bugs.
         editLayer = self.getLayerFromName(self.editLayerName)
         editLayerProvider = editLayer.dataProvider()
         
@@ -1763,38 +1764,30 @@ the appropriate scenario edit type, and try again.")
             except (IOError, OSError), e:
                 error = unicode(e)
                 print error
-                vlayerName = self.activeVLayer.name()
                 QtGui.QMessageBox.warning(self, "Failed to paste feature(s)", "Please check if "
-                                 + vlayerName + " is open in another program and then try again.")    
+                                 + self.editLayerName + " is open in another program and then try again.")    
 
         # reorder the id numbers
         shared.resetIdNumbers(editLayerProvider, self.geom)
         
         # Set the editDirty flag so that the user will be prompted to save edits or not.  
-        # will be called when the edits (i.e. pasted features) are saved, so 
-        # we don't need to do that here.
+        # self.originalEditLayerFeats will be called when the edits (i.e. pasted features) are saved, so 
+        # saved, so we don't need to do that here.
         self.editDirty = True
         self.mpActionSaveEdits.setDisabled(False)
-        # set the edit dirty flag
-        # reset the copy flag
-        self.copiedFeats = None
-        self.copiedFeatGeom = None
-        self.copyFlag = False
+        
         # the paste action is turned on in copyFeatures
         # it is turned off here or in pasteFeatures
-        self.mpActionPasteFeatures.setDisabled(True)
+        self.setPasteModifyDone()
+        
         # update Vector Attribute Table if open
         if self.attrTable != None and self.attrTable.isVisible():
             self.openVectorAttributeTable()
-        # update the extents and refresh so the features show
-        shared.updateExtents(self, editLayer, editLayer, self.canvas)
+        # update the extents and refresh so the features show (this will close and reopen the editing layer)
+        shared.updateExtents(self, editLayer, self.canvas)
         
         # reset the base layer to be the active layer
-        items = self.legend.findItems(baseLayerName, QtCore.Qt.MatchFixedString, 0)
-        print "Main.mainwindow.pasteBaseLayerDeletions(): baseLayerName is: " + baseLayerName
-        if len(items) > 0:
-            self.legend.setCurrentItem(items[0])
-            self.legend.currentItem().setCheckState(0, QtCore.Qt.Checked)
+        self.setBaseLayerActive(baseLayerName)
 
     def pasteEmptyFeatures(self, editLayerProvider):
         ''' An edit method that creates empty attributes for the current edit layer geometry,  
@@ -1967,9 +1960,9 @@ the appropriate scenario edit type, and try again.")
         '''PASTING COMPLETED, SO DO SOME HOUSEKEEPING '''
         
         # reset the layer we were copying or modifying to be the active layer
-        self.setBaseLayerActive(copyLayerName)        
         self.setPasteModifySuccess()         
-
+        self.setBaseLayerActive(copyLayerName)
+         
     def modifyEditLayerFeatures(self):
         ''' This edit method provides the ability to modify features on editing layers of all geometry types. '''
         # debugging
@@ -1987,7 +1980,8 @@ the appropriate scenario edit type, and try again.")
         print copiedFeatIds
         
         # next get the editLayer
-        editLayer = self.getLayerFromName(self.editLayerName)        
+        editLayer = self.getLayerFromName(self.editLayerName)
+                
         
         # Now call this method, which gives the user info about the features they are modifying,
         # and also opens the Add Attributes dialog, which allows them to input the attribute changes.
@@ -2406,7 +2400,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
                 elif len(self.activeVLayer.selectedFeatures()) != 0:
                     # We have selected features, so enable all the selected features actions
                     # Note that "Modify Selected" will only be enabled if the active layer
-                    # is an editable point base layer.
+                    # is an editable point base layer or an editing layer.
                     self.mpActionSelectFeatures.setChecked(True)
                     self.enableSelectSubActions()
             else:
@@ -2754,6 +2748,10 @@ choose 'Export Scenario' for this scenario in the future.")
         
         for layer in self.getCurrentLayers().values():
             if layerName == layer.name(): return layer
+        else:
+            QtGui.QMessageBox.warning(self, "Get Layer Error:", "The layer "
+                                                    + layerName + " is not open in the layer list panel.")
+            return False
    
     def getEditFields(self):
         # debugging

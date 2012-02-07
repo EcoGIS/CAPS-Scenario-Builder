@@ -42,10 +42,9 @@ def listOriginalFeatures(mainwindow, editingLayerName):
         # debugging
         print "Tools.shared.listOriginalFeatures()"
         
-        legend = mainwindow.legend
         originalEditLayerFeats = []
         
-        editingLayer = getEditingLayer(mainwindow, legend, editingLayerName)
+        editingLayer = mainwindow.getLayerFromName(editingLayerName)
         if not editingLayer:
             return
         provider = editingLayer.dataProvider()
@@ -137,9 +136,8 @@ def deleteEdits(mainwindow, editingLayerName, currentEditLayerFeats):
 to delete edits from a vector layer other than an editing layer.")
             return
 
-        legend = mainwindow.legend
         # Now that we know we have an editing layer, get the provider from the name
-        editingLayer = getEditingLayer(mainwindow, legend, editingLayerName)
+        editingLayer = mainwindow.getLayerFromName(editingLayerName)
         if not editingLayer:
             return
         provider = editingLayer.dataProvider()
@@ -251,7 +249,7 @@ def updateExtents(mainwindow, activeVLayer, canvas):
         #canvas.map().render()
         canvas.refresh()
 
-def checkConstraints(mainwindow, geometry, featId = None):
+def checkConstraints(mainwindow, geometry, qPoint, featId = None):
     ''' Checks constraints on scenario edits.  Currently only point edits are checked, 
         but this could change in the future, so the geometry parameter is generic.
     '''
@@ -259,65 +257,100 @@ def checkConstraints(mainwindow, geometry, featId = None):
     print "Tools.shared.checkConstraints()"
     print "Tools.shared.checkConstraints(): The featId is " + str(featId)
     
+    qgsPoint = geometry  # The geometry is a qgs point for these scenario edit types.
     basePath = config.baseLayersPath
-    streamsFileName = config.scenarioConstraintLayersFileNames[0]
     editType = mainwindow.scenarioEditType
     typesList = config.scenarioEditTypesList
+    
+    ''' Check whether the qgs point falls on a stream for a culvert/bridge, dam or tidal restriction'''
+    
     pointsList = [typesList[0], typesList[1], typesList[3]]
-    if editType in pointsList: # crossing, dam removal or tidal restriction
-        # Load the raster layer, but do not add it to the registry
-        # so that it doesn't appear to the user
-        point = geometry # The geometry is a point for these scenario edit types.
-        rfilePath = basePath + streamsFileName
-        rlayer = openHiddenRasterLayer(mainwindow, rfilePath) # returns false if the file failed to open
-        if rlayer == False:    # if the file failed to open, the constraints have not be met.
-            # if the file failed to open, the constraints have not be met.
-            return False
-        # rlayer.identify returns a tuple with the result code (True or False) and a dictionary
-        # with key = band and value = raster value for that band. We only have one band, so the 
-        # key = "Band 1"
-        result, identifyDict = rlayer.identify(point) 
-        if not result: # if the identify method fails, we have not met constraints
-            print "Tools.shared.checkConstraints(): base_streams.tif identify failed"
-            return False
-        if unicode(identifyDict.get(QtCore.QString("Band 1"))) != u"1": # stream centerlines have a value of 1
-            print "Tools.shared.checkConstraints(): base_streams return False value = " \
-                                                            + unicode(identifyDict.get(QtCore.QString("Band 1")))
-            if featId != None:
-                text = "All pasted features must fall on the centerline of a stream (dark blue color) \
+    if editType in pointsList: # 
+        if checkStreamsConstraint(mainwindow, basePath, qgsPoint, featId):
+            return True
+        else: return False
+
+    ''' Check whether the point falls on an existing or new road for a terrestrial wildlife passage structure '''
+      
+    if editType == typesList[2]: # a terrestrial wildlife crossing
+        if checkRoadConstraints(mainwindow, basePath, qgsPoint, qPoint, featId):
+            return True
+        else: return False
+    else: print "Tools.shared.checkConstraints(): Layer does not need constraints checked"
+    
+def checkStreamsConstraint(mainwindow, basePath, qgsPoint, featId):
+    ''' Checks whether a new culvert/bridge, dam, or tidal restriction falls on a stream '''
+    # debugging
+    print "Tools.shared.checkStreamsConstraint()"
+    
+    # Load the raster layer, but do not add it to the registry
+    # so that it doesn't appear to the user
+    streamsFileName = config.scenarioConstraintLayersFileNames[0]
+    rfilePath = basePath + streamsFileName
+    rlayer = openHiddenRasterLayer(mainwindow, rfilePath) # returns false if the file failed to open
+    if rlayer == False:    # if the file failed to open, the constraints have not be met.
+        # if the file failed to open, the constraints have not be met.
+        return False
+    # rlayer.identify returns a tuple with the result code (True or False) and a dictionary
+    # with key = band and value = raster value for that band. We only have one band, so the 
+    # key = "Band 1"
+    result, identifyDict = rlayer.identify(qgsPoint) 
+    if not result: # if the identify method fails, we have not met constraints
+        print "Tools.shared.checkConstraints(): base_streams.tif identify failed"
+        return False
+    if unicode(identifyDict.get(QtCore.QString("Band 1"))) != u"1": # stream centerlines have a value of 1
+        print "Tools.shared.checkConstraints(): base_streams return False value = " \
+                                                        + unicode(identifyDict.get(QtCore.QString("Band 1")))
+        if featId != None:
+            text = "All pasted features must fall on the centerline of a stream (dark blue color) \
 in the base_streams layer. The feature in row " + unicode(featId+1) + " in the attribute table of the layer you \
 copied from does not meet this constraint.  Please check all your points carefully and try again."
-            else:
-                text = "The added feature must fall on the centerline of a stream (dark blue color) \
+        else:
+            text = "The added feature must fall on the centerline of a stream (dark blue color) \
 in the base_streams layer.  Please make the base_streams layer visible on your map, and try again. \
 If the base_streams layer is not open in your scenario, you may open it by clicking 'Add Raster Layer' \
 on the toolbar or in the 'Layer' menu."
-            QtGui.QMessageBox.warning(mainwindow, "Constraints Error:", text)
-            # add the layer to the registry here if it is not already open
-            return False # constraints have not been met
-        else: 
-            return True # base file opened and constraints have been met.'''
-        
-        # debugging
-        print "Tools.shared.checkConstraints(): The rfilePath is " + rfilePath
-        print "Tools.shared.checkConstraints(): The raster value for base_streams.tif is " \
-                                                            + unicode(identifyDict.get(QtCore.QString("Band 1")))
-        print "Tools.shared.checkConstraints(): The constraints were met and the return value is 'True'"
-        
-    elif editType == typesList[2]: # a terrestrial wildlife crossing
-        point = geometry
-        trafficLayerName = config.scenarioConstraintLayersFileNames[1]
-        rfilePath = basePath + trafficLayerName
-        rlayer = openHiddenRasterLayer(mainwindow, rfilePath) # returns false if the file failed to open
-        if rlayer == False: # if the file failed to open, the constraints have not be met.
-            return False
-        result, identifyDict = rlayer.identify(point)
-        print "Tools.shared.checkConstraints(): The raster value for base_traffic.tif is " \
-                                                                + unicode(identifyDict.get(QtCore.QString("Band 1"))) 
-        if not result: # if the identify method fails, we have not met constraints
-            print "Tools.shared.checkConstraints(): base_traffic.tif identify failed"
-            return False
-        if unicode(identifyDict.get(QtCore.QString("Band 1"))) == u"null (no data)": # value for areas not on roads is null 
+        QtGui.QMessageBox.warning(mainwindow, "Constraints Error:", text)
+        # add the layer to the registry here if it is not already open
+        return False # constraints have not been met
+    else: 
+        return True # base file opened and constraints have been met because the value was "1".
+    
+    # debugging
+    print "Tools.shared.checkConstraints(): The rfilePath is " + rfilePath
+    print "Tools.shared.checkConstraints(): The raster value for base_streams.tif is " \
+                                                        + unicode(identifyDict.get(QtCore.QString("Band 1")))
+    print "Tools.shared.checkConstraints(): The constraints were met and the return value is 'True'"
+    
+def checkRoadConstraints(mainwindow, basePath, qgsPoint, qPoint, featId):
+    ''' Checks whether a new terrestrial wildlife structure falls on an existing or new road '''
+    # debugging
+    print "Tools.shared.checkRoadConstraints()" 
+    
+    trafficLayerName = config.scenarioConstraintLayersFileNames[1]
+    rfilePath = basePath + trafficLayerName
+    rlayer = openHiddenRasterLayer(mainwindow, rfilePath) # returns false if the file failed to open
+    if rlayer == False: # if the file failed to open, the constraints have not be met.
+        return False
+    result, identifyDict = rlayer.identify(qgsPoint)
+    print "Tools.shared.checkConstraints(): The raster value for base_traffic.tif is " \
+                                                            + unicode(identifyDict.get(QtCore.QString("Band 1"))) 
+    if not result: # if the identify method fails, we have not met constraints
+        print "Tools.shared.checkConstraints(): base_traffic.tif identify failed"
+        return False
+    # value for areas not on roads is null
+    if unicode(identifyDict.get(QtCore.QString("Band 1"))) == u"null (no data)":  
+        # The point is not on an existing road so now see if the point can be snapped to a "new" road 
+        # (i.e. a road created by the user)
+        if newRoadExists(mainwindow):
+            snappedQgsPoint = snapToNewRoad(mainwindow, qPoint)
+            print "Tools.addpoints.AddPoints().canvasPressEvent(): The returned snappedPoint is " + str(snappedQgsPoint)
+            if snappedQgsPoint:
+                # constraints are satisfied because clicked point is on a new road
+                # set the new wildlife crossing's point to be the point on the new road
+                mainwindow.toolAddPoints.qgsPoint = snappedQgsPoint
+                return True
+        else:  
             print "base_traffic return False value = " + unicode(identifyDict.get(QtCore.QString("Band 1")))
             if featId != None:
                 text = "All pasted features must fall on a road in the 'base_traffic' layer. \
@@ -330,15 +363,14 @@ in your scenario, you may open it by clicking 'Add Raster' on the toolbar or in 
             QtGui.QMessageBox.warning(mainwindow, "Constraints Error:", text)
             # add the layer to the registry here if it is not already open
             return False # constraints have not been met
-        else: return True # base file opened and constraints have been met.
-    
-        # debugging
-        "Tools.shared.checkConstraints(): The rfilePath is " + rfilePath
-        "Tools.shared.checkConstraints(): The raster value for base_traffic.tif is " \
-                                                        + unicode(identifyDict.get(QtCore.QString("Band 1")))
-        "Tools.shared.checkConstraints(): The constraints were met and the return value is 'True'"
-    else: print "Tools.shared.checkConstraints(): Layer does not need constraints checked"
-    
+    else: return True # base file opened and constraints have been met.
+
+    # debugging
+    print "Tools.shared.checkConstraints(): The rfilePath is " + rfilePath
+    print "Tools.shared.checkConstraints(): The raster value for base_traffic.tif is " \
+                                                    + unicode(identifyDict.get(QtCore.QString("Band 1")))
+    print "Tools.shared.checkConstraints(): The constraints were met and the return value is 'True'"   
+
 def openHiddenRasterLayer(mainwindow, rfilePath):
     ''' Open a raster layer without adding to the registry, so it is not visible to the user '''    
     info = QtCore.QFileInfo(rfilePath)
@@ -427,7 +459,7 @@ def newRoadExists(mainwindow):
         print "Tools.shared.newRoadExists(): The new road does not exist"
         return False
         
-def snapToNewRoad(mainwindow, point):
+def snapToNewRoad(mainwindow, qPoint):
     # debugging
     print "Tools.shared.snapToNewRoad()"
     
@@ -446,7 +478,7 @@ def snapToNewRoad(mainwindow, point):
     
     # Now that the line layer is the active layer, snap the wildlife crossing point to the line.
     snapper = QgsMapCanvasSnapper(mainwindow.canvas)
-    (retval, result) = snapper.snapToCurrentLayer(point, QgsSnapper.SnapToSegment)
+    (retval, result) = snapper.snapToCurrentLayer(qPoint, QgsSnapper.SnapToSegment)
     # Set the current layer back to the layer that was clicked (i.e. edit_scenario(points))
     mainwindow.canvas.setCurrentLayer(pointsEditLayer)
     
@@ -455,9 +487,9 @@ def snapToNewRoad(mainwindow, point):
     print "Tools.shared.newRoadExists(): retval is " + str(retval)
     print "Tools.shared.newRoadExists(): result is "
     print result
-    print "Tools.shared.newRoadExists(): The clicked points in device coordinates is " + str(point)
+    print "Tools.shared.newRoadExists(): The clicked points in device coordinates is " + str(qPoint)
     transform = mainwindow.canvas.getCoordinateTransform()
-    qgsPoint = transform.toMapCoordinates(point.x(), point.y())
+    qgsPoint = transform.toMapCoordinates(qPoint.x(), qPoint.y())
     print "Tools.shared.newRoadExists(): The clicked point in map coords is " + str(qgsPoint)
     
     if result:
@@ -499,13 +531,4 @@ def printFeatures(provider):
             # note: the QgsAttribute map is a Python dictionary (key = field id : field value)
             for (key, attr) in attrs.iteritems():
                 print "%d: %s" % (key, attr.toString())
-                
-def getEditingLayer(mainwindow, legend, editingLayerName):
-    items = legend.findItems(editingLayerName, QtCore.Qt.MatchFixedString, 0)
-    if len(items) == 0:
-        QtGui.QMessageBox.warning(mainwindow, "Editing Layer Error:", "The editing layer "
-                                                    + editingLayerName + " is not open in the layer list panel.")
-        return False
-    else: 
-        return items[0].canvasLayer.layer()
                         
