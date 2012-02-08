@@ -140,6 +140,9 @@ class AddLinesPolygons(QgsMapTool):
         # debugging
         print "Tools.addlinespolygons.AddLinesPolygons().getNewAttributes()"
         
+        # set the msgFlag to none so user gets no warning when canceling adding a new line or polygon
+        self.mainwindow.msgFlag = None
+           
         self.dlg = DlgAddAttributes(self.mainwindow)
 
         if self.dlg.exec_(): # The user has clicked "OK"

@@ -175,7 +175,11 @@ value for every item except the 'Description':")
     def reject(self):
         # debugging
         print "Tools.dlgaddattributes.DlgAddAttributes().reject()"
-                
+        
+        if not self.mainwindow.msgFlag:
+            QtGui.QDialog.reject(self)
+            return
+
         if self.mainwindow.msgFlag == "baselayer":
             title = "Modify Features Warning"
             text = "If you click 'Yes' in this dialog, any modifications you have made \
@@ -212,7 +216,7 @@ you still want to modify the remaining features, you will will need to select th
         geom = self.mainwindow.geom # geometry of the active layer
 
         # get the editFields for the current editing shapefile
-        editFields = self.mainwindow.getEditFields()
+        editFields = self.mainwindow.getEditFields(geom)
         
         # debugging
         print "Tools.dlgaddattributes.DlgAddAttributes().getNewAttributes(): The editing fields are " + str(editFields)

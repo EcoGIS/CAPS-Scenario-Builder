@@ -112,7 +112,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.scenarioEditType = None
         self.currentLayersCount = None
         self.layerType = None
-        # get the geometry of the activeVLayer
+        # geometry of the activeVLayer
         self.geom = None #0 point, 1 line, 2 polygon
         # This saves an editing layer's color so that it gets refreshed
         # when the layer loads after updating extents (see shared.updateExtents
@@ -752,7 +752,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         print "Main.mainwindow.getOriginalScenarioLayers(): originalScenarioLayers are " 
         for layer in self.originalScenarioLayers: print layer.name()
         print "Main.mainwindow.getOriginalScenarioLayers() currentLayers are " 
-        if i > 0:
+        if i > 0: 
             for layer in self.getCurrentLayers().values(): print layer.name()
 
     def setScenarioDirty(self):
@@ -1141,9 +1141,27 @@ scenario edit type that has the features you wish to modify, and then try again.
                 self.legend.currentItem().setCheckState(0, QtCore.Qt.Checked)
                 self.pasteModifiedBaseLayerFeats()
         elif name in config.editLayersBaseNames:
-            # check if editing layer is correct for the current scenario edit type
+            # Force the user to save or discard unsaved edits before we bother to modify them.
+            if self.appStateChanged("modifyingEdits") == "Cancel":
+                    return
+            # check if editing layer chosen is correct for the current scenario edit type 
+            # (this method warns the user and returns false if no match)
             if not shared.checkSelectedLayer(self, self.scenarioEditType, name):
-                return 
+                return
+            # So we have the edit layer for the current scenario edit type but do the selected features
+            # all match the current scenario edit type?
+            editLayer = self.getLayerFromName(self.editLayerName) # use the instance variable as a double check
+            features = editLayer.selectedFeatures()
+            print "Main.mainwindow.modifyFeatures(): The selected feature count is " + str(editLayer.selectedFeatureCount())
+            # This method checks if the attribute values for all the selected features match the
+            # current scenario edit type. The method warns and returns false if one or more do not match.
+            if not self.checkEditFeatureMatch(editLayer, features):
+                return
+            # Now check for a user attempting to delete "deletions" on a point editing layer
+            if editLayer.geometryType() == 0:
+                if not self.checkForDeletions(editLayer, features):
+                    return
+            # so we have proper features of the current scenario edit type to modify
             self.copyFeaturesShared()
             self.modifyEditLayerFeatures()
   
@@ -1458,13 +1476,13 @@ before you can make edits.  Please save the current scenario or open an existing
             
             This method also calls methods that provide the user with information about features being modified.
         '''
-        
+
         # debugging
         print "Main.mainwindow.getAttsForPastedOrModifiedFeats()" 
         
-        self.msgFlag = msgFlag
+        self.msgFlag = msgFlag # msgFlag can be "baselayer", "userlayer" or  "editlayer"
         self.tempOriginalEditFeats = tempOriginalEditFeats
-        self.modifyFlag = modifyFlag
+        self.modifyFlag = modifyFlag # Currently true or false
        
         # set some variables based on recording the id of the layer features were copied from
         # The id was recorded in Main.mainwindow.copyFeaturesShared().
@@ -1494,10 +1512,15 @@ before you can make edits.  Please save the current scenario or open an existing
             # user can continue where they left off.  If the user chooses to abort,
             #  the reject() method closes the dialog and returns False.
             if self.dlgAddAtts.exec_(): # open DlgAddAttributes and then if user clicks OK it returns true
+                # if this is an editing layer modification, we need to get the type of edit so that we can
+                # mark it correctly in the attribute table.
+                if msgFlag == "editlayer" and self.copiedFeatGeom == 0: # points edit layer
+                    modifyFlag = self.isAlteredFeature(editLayer, featId) # returns True if altered, otherwise False
+                # if "modified" the points are new pasted base layer modifications or edit layer points that were modifications
                 if modifyFlag: 
                     # if user is modifying a point, set the altered field to 'y' by passing 'True' flag
                     attributes = self.dlgAddAtts.getNewAttributes(True)
-                else: attributes = self.dlgAddAtts.getNewAttributes() # flag false for pasting user feats, modifying edits
+                else: attributes = self.dlgAddAtts.getNewAttributes() # flag False for pasting user feats, modifying edits
                 changedAttributes = {featId : attributes} # create a "QgsChangedAttributesMap"
                 try:
                     editLayerProvider.changeAttributeValues(changedAttributes) # here is the "write" operation
@@ -1572,7 +1595,8 @@ before you can make edits.  Please save the current scenario or open an existing
         # So, reset the id values.
         editLayer = self.getLayerFromName(self.editLayerName)
         editLayerProvider = editLayer.dataProvider()
-        shared.resetIdNumbers(editLayerProvider, self.geom)
+        geometry = editLayer.geometryType()
+        shared.resetIdNumbers(editLayerProvider, geometry)
         # Set the editDirty flag to True on pasting base layer modifications or user's 
         # features. Leave it (should be false) if modifying editing layer features.
         # Note that shared.listOriginalFeatures() will be called when the edits
@@ -1647,22 +1671,7 @@ before you can make edits.  Please save the current scenario or open an existing
         self.mpActionDeleteFeatures.setChecked(False)
         self.mpActionCopyFeatures.setDisabled(True)
         self.mpActionCopyFeatures.setChecked(False)
-        
-        '''def disableEditing(self):
-        Edit method to set action states 
-        # debugging
-        print "Main.mainwindow.disableEditing()"
-        # We need to block the signals or we get a feedback loop
-        # that toggles the edits on and off repeatedly.
-        self.mpActionEditScenario.blockSignals(True)
-        self.mpActionEditScenario.setChecked(False)
-        self.disableEditActions()
-        self.mpActionEditScenario.blockSignals(False)
-        self.canvas.unsetMapTool(self.toolAddPoints)
-        self.canvas.unsetMapTool(self.toolAddLinesPolygons)
-        self.editMode = False
-        self.statusBar.removeWidget(self.editTypeLabel)'''
-
+ 
     def copyFeaturesShared(self):
         ''' 
             This edit method copies features and is used by Main.mainwindow.copyFeatures(), 
@@ -1723,8 +1732,9 @@ the appropriate scenario edit type, and try again.")
         print inputFieldNames
 
         # get a list of all the editing layer attribute fields for the 
-        # geometry type associated with the deleted features 
-        editFields = self.getEditFields()
+        # geometry type associated with the deleted features
+        geom = editLayer.geometryType() 
+        editFields = self.getEditFields(geom)
         a = {} # Python dictionary of attributes for the current editing layer
         # Simply add an id value and set the altered field to n and the deleted field to 'y'
         feat = QgsFeature()
@@ -1745,12 +1755,12 @@ the appropriate scenario edit type, and try again.")
                     print "Main.mainwindow.pasteBaseLayerDeletions(): first field (id) count = " + str(count)
                     continue
                 # if a point layer, set the altered and deleted fields
-                if self.geom == 0 and subListCount == 2:
+                if geom == 0 and subListCount == 2:
                     a[count] = QtCore.QVariant("n")
                     subListCount = 3
                     print "Main.mainwindow.pasteBaseLayerDeletions(): second field (altered) count = " + str(count)
                     continue
-                if self.geom == 0 and subListCount == 3:
+                if geom == 0 and subListCount == 3:
                     a[count] = QtCore.QVariant("y")
                     print "Main.mainwindow.pasteBaseLayerDeletions(): third field (deleted) count = " + str(count)
                     subListCount = 4
@@ -1768,7 +1778,7 @@ the appropriate scenario edit type, and try again.")
                                  + self.editLayerName + " is open in another program and then try again.")    
 
         # reorder the id numbers
-        shared.resetIdNumbers(editLayerProvider, self.geom)
+        shared.resetIdNumbers(editLayerProvider, geom)
         
         # Set the editDirty flag so that the user will be prompted to save edits or not.  
         # self.originalEditLayerFeats will be called when the edits (i.e. pasted features) are saved, so 
@@ -1798,7 +1808,8 @@ the appropriate scenario edit type, and try again.")
         
         # We can paste features from a user's layer of any geometry type into an editing 
         # layer, so get the list of editing shapefile fields for the current scenario edit type.
-        editFields = self.getEditFields()
+        geom = self.getLayerFromName(self.editLayerName).geometryType()
+        editFields = self.getEditFields(geom)
         
         # Create an attribute map (a python dictionary) of empty values
         # for the current editing shapefile.
@@ -1922,8 +1933,7 @@ the appropriate scenario edit type, and try again.")
         # The id was recorded in Main.mainwindow.copyFeaturesShared().
         copyLayer = QgsMapLayerRegistry.instance().mapLayer(self.copyLayerId)
         copyLayerName = unicode(copyLayer.name())
-        copyLayerProvider = copyLayer.dataProvider()
-        
+                
         # Set tempOriginalFeats (the list of ids of current edit layer features) 
         # in case the user wants to delete the pasted features below.
         tempOriginalEditFeats = shared.listOriginalFeatures(self, editLayerName)
@@ -1945,7 +1955,7 @@ the appropriate scenario edit type, and try again.")
         # to get the new ids.  pastedFeatureIDS is a python list.
         
         pastedFeatureIds = shared.getFeatsToDelete(editLayerProvider, tempOriginalEditFeats)
-        
+
         '''  
             WE NEED TO ITERATE THROUGH THE PASTED FEATURES, SELECT EACH ONE
             ON THE MAP CANVAS(FOR THE USER'S CONVENIENCE), OPEN THE "ADD ATTRIBUTES" DIALOG
@@ -1968,10 +1978,6 @@ the appropriate scenario edit type, and try again.")
         # debugging
         print "Main.mainwindow.modifyEditLayerFeatures()" 
         
-        # Force the user to save or discard unsaved edits before we bother to modify them.
-        if self.appStateChanged("modifyingEdits") == "Cancel":
-                return
-        
         # So we have some edit layer features copied and the user wants to modify them.
         # first get  a list of the copied feature ids so they can be selected
         copiedFeatIds = []
@@ -1981,7 +1987,6 @@ the appropriate scenario edit type, and try again.")
         
         # next get the editLayer
         editLayer = self.getLayerFromName(self.editLayerName)
-                
         
         # Now call this method, which gives the user info about the features they are modifying,
         # and also opens the Add Attributes dialog, which allows them to input the attribute changes.
@@ -1993,6 +1998,106 @@ the appropriate scenario edit type, and try again.")
         
         # now clean up and renumber the features
         self.setPasteModifySuccess(True)
+        
+    def checkEditFeatureMatch(self, editLayer, features):
+        ''' 
+            This edit method checks whether editing layer features that the user wishes to modify
+            match the current scenario edit type.
+        
+        '''
+        # debugging
+        print "Main.mainwindow.checkEditFeatureMatch()"
+        
+        editLayerProvider = editLayer.dataProvider()
+        for feat in features:
+            attrs = feat.attributeMap()
+            for key, value in attrs.iteritems():
+                print "Main.mainwindow.checkEditFeatureMatch(): The key is " + str(key)
+                print "Main.mainwindow.checkEditFeatureMatch(): The value is " + value.toString()
+                if unicode(value.toString()) == "": continue
+                else:
+                    fieldMap = editLayerProvider.fields()
+                    fieldName = unicode(fieldMap[key].name())
+                    print "Main.mainwindow.checkEditFeatureMatch(): The fieldName is " +  fieldName
+                    if not self.checkFieldNameMatch(fieldName):
+                        QtGui.QMessageBox.warning(self, "Modify Edits Error", "At least one of the features that you selected \
+was not created by using the current scenario edit type.  After choosing a particular scenario edit type, you can only \
+modify edits created using that scenario edit type. Please use the 'Identify Features' tool to \
+find what scenario edit type was used to create the features you wish to modify and then choose the matching \
+scenario edit type to modify them.  Your modifications were not made. Please try again.")
+                        return False
+                    else: break
+        else: return True             
+        
+    def checkFieldNameMatch(self, fieldName):
+        ''' An edit method that checks whether the name of a field matches the current scenario edit type '''
+        # debugging
+        print "Main.mainwindow.checkFieldNameMatch()"
+        
+        editType = self.scenarioEditType
+        if fieldName == 'cross_id' and editType == config.scenarioEditTypesList[0]: return True
+        elif fieldName == 'dam_id' and editType == config.scenarioEditTypesList[1]: return True
+        elif fieldName == 'wildlf_id' and editType == config.scenarioEditTypesList[2]: return True
+        elif fieldName == 'restr_id' and editType == config.scenarioEditTypesList[3]: return True
+        elif fieldName == 'newrd_id' and editType == config.scenarioEditTypesList[4]: return True
+        elif fieldName == 'modrd_id' and editType == config.scenarioEditTypesList[5]: return True
+        elif fieldName == 'ldcvr_id' and editType == config.scenarioEditTypesList[6]: return True
+        else: return False
+            
+    def isAlteredFeature(self, editLayer, featId):
+        ''' 
+            This edit method checks whether editing layer features that the user wishes to modify
+            match the current scenario edit type.
+        
+        '''
+        # debugging
+        print "Main.mainwindow.isAlteredFeature()"
+        
+        editLayerProvider = editLayer.dataProvider()
+        allAttrs = editLayerProvider.attributeIndexes()
+        feat = QgsFeature()
+        if not editLayerProvider.featureAtId(featId, feat, False, allAttrs):
+            QtGui.QMessageBox.warning(self, "Modify Edits Error", "This feature could not be found. Please deselect \
+these features and try again.") 
+        attrs = feat.attributeMap()
+        subcount = None
+        for key, value in attrs.iteritems():
+            print "Main.mainwindow.isAlteredFeature(): key = " + str(key)
+            print "Main.mainwindow.isAlteredFeature(): subcount = " + str(subcount)
+            print "Main.mainwindow.isAlteredFeature(): The value is " + value.toString()
+            if unicode(value.toString()) == "": continue
+            elif subcount == None:                   
+                subcount = key
+                print "Main.mainwindow.isAlteredFeature(): subcount first set at " + str(subcount) 
+                continue
+            if key == subcount + 1 and unicode(value.toString()) == "y":
+                return True
+            else: return False
+            
+    def checkForDeletions(self, editLayer, features):
+        ''' This edit method checks if a user is attempting to modify deletions on an editing layer '''
+        # debugging
+        print "Main.mainwindow.checkForDeletions()"
+        
+        for feat in features:
+            attrs = feat.attributeMap()
+            subcount = None
+            for key, value in attrs.iteritems():
+                print "Main.mainwindow.checkForDeletions(): key = " + str(key)
+                print "Main.mainwindow.checkForDeletions(): The subcount is " + str(subcount)
+                print "Main.mainwindow.checkForDeletions(): The value is " + value.toString()
+                if unicode(value.toString()) == "": continue
+                elif subcount == None:                   
+                    subcount = key
+                    print "Main.mainwindow.checkForDeletions(): subcount first set at " + str(subcount) 
+                    continue
+                if key == subcount + 2:
+                    if unicode(value.toString()) == "y":
+                        QtGui.QMessageBox.warning(self, "Modify Edits Error", "You cannont modify deleted features. \
+If you wish to remove a deleted feature from an editing layer then select it and choose 'Delete Selected.'")
+                        return False
+                    else: break
+        else: return True # if no features are deleted edit layer features
                                             
 ############################################################################################  
     ''' VIEW MENU SLOTS '''
@@ -2753,11 +2858,11 @@ choose 'Export Scenario' for this scenario in the future.")
                                                     + layerName + " is not open in the layer list panel.")
             return False
    
-    def getEditFields(self):
+    def getEditFields(self, geom):
         # debugging
         print "Main.mainwindow.getEditFields()"
         
-        geom = self.geom #0 point, 1 line, 2 polygon
+        # 0 point, 1 line, 2 polygon
         if geom == 0: editFields = config.editPointsFields  
         elif geom == 1: editFields = config.editLinesFields
         elif geom == 2: editFields = config.editPolygonsFields   
@@ -3140,6 +3245,7 @@ choose 'Export Scenario' for this scenario in the future.")
         else: return True
 
     def checkBaseLayerMatch(self, title, text):
+        ''' Checks whether the base layer selected matches the current scenario edit type '''
         # debugging
         print 'Main.mainwindow.checkBaseLayerMatch()'
         name = unicode(self.activeVLayer.name())

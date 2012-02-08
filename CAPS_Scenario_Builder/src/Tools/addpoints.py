@@ -107,6 +107,9 @@ class AddPoints(QgsMapTool):
         # debugging
         print "Tools.addpoints.AddPoints().getNewAttributes()"
         
+        # set the msgFlag to none so user gets no warning when canceling adding a new point
+        self.mainwindow.msgFlag = None
+                
         self.dlg = DlgAddAttributes(self.mainwindow)
 
         if self.dlg.exec_(): # The user has clicked "OK"
