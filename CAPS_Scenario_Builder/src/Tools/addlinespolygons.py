@@ -73,14 +73,6 @@ class AddLinesPolygons(QgsMapTool):
             if self.mainwindow.geom == 1: self.geom = False # line
             else: self.geom = True # polygon
         
-        '''# check if the editing layer is selected but only on the first click
-        # Convert QStrings to unicode unless they are used immediately in a Qt method. 
-        # This ensures that we never ask Python to slice a QString, which produces a type error.
-        if self.started == False:
-            currentLayerName = unicode(self.mainwindow.legend.currentItem().canvasLayer.layer().name())
-            # Check if user has chosen the correct editing shapefile. This method warns the user and returns False on error.
-            if not shared.checkSelectedLayer(self.mainwindow, self.mainwindow.scenarioEditType, currentLayerName):    
-                return # return without starting to draw'''
         self.down = True # starts the drawing process
 
     def canvasReleaseEvent(self, event):
@@ -96,22 +88,26 @@ class AddLinesPolygons(QgsMapTool):
                 self.rubberBand.show()
                 self.numberOfPoints = 0
                             
-                ####################
-                #This is the first point of a new road, so add code for snap to new or existing roads here.
-                
-                
-                
-                ####################
-
             # getCoordinateTransform returns a QgsMapToPixel object
             # which transforms between device coordinates and map coordinates 
             transform = self.canvas.getCoordinateTransform()
             # toMapCoordinates is a QgsMapToPixel method that 
             # takes a QPoint (from device) as a parameter and returns a 
             # QgsPoint object transformed to map coordinates
-            qgsPoint = transform.toMapCoordinates(event.pos().x(),
+            self.qgsPoint = transform.toMapCoordinates(event.pos().x(),
                                             event.pos().y())
-            self.rubberBand.addPoint(qgsPoint)
+            
+            # We have the first point of either a line or polygon. If it is a line then it is a new road
+            # so check constraints for new roads. This method will also check if the point is near a 
+            # previously saved new road and snap to it if it is.
+            if self.started == False: # only checks the first point
+                qPoint = event.pos()
+                if self.geom == False:
+                    # prompts user and returns false if constraints not met
+                    if not shared.checkConstraints(self.mainwindow, self.qgsPoint, qPoint): 
+                        return
+            
+            self.rubberBand.addPoint(self.qgsPoint)
             self.started=True
             self.numberOfPoints = self.numberOfPoints + 1
             if self.geom: # polygon
@@ -182,6 +178,9 @@ class AddLinesPolygons(QgsMapTool):
                                  + vlayerName + " is open in another program and then try again.")
    
         
+        # The feature has been drawn so reset the QgsRubberBand so color of feature returns to default
+        self.resetDraw()
+
         # reset the editing layer id numbers
         shared.resetIdNumbers(self.provider, self.mainwindow.geom)
         
@@ -189,9 +188,6 @@ class AddLinesPolygons(QgsMapTool):
         if self.mainwindow.attrTable and self.mainwindow.attrTable.isVisible():
             self.mainwindow.openVectorAttributeTable()
         
-        # reset the QgsRubberBand so color of feature returns to default
-        self.resetDraw()
-
         #set the edit flag to unsaved
         self.mainwindow.editDirty = True
         # enable the save edits button

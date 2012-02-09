@@ -90,6 +90,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.dwRasterTable = None
         self.scenarioInfo = None
         self.dlgDisplayIdentify = None
+        self.dlgScenarioEditTypes = None
         self.windModifyInfo = None
         # MA State Plane coordinate system used by MassGIS
         self.crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
@@ -1005,19 +1006,21 @@ was not written.  Please check that a file with the same name is not open in ano
             # return on error, openVectorLayer() provides the error message box
             if not self.openVectorLayer(path): return
             
-        # We opened new editing layers, so color the text of the editing and base layers.
-        # The below works because the instance variable remains active
-        self.dlgScenarioEditTypes.colorEditBaseConstraintLayers(self.legend)
-        # Now we position the editing layer and any base layer or constraints layer that exists
-        # for the current scenario edit type.
-        self.dlgScenarioEditTypes.moveLayer(self.legend, self.dlgScenarioEditTypes.editLayerBaseName, 0)
-        if (self.dlgScenarioEditTypes.baseLayerBaseName and 
-                        self.dlgScenarioEditTypes.baseLayerBaseName != config.polygonBaseLayersBaseNames[1]): 
-            self.dlgScenarioEditTypes.moveLayer(self.legend, self.dlgScenarioEditTypes.baseLayerBaseName, 1)
-        if self.dlgScenarioEditTypes.constraintLayerBaseName:
-            if self.dlgScenarioEditTypes.baseLayerBaseName: position = 2
-            else: position = 1 
-            self.dlgScenarioEditTypes.moveLayer(self.legend, self.dlgScenarioEditTypes.constraintLayerBaseName, position)
+        # if we have opened a scenario edit type
+        if self.dlgScenarioEditTypes:
+            # We opened new editing layers, so color the text of the editing and base layers.
+            # The below works because the instance variable remains active
+            self.dlgScenarioEditTypes.colorEditBaseConstraintLayers(self.legend)
+            # Now we position the editing layer and any base layer or constraints layer that exists
+            # for the current scenario edit type.
+            self.dlgScenarioEditTypes.moveLayer(self.legend, self.dlgScenarioEditTypes.editLayerBaseName, 0)
+            if (self.dlgScenarioEditTypes.baseLayerBaseName and 
+                            self.dlgScenarioEditTypes.baseLayerBaseName != config.polygonBaseLayersBaseNames[1]): 
+                self.dlgScenarioEditTypes.moveLayer(self.legend, self.dlgScenarioEditTypes.baseLayerBaseName, 1)
+            if self.dlgScenarioEditTypes.constraintLayerBaseName:
+                if self.dlgScenarioEditTypes.baseLayerBaseName: position = 2
+                else: position = 1 
+                self.dlgScenarioEditTypes.moveLayer(self.legend, self.dlgScenarioEditTypes.constraintLayerBaseName, position)
                          
         # Finally, write the project information to a scenario file using QgsProject
         scenario = QgsProject.instance()
@@ -1287,19 +1290,11 @@ changes will be made to the base layer."
                 QtGui.QMessageBox.information(self, title, text, QtGui.QMessageBox.Ok)
                 return
  
-        # If a pasted point(s), make sure constraints are met.
-        if self.geom == 0:
-            for feat in self.copiedFeats:
-                qgsPoint = feat.geometry().asPoint()
-                featId = feat.id()
-                print "Main.mainwindow.pasteFeatures(): The point is " + str(qgsPoint) 
-                if not shared.checkConstraints(self, qgsPoint, featId): 
-                    # check constraints failed so undo the copy and disable the paste action
-                    self.copiedFeats = None
-                    self.copyFlag = False
-                    self.mpActionPasteFeatures.setDisabled(True)
-                    return
-
+        # If a pasted point(s) or lines, make sure constraints are met.  Method checks point and line features.
+        # The method warns user and returns False if constraints are not met
+        if not self.checkPastedFeatureConstraints():
+            return
+        
         # Now that we have good features and a correct layer to paste to:
         # The user could have added features or made other edits to the editing layer without
         # saving them as of yet, so we cannot use the variable self.originalEditLayerFeats here.
@@ -1487,7 +1482,7 @@ before you can make edits.  Please save the current scenario or open an existing
         # set some variables based on recording the id of the layer features were copied from
         # The id was recorded in Main.mainwindow.copyFeaturesShared().
         editLayerProvider = editLayer.dataProvider()
-        copyLayer = QgsMapLayerRegistry.instance().mapLayer(self.copyLayerId)
+        copyLayer = self.copyLayer
         copyLayerName = unicode(copyLayer.name())
         #self.copyLayerName = unicode(copyLayer.name())
         # this is the same as the editLayerProvider if edit layer features are being modified
@@ -1678,9 +1673,8 @@ before you can make edits.  Please save the current scenario or open an existing
             Main.mainwindow. modifyFeatures, mainwindow.deleteFeatures() 
             (when deleting from config.pointBaseLayersBaseNames)
         '''
-        # **so now can be edit or base layer**
         # get the id of the layer we are copying from for use in paste features
-        self.copyLayerId = self.activeVLayer.id()
+        self.copyLayer = self.activeVLayer
         
         # make copy as instance variable so we can paste features into another layer
         # "selectedFeatures" is a QgsFeatureList (a Python list of QgsFeature objects)
@@ -1931,7 +1925,7 @@ the appropriate scenario edit type, and try again.")
         
         # Set some variables based on recording the id of the layer features were copied from.
         # The id was recorded in Main.mainwindow.copyFeaturesShared().
-        copyLayer = QgsMapLayerRegistry.instance().mapLayer(self.copyLayerId)
+        copyLayer = self.copyLayer
         copyLayerName = unicode(copyLayer.name())
                 
         # Set tempOriginalFeats (the list of ids of current edit layer features) 
@@ -2766,7 +2760,7 @@ choose 'Export Scenario' for this scenario in the future.")
         self.currentLayers = []
         self.currentLayersCount = None
         self.dlgDisplayIdentify = None
-        self.windModifyInfo = None
+        self.dlgScenarioEditTypes = None
         self.dwAttrTable = None
         self.dwRasterTable = None
         self.editDirty = False
@@ -2799,7 +2793,7 @@ choose 'Export Scenario' for this scenario in the future.")
         self.scenarioInfo = None
         self.setWindowTitle("Conservation Assessment and Prioritization System (CAPS) Scenario Builder")
         self.statusBar.removeWidget(self.editTypeLabel)
-
+        self.windModifyInfo = None
         # This must be last so app sets variables when layers opened
         if newScenario:
             self.openOrientingLayers()
@@ -3310,7 +3304,51 @@ For example. If you have chosen to edit 'dams,' then you can only " + text + " t
             QtGui.QMessageBox.warning(self, "Export Scenario Error:", "Rounding the coordinate values in the \
 CSV export file failed. Please try again.")
             return False
-          
+        
+    def checkPastedFeatureConstraints(self):
+        ''' Utility method to check constraints for pasted features '''
+        # debugging
+        print "Main.mainwindow.getStartPointsOfLine()"
+        
+        #xform = self.canvas.getCoordinateTransform() # returns the QgsMapToPixel() class for the map canvas
+        qPoint = None
+        if self.geom == 0:
+            for feat in self.copiedFeats:
+                qgsPoint = feat.geometry().asPoint()
+                # xform.transform(qgsPoint) # QgsMapToPixel.transform() changes map coords to device coords
+                featId = feat.id()
+                print "Main.mainwindow.pasteFeatures(): The point is " + str(qgsPoint) 
+                if not shared.checkConstraints(self, qgsPoint, qPoint, featId): 
+                    # check constraints failed so undo the copy and disable the paste action
+                    self.copiedFeats = None
+                    self.copyFlag = False
+                    self.mpActionPasteFeatures.setDisabled(True)
+                    return False
+            else: return True
+        elif self.geom == 1:
+            for feat in self.copiedFeats:
+                featId = feat.id()
+                line = feat.geometry().asPolyline()
+                endCount = len(line)
+                for count, point in enumerate(line): # get the first point and last point of the line
+                    if count == 0:
+                        firstPoint = point
+                        print "Main.mainwindow.getStartPointsOfLine(): firstPoint is (" + str(point.x()) + ", " + str(point.y()) + ")" 
+                    elif count == endCount-1:
+                        lastPoint = point
+                        print "Main.mainwindow.getStartPointsOfLine(): lastPoint is (" + str(point.x()) + ", " + str(point.y()) + ")"
+                for count, qgsPoint in enumerate([firstPoint, lastPoint]):
+                    #qPoint = None #xform.transform(qgsPoint) # QgsMapToPixel.transform() changes map coords to device coords
+                    if shared.checkRoadConstraints(self, config.baseLayersPath, qgsPoint, qPoint, self.scenarioEditType, featId):
+                        break # feat meets constraints, so go to next feat
+                    elif count == 0: continue
+                    else: 
+                        QtGui.QMessageBox.warning(self, "Constraints Error:", "All pasted features must fall \
+on a road in the 'base_traffic' layer. The feature in row " + str(featId+1) + " in the attribute table of \
+the layer you copied from does not meet this constraint.  Please check all your points carefully and try again.")
+                        return False
+            else: return True    
+                
 #**************************************************************
     ''' Testing '''
 #**************************************************************

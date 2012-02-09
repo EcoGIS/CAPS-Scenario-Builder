@@ -260,11 +260,11 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
     def isLayerOpen(self, legend, layerBaseName):
         ''' Check if editLayer or baseLayer is open in the layer panel '''
         # debugging
-        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().isEditLayerOpen()"
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().isLayerOpen()"
         
         if not layerBaseName: return False # if this layers name is None
         items = legend.findItems(layerBaseName, QtCore.Qt.MatchFixedString, 0)
-        print "length of item list is " + str(len(items))
+        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().isLayerOpen(): length of item list is " + str(len(items))
         if len(items) > 0: return True
         else: return False # set the editLayerOpen flag
   

@@ -78,16 +78,13 @@ class AddPoints(QgsMapTool):
             and prompt the user if constraints are not met.
         '''
  
-        '''# First check if the point can be snapped to a new road in the scenario
-        if shared.newRoadExists(self.mainwindow):
-            snappedQgsPoint = shared.snapToNewRoad(self.mainwindow, point)
-            print "Tools.addpoints.AddPoints().canvasPressEvent(): The returned snappedPoint is " + str(snappedQgsPoint)
-            if snappedQgsPoint:
-                # constraints are satisfied because clicked point is on a new road
-                # set the new wildlife crossing's point to be the point on the new road
-                self.qgsPoint = snappedQgsPoint
-                self.getNewAttributes()
-                return '''   
+        # If the point is a culvert/bridge, check if it can be snapped to a new road in the scenario.
+        if self.mainwindow.scenarioEditType == config.scenarioEditTypesList[0]:
+            # returns the snapped qgs point if the point can be snapped to a new road, or returns False
+            retval = shared.snapToNewRoad(self.mainwindow, qPoint) 
+            if retval:
+                self.qgsPoint = retval # if the point is returned, set it to be the new feature's geometry
+        
         # If not editing a new road check constraints.
         # This method returns False if the constraints are not met.
         if not shared.checkConstraints(self.mainwindow, self.qgsPoint, qPoint):
