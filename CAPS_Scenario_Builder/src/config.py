@@ -117,8 +117,9 @@ comboBoxOptions5 = [['','0.0 - none(closed road; 0 cars/day)', '0.025 - very low
                 '0.2 - low(minor road; 800 cars/day)', '0.5 - medium(collector; 2500 cars/day)',
                 '0.75 - medium-high(secondary highway; 5000 cars/day)', 
                 '0.94 - high(primary highway; 10,000 cars/day)', 
-                '1.0 - extreme(expressway; >40,000 cars/day)'], ['', '81 - Expressway', '82 - Primary highway', '83 - Secondary highway', '84 - Light duty road',
-                   '85 - Unpaved road', '90 - Railroad', '91 - Abandoned railbed', '92 - Rail trail']]
+                '1.0 - extreme(expressway; >40,000 cars/day)'], ['', '81 - Expressway', '82 - Primary highway', 
+                '83 - Secondary highway', '84 - Light duty road', '85 - Unpaved road', '90 - Railroad', 
+                '91 - Abandoned railbed', '92 - Rail trail']]
 comboBoxOptions6 = [['', '1 - Commercial', '2 - Industrial', '3 - Urban open', '4 - Urban public ', 
                      '5 - Transportation ', '6 - Mining', '7 - Waste disposal', '8 - Junkyard', 
                      '10 - Multi-family  residential', '11 - High-density residential', 
@@ -132,6 +133,27 @@ comboBoxOptions6 = [['', '1 - Commercial', '2 - Industrial', '3 - Urban open', '
                      '47 - Deep marsh', '48 - Vernal pool', '55 - Pond', '56 - Lake', '60 - Sea cliff', 
                      '61 - Vegetated dune ', '62 - Coastal dune', '63 - Coastal beach', '70 - Salt marsh', 
                      '71 - Tidal flat', '72 - Rocky intertidal', '75 - Salt pond/bay']]
+
+baseLandLookup = {1: 'Commercial', 2: 'Industrial', 3: 'Urban open', 4: 'Urban public ', 
+                  5: 'Transportation', 6: 'Mining', 7: 'Waste disposal', 8: 'Junkyard', 
+                 10: 'Multi-family  residential', 11: 'High-density residential', 
+                 12: 'Medium-density residential', 13: 'Low-density residential', 
+                 20: 'Spectator recreation', 21: 'Participatory recreation', 
+                 22: 'Golf', 23: 'Water based recreation ', 24: 'Marina', 
+                 30: 'Cropland', 31: 'Cranberry bog ', 32: 'Nursery', 33: 'Orchard', 
+                 34: 'Cemetery', 35: 'Pasture', 36: 'Powerline shrubland', 37: 'Open land', 
+                 40: 'Forest', 41: 'Deciduous forested wetland', 42: 'Mixed forested wetland', 
+                 43: 'Coniferous forested wetland', 44: 'Shrub swamp', 45: 'Bog', 46: 'Shallow marsh', 
+                 47: 'Deep marsh', 48: 'Vernal pool', 50: 'Water (lentic)', 51: 'Water(loic)', 55: 'Pond', 
+                 56: 'Lake', 60: 'Sea cliff', 61: 'Vegetated dune', 62: 'Coastal dune', 63: 'Coastal beach', 
+                 70: 'Salt marsh', 71: 'Tidal flat', 72: 'Rocky intertidal', 74: 'Ocean', 75: 'Salt pond/bay',
+                 81: 'Expressway', 82: 'Primary highway', 83: 'Secondary highway', 84: 'Light duty road', 
+                 90: 'Railroad', 91: 'Abandoned raibed', 92: 'Rail trail', 95: 'Bridge/culvert', 96: 'Dam'}
+
+# If the raster value falls between the two numbers in baseTrafficKeys[x] then displayed value is baseTrafficValues[x]
+# these numbers and values can be modified as needed as long is there is a one-to-one correspondence in order.
+baseTrafficValues = [[-1, 0], [1, 60], [61, 121], [122, 182], [183, 244], [245, 255]]
+baseTrafficDisplay = ['No road', 'Unpaved road', 'Light duty road', 'Secondary highway', 'Primary highway', 'Expressway']
 
 ''' The fields lists for the three editing shapefiles '''
 # no changes should be made to the code under this heading
@@ -155,7 +177,7 @@ scenarioConstraintLayersFileNames = ['base_streams.tif', 'base_traffic.tif']
 
 
 # The below are used in various places to check that correct layers are active for editing operations.
-# The spelling of these names can be changed, but not the number of them.
+# The spelling of these names can be changed, but not the number or order of them.
 pointBaseLayersBaseNames = ['base_culverts_bridges', 'base_dams', 'base_terrestrial_passage',
                              'base_tidal_restrictions']
 pointBaseLayersFileNames = ['base_culverts_bridges.shp', 'base_dams.shp', 'base_terrestrial_passage.shp',

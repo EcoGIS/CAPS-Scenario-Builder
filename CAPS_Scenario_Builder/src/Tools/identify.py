@@ -32,7 +32,7 @@ from PyQt4 import QtCore, QtGui
 from qgis.core import *
 from qgis.gui import *
 # CAPS application imports
-import shared
+import shared, config
 
 class Identify(QgsMapTool):
     ''' Provide a tool to get information about vector features and raster values '''
@@ -72,6 +72,7 @@ class Identify(QgsMapTool):
         # debugging
         print "Tools.identify.Identify().rasterIdentifyTool()"
 
+        layerName = unicode(self.mainwindow.activeRLayer.name())
         # Convert QStrings to unicode unless they are used immediately in a Qt method. 
         # This ensures that we never ask Python to slice a QString, which produces a type error.
         text = "The clicked x,y point is (" + unicode(round(qgsPoint.x(), 2)) + ", " + unicode(round(qgsPoint.y(), 2)) + ")\n"
@@ -80,7 +81,38 @@ class Identify(QgsMapTool):
         # being the values at the clicked point.
         result, identifyDict = self.mainwindow.activeRLayer.identify(qgsPoint)
         for (k,v) in identifyDict.iteritems():
-            text += unicode(k) + " value: " + unicode(v) + "\n"
+            k = unicode(k)
+            v = unicode(v)
+            print "Tools.identify.Identify().rasterIdentifyTool(): v is " + v
+            if  layerName == config.polygonBaseLayersBaseNames[0]: # base_traffic
+                vNumber = v
+                if v == u"null (no data)":
+                    vNumber = u"0"
+                    v = 0
+                else: v = int(v)
+                ranges = config.baseTrafficValues
+                print "Tools.identify.Identify().rasterIdentifyTool(): length of ranges is " + str(len(ranges))
+                vDisplay = config.baseTrafficDisplay
+                for count, vRange in enumerate(ranges):
+                    print "Tools.identify.Identify().rasterIdentifyTool(): vRange is " + str(vRange)
+                    print "Tools.identify.Identify().rasterIdentifyTool(): vRange is " + str(vRange[0])
+                    print "Tools.identify.Identify().rasterIdentifyTool(): count is " + str(count)
+                    if v >= vRange[0] and v <= vRange[1]:
+                        v = vDisplay[count]
+                        print "Tools.identify.Identify().rasterIdentifyTool(): v loop is " + v
+                        break
+                text += k + " value: " + vNumber + " " + unicode(v) + "\n"
+            elif layerName == config.polygonBaseLayersBaseNames[1]: # base_land
+                lookup = config.baseLandLookup
+                vNumber = v
+                v = int(v)
+                retval = lookup.get(v)
+                if retval:
+                    v = retval
+                else: v = "unknown" 
+                text += k + " value: " + vNumber + " " + unicode(v) + "\n"
+            else: text += k + " value: " + unicode(v) + "\n"
+                 
         if not result: # if the identify method fails
             print "Tools.identify.Identify().rasterIdentifyTool(): Identify raster layer failed"
         
@@ -93,6 +125,7 @@ class Identify(QgsMapTool):
         # debugging
         print "Tools.identify.Identify().vectorIdentifyTool()"
         
+        vlayer = self.mainwindow.activeVLayer
         provider = self.mainwindow.provider
         # fields() returns a dictionary with the field key and the name of the field
         fieldNamesDict = provider.fields()
@@ -102,9 +135,9 @@ class Identify(QgsMapTool):
         feat = QgsFeature()
         while provider.nextFeature(feat):
             # fetch the feature geometry, which is the feature's spatial coordinates
-            fgeom = feat.geometry()
+            roundGeomText = self.getGeometryText(feat)
             # This records the feature's ID and its spatial coordinates
-            text = "Feature ID %d: %s\n" % (feat.id()+1, unicode(fgeom.exportToWkt())) 
+            text = "Feature ID %d: %s\n" % (feat.id()+1, roundGeomText) 
             #A QgsAttribute map is a Python dictionary (key = field id : value = 
             # the field's value as a QtCore.QVariant()object 
             attrs = feat.attributeMap() 
@@ -118,6 +151,44 @@ class Identify(QgsMapTool):
             # display the text to the user
             title = "Vector Feature Information"
             self.displayInformation(title, text)
+            
+    def getGeometryText(self, feat):
+        vlayer = self.mainwindow.activeVLayer
+        if vlayer.geometryType() == 0: # point
+            point = feat.geometry().asPoint()
+            roundGeomText = "POINT(" + unicode(round(point.x(), 2)) + "," + unicode(round(point.y(), 2)) + ")"
+            return roundGeomText
+        elif vlayer.geometryType() == 1: # line
+            roundGeomText = "LINESTRING("
+            line = feat.geometry().asPolyline()
+            numPoints = len(line)
+            for count, point in enumerate(line): 
+                roundGeomText += unicode(round(point.x(), 2)) + " " + unicode(round(point.y(), 2))
+                if numPoints > count + 1:
+                    roundGeomText += ","
+                else:  roundGeomText += ")"
+            return roundGeomText
+        elif vlayer.geometryType() == 2: # polygon
+            # a list of lists because polygons can have nested polygons (i.e. "ring polygons")
+            roundGeomText = "POLYGON("
+            allPolygons = feat.geometry().asPolygon()
+            numPolygons = len(allPolygons)
+            for cnt, polygon in enumerate(allPolygons):
+                numPoints = len(polygon)
+                roundGeomText += "("
+                for count, point in enumerate(polygon):
+                    roundGeomText += unicode(round(point.x(), 2)) + " " + unicode(round(point.y(), 2))
+                    if numPoints > count + 1:
+                        roundGeomText += ","
+                    else: roundGeomText += ")"
+                if numPolygons > cnt + 1:
+                    roundGeomText += ","
+                else: roundGeomText += ")"
+            return roundGeomText
+        else: 
+            QtGui.QMessageBox.warning(self, "Export Scenario Error:", "Rounding the coordinate values in the \
+CSV export file failed. Please try again.")
+            return False
             
     def displayInformation(self, title, text):
         ''' Display the information about the vector or raster '''

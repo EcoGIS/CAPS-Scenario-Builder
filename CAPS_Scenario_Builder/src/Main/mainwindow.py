@@ -580,7 +580,7 @@ make some edits to your scenario and try again.")
             if not self.deleteOldCsvShapefile(csvPath, csvFileName): return
             
             # round values to shorten csv file output (roundGeometryValues() warns on error)
-            vlayer = self.roundGeometryValues(vlayer)
+            vlayer = self.roundGeometryValues(vlayer, "export")
             if not vlayer: return
         
             ''' Convert the editing shapefiles to CSV format '''
@@ -3285,7 +3285,7 @@ For example. If you have chosen to edit 'dams,' then you can only " + text + " t
                 roundedLine = []
                 line = feat.geometry().asPolyline()
                 for point in line: 
-                    roundedLine.append(QgsPoint(round(point.x(), 2), round(point.y(), 2))) 
+                    roundedLine.append(QgsPoint(round(point.x(), 2), round(point.y(), 2)))
                 retval = provider.changeGeometryValues({feat.id(): QgsGeometry.fromPolyline(roundedLine)})
         elif vlayer.geometryType() == 2: # polygon
             while provider.nextFeature(feat):
@@ -3308,7 +3308,7 @@ CSV export file failed. Please try again.")
     def checkPastedFeatureConstraints(self):
         ''' Utility method to check constraints for pasted features '''
         # debugging
-        print "Main.mainwindow.getStartPointsOfLine()"
+        print "Main.mainwindow.checkPastedFeatureConstraints()"
         
         #xform = self.canvas.getCoordinateTransform() # returns the QgsMapToPixel() class for the map canvas
         qPoint = None
@@ -3317,7 +3317,7 @@ CSV export file failed. Please try again.")
                 qgsPoint = feat.geometry().asPoint()
                 # xform.transform(qgsPoint) # QgsMapToPixel.transform() changes map coords to device coords
                 featId = feat.id()
-                print "Main.mainwindow.pasteFeatures(): The point is " + str(qgsPoint) 
+                print "Main.mainwindow.checkPastedFeatureConstraints(): The point is " + str(qgsPoint) 
                 if not shared.checkConstraints(self, qgsPoint, qPoint, featId): 
                     # check constraints failed so undo the copy and disable the paste action
                     self.copiedFeats = None
@@ -3333,10 +3333,10 @@ CSV export file failed. Please try again.")
                 for count, point in enumerate(line): # get the first point and last point of the line
                     if count == 0:
                         firstPoint = point
-                        print "Main.mainwindow.getStartPointsOfLine(): firstPoint is (" + str(point.x()) + ", " + str(point.y()) + ")" 
+                        print "Main.mainwindow.checkPastedFeatureConstraints(): firstPoint is (" + str(point.x()) + ", " + str(point.y()) + ")" 
                     elif count == endCount-1:
                         lastPoint = point
-                        print "Main.mainwindow.getStartPointsOfLine(): lastPoint is (" + str(point.x()) + ", " + str(point.y()) + ")"
+                        print "Main.mainwindow.checkPastedFeatureConstraints(): lastPoint is (" + str(point.x()) + ", " + str(point.y()) + ")"
                 for count, qgsPoint in enumerate([firstPoint, lastPoint]):
                     #qPoint = None #xform.transform(qgsPoint) # QgsMapToPixel.transform() changes map coords to device coords
                     if shared.checkRoadConstraints(self, config.baseLayersPath, qgsPoint, qPoint, self.scenarioEditType, featId):
@@ -3348,7 +3348,7 @@ on a road in the 'base_traffic' layer. The feature in row " + str(featId+1) + " 
 the layer you copied from does not meet this constraint.  Please check all your points carefully and try again.")
                         return False
             else: return True    
-                
+        else: return True                
 #**************************************************************
     ''' Testing '''
 #**************************************************************
