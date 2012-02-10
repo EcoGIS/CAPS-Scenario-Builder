@@ -61,9 +61,6 @@ class LegendItem(QtGui.QTreeWidgetItem):
         self.isVect = (self.canvasLayer.layer().type() == 0) # 0: Vector, 1: Raster
         self.layerId = self.canvasLayer.layer().id()
 
-        #if self.isVect:
-        # geom = self.canvasLayer.layer().dataProvider().geometryType()
-
         ''' 
             This class is instantiated by the Legend() class  after a layer is registered by QGIS,
             and creates a legend item that is a map layer.  
@@ -90,13 +87,6 @@ class LegendItem(QtGui.QTreeWidgetItem):
         icon = QtGui.QIcon()
 
         if self.isVect:
-            '''if geom == 1 or geom == 4 or geom == 8 or geom == 11: # Point
-                icon.addPixmap(QtGui.QPixmap(resources_prefix + "mIconPointLayer.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-            elif geom == 2 or geom == 5 or geom == 9 or geom == 12: # Polyline
-                icon.addPixmap(QtGui.QPixmap(resources_prefix + "mIconLineLayer.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-            elif geom == 3 or geom == 6 or geom == 10 or geom == 13: # Polygon
-                icon.addPixmap(QtGui.QPixmap(resources_prefix + "mIconPolygonLayer.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-            else: # Not a valid WKT Geometry'''
             geom = self.canvasLayer.layer().geometryType() # QGis Geometry
             if geom == 0: # Point
                 icon.addPixmap(QtGui.QPixmap(resources_prefix + "mIconPointLayer.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)

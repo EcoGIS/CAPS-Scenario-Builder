@@ -1441,7 +1441,7 @@ before you can make edits.  Please save the current scenario or open an existing
         print "Main.mainwindow.saveEdits(): self.editDirty begin is " + str(self.editDirty)
              
         # This gives a save message only if the user clicks the Save Edits action
-        # or if there are no edtis to save.
+        # and there are no edits to save.
         title = "Save Edits"
         if not self.editDirty: 
             text = "You have not made any edits to save!"
@@ -1450,7 +1450,7 @@ before you can make edits.  Please save the current scenario or open an existing
         # The editing tools save the edits to disk as they are made. So, to delete
         # new features, we list the original features when editing starts and delete
         # any feature not in the list.  To save features, we just run listOriginalFeatures
-        # again with the editing layer provider
+        # again with the editing layer 
         self.originalEditLayerFeats = shared.listOriginalFeatures(self, self.editLayerName)
 
         # Set "Save Edits" action to disabled to let user know edits are saved.
@@ -3089,47 +3089,86 @@ choose 'Export Scenario' for this scenario in the future.")
       
         if unicode(self.activeVLayer.name()) == config.editLayersBaseNames[0]: # edit_scenario(points) layer
             print "Main.mainWindow.setRendererV2(): Setting Rule Based Renderer for 'edit_scenario(points).shp"
+            
             # if rule renderer is already set then no need to do anything, just return
             if self.activeVLayer.rendererV2().type() == "RuleRenderer": 
                 print "Main.mainWindow.setRendererV2(): RuleRenderer returned"
                 return
+
             # This returns a QgsSymbolV2().  In particular a QgsMarkerSymbolV2()
             # This also returns a QgsMarkerSymbolLayerV2() layer.
             # In particular a QgsSimpleMarkerSymbolLayerV2(). 
             symbol = QgsSymbolV2.defaultSymbol(QGis.Point)
             # renderer only needs a symbol to be instantiated
             rendererV2 = QgsRuleBasedRendererV2(symbol)
+            
             # get the symbols list and symbol (usually only one symbol)
             symbol = rendererV2.symbols()[0]
-            # return the symbol's symbol layer (usually only one layer)
             symbolLayer = symbol.symbolLayer(0)
+            symbolLayer.setSize(2.0)
+            
             # This variable is set in Tools.shared.updateExtents() when reopening the editing layer.
             # after editing.  If the user had set a color, we reset it here. 
-            if self.layerColor: 
+            if self.layerColor:
+                print  "Main.mainWindow.setRendererV2(): There is a layer color" + str(self.layerColor)
                 symbolLayer.setColor(self.layerColor)
                 self.layerColor = None
                 # color the preview icon
                 self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
             else: symbolLayer.setColor(QtGui.QColor("red"))
-            # create a new symbol layer for the delete symbol (i.e. a red cross)
+            
+            '''
+                Choices for symbols are: circle, rectangle, diamond, pentagon, cross, cross2, triangle, 
+                equilateral_triangle, star, regular_star, arrow.
+                
+            '''
+            
             newSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
-            map1 = {"name": "cross", "color": "255,0,0,255", 
+            # dams
+            map1 = {"name": "rectangle", "color": "255,0,0,255", "offset": "0,0",
+                   "color_border": "0,0,0,255", "size": "2.5", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
+            damSymbol = newSymbol.createSimple(map1)
+            damLayer = damSymbol.symbolLayer(0)
+            # terrestrial crossing
+            map2 = {"name": "pentagon", "color": "255,0,0,255", "offset": "0,0",
+                   "color_border": "0,0,0,255", "size": "3.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
+            terrSymbol = newSymbol.createSimple(map2)
+            terrLayer = terrSymbol.symbolLayer(0)
+            # tidal restriction
+            map3 = {"name": "regular_star", "color": "255,0,0,255", "offset": "0,0",
+                   "color_border": "0,0,0,255", "size": "4.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
+            tidalSymbol = newSymbol.createSimple(map3)
+            tidalLayer = tidalSymbol.symbolLayer(0)
+            
+            # create a new symbol layer for the delete symbol (i.e. a red cross)
+            map4 = {"name": "cross", "color": "255,0,0,255", "offset": "0,0",
                    "color_border": "255,0,0,255", "size": "7.0", "angle": "45.0"}
-            deleteSymbol = newSymbol.createSimple(map1)
+            deleteSymbol = newSymbol.createSimple(map4)
             deleteLayer = deleteSymbol.symbolLayer(0)
-            # create a new symbol layer for the altered symbol (i.e. a green triangle
-            map2 = {"name": "equilateral_triangle", "color": "0,0,0,0", 
+            
+            # create a new symbol layer for the altered symbol (i.e. a red triangle)
+            map5 = {"name": "equilateral_triangle", "color": "0,0,0,0", "offset": "0,0",
                    "color_border": "255,0,0,255", "size": "7.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
-            alteredSymbol = newSymbol.createSimple(map2)
+            alteredSymbol = newSymbol.createSimple(map5)
             alteredLayer = alteredSymbol.symbolLayer(0)
             
-            # make the rule, using the delete symbol, and add it
-            rule1 = rendererV2.Rule(deleteSymbol, 0, 0, 
-                "c_deleted='y' or d_deleted='y' or w_deleted='y' or r_deleted='y'")
+            # rule that makes dam symbol a rectangle
+            rule1 = rendererV2.Rule(damSymbol, 0, 0, "dam_id!=''")
             rendererV2.addRule(rule1)
-            rule2 = rendererV2.Rule(alteredSymbol, 0, 0, 
-                "c_altered = 'y' or d_altered = 'y' or w_altered = 'y' or r_altered = 'y'")
+            # rule that makes terrestrial crossing structures a diamond
+            rule2 = rendererV2.Rule(terrSymbol, 0, 0, "wildlf_id!=''")
             rendererV2.addRule(rule2)
+            # rule that makes tidal restrictions a star
+            rule3 = rendererV2.Rule(tidalSymbol, 0, 0, "restr_id!=''")
+            rendererV2.addRule(rule3)
+            # make the rule, using the delete symbol, and add it
+            rule4 = rendererV2.Rule(deleteSymbol, 0, 0, 
+                "c_deleted='y' or d_deleted='y' or w_deleted='y' or r_deleted='y'")
+            rendererV2.addRule(rule4)
+            # rule for altered symbol
+            rule5 = rendererV2.Rule(alteredSymbol, 0, 0, 
+                "c_altered = 'y' or d_altered = 'y' or w_altered = 'y' or r_altered = 'y'")
+            rendererV2.addRule(rule5)
             # associate the new renderer with the activeVLayer
             self.activeVLayer.setRendererV2(rendererV2)
             # color the preview icon
@@ -3137,17 +3176,29 @@ choose 'Export Scenario' for this scenario in the future.")
             self.activeVLayer.triggerRepaint()
             # debugging
             #print "The delete layers name is: " + deleteLayer.name()
-            print "Main.mainWindow.setRendererV2(): The number of symbols is: " + str(len(rendererV2.symbols()))
+            print "Main.mainWindow.setRendererV2(): The number of symbol layers is: " + str(len(rendererV2.symbols()))
             print "Main.mainWindow.setRendererV2(): The number of rules is: " + str(rendererV2.ruleCount())
             print "Main.mainWindow.setRendererV2(): The symbolLayer properties are: "
             for k, v in symbolLayer.properties().iteritems():
                 print "%s: %s" % (k, v)
+            print "Main.mainWindow.setRendererV2(): The damLayer properties are: "
+            for k, v in damLayer.properties().iteritems():
+                print "%s: %s" % (k, v) 
+            print "Main.mainWindow.setRendererV2(): The terrLayer properties are: "
+            for k, v in terrLayer.properties().iteritems():
+                print "%s: %s" % (k, v) 
+            print "Main.mainWindow.setRendererV2(): The tidalLayer properties are: "
+            for k, v in tidalLayer.properties().iteritems():
+                print "%s: %s" % (k, v) 
             print "Main.mainWindow.setRendererV2(): The deleteLayer properties are: "
             for k, v in deleteLayer.properties().iteritems():
                 print "%s: %s" % (k, v)
             print "Main.mainWindow.setRendererV2(): The alteredLayer properties are: "
             for k, v in alteredLayer.properties().iteritems():
-                print "%s: %s" % (k, v)    
+                print "%s: %s" % (k, v)
+            print "Main.mainWindow.setRendererV2(): The damLayer properties are: "
+            for k, v in damLayer.properties().iteritems():
+                print "%s: %s" % (k, v)        
         elif unicode(self.activeVLayer.name()) == config.editLayersBaseNames[1]: # edit_scenario(lines).shp
             print "Main.mainWindow.setRendererV2(): Setting color and line width for edit_scenario(lines).shp"
             # this is a QgsLineSymbolLayerV2()
