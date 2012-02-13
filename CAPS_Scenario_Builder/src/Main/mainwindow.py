@@ -66,12 +66,13 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.splash = splash
         
         ''' Set instance variables '''
-        # LISTS
+        # LISTS AND DICTIONARIES
         self.originalScenarioLayers = []
         self.currentLayers = []
         self.copiedFeats = []
         self.originalEditLayerFeats = []
         self.originalScenarioLayersNames = []
+        self.coloredLayers = {}
         
         # FLAGS
         self.scenarioDirty = False
@@ -788,16 +789,16 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             orientingLayerNames = []
             for fileName in config.allOrientingLayers:
                 info = QtCore.QFileInfo(fileName)  
-                name = info.completeBaseName()
+                name = unicode(info.completeBaseName())
                 orientingLayerNames.append(name)
             legendLayerNames = []
             # legendLayers are QgsMapCanvasLayers
             legendLayers = self.legend.getLayerSet()
-            for layer in legendLayers: legendLayerNames.append(layer.layer().name())
+            for layer in legendLayers: legendLayerNames.append(unicode(layer.layer().name()))
             print "Main.mainwindow.setScenarioDirty(): orientingLayerNames are"
-            for name in orientingLayerNames: print name.toUtf8()  
+            for name in orientingLayerNames: print name  
             print "Main.mainwindow.setScenarioDirty(): legendLayerNames are "
-            for name in legendLayerNames: print name.toUtf8()
+            for name in legendLayerNames: print name
             difference = [name for name in orientingLayerNames if name not in legendLayerNames]
             print "Main.mainwindow.setScenarioDirty(): difference is"
             print difference
@@ -832,6 +833,9 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             # this is what Python calls a "list comprehension"
             differences = [name for name in self.getCurrentLayersNames() if name not in 
                                                             self.originalScenarioLayersNames]
+            if differences: self.scenarioDirty = True # if there are differences
+            else: self.scenarioDirty = False
+
             # debugging
             print "Main.mainwindow.setScenarioDirty(): currentLayersNames are"
             for name in self.getCurrentLayersNames(): print name
@@ -839,9 +843,6 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             for name in self.originalScenarioLayersNames: print name
             print "Main.mainwindow.setScenarioDirty(): differences are "
             for name in differences: print name
-            
-            if differences: self.scenarioDirty = True # if there are differences
-            else: self.scenarioDirty = False
         
         # debugging
         print "Main.mainwindow.setScenarioDirty(): self.scenarioDirty end is " + str(self.scenarioDirty)
@@ -2348,11 +2349,12 @@ attribute table is very large and can take a few seconds to load.  Do you want t
     ''' QT AND PYTHON SHORT CIRCUIT SIGNAL SLOTS TO HANDLE APP STATE CHANGES '''
 ############################################################################################    
     
-    # this Pythono short-circuit signal found in legend.currentItemChanged()
+    # this Python short-circuit signal found in legend.currentItemChanged()
     def activeLayerChanged(self, layerType):
         ''' 
             A controller for handling app state changes originating from the legend.
-            This method is called whenever the "current item" in the legend has changed.
+            This method is called whenever the "current item" in the legend has changed,
+            and its major task is to enable or disable actions in the GUI.
         '''
 
         #**************************************************************************     
@@ -2425,14 +2427,14 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # enabled by loading a vector layer.
             self.mpActionOpenVectorAttributeTable.setDisabled(True)
             
-            # New layer loaded so check about seting the scenarioDirty flag.  
+            '''# New layer loaded so check about seting the scenarioDirty flag.  
             # Note: This gets called unnecessarily when a different layer is selected in the layer panel.
             # However, it returns immediately if the layer count has not changed.
             # It also returns immediately if a scenario is in the process of loading
             # or if the orienting layers are loading.
             # There is no need to check if the scenario is already dirty.  Once a scenario
             # is dirty, the policy is it stays dirty until the user saves it.
-            if not self.scenarioDirty: self.setScenarioDirty()
+            if not self.scenarioDirty: self.setScenarioDirty()'''
           
             # There could be something to export if a scenario is open so enable Export Scenario
             # A user could open a scenario that has edits to editing layers and export it.
@@ -2460,21 +2462,22 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # set extents if not within MA state extents
             self.setExtents()
                       
-            # New layer loaded so set the scenarioDirty flag.  Note: This gets called
+            '''# New layer loaded so set the scenarioDirty flag.  Note: This gets called
             # unnecessarily when a different layer is selected in the layer panel.
             # However, it returns immediately if the layer count has not changed. 
             # There is no need to check if the scenario is already dirty.  Once a scenario
             # is dirty, the policy is it stays dirty until the user saves it.
-            if not self.scenarioDirty: self.setScenarioDirty()
+            if not self.scenarioDirty: self.setScenarioDirty()'''
             
             # debugging 
             print "ALC THE ACTIVE VLAYER NAME IS " + self.activeVLayer.name()
             print "alc The layers authid is " + str(self.activeVLayer.crs().authid())
             print "alc The description of the srs is " + str(self.activeVLayer.crs().description())
-
-            # This method sets colors, marker types and other properties for certain vector layers
+            print "alc The activeVLayer is using renderer V2: " + str(self.activeVLayer.isUsingRendererV2())
             print "alc The activeVLayer renderer type is " + self.activeVLayer.rendererV2().type()
-            self.setRendererV2()
+            
+            '''# This method sets colors, marker types and other properties for certain vector layers
+            self.setRendererV2()'''
             
             # refresh attribute table if open
             if self.attrTable != None and self.attrTable.isVisible():
@@ -2755,6 +2758,7 @@ choose 'Export Scenario' for this scenario in the future.")
         self.activeRLayer = None
         self.activeVLayer = None
         self.attrTable = None
+        self.coloredLayers = {}
         self.copiedFeats = []
         self.copyFlag = False
         self.currentLayers = []
@@ -3047,7 +3051,6 @@ choose 'Export Scenario' for this scenario in the future.")
             self.canvas.refresh()
             print "Main.mainwindow.setExtents(): SET CANVAS TO MA EXTENT"
         else: print "Main.mainwindow.setExtents(): THE EXTENTS WERE NOT CHANGED" 
-        
        
         # debugging
         rect = self.canvas.extent()
@@ -3090,7 +3093,9 @@ choose 'Export Scenario' for this scenario in the future.")
         if unicode(self.activeVLayer.name()) == config.editLayersBaseNames[0]: # edit_scenario(points) layer
             print "Main.mainWindow.setRendererV2(): Setting Rule Based Renderer for 'edit_scenario(points).shp"
             
-            # if rule renderer is already set then no need to do anything, just return
+            # If rule renderer is already set (either because this layer was previously opened, or
+            # because it was opened from a scenario (.cap) file having renderer information)
+            # then no need to do anything, just return
             if self.activeVLayer.rendererV2().type() == "RuleRenderer": 
                 print "Main.mainWindow.setRendererV2(): RuleRenderer returned"
                 return
@@ -3118,6 +3123,9 @@ choose 'Export Scenario' for this scenario in the future.")
             else: symbolLayer.setColor(QtGui.QColor("red"))
             
             '''
+                Now we set the rules for rendering different scenario edits, so that the user can
+                easily determine what features represent.
+                
                 Choices for symbols are: circle, rectangle, diamond, pentagon, cross, cross2, triangle, 
                 equilateral_triangle, star, regular_star, arrow.
                 
@@ -3174,6 +3182,7 @@ choose 'Export Scenario' for this scenario in the future.")
             # color the preview icon
             self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
             self.activeVLayer.triggerRepaint()
+            
             # debugging
             #print "The delete layers name is: " + deleteLayer.name()
             print "Main.mainWindow.setRendererV2(): The number of symbol layers is: " + str(len(rendererV2.symbols()))
@@ -3203,15 +3212,17 @@ choose 'Export Scenario' for this scenario in the future.")
             print "Main.mainWindow.setRendererV2(): Setting color and line width for edit_scenario(lines).shp"
             # this is a QgsLineSymbolLayerV2()
             symbolLayer = self.activeVLayer.rendererV2().symbols()[0].symbolLayer(0)
-            if symbolLayer.width() == (0.4): # if line width and color already set then return
+            # if the line width has been set, then the color has been set either by the code below when 
+            # the layer was first opened, or by the user in a previously saved scenario (.caps) file.
+            if symbolLayer.width() == (0.4): 
                 return
-            if self.layerColor: # we saved color in Tools.shared.setExtents()
+            if self.layerColor: # we saved color in Tools.shared.setExtents() and are opening a new line layer.
                 print "Main.mainWindow.setRendererV2(): THERE IS A LINE COLOR"
                 symbolLayer.setColor(self.layerColor)
                 self.layerColor = None
                 # color the preview icon
                 self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
-            else: symbolLayer.setColor(QtGui.QColor("red")) # default to red if user has not chosen other color   
+            else: symbolLayer.setColor(QtGui.QColor("red")) # default to red if user has not chosen another color   
             symbolLayer.setWidth(0.4)
             # color the preview icon
             self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
@@ -3233,7 +3244,7 @@ choose 'Export Scenario' for this scenario in the future.")
             #  layer color will be set to the color property in the scenario file.
             if self.origScenarioLyrsLoaded == False:
                 print "Main.mainWindow.setRendererV2(): The " + config.editLayersBaseNames[2] + "is loading from a scenario"
-                self.editingPolygon = True
+                self.editingPolygon = True  # we set this flag when loading a scenario with an editingPolygon for use below.
                 return
             # If the layer was loaded from a scenario file then return because
             # we don't want to change the user's color selection.
@@ -3249,7 +3260,11 @@ choose 'Export Scenario' for this scenario in the future.")
             # Set the base_towns layer fill color to none
             rendererV2 = self.activeVLayer.rendererV2()
             symbol = rendererV2.symbols()[0]
-            symbolMap = {"color": "255, 255, 255, 0", "style": "no", 
+            color = QtGui.QColor(255, 255, 255, 255)
+            if symbol.color() == color: # no need to set properties for this layer if they have already been set
+                print "Main.mainWindow.setRendererV2(): base_towns color is white"
+                return 
+            symbolMap = {"color": "255, 255, 255, 255", "style": "no", 
                               "color_border": "DEFAULT_SIMPLEFILL_BORDERCOLOR", 
                               "style_border": "DEFAULT_SIMPLEFILL_BORDERSTYLE", 
                               "width_border": "0.3" }

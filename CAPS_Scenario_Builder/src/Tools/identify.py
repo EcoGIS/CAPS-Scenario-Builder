@@ -39,7 +39,7 @@ class Identify(QgsMapTool):
     def __init__(self, parent):
         QgsMapTool.__init__(self, parent.canvas)
     
-        print "Tools.identify.Identify()"
+        print "Tools.identify.Identify() class"
         
         # Make handle to mainwindow and call all variables needed for methods from mainwindow.
         # This allows variables to be updated when the active layer changes so that 

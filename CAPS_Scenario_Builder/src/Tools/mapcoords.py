@@ -43,7 +43,7 @@ class MapCoords(object):
         self.parent = parent
         
         # debugging
-        print "Tools.mapcoords.MapCoords()"
+        print "Tools.mapcoords.MapCoords() class"
     
         # This captures the mouse move for coordinate display
         QtCore.QObject.connect(parent.canvas, QtCore.SIGNAL("xyCoordinates(const QgsPoint &)"),

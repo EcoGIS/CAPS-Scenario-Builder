@@ -42,7 +42,7 @@ class SelectTool(QgsMapTool):
         QgsMapTool.__init__(self, parent.canvas)
         
         # debugging
-        print "Tools.selectfeatures.SelectTool()"
+        print "Tools.selectfeatures.SelectTool() class"
      
         # Make handle to mainwindow and call all variables needed for methods from mainwindow.
         # This allows variables to be updated when the active layer changes so that 

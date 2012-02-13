@@ -202,8 +202,9 @@ def updateExtents(mainwindow, activeVLayer, canvas):
         vlayerName = unicode(activeVLayer.name())
         if vlayerName in config.editLayersBaseNames:
             layerId = activeVLayer.id()
-            # save the color so we can keep the same color when reopening the layer
-            mainwindow.layerColor = activeVLayer.rendererV2().symbols()[0].color()
+            # if not the default color of red save the color so we can keep the same color when reopening the layer
+            if not activeVLayer.rendererV2().symbols()[0].color() == QtGui.QColor(255, 0, 0, 255):
+                mainwindow.layerColor = activeVLayer.rendererV2().symbols()[0].color()
             # The method below removes the layer from the originalScenarioLayers list if the 
             # editing layer was in self.originalScenarioLayers and returns True if it was
             # or False if it was not.  The method resets the 
