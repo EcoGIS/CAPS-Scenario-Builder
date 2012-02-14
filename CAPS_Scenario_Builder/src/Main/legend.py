@@ -57,10 +57,13 @@ class LegendItem(QtGui.QTreeWidgetItem):
         
         # Convert QStrings to unicode unless they are used immediately in a Qt method. 
         # This ensures that we never ask Python to slice a QString, which produces a type error.
-        self.canvasLayer.layer().setLayerName(self.legend.normalizeLayerName(unicode(self.canvasLayer.layer().name())))
-        self.setText(0, self.canvasLayer.layer().name())
+        self.layerName = unicode(self.canvasLayer.layer().name())
+        self.canvasLayer.layer().setLayerName(self.legend.normalizeLayerName(self.layerName))
+        self.setText(0, self.layerName)
         self.isVect = (self.canvasLayer.layer().type() == 0) # 0: Vector, 1: Raster
         self.layerId = self.canvasLayer.layer().id()
+        self.openingScenario = self.legend.mainwindow.openingScenario
+        
 
         ''' 
             This class is instantiated by the legend.Legend() class immediately after a layer is registered by QGIS.
@@ -72,25 +75,46 @@ class LegendItem(QtGui.QTreeWidgetItem):
              
         '''
         
-        # each time a layer is loaded (or removed) we set the scenarioDirty flag
+        # Each time a layer is loaded (or removed) we set the scenarioDirty flag
+        # There is no need to set it if the scenario is already dirty.  Once a scenario
+        # is dirty, the policy is it stays dirty until the user saves it.
         if not self.legend.mainwindow.scenarioDirty: self.legend.mainwindow.setScenarioDirty()
         
-        # This method sets colors, marker types and other properties for certain vector layers
-        if self.isVect:
+        # This method sets colors, marker types and other properties for certain vector layers.
+        # Since the scenario's '.cap' file stores rendererV2 settings, we don't need to call the
+        # when opening a scenario.
+        if self.isVect and not self.openingScenario:
             self.setRendererV2(self.canvasLayer.layer())
 
         # handle visibility when opening the app, "New Scenario" or "Open Scenario."
-        if self.legend.mainwindow.openingScenario or self.legend.mainwindow.openingOrientingLayers:
+        if self.openingScenario or self.legend.mainwindow.openingOrientingLayers:
             # Make any layer in config.orientingLayersChecked visible
-            if unicode(self.canvasLayer.layer().name()) in config.orientingLayersChecked:
+            if self.layerName in config.orientingLayersChecked:
                 self.setCheckState(0, QtCore.Qt.Checked)
                 self.canvasLayer.setVisible(True)
             else: # all other layers loaded will be hidden
                 self.setCheckState(0, QtCore.Qt.Unchecked) 
                 self.canvasLayer.setVisible(False)
-        else: #  User chose "Add Vector Layer" or "Add Raster Layer" to add a single layer, so make visible.
+        else: # User chose "Add Vector Layer" or "Add Raster Layer" to add a single layer, so make visible.
             self.setCheckState(0, QtCore.Qt.Checked)    
             self.canvasLayer.setVisible(True)
+
+        # get colors when opening a saved scenario and save to the coloredLayers dictionary
+        # note that any layer that the user colors during the session will be saved in the dictionary
+        if self.isVect and self.openingScenario:
+            if self.layerName in (config.editLayersBaseNames + config.pointBaseLayersBaseNames):
+                color = self.canvasLayer.layer().rendererV2().symbols()[0].color()
+                self.legend.mainwindow.coloredLayers[self.layerName] = color
+        
+        # now set colors for layers not colored by the user (i.e. not in the coloredLayers dictionary)
+        if self.isVect:
+            if not self.legend.mainwindow.coloredLayers.get(self.layerName):
+                if self.legend.currentColor == None or self.legend.currentColor == len(self.legend.mainwindow.defaultColors):
+                    self.legend.currentColor = 0
+                print "Main.legend.LegendItem() class self.legend.currentColor is " + str(self.legend.currentColor)
+                color = self.legend.mainwindow.defaultColors[0]
+                self.canvasLayer.layer().rendererV2().symbols()[0].setColor(color)
+                self.legend.currentColor += 1
         
         ''' Now set icons etc. for legend item '''
         
@@ -167,7 +191,8 @@ class LegendItem(QtGui.QTreeWidgetItem):
         print "Main.mainWindow.setRendererV2()"
         print "Main.mainWindow.setRendererV2(): vlayer geometry is :" + str(vlayer.geometryType())
       
-        if unicode(vlayer.name()) == config.editLayersBaseNames[0]: # edit_scenario(points) layer
+        vlayerName = unicode(vlayer.name())
+        if vlayerName == config.editLayersBaseNames[0]: # edit_scenario(points) layer
             print "Main.mainWindow.setRendererV2(): Setting Rule Based Renderer for 'edit_scenario(points).shp"
             
             # If rule renderer is already set (either because this layer was previously opened, or
@@ -247,16 +272,17 @@ class LegendItem(QtGui.QTreeWidgetItem):
                 "c_altered = 'y' or d_altered = 'y' or w_altered = 'y' or r_altered = 'y'")
             rendererV2.addRule(rule5)
             
-            # This variable is set in Tools.shared.updateExtents() when reopening the editing layer.
-            # after editing.  If the user had set a color, we reset it here. 
-            if self.legend.mainwindow.layerColor:
+            # This dictionary is set when a saved scenario is opened or in Tools.shared.updateExtents() 
+            # when reopening the editing layer after editing (i.e. rule renderer not set).  
+            # If the user had set a color other than the default,we reset it here. 
+            if self.legend.mainwindow.coloredLayers.get(vlayerName):
                 symbols = rendererV2.symbols()
                 print  "Main.mainWindow.setRendererV2(): There is a layer color" + str(self.legend.mainwindow.layerColor)
-                symbols[0].setColor(self.legend.mainwindow.layerColor)
-                symbols[1].setColor(self.legend.mainwindow.layerColor)
-                symbols[2].setColor(self.legend.mainwindow.layerColor)
-                symbols[3].setColor(self.legend.mainwindow.layerColor)
-                self.legend.mainwindow.layerColor = None
+                color = self.legend.mainwindow.coloredLayers.get(vlayerName)
+                symbols[0].setColor(color)
+                symbols[1].setColor(color)
+                symbols[2].setColor(color)
+                symbols[3].setColor(color)
                 
             # associate the new renderer with the activeVLayer
             vlayer.setRendererV2(rendererV2)
@@ -289,54 +315,50 @@ class LegendItem(QtGui.QTreeWidgetItem):
             print "Main.mainWindow.setRendererV2(): The damLayer properties are: "
             for k, v in damLayer.properties().iteritems():
                 print "%s: %s" % (k, v)        
-        elif unicode(vlayer.name()) == config.editLayersBaseNames[1]: # edit_scenario(lines).shp
+        elif vlayerName == config.editLayersBaseNames[1]: # edit_scenario(lines).shp
             print "Main.mainWindow.setRendererV2(): Setting color and line width for edit_scenario(lines).shp"
             # this is a QgsLineSymbolLayerV2()
             symbolLayer = vlayer.rendererV2().symbols()[0].symbolLayer(0)
             # if the line width has been set, then the color has been set either by the code below when 
-            # the layer was first opened, or by the user in a previously saved scenario (.caps) file.
+            # the layer was first opened, or by the user in a previously saved scenario (.caps) file. 
+            # If the user changes the color during the current session, then it will not be changed.
             if symbolLayer.width() == (0.4): 
                 return
-            if self.legend.mainwindow.layerColor: # we saved color in Tools.shared.setExtents() and are opening a new line layer.
+            # This dictionary is set when a saved scenario is opened or in Tools.shared.updateExtents() 
+            # when reopening the editing layer after editing.  
+            # If the user had set a color other than the default,we reset it here.
+            retval = self.legend.mainwindow.coloredLayers.get(vlayerName)
+            if retval: 
                 print "Main.mainWindow.setRendererV2(): THERE IS A LINE COLOR"
-                symbolLayer.setColor(self.legend.mainwindow.layerColor)
-                self.legend.mainwindow.layerColor = None
-                # color the preview icon
-                #self.legend.currentItem().vectorLayerSymbology(vlayer)
-            else: symbolLayer.setColor(QtGui.QColor("red")) # default to red if user has not chosen another color   
+                symbolLayer.setColor(retval)
+            # default to red if the layer is being opened for the first time   
+            else: symbolLayer.setColor(QtGui.QColor("red")) 
             symbolLayer.setWidth(0.4)
             # color the preview icon
             #self.legend.currentItem().vectorLayerSymbology(vlayer)
             vlayer.triggerRepaint() 
-        elif unicode(vlayer.name()) == config.editLayersBaseNames[2]: #edit_scenario(polygons).shp
+        elif vlayerName == config.editLayersBaseNames[2]: #edit_scenario(polygons).shp
             print "Main.mainWindow.setRendererV2(): Setting color for edit_scenario(polygons).shp"
         
             symbolLayer = vlayer.rendererV2().symbols()[0].symbolLayer(0)
-            # if the layer is being reloaded by update extents after editing then set the color
-            if self.legend.mainwindow.layerColor: # we saved color in Tools.shared.setExtents()
+            
+            # This dictionary (coloredLayers) is set when a saved scenario is opened or in Tools.shared.updateExtents() 
+            # when reopening the editing layer after editing.  
+            # If the user had set a color other than the default,we reset it here.
+            retval = self.legend.mainwindow.coloredLayers.get(vlayerName)
+            if retval: 
                 print "Main.mainWindow.setRendererV2(): THERE IS A POLYGON COLOR"
-                symbolLayer.setColor(self.legend.mainwindow.layerColor)
-                self.legend.mainwindow.layerColor = None
+                symbolLayer.setColor(retval)
+                # self.legend.mainwindow.layerColor = None
                 # color the preview icon
                 #self.legend.currentItem().vectorLayerSymbology(vlayer)
                 vlayer.triggerRepaint()
                 return
-            # If the layer is being loaded from a scenario file return so that the
-            #  layer color will be set to the color property in the scenario file.
-            if self.legend.mainwindow.origScenarioLyrsLoaded == False:
-                print "Main.mainWindow.setRendererV2(): The " + config.editLayersBaseNames[2] + "is loading from a scenario"
-                self.legend.mainwindow.editingPolygon = True  # we set this flag when loading a scenario with an editingPolygon for use below.
-                return
-            # If the layer was loaded from a scenario file then return because
-            # we don't want to change the user's color selection.
-            if self.legend.mainwindow.editingPolygon == True:
-                return
+
             # if the layer being loaded into the scenario for the first time default to red
             symbolLayer.setColor(QtGui.QColor("red"))
-            # color the preview icon
-            #self.legend.currentItem().vectorLayerSymbology(vlayer)
             vlayer.triggerRepaint()
-        elif unicode(vlayer.name()) == config.orientingLayersChecked[0]: # the base_towns layer
+        elif vlayerName == config.orientingLayersChecked[0]: # the base_towns layer
             print "Main.mainWindow.setRendererV2(): This is the base_towns layer"
             # Set the base_towns layer fill color to none
             rendererV2 = vlayer.rendererV2()
@@ -404,6 +426,7 @@ class Legend(QtGui.QTreeWidget):
         self.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
         #self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.setSelectionBehavior(QtGui.QAbstractItemView.SelectItems)
+        self.currentColor = None
  
         self.connect(self, QtCore.SIGNAL("customContextMenuRequested(QPoint)"),
             self.showMenu)
@@ -656,8 +679,12 @@ the file system. All changes to these files will be lost. Do you want to delete 
 
             if color.isValid():
                 legendLayer.canvasLayer.layer().rendererV2().symbols()[0].setColor(color)
+                name = unicode(legendLayer.canvasLayer.layer().name())
+                # remember the layer's name and color, or reset the color if the name is in the dictionary
+                self.mainwindow.coloredLayers[name] = color
                 if unicode(legendLayer.canvasLayer.layer().name()) == unicode(config.editLayersBaseNames[0]):
                     print "Main.legend.layerSymbology(): is edit_scenario(points)"
+                    # if edit_scenario points, we need to set the color for all the symbols (i.e. box, pentagon and star) 
                     legendLayer.canvasLayer.layer().rendererV2().symbols()[1].setColor(color)
                     legendLayer.canvasLayer.layer().rendererV2().symbols()[2].setColor(color)
                     legendLayer.canvasLayer.layer().rendererV2().symbols()[3].setColor(color)

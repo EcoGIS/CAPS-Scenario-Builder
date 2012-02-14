@@ -218,4 +218,5 @@ hideEditLayers = ['edit_scenario(points)', 'edit_scenario(lines)',
                        'edit_scenario(polygons)', 'base_culverts_bridges', 'base_dams',
                         'base_terrestrial_passage', 'base_tidal_restrictions', 'base_traffic', 'base_streams']
 
+
 ############################################################################################

@@ -73,6 +73,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.originalEditLayerFeats = []
         self.originalScenarioLayersNames = []
         self.coloredLayers = {}
+        self.defaultColors = [QtGui.QColor('darkorange'), QtGui.QColor('magenta'), QtGui.QColor('blueviolet')]
         
         # FLAGS
         self.scenarioDirty = False
