@@ -205,6 +205,7 @@ editLayersFileNames = ['edit_scenario(points).shp', 'edit_scenario(lines).shp',
 # (i.e. legend).
 orientingRasterLayers = ['USGS.SID', 'base_land.tif', 'base_streams.tif', 'base_traffic.tif']
 orientingVectorLayers = ['base_towns.shp']
+orientingVectorLayersBaseNames = ['base_towns']
 allOrientingLayers = orientingRasterLayers + orientingVectorLayers
 
 # Orienting base layer names can be added here to make them visible (i.e. checked) when they are opened.

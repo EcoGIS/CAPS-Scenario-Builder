@@ -516,7 +516,7 @@ def snapToNewRoad(mainwindow, qPoint):
         newRoadEditFileId = item.layerId
         layer = QgsMapLayerRegistry.instance().mapLayer(newRoadEditFileId)
         mainwindow.canvas.setCurrentLayer(layer)
-    else: print "Tools.shared.snapToNewRoad(): Could not find the new roads editing shapefile in the legend, although it exists!"
+    else: print "Tools.shared.snapToNewRoad(): Could not find the new roads editing shapefile in the legend"
     
     # Now that the line layer is the active layer, snap the wildlife or culvert/bridge point to the line.
     snapper = QgsMapCanvasSnapper(mainwindow.canvas)
