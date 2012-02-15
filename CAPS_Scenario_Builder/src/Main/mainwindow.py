@@ -73,9 +73,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.originalEditLayerFeats = []
         self.originalScenarioLayersNames = []
         self.coloredLayers = {}
-        self.defaultColors = [QtGui.QColor('darkorange'), QtGui.QColor('fuchsia'), QtGui.QColor('blueviolet'), 
-                              QtGui.QColor('lime'), QtGui.QColor('mediumorchid'), QtGui.QColor('plum'),
-                              QtGui.QColor('aqua')]
+        self.defaultColors = config.setDefaultColors() # a list of QColors 
         
         # FLAGS
         self.scenarioDirty = False
@@ -84,7 +82,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.editDirty = False # True if edits unsaved, false if no unsaved edits
         self.editMode = False # True if "Toggle Edits" is activated
         # used to remember if edit_scenario(polygons).shp was loaded from a scenario file
-        self.editingPolygon = False
         self.openingOrientingLayers = False
         self.openingScenario = False 
                 
@@ -96,10 +93,10 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.dlgDisplayIdentify = None
         self.dlgScenarioEditTypes = None
         self.windModifyInfo = None
-        # MA State Plane coordinate system used by MassGIS
-        self.crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
-        # The rough extents of Massachusetts
-        self.rectExtentMA = QgsRectangle(26000, 747000, 350000, 989000)
+        # MA State Plane coordinate system used by MassGIS (a QgsCoordinateReferenceSystem())
+        self.crs = config.setCrs()
+        # The rough extents of Massachusetts (a QgsRectangle)
+        self.rectExtentMA = config.setExtentMA()
         # get active vlayer to pass to edit tools
         # this variable is updated by self.activeLayerChanged
         self.activeVLayer = None
@@ -333,10 +330,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # debugging
         print "Main.mainwindow.openScenario() after remove registry count " + str(QgsMapLayerRegistry.instance().count())
      
-        # Set the self.editingPolygon flag to False because we don't know if the 
-        # edit_scenario(polygons) layer is in this scenario
-        self.editingPolygon = False
-        
         # Set a flag to indicate a scenario is opening.  This flag is used in 
         # Main.legend.LegendItem() class to help set layer visibility
         self.openingScenario = True  
@@ -1052,9 +1045,6 @@ if this scenario file is open in another program.")
             print "Main.mainwindow.selectFeatures() state is True"
             # Need this to stop user from taking this action if making line or polygon edits
             if self.appStateChanged("selectFeatures") == "Cancel":
-                #self.mpActionSelectFeatures.blockSignals(True)
-                #self.mpActionSelectFeatures.setChecked(False)
-                #self.mpActionSelectFeatures.blockSignals(False)
                 return
             
             # select action is selected so enable these tools
@@ -2430,15 +2420,6 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             # enabled by loading a vector layer.
             self.mpActionOpenVectorAttributeTable.setDisabled(True)
             
-            '''# New layer loaded so check about seting the scenarioDirty flag.  
-            # Note: This gets called unnecessarily when a different layer is selected in the layer panel.
-            # However, it returns immediately if the layer count has not changed.
-            # It also returns immediately if a scenario is in the process of loading
-            # or if the orienting layers are loading.
-            # There is no need to check if the scenario is already dirty.  Once a scenario
-            # is dirty, the policy is it stays dirty until the user saves it.
-            if not self.scenarioDirty: self.setScenarioDirty()'''
-          
             # There could be something to export if a scenario is open so enable Export Scenario
             # A user could open a scenario that has edits to editing layers and export it.
             if self.scenarioFilePath:
@@ -2464,13 +2445,6 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             self.geom = self.activeVLayer.geometryType() #0 point, 1 line, 2 polygon
             # set extents if not within MA state extents
             self.setExtents()
-                      
-            '''# New layer loaded so set the scenarioDirty flag.  Note: This gets called
-            # unnecessarily when a different layer is selected in the layer panel.
-            # However, it returns immediately if the layer count has not changed. 
-            # There is no need to check if the scenario is already dirty.  Once a scenario
-            # is dirty, the policy is it stays dirty until the user saves it.
-            if not self.scenarioDirty: self.setScenarioDirty()'''
             
             # debugging 
             print "ALC THE ACTIVE VLAYER NAME IS " + self.activeVLayer.name()
@@ -2478,9 +2452,6 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             print "alc The description of the srs is " + str(self.activeVLayer.crs().description())
             print "alc The activeVLayer is using renderer V2: " + str(self.activeVLayer.isUsingRendererV2())
             print "alc The activeVLayer renderer type is " + self.activeVLayer.rendererV2().type()
-            
-            '''# This method sets colors, marker types and other properties for certain vector layers
-            self.setRendererV2()'''
             
             # refresh attribute table if open
             if self.attrTable != None and self.attrTable.isVisible():
@@ -2771,7 +2742,6 @@ choose 'Export Scenario' for this scenario in the future.")
         self.dwAttrTable = None
         self.dwRasterTable = None
         self.editDirty = False
-        self.editingPolygon = False
         self.editLayerName = None
         self.editMode = False 
         self.statusBar.removeWidget(self.editTypeLabel)
@@ -3087,216 +3057,6 @@ choose 'Export Scenario' for this scenario in the future.")
                 print error
                 QtGui.QMessageBox.warning(self, 'Export Scenario Error:', 'The previously saved scenario '\
 + exportFileName + ' could not be deleted.  Please try again.')
-          
-    def setRendererV2(self):
-        # debugging
-        print "Main.mainWindow.setRendererV2()"
-        print "Main.mainWindow.setRendererV2(): self.geom is :" + str(self.geom)
-      
-        if unicode(self.activeVLayer.name()) == config.editLayersBaseNames[0]: # edit_scenario(points) layer
-            print "Main.mainWindow.setRendererV2(): Setting Rule Based Renderer for 'edit_scenario(points).shp"
-            
-            # If rule renderer is already set (either because this layer was previously opened, or
-            # because it was opened from a scenario (.cap) file having renderer information)
-            # then no need to do anything, just return
-            if self.activeVLayer.rendererV2().type() == "RuleRenderer": 
-                print "Main.mainWindow.setRendererV2(): RuleRenderer returned"
-                return
-
-            # This returns a QgsSymbolV2().  In particular a QgsMarkerSymbolV2()
-            # This also returns a QgsMarkerSymbolLayerV2() layer.
-            # In particular a QgsSimpleMarkerSymbolLayerV2(). 
-            symbol = QgsSymbolV2.defaultSymbol(QGis.Point)
-            # renderer only needs a symbol to be instantiated
-            rendererV2 = QgsRuleBasedRendererV2(symbol)
-            
-            # get the symbols list and symbol (usually only one symbol)
-            symbol = rendererV2.symbols()[0]
-            symbolLayer = symbol.symbolLayer(0)
-            symbolLayer.setSize(2.0)
-            
-            # This variable is set in Tools.shared.updateExtents() when reopening the editing layer.
-            # after editing.  If the user had set a color, we reset it here. 
-            if self.layerColor:
-                print  "Main.mainWindow.setRendererV2(): There is a layer color" + str(self.layerColor)
-                symbolLayer.setColor(self.layerColor)
-                self.layerColor = None
-                # color the preview icon
-                self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
-            else: symbolLayer.setColor(QtGui.QColor("red"))
-            
-            '''
-                Now we set the rules for rendering different scenario edits, so that the user can
-                easily determine what features represent.
-                
-                Choices for symbols are: circle, rectangle, diamond, pentagon, cross, cross2, triangle, 
-                equilateral_triangle, star, regular_star, arrow.
-                
-            '''
-            
-            newSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
-            # dams
-            map1 = {"name": "rectangle", "color": "255,0,0,255", "offset": "0,0",
-                   "color_border": "0,0,0,255", "size": "2.5", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
-            damSymbol = newSymbol.createSimple(map1)
-            damLayer = damSymbol.symbolLayer(0)
-            # terrestrial crossing
-            map2 = {"name": "pentagon", "color": "255,0,0,255", "offset": "0,0",
-                   "color_border": "0,0,0,255", "size": "3.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
-            terrSymbol = newSymbol.createSimple(map2)
-            terrLayer = terrSymbol.symbolLayer(0)
-            # tidal restriction
-            map3 = {"name": "regular_star", "color": "255,0,0,255", "offset": "0,0",
-                   "color_border": "0,0,0,255", "size": "4.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
-            tidalSymbol = newSymbol.createSimple(map3)
-            tidalLayer = tidalSymbol.symbolLayer(0)
-            
-            # create a new symbol layer for the delete symbol (i.e. a red cross)
-            map4 = {"name": "cross", "color": "255,0,0,255", "offset": "0,0",
-                   "color_border": "255,0,0,255", "size": "7.0", "angle": "45.0"}
-            deleteSymbol = newSymbol.createSimple(map4)
-            deleteLayer = deleteSymbol.symbolLayer(0)
-            
-            # create a new symbol layer for the altered symbol (i.e. a red triangle)
-            map5 = {"name": "equilateral_triangle", "color": "0,0,0,0", "offset": "0,0",
-                   "color_border": "255,0,0,255", "size": "7.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
-            alteredSymbol = newSymbol.createSimple(map5)
-            alteredLayer = alteredSymbol.symbolLayer(0)
-            
-            # rule that makes dam symbol a rectangle
-            rule1 = rendererV2.Rule(damSymbol, 0, 0, "dam_id!=''")
-            rendererV2.addRule(rule1)
-            # rule that makes terrestrial crossing structures a diamond
-            rule2 = rendererV2.Rule(terrSymbol, 0, 0, "wildlf_id!=''")
-            rendererV2.addRule(rule2)
-            # rule that makes tidal restrictions a star
-            rule3 = rendererV2.Rule(tidalSymbol, 0, 0, "restr_id!=''")
-            rendererV2.addRule(rule3)
-            # make the rule, using the delete symbol, and add it
-            rule4 = rendererV2.Rule(deleteSymbol, 0, 0, 
-                "c_deleted='y' or d_deleted='y' or w_deleted='y' or r_deleted='y'")
-            rendererV2.addRule(rule4)
-            # rule for altered symbol
-            rule5 = rendererV2.Rule(alteredSymbol, 0, 0, 
-                "c_altered = 'y' or d_altered = 'y' or w_altered = 'y' or r_altered = 'y'")
-            rendererV2.addRule(rule5)
-            # associate the new renderer with the activeVLayer
-            self.activeVLayer.setRendererV2(rendererV2)
-            # color the preview icon
-            self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
-            self.activeVLayer.triggerRepaint()
-            
-            # debugging
-            #print "The delete layers name is: " + deleteLayer.name()
-            print "Main.mainWindow.setRendererV2(): The number of symbol layers is: " + str(len(rendererV2.symbols()))
-            print "Main.mainWindow.setRendererV2(): The number of rules is: " + str(rendererV2.ruleCount())
-            print "Main.mainWindow.setRendererV2(): The symbolLayer properties are: "
-            for k, v in symbolLayer.properties().iteritems():
-                print "%s: %s" % (k, v)
-            print "Main.mainWindow.setRendererV2(): The damLayer properties are: "
-            for k, v in damLayer.properties().iteritems():
-                print "%s: %s" % (k, v) 
-            print "Main.mainWindow.setRendererV2(): The terrLayer properties are: "
-            for k, v in terrLayer.properties().iteritems():
-                print "%s: %s" % (k, v) 
-            print "Main.mainWindow.setRendererV2(): The tidalLayer properties are: "
-            for k, v in tidalLayer.properties().iteritems():
-                print "%s: %s" % (k, v) 
-            print "Main.mainWindow.setRendererV2(): The deleteLayer properties are: "
-            for k, v in deleteLayer.properties().iteritems():
-                print "%s: %s" % (k, v)
-            print "Main.mainWindow.setRendererV2(): The alteredLayer properties are: "
-            for k, v in alteredLayer.properties().iteritems():
-                print "%s: %s" % (k, v)
-            print "Main.mainWindow.setRendererV2(): The damLayer properties are: "
-            for k, v in damLayer.properties().iteritems():
-                print "%s: %s" % (k, v)        
-        elif unicode(self.activeVLayer.name()) == config.editLayersBaseNames[1]: # edit_scenario(lines).shp
-            print "Main.mainWindow.setRendererV2(): Setting color and line width for edit_scenario(lines).shp"
-            # this is a QgsLineSymbolLayerV2()
-            symbolLayer = self.activeVLayer.rendererV2().symbols()[0].symbolLayer(0)
-            # if the line width has been set, then the color has been set either by the code below when 
-            # the layer was first opened, or by the user in a previously saved scenario (.caps) file.
-            if symbolLayer.width() == (0.4): 
-                return
-            if self.layerColor: # we saved color in Tools.shared.setExtents() and are opening a new line layer.
-                print "Main.mainWindow.setRendererV2(): THERE IS A LINE COLOR"
-                symbolLayer.setColor(self.layerColor)
-                self.layerColor = None
-                # color the preview icon
-                self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
-            else: symbolLayer.setColor(QtGui.QColor("red")) # default to red if user has not chosen another color   
-            symbolLayer.setWidth(0.4)
-            # color the preview icon
-            self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
-            self.activeVLayer.triggerRepaint() 
-        elif unicode(self.activeVLayer.name()) == config.editLayersBaseNames[2]: #edit_scenario(polygons).shp
-            print "Main.mainWindow.setRendererV2(): Setting color for edit_scenario(polygons).shp"
-        
-            symbolLayer = self.activeVLayer.rendererV2().symbols()[0].symbolLayer(0)
-            # if the layer is being reloaded by update extents after editing then set the color
-            if self.layerColor: # we saved color in Tools.shared.setExtents()
-                print "Main.mainWindow.setRendererV2(): THERE IS A POLYGON COLOR"
-                symbolLayer.setColor(self.layerColor)
-                self.layerColor = None
-                # color the preview icon
-                self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
-                self.activeVLayer.triggerRepaint()
-                return
-            # If the layer is being loaded from a scenario file return so that the
-            #  layer color will be set to the color property in the scenario file.
-            if self.origScenarioLyrsLoaded == False:
-                print "Main.mainWindow.setRendererV2(): The " + config.editLayersBaseNames[2] + "is loading from a scenario"
-                self.editingPolygon = True  # we set this flag when loading a scenario with an editingPolygon for use below.
-                return
-            # If the layer was loaded from a scenario file then return because
-            # we don't want to change the user's color selection.
-            if self.editingPolygon == True:
-                return
-            # if the layer being loaded into the scenario for the first time default to red
-            symbolLayer.setColor(QtGui.QColor("red"))
-            # color the preview icon
-            self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
-            self.activeVLayer.triggerRepaint()
-        elif unicode(self.activeVLayer.name()) == config.orientingLayersChecked[0]: # the base_towns layer
-            print "Main.mainWindow.setRendererV2(): This is the base_towns layer"
-            # Set the base_towns layer fill color to none
-            rendererV2 = self.activeVLayer.rendererV2()
-            symbol = rendererV2.symbols()[0]
-            color = QtGui.QColor(255, 255, 255, 255)
-            if symbol.color() == color: # no need to set properties for this layer if they have already been set
-                print "Main.mainWindow.setRendererV2(): base_towns color is white"
-                return 
-            symbolMap = {"color": "255, 255, 255, 255", "style": "no", 
-                              "color_border": "DEFAULT_SIMPLEFILL_BORDERCOLOR", 
-                              "style_border": "DEFAULT_SIMPLEFILL_BORDERSTYLE", 
-                              "width_border": "0.3" }
-            simpleSymbol = symbol.createSimple(symbolMap)
-            rendererV2.setSymbol(simpleSymbol)
-            self.legend.currentItem().vectorLayerSymbology(self.activeVLayer)
-            self.activeVLayer.triggerRepaint()
-        elif self.geom == 1: # set line width for all line layers
-            # debugging
-            print "Main.mainWindow.setRendererV2(): geometry = 1"
-            symbolLayer = self.activeVLayer.rendererV2().symbols()[0].symbolLayer(0)
-            print "Main.mainWindow.setRendererV2(): The line width before setting is: " + str(symbolLayer.width())
-            symbolLayer.setWidth(0.4)
-            print "Main.mainWindow.setRendererV2(): The line width after setting is: " + str(symbolLayer.width())
-            self.activeVLayer.triggerRepaint()
-        # debugging
-        if self.activeVLayer.isUsingRendererV2():
-            rendererV2 = self.activeVLayer.rendererV2()
-            symbols = rendererV2.symbols()
-            # only 1 symbol in symbols and only one layer
-            symbol = symbols[0]
-            symbolLayer = symbol.symbolLayer(0)
-            print "Main.mainWindow.setRendererV2(): rendererV2.dump is:" + rendererV2.dump()
-            print "Main.mainWindow.setRendererV2(): The layer properties are: "
-            for k, v in symbolLayer.properties().iteritems():
-                print "%s: %s" % (k, v)
-            print "Main.mainWindow.setRendererV2(): The number of symbols is: " + str(len(symbols))
-            print "Main.mainWindow.setRendererV2(): The number of layers in symbols[0] is: " + str(symbol.symbolLayerCount())
-            print "Main.mainWindow.setRendererV2(): The layer type is: " + str(symbolLayer.layerType())
        
     def checkLayerLoadError(self, layer):
         # debugging
@@ -3418,6 +3178,7 @@ the layer you copied from does not meet this constraint.  Please check all your 
                         return False
             else: return True    
         else: return True                
+
 #**************************************************************
     ''' Testing '''
 #**************************************************************

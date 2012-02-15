@@ -28,6 +28,11 @@
 #along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
 #-----------------------------------------------------------------------
 
+# import Qt libraries
+from PyQt4.QtGui import QColor
+# import qgis API
+from qgis.core import QgsCoordinateReferenceSystem, QgsRectangle
+
 ############################################################################################
 ''' APPLICATION CONFIGURATION '''
 ############################################################################################
@@ -216,8 +221,32 @@ orientingLayersChecked = ['base_towns']
 # Adding a name to this list will hide (uncheck) that layer if not needed when opening a
 # new scenario edit type. 
 hideEditLayers = ['edit_scenario(points)', 'edit_scenario(lines)',
-                       'edit_scenario(polygons)', 'base_culverts_bridges', 'base_dams',
-                        'base_terrestrial_passage', 'base_tidal_restrictions', 'base_traffic', 'base_streams']
+                  'edit_scenario(polygons)', 'base_culverts_bridges', 'base_dams',
+                  'base_terrestrial_passage', 'base_tidal_restrictions', 'base_traffic', 'base_streams']
 
 
 ############################################################################################
+''' Configuration variables that need to be executed to be set '''
+
+def setDefaultColors():
+    # debugging
+    print "config.setDefaultColors()"
+    
+    defaultColors = [QColor('darkorange'), QColor('fuchsia'), QColor('blueviolet'), QColor('lime'), 
+                    QColor('mediumorchid'),QColor('plum'), QColor('aqua')]
+                    
+    return defaultColors
+
+def setCrs():
+    # debugging
+    print "config.setCrs()"
+    
+    # MA State Plane coordinate system used by MassGIS
+    crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
+    return crs
+
+def setExtentMA():
+    # debugging
+    print "config.setExtentMA"
+    extentMA = QgsRectangle(26000, 747000, 350000, 989000)
+    return extentMA

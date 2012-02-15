@@ -106,11 +106,12 @@ class LegendItem(QtGui.QTreeWidgetItem):
         if self.isVect and self.openingScenario:
             self.addLayerToColoredLayers()
         
-        # now set colors for layers not colored by the user (i.e. not in the coloredLayers dictionary)
+        # Now set colors for layers not colored in a scenario file or 
+        # specifically colored by the user (i.e. not in the coloredLayers dictionary).
         if self.isVect:
             if not self.legend.mainwindow.coloredLayers.get(self.layerName):
                 if self.legend.currentColor == None or self.legend.currentColor == len(self.legend.mainwindow.defaultColors):
-                    self.legend.currentColor = 0
+                    self.legend.currentColor = 0 # when we open the app or get to the end of the color list, we start again.
                 print "Main.legend.LegendItem() class self.legend.currentColor is " + str(self.legend.currentColor)
                 defColor = self.legend.mainwindow.defaultColors[self.legend.currentColor]
                 self.canvasLayer.layer().rendererV2().symbols()[0].setColor(defColor)
@@ -201,229 +202,46 @@ class LegendItem(QtGui.QTreeWidgetItem):
         if vlayerName == config.editLayersBaseNames[0]: # edit_scenario(points) layer
             print "Main.legend.LegendItem.setRendererV2(): Setting Rule Based Renderer for 'edit_scenario(points).shp"
             
-            '''# If rule renderer is already set because it was opened from a scenario (.cap) file 
-            # having renderer information then no need to do anything, just return.
-            if vlayer.rendererV2().type() == "RuleRenderer": 
-                print "Main.legend.LegendItem.setRendererV2(): RuleRenderer returned"
-                return'''
-            
             ''' 
-                So, we are opening 'edit_scenario(points)' for the first time.  Either it has been reopened by
+                We are opening 'edit_scenario(points)' for the first time.  Either it has been reopened by
                 Tools.shared.updateExtents(), Main.mainwindow.copyScenario() or it has been newly written by
                 Main.mainwindow.dlgscenarioedittypes.
                 
             '''
             
-            # Create the rule based renderer.
-            # This returns a QgsSymbolV2().  In particular a QgsMarkerSymbolV2()
-            # This also returns a QgsMarkerSymbolLayerV2() layer.
-            # In particular a QgsSimpleMarkerSymbolLayerV2().
-            symbol = QgsSymbolV2.defaultSymbol(QGis.Point)
-            # renderer only needs a symbol to be instantiated
-            rendererV2 = QgsRuleBasedRendererV2(symbol)
+            self.setPointsRuleRendererV2(vlayer, red, vlayerName) # sets up the rule renderer for edit_scenario(points)
             
-            # get the symbols list and symbol (usually only one symbol)
-            symbol = rendererV2.symbols()[0]
-            symbolLayer = symbol.symbolLayer(0)
-            symbolLayer.setSize(2.0)
-            symbolLayer.setColor(red)
-            
-            
-            '''
-                Now we set the rules for rendering different scenario edits, so that the user can
-                easily determine what features represent.
-                
-                Choices for symbols are: circle, rectangle, diamond, pentagon, cross, cross2, triangle, 
-                equilateral_triangle, star, regular_star, arrow.
-                
-            '''
-            
-            newSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
-            # dams
-            map1 = {"name": "rectangle", "color": "255,0,0,255", "offset": "0,0",
-                   "color_border": "0,0,0,255", "size": "2.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
-            damSymbol = newSymbol.createSimple(map1)
-            damLayer = damSymbol.symbolLayer(0)
-            # terrestrial crossing
-            map2 = {"name": "pentagon", "color": "255,0,0,255", "offset": "0,0",
-                   "color_border": "0,0,0,255", "size": "3.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
-            terrSymbol = newSymbol.createSimple(map2)
-            terrLayer = terrSymbol.symbolLayer(0)
-            # tidal restriction
-            map3 = {"name": "regular_star", "color": "255,0,0,255", "offset": "0,0",
-                   "color_border": "0,0,0,255", "size": "4.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
-            tidalSymbol = newSymbol.createSimple(map3)
-            tidalLayer = tidalSymbol.symbolLayer(0)
-            
-            # create a new symbol layer for the delete symbol (i.e. a red cross)
-            map4 = {"name": "cross", "color": "255,0,0,255", "offset": "0,0",
-                   "color_border": "255,0,0,255", "size": "7.0", "angle": "45.0"}
-            deleteSymbol = newSymbol.createSimple(map4)
-            deleteLayer = deleteSymbol.symbolLayer(0)
-            
-            # create a new symbol layer for the altered symbol (i.e. a red triangle)
-            map5 = {"name": "equilateral_triangle", "color": "0,0,0,0", "offset": "0,0",
-                   "color_border": "255,0,0,255", "size": "7.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
-            alteredSymbol = newSymbol.createSimple(map5)
-            alteredLayer = alteredSymbol.symbolLayer(0)
-            
-            # rule that makes dam symbol a rectangle
-            rule1 = rendererV2.Rule(damSymbol, 0, 0, "dam_id!=''")
-            rendererV2.addRule(rule1)
-            # rule that makes terrestrial crossing structures a diamond
-            rule2 = rendererV2.Rule(terrSymbol, 0, 0, "wildlf_id!=''")
-            rendererV2.addRule(rule2)
-            # rule that makes tidal restrictions a star
-            rule3 = rendererV2.Rule(tidalSymbol, 0, 0, "restr_id!=''")
-            rendererV2.addRule(rule3)
-            # make the rule, using the delete symbol, and add it
-            rule4 = rendererV2.Rule(deleteSymbol, 0, 0, 
-                "c_deleted='y' or d_deleted='y' or w_deleted='y' or r_deleted='y'")
-            rendererV2.addRule(rule4)
-            # rule for altered symbol
-            rule5 = rendererV2.Rule(alteredSymbol, 0, 0, 
-                "c_altered = 'y' or d_altered = 'y' or w_altered = 'y' or r_altered = 'y'")
-            rendererV2.addRule(rule5)
-            
-            # associate the new renderer with the activeVLayer
-            vlayer.setRendererV2(rendererV2)
-            
-            # The coloredLayers dictionary is set when a saved scenario is opened or in Tools.shared.updateExtents() 
-            # Tools.shared.updateExtents() when reopening the editing layer after editing (i.e. rule renderer not set).  
-            # If the user had set a color other than the default color red, we reset it here. 
-            retval = self.legend.mainwindow.coloredLayers.get(vlayerName)
-            # color set by user and being opened by updateExtents() or copyScenario
-            if retval and retval != red: 
-                symbols = rendererV2.symbols()
-                print  "Main.legend.LegendItem.setRendererV2(): There is a layer color" + str(retval.getRgb())
-                symbols[0].setColor(retval)
-                symbols[1].setColor(retval)
-                symbols[2].setColor(retval)
-                symbols[3].setColor(retval)
-            # this is the case where copyScenario is opening editing layers that are in coloredLayers
-            elif retval and retval == red: # for code clarity
-                pass # color set above as default color
-            # layer newly created with default colors so add the layer to the coloredLayers dictionary
-            elif not retval: self.addLayerToColoredLayers() 
-            else: print "Main.legend.LegendItem.setRendererV2(): There is a 'retval' error"
-                
-            
-            # color the preview icon
-            #self.legend.currentItem().vectorLayerSymbology(vlayer)
-            vlayer.triggerRepaint()
-            
-            # debugging
-            #print "The delete layers name is: " + deleteLayer.name()
-            print "Main.legend.LegendItem.setRendererV2(): The number of symbols is: " + str(len(rendererV2.symbols()))
-            print "Main.legend.LegendItem.setRendererV2(): The number of rules is: " + str(rendererV2.ruleCount())
-            print "Main.legend.LegendItem.setRendererV2(): The symbolLayer properties are: "
-            for k, v in symbolLayer.properties().iteritems():
-                print "%s: %s" % (k, v)
-            print "Main.legend.LegendItem.setRendererV2(): The damLayer properties are: "
-            for k, v in damLayer.properties().iteritems():
-                print "%s: %s" % (k, v) 
-            print "Main.legend.LegendItem.setRendererV2(): The terrLayer properties are: "
-            for k, v in terrLayer.properties().iteritems():
-                print "%s: %s" % (k, v) 
-            print "Main.legend.LegendItem.setRendererV2(): The tidalLayer properties are: "
-            for k, v in tidalLayer.properties().iteritems():
-                print "%s: %s" % (k, v) 
-            print "Main.legend.LegendItem.setRendererV2(): The deleteLayer properties are: "
-            for k, v in deleteLayer.properties().iteritems():
-                print "%s: %s" % (k, v)
-            print "Main.legend.LegendItem.setRendererV2(): The alteredLayer properties are: "
-            for k, v in alteredLayer.properties().iteritems():
-                print "%s: %s" % (k, v)
-            print "Main.legend.LegendItem.setRendererV2(): The damLayer properties are: "
-            for k, v in damLayer.properties().iteritems():
-                print "%s: %s" % (k, v)        
         elif vlayerName == config.editLayersBaseNames[1]: # edit_scenario(lines).shp
             print "Main.legend.LegendItem.setRendererV2(): Setting color and line width for edit_scenario(lines).shp"
             
-            # this is a QgsLineSymbolLayerV2()
-            symbolLayer = vlayer.rendererV2().symbols()[0].symbolLayer(0)
-            
-            ''' # If the line width has been set, then the color has been set either by the code below when the layer
-            # was first opened, or by the user in a previously saved scenario (.caps) file.  If the user changes 
-            # the color during the current session, then it will not be changed back to the default color here.
-            if symbolLayer.width() == (0.4): 
-                return'''
-            
             ''' 
-                So, we are opening 'edit_scenario(lines)' for the first time.  Either it has been reopened by
+                We are opening 'edit_scenario(lines)' for the first time.  Either it has been reopened by
                 Tools.shared.updateExtents(), Main.mainwindow.copyScenario() or it has been newly written by
                 Main.mainwindow.dlgscenarioedittypes.
                 
             '''
             
-            # This dictionary is set when a saved scenario is opened or in Tools.shared.updateExtents() 
-            # when reopening the editing layer after editing.  
-            # If the user had set a color other than the default color red, we reset it here.
-            retval = self.legend.mainwindow.coloredLayers.get(vlayerName)
-            if retval and retval != red: # being opened by updateExtents and user set color
-                print "Main.legend.LegendItem.setRendererV2(): THERE IS A LINE COLOR"
-                symbolLayer.setColor(retval)
-            elif retval and retval == red: # being opened by copyScenario
-                symbolLayer.setColor(retval)
-            elif not retval: # newly opened layer so default to red if the layer is being opened for the first time   
-                symbolLayer.setColor(red)
-                self.addLayerToColoredLayers() 
-            else: print "Main.legend.LegendItem.setRendererVretvalThere is a 'retval' error"
-            
-            symbolLayer.setWidth(0.4)
-            vlayer.triggerRepaint() 
-        elif vlayerName == config.editLayersBaseNames[2]: #edit_scenario(polygons).shp
+            self.setLineColorAndWidth(vlayer, red, vlayerName) # sets color and width for edit_scenario(lines)
+             
+        elif vlayerName == config.editLayersBaseNames[2]: # edit_scenario(polygons).shp
             print "Main.legend.LegendItem.setRendererV2(): Setting color for edit_scenario(polygons).shp"
         
             ''' 
-                So, we are opening 'edit_scenario(polygons)' for the first time.  Either it has been reopened by
+                We are opening 'edit_scenario(polygons)' for the first time.  Either it has been reopened by
                 Tools.shared.updateExtents(), Main.mainwindow.copyScenario() or it has been newly written by
                 Main.mainwindow.dlgscenarioedittypes.
                 
             '''
             
-            symbolLayer = vlayer.rendererV2().symbols()[0].symbolLayer(0)
-            # This dictionary (coloredLayers) is set when a saved scenario is opened or in Tools.shared.updateExtents() 
-            # when reopening the editing layer after editing.  
-            # If the user had set a color other than the default,we reset it here.
-            retval = self.legend.mainwindow.coloredLayers.get(vlayerName)
+            self.setPolygonColor(vlayer, red, vlayerName) # sets color for edit_scenario Polygons
             
-            if retval and retval != red: # being opened by updateExtents and user has set color
-                print "Main.legend.LegendItem.setRendererV2(): THERE IS A POLYGON COLOR"
-                symbolLayer.setColor(retval)
-                # self.legend.mainwindow.layerColor = None
-                # color the preview icon
-                #self.legend.currentItem().vectorLayerSymbology(vlayer)
-                vlayer.triggerRepaint()
-                return
-            elif retval and retval == red: # being opened by copyScenario
-                symbolLayer.setColor(retval)
-            else: # if the layer being loaded into the scenario for the first time default to red
-                symbolLayer.setColor(red)
-                self.addLayerToColoredLayers()
-            vlayer.triggerRepaint()
         elif vlayerName == config.orientingLayersChecked[0]: # the base_towns layer
             print "Main.legend.LegendItem.setRendererV2(): This is the base_towns layer"
             
-            # The user could be opening this layer with 'Add Vector' or the app could be opening orienting layers
-            # Set the base_towns layer fill color to none
-            rendererV2 = vlayer.rendererV2()
-            symbol = rendererV2.symbols()[0]
-            color = QtGui.QColor(255, 255, 255, 255)
             
-            '''# no need to set properties for this layer if they have already been set
-            if symbol.color() == color: # opening saved scenario file
-                print "Main.legend.LegendItem.setRendererV2(): base_towns color is white"
-                return''' 
-            symbolMap = {"color": "255, 255, 255, 255", "style": "no", 
-                              "color_border": "DEFAULT_SIMPLEFILL_BORDERCOLOR", 
-                              "style_border": "DEFAULT_SIMPLEFILL_BORDERSTYLE", 
-                              "width_border": "0.3" }
-            simpleSymbol = symbol.createSimple(symbolMap)
-            rendererV2.setSymbol(simpleSymbol)
-            self.addLayerToColoredLayers()
-            #self.legend.currentItem().vectorLayerSymbology(vlayer)
-            vlayer.triggerRepaint()
+            # The user could be opening this layer with 'Add Vector' or the app could be opening orienting layers
+            self.setBaseTownsProperties(vlayer) # sets this layer to transparent with black borders
+                        
         elif vlayer.geometryType() == 1: # set line width for all line layers
             # debugging
             print "Main.legend.LegendItem.setRendererV2(): geometry = 1"
@@ -432,6 +250,7 @@ class LegendItem(QtGui.QTreeWidgetItem):
             symbolLayer.setWidth(0.4)
             print "Main.legend.LegendItem.setRendererV2(): The line width after setting is: " + str(symbolLayer.width())
             vlayer.triggerRepaint()
+        
         # debugging
         if vlayer.isUsingRendererV2():
             rendererV2 = vlayer.rendererV2()
@@ -453,6 +272,197 @@ class LegendItem(QtGui.QTreeWidgetItem):
                        
         color = self.canvasLayer.layer().rendererV2().symbols()[0].color()
         self.legend.mainwindow.coloredLayers[self.layerName] = color
+        
+    def setPointsRuleRendererV2(self, vlayer, red, vlayerName):
+        # debugging
+        print "Main.legend.LegendItem.setPointsRuleRenderer()"
+        
+        ''' Create the rule based renderer. '''
+         
+        # This returns a QgsSymbolV2(). In particular a QgsMarkerSymbolV2().
+        # This also returns a QgsMarkerSymbolLayerV2() layer. In particular a QgsSimpleMarkerSymbolLayerV2().
+        symbol = QgsSymbolV2.defaultSymbol(QGis.Point)
+        # renderer only needs a symbol to be instantiated
+        rendererV2 = QgsRuleBasedRendererV2(symbol)
+        
+        # get the symbols list and symbol (usually only one symbol)
+        symbol = rendererV2.symbols()[0]
+        symbolLayer = symbol.symbolLayer(0)
+        symbolLayer.setSize(2.0)
+        symbolLayer.setColor(red)
+        
+        
+        '''
+            Now we set the rules for rendering different scenario edits, so that the user can
+            easily determine what features represent.
+            
+            Choices for symbols are: circle, rectangle, diamond, pentagon, cross, cross2, triangle, 
+            equilateral_triangle, star, regular_star, arrow.
+            
+        '''
+        
+        newSymbol = QgsSymbolV2.defaultSymbol(QGis.Point)
+        # dams
+        map1 = {"name": "rectangle", "color": "255,0,0,255", "offset": "0,0",
+               "color_border": "0,0,0,255", "size": "2.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
+        damSymbol = newSymbol.createSimple(map1)
+        damLayer = damSymbol.symbolLayer(0)
+        # terrestrial crossing
+        map2 = {"name": "pentagon", "color": "255,0,0,255", "offset": "0,0",
+               "color_border": "0,0,0,255", "size": "3.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
+        terrSymbol = newSymbol.createSimple(map2)
+        terrLayer = terrSymbol.symbolLayer(0)
+        # tidal restriction
+        map3 = {"name": "regular_star", "color": "255,0,0,255", "offset": "0,0",
+               "color_border": "0,0,0,255", "size": "4.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
+        tidalSymbol = newSymbol.createSimple(map3)
+        tidalLayer = tidalSymbol.symbolLayer(0)
+        # create a new symbol layer for the delete symbol (i.e. a red cross)
+        map4 = {"name": "cross", "color": "255,0,0,255", "offset": "0,0",
+               "color_border": "255,0,0,255", "size": "7.0", "angle": "45.0"}
+        deleteSymbol = newSymbol.createSimple(map4)
+        deleteLayer = deleteSymbol.symbolLayer(0)
+        # create a new symbol layer for the altered symbol (i.e. a red triangle)
+        map5 = {"name": "equilateral_triangle", "color": "0,0,0,0", "offset": "0,0",
+               "color_border": "255,0,0,255", "size": "7.0", "angle": "DEFAULT_SIMPLEMARKER_ANGLE"} 
+        alteredSymbol = newSymbol.createSimple(map5)
+        alteredLayer = alteredSymbol.symbolLayer(0)
+        
+        # rule that makes dam symbol a rectangle
+        rule1 = rendererV2.Rule(damSymbol, 0, 0, "dam_id!=''")
+        rendererV2.addRule(rule1)
+        # rule that makes terrestrial crossing structures a diamond
+        rule2 = rendererV2.Rule(terrSymbol, 0, 0, "wildlf_id!=''")
+        rendererV2.addRule(rule2)
+        # rule that makes tidal restrictions a star
+        rule3 = rendererV2.Rule(tidalSymbol, 0, 0, "restr_id!=''")
+        rendererV2.addRule(rule3)
+        # make the rule, using the delete symbol, and add it
+        rule4 = rendererV2.Rule(deleteSymbol, 0, 0, 
+            "c_deleted='y' or d_deleted='y' or w_deleted='y' or r_deleted='y'")
+        rendererV2.addRule(rule4)
+        # rule for altered symbol
+        rule5 = rendererV2.Rule(alteredSymbol, 0, 0, 
+            "c_altered = 'y' or d_altered = 'y' or w_altered = 'y' or r_altered = 'y'")
+        rendererV2.addRule(rule5)
+        
+        # associate the new renderer with the activeVLayer
+        vlayer.setRendererV2(rendererV2)
+        
+        # The coloredLayers dictionary is set when a saved scenario is opened, in Tools.shared.updateExtents() 
+        # when reopening the editing layer after editing, in which case the rule renderer not set.  
+        # If the user had set a color other than the default color red, we reset it here. 
+        retval = self.legend.mainwindow.coloredLayers.get(vlayerName)
+        # color set by user (either in scenario file or in this session) and being opened by updateExtents() or copyScenario
+        if retval and retval != red: 
+            symbols = rendererV2.symbols()
+            print  "Main.legend.LegendItem.setRendererV2(): There is a layer color" + str(retval.getRgb())
+            symbols[0].setColor(retval)
+            symbols[1].setColor(retval)
+            symbols[2].setColor(retval)
+            symbols[3].setColor(retval)
+        # This is the case where updateExtents or copyScenario is opening editing layers that are in coloredLayers with default red 
+        # color. The layer was opened with a some unknown QGIS color but we reset the layer's color to red above, so pass.
+        elif retval and retval == red: # for code clarity
+            pass # color set above as default color
+        # layer newly created with default colors so add the layer to the coloredLayers dictionary
+        elif not retval: self.addLayerToColoredLayers() 
+        else: print "Main.legend.LegendItem.setRendererV2(): There is a 'retval' error"
+        
+        # color the preview icon
+        #self.legend.currentItem().vectorLayerSymbology(vlayer)
+        vlayer.triggerRepaint()
+        
+        # debugging
+        #print "The delete layers name is: " + deleteLayer.name()
+        print "Main.legend.LegendItem.setRendererV2(): The number of symbols is: " + str(len(rendererV2.symbols()))
+        print "Main.legend.LegendItem.setRendererV2(): The number of rules is: " + str(rendererV2.ruleCount())
+        print "Main.legend.LegendItem.setRendererV2(): The symbolLayer properties are: "
+        for k, v in symbolLayer.properties().iteritems():
+            print "%s: %s" % (k, v)
+        print "Main.legend.LegendItem.setRendererV2(): The damLayer properties are: "
+        for k, v in damLayer.properties().iteritems():
+            print "%s: %s" % (k, v) 
+        print "Main.legend.LegendItem.setRendererV2(): The terrLayer properties are: "
+        for k, v in terrLayer.properties().iteritems():
+            print "%s: %s" % (k, v) 
+        print "Main.legend.LegendItem.setRendererV2(): The tidalLayer properties are: "
+        for k, v in tidalLayer.properties().iteritems():
+            print "%s: %s" % (k, v) 
+        print "Main.legend.LegendItem.setRendererV2(): The deleteLayer properties are: "
+        for k, v in deleteLayer.properties().iteritems():
+            print "%s: %s" % (k, v)
+        print "Main.legend.LegendItem.setRendererV2(): The alteredLayer properties are: "
+        for k, v in alteredLayer.properties().iteritems():
+            print "%s: %s" % (k, v)
+        print "Main.legend.LegendItem.setRendererV2(): The damLayer properties are: "
+        for k, v in damLayer.properties().iteritems():
+            print "%s: %s" % (k, v)
+            
+    def setLineColorAndWidth(self, vlayer, red, vlayerName):
+        # debugging
+        print "Main.legend.LegendItem.setLineColorAndWidth()"
+        
+        # this is a QgsLineSymbolLayerV2()
+        symbolLayer = vlayer.rendererV2().symbols()[0].symbolLayer(0)
+        
+        # This dictionary (coloredLayers) is set when a saved scenario is opened, when an editing layer is created 
+        # (in dlgscenarioedittypes) or in Tools.shared.updateExtents() when reopening the editing layer after editing. 
+        # If the user had set a color other than the default,we reset it here. 
+        retval = self.legend.mainwindow.coloredLayers.get(vlayerName)
+        if retval and retval != red: # being opened by updateExtents or copyScenario and user set color
+            print "Main.legend.LegendItem.setRendererV2(): THERE IS A LINE COLOR"
+            symbolLayer.setColor(retval)
+        # being opened by updateExtents or copyScenario with some unknown QGIS color so we reset to red here
+        elif retval and retval == red: 
+            symbolLayer.setColor(retval)
+        # newly opened layer (not in coloredLayers) so default to red if the layer is being opened for the first time
+        elif not retval:    
+            symbolLayer.setColor(red)
+            self.addLayerToColoredLayers() 
+        else: print "Main.legend.LegendItem.setRendererVretvalThere is a 'retval' error"
+        
+        symbolLayer.setWidth(0.4)
+        vlayer.triggerRepaint()
+        
+    def setPolygonColor(self, vlayer, red, vlayerName):
+        # debugging
+        print "Main.legend.LegendItem.setPolygonColor()" 
+        
+        # This dictionary (coloredLayers) is set when a saved scenario is opened, when an editing layer is created 
+        # (in dlgscenarioedittypes) or in Tools.shared.updateExtents() when reopening the editing layer after editing. 
+        # If the user had set a color other than the default,we reset it here.
+        symbolLayer = vlayer.rendererV2().symbols()[0].symbolLayer(0)
+        retval = self.legend.mainwindow.coloredLayers.get(vlayerName)
+        if retval and retval != red: # being opened by updateExtents or copyScenario and user has set color
+            print "Main.legend.LegendItem.setRendererV2(): THERE IS A POLYGON COLOR"
+            symbolLayer.setColor(retval)
+            return
+        # being opened by updateExtents or copyScenario with some unknown QGIS color so we reset to red here
+        elif retval and retval == red: # being opened by copyScenario
+            symbolLayer.setColor(retval)
+        else: # if the layer being loaded into the scenario for the first time default to red
+            symbolLayer.setColor(red)
+            self.addLayerToColoredLayers()
+        vlayer.triggerRepaint()
+        
+    def setBaseTownsProperties(self, vlayer):
+        # debugging
+        print "Main.legend.LegendItem.setBaseTownsProperties()"
+        
+        # Set the base_towns layer fill color to none
+        rendererV2 = vlayer.rendererV2()
+        symbol = rendererV2.symbols()[0]
+        
+        symbolMap = {"color": "255, 255, 255, 255", "style": "no", 
+                          "color_border": "DEFAULT_SIMPLEFILL_BORDERCOLOR", 
+                          "style_border": "DEFAULT_SIMPLEFILL_BORDERSTYLE", 
+                          "width_border": "0.3" }
+        
+        simpleSymbol = symbol.createSimple(symbolMap)
+        rendererV2.setSymbol(simpleSymbol)
+        self.addLayerToColoredLayers()
+        vlayer.triggerRepaint()
 
 class Legend(QtGui.QTreeWidget):
     """
@@ -685,6 +695,12 @@ the file system. All changes to these files will be lost. Do you want to delete 
                 self.deleteEditingLayer(editFilePath)
                 # remove the layer from the coloredLayers dictionary
                 self.mainwindow.coloredLayers.pop(name, None)
+                
+                # debugging
+                print "Main.legend.Legend.removeCurrentLayer(): The coloredLayers are: "
+                for k, v in self.mainwindow.coloredLayers.iteritems():
+                    print "%s: %s" % (k, str(v.getRgb()))
+                    
                 # If we have deleted the edit layer for current scenario edit type, then
                 # reset the editLayerName and the editDirty flag.
                 if name == self.mainwindow.editLayerName:
@@ -720,6 +736,11 @@ the file system. All changes to these files will be lost. Do you want to delete 
         self.updateLayerSet()
         # remove the layer from the coloredLayers dictionary
         self.mainwindow.coloredLayers.pop(name, None)
+        
+        # debugging
+        print "Main.legend.Legend.removeCurrentLayer(): The coloredLayers are: "
+        for k, v in self.mainwindow.coloredLayers.iteritems():
+            print "%s: %s" % (k, str(v.getRgb()))
         print "Mainwindow.legend.removeCurrentLayer(): The deleted color is " + str(self.mainwindow.coloredLayers.pop(name, None))
 
     def layerSymbology(self):
