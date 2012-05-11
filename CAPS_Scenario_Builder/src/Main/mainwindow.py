@@ -51,6 +51,7 @@ from Tools.dlgaddattributes import DlgAddAttributes
 from Tools.addlinespolygons import *
 from Tools.identify import Identify
 from Main.dlgscenarioedittypes import DlgScenarioEditTypes
+from Main.dlgmanageprojects import DlgManageProjects
 import Tools.shared
 import config
 
@@ -186,7 +187,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         QtCore.QObject.connect(self.mpActionIdentifyFeatures, QtCore.SIGNAL("toggled(bool)"), self.identifyFeatures)
         QtCore.QObject.connect(QgsProject.instance(), QtCore.SIGNAL("layerLoaded(int, int)"), self.getOriginalScenarioLayers)
         QtCore.QObject.connect(self.mpActionModifyPoints, QtCore.SIGNAL("triggered()"), self.modifyFeatures)
-        
+        QtCore.QObject.connect(self.mpActionManageProjects, QtCore.SIGNAL(("triggered()")), self.manageProjects)
+        QtCore.QObject.connect(self.mpActionSftpProperties, QtCore.SIGNAL(("triggered()")), self.sftpProperties)
         # Instantiate all tools.  They are written so their variables update from
         # the main window, so there is no need to repeat the instantiation process 
         # when layers or other variables change.
@@ -255,6 +257,23 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # The V2 renderers get the selection color from the old renderer.
         # This sets the selection color once, when the app starts
         self.setSelectionColor()
+
+############################################################################################   
+    ''' PROJECT MENU CUSTOM SLOTS AND METHODS'''
+############################################################################################ 
+    def manageProjects(self):
+        ''' Project menu SLOT '''
+        print "Main.mainwindow.manageProjects()"
+        self.dlgManageProjects = DlgManageProjects(self)
+        self.dlgManageProjects.show()
+        
+    def sftpProperties(self):
+        ''' Project menu SLOT '''
+        print "Main.mainwindow.sftpProperties()"
+        QtGui.QMessageBox.information(self, "Create SFTP Dialog", "Make a dialog to store the sftp host \
+and password as using the QSettings() class")
+
+
 
 ############################################################################################   
     ''' SCENARIO MENU CUSTOM SLOTS AND METHODS'''

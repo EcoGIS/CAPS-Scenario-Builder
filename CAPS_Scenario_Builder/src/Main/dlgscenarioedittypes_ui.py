@@ -32,8 +32,8 @@ class Ui_DlgScenarioEditTypes(object):
         self.gridLayout.addWidget(self.typesButtonBox, 2, 0, 1, 1)
 
         self.retranslateUi(DlgScenarioEditTypes)
-        QtCore.QObject.connect(self.typesButtonBox, QtCore.SIGNAL("accepted()"), DlgScenarioEditTypes.accept)
-        QtCore.QObject.connect(self.typesButtonBox, QtCore.SIGNAL("rejected()"), DlgScenarioEditTypes.reject)
+        '''QtCore.QObject.connect(self.typesButtonBox, QtCore.SIGNAL("accepted()"), DlgScenarioEditTypes.accept)
+        QtCore.QObject.connect(self.typesButtonBox, QtCore.SIGNAL("rejected()"), DlgScenarioEditTypes.reject)'''
         QtCore.QMetaObject.connectSlotsByName(DlgScenarioEditTypes)
 
     def retranslateUi(self, DlgScenarioEditTypes):

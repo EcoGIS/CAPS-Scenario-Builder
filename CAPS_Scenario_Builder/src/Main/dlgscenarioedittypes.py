@@ -58,9 +58,12 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         
         # add the scenario types list to the combo box drop down
         self.typesComboBox.addItems(self.scenarioEditTypesList)
-    
-        QtCore.QObject.connect(self, QtCore.SIGNAL("accepted()"), self.accept)
-        QtCore.QObject.connect(self, QtCore.SIGNAL("rejected()"), self.reject)
+        
+        '''QtCore.QObject.connect(self, QtCore.SIGNAL("accepted()"), self.accept)
+        QtCore.QObject.connect(self, QtCore.SIGNAL("rejected()"), self.reject)'''
+        
+        QtCore.QObject.connect(self.typesButtonBox, QtCore.SIGNAL("accepted()"), self.accept)
+        QtCore.QObject.connect(self.typesButtonBox, QtCore.SIGNAL("rejected()"), self.reject)
                 
 #################################################################################
     ''' Custom slots '''

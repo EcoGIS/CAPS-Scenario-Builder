@@ -70,6 +70,11 @@ for the CAPS Scenario Builder Beta version.  The error is: " + error, "Debug Err
 
     # create Qt application
     app = QtGui.QApplication(argv, True)
+    
+    # set parameters for using the QSettings class to store persistent values
+    app.setOrganizationName("UMass, Amherst")
+    app.setOrganizationDomain("umass.edu")
+    app.setApplicationName("CAPS Scenario Builder")
         
     # add a splash screen on startup   
     mySplashPix = QtGui.QPixmap("./CAPS_splash.png")
