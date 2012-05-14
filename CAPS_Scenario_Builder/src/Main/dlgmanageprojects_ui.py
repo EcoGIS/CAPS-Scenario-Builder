@@ -79,10 +79,10 @@ class Ui_DlgManageProjects(object):
         self.selectProjectLabel.setMargin(0)
         self.selectProjectLabel.setObjectName(_fromUtf8("selectProjectLabel"))
         self.verticalLayout_2.addWidget(self.selectProjectLabel)
-        self.comboBox_2 = QtGui.QComboBox(DlgManageProjects)
-        self.comboBox_2.setEditable(True)
-        self.comboBox_2.setObjectName(_fromUtf8("comboBox_2"))
-        self.verticalLayout_2.addWidget(self.comboBox_2)
+        self.selectProjectComboBox = QtGui.QComboBox(DlgManageProjects)
+        self.selectProjectComboBox.setEditable(True)
+        self.selectProjectComboBox.setObjectName(_fromUtf8("selectProjectComboBox"))
+        self.verticalLayout_2.addWidget(self.selectProjectComboBox)
         self.gridLayout.addLayout(self.verticalLayout_2, 0, 1, 1, 3)
         self.splitter = QtGui.QSplitter(DlgManageProjects)
         self.splitter.setOrientation(QtCore.Qt.Vertical)
@@ -133,12 +133,13 @@ class Ui_DlgManageProjects(object):
         QtCore.QObject.connect(self.projectsButtonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), DlgManageProjects.reject)
         QtCore.QObject.connect(self.projectsButtonBox, QtCore.SIGNAL(_fromUtf8("destroyed()")), DlgManageProjects.deleteProject)
         QtCore.QObject.connect(self.addScenarioButton, QtCore.SIGNAL(_fromUtf8("clicked()")), DlgManageProjects.addScenarioToProject)
-        QtCore.QObject.connect(self.removeScenarioButton, QtCore.SIGNAL(_fromUtf8("clicked()")), DlgManageProjects.removeScenarioFromProject)'''
+        QtCore.QObject.connect(self.removeScenarioButton, QtCore.SIGNAL(_fromUtf8("clicked()")), DlgManageProjects.removeScenarioFromProject)
+        QtCore.QObject.connect(self.selectProjectComboBox, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), DlgManageProjects.displayProject)'''
         QtCore.QMetaObject.connectSlotsByName(DlgManageProjects)
 
     def retranslateUi(self, DlgManageProjects):
         DlgManageProjects.setWindowTitle(QtGui.QApplication.translate("DlgManageProjects", "Manage Projects", None, QtGui.QApplication.UnicodeUTF8))
-        DlgManageProjects.setToolTip(QtGui.QApplication.translate("DlgManageProjects", "Create, ", None, QtGui.QApplication.UnicodeUTF8))
+        #DlgManageProjects.setToolTip(QtGui.QApplication.translate("DlgManageProjects", "Create, ", None, QtGui.QApplication.UnicodeUTF8))
         self.senderNameLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Sender\'s name:", None, QtGui.QApplication.UnicodeUTF8))
         self.senderEmailLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Sender\'s email:", None, QtGui.QApplication.UnicodeUTF8))
         self.dateSentLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Date sent:", None, QtGui.QApplication.UnicodeUTF8))
@@ -150,5 +151,6 @@ class Ui_DlgManageProjects(object):
         self.scenarioListLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Existing Scenario files:", None, QtGui.QApplication.UnicodeUTF8))
         self.projectListLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Scenario files in Project:", None, QtGui.QApplication.UnicodeUTF8))
         self.addScenarioButton.setToolTip(QtGui.QApplication.translate("DlgManageProjects", "Add selected scenario(s) to the project.", None, QtGui.QApplication.UnicodeUTF8))
-
+        self.removeScenarioButton.setToolTip(QtGui.QApplication.translate("DlgManageProjects", "Remove selected scenario(s) from the project.", None, QtGui.QApplication.UnicodeUTF8))
+        
 import resources_rc

@@ -263,13 +263,17 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
 ############################################################################################ 
     def manageProjects(self):
         ''' Project menu SLOT '''
+        # debugging
         print "Main.mainwindow.manageProjects()"
+        
         self.dlgManageProjects = DlgManageProjects(self)
-        self.dlgManageProjects.show()
+        self.dlgManageProjects.exec_()
         
     def sftpProperties(self):
         ''' Project menu SLOT '''
+        # debugging
         print "Main.mainwindow.sftpProperties()"
+        
         QtGui.QMessageBox.information(self, "Create SFTP Dialog", "Make a dialog to store the sftp host \
 and password as using the QSettings() class")
 

@@ -52,8 +52,10 @@ various scenario edit types.
 baseLayersPath =  './base_layers/'
 #scenariosPath = 'C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Scenarios/' 
 scenariosPath = './Scenarios/' 
+projectsPath = './Projects/'
 #scenarioExportsPath = 'C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Exported Scenarios/' 
 scenarioExportsPath = './Exported Scenarios/'
+
 
 ''' Field names, which appear in the editing layer attribute table, for each scenario edit type. '''     
 # To change the data users input into the application in the 'Add Attributes' dialog,
