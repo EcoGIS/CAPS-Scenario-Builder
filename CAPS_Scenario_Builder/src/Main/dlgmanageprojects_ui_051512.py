@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'dlgmanageprojects.ui'
 #
-# Created: Tue May 15 11:17:02 2012
+# Created: Fri May 11 15:13:00 2012
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -18,7 +18,6 @@ class Ui_DlgManageProjects(object):
     def setupUi(self, DlgManageProjects):
         DlgManageProjects.setObjectName(_fromUtf8("DlgManageProjects"))
         DlgManageProjects.resize(1174, 590)
-        DlgManageProjects.setToolTip(_fromUtf8(""))
         self.gridLayout = QtGui.QGridLayout(DlgManageProjects)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.verticalLayout_4 = QtGui.QVBoxLayout()
@@ -37,6 +36,9 @@ class Ui_DlgManageProjects(object):
         self.senderEmailLabel.setMargin(0)
         self.senderEmailLabel.setObjectName(_fromUtf8("senderEmailLabel"))
         self.formLayout.setWidget(1, QtGui.QFormLayout.LabelRole, self.senderEmailLabel)
+        self.sendersEmailEdit = QtGui.QLineEdit(DlgManageProjects)
+        self.sendersEmailEdit.setObjectName(_fromUtf8("sendersEmailEdit"))
+        self.formLayout.setWidget(1, QtGui.QFormLayout.FieldRole, self.sendersEmailEdit)
         self.dateSentLabel = QtGui.QLabel(DlgManageProjects)
         self.dateSentLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.dateSentLabel.setObjectName(_fromUtf8("dateSentLabel"))
@@ -44,18 +46,15 @@ class Ui_DlgManageProjects(object):
         self.dateSentTextLabel = QtGui.QLabel(DlgManageProjects)
         self.dateSentTextLabel.setObjectName(_fromUtf8("dateSentTextLabel"))
         self.formLayout.setWidget(2, QtGui.QFormLayout.FieldRole, self.dateSentTextLabel)
-        self.sendersEmailEdit = QtGui.QLineEdit(DlgManageProjects)
-        self.sendersEmailEdit.setObjectName(_fromUtf8("sendersEmailEdit"))
-        self.formLayout.setWidget(1, QtGui.QFormLayout.FieldRole, self.sendersEmailEdit)
         self.verticalLayout_4.addLayout(self.formLayout)
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.messageLabel = QtGui.QLabel(DlgManageProjects)
         self.messageLabel.setObjectName(_fromUtf8("messageLabel"))
         self.verticalLayout.addWidget(self.messageLabel)
-        self.messageTextEdit = QtGui.QTextEdit(DlgManageProjects)
-        self.messageTextEdit.setObjectName(_fromUtf8("messageTextEdit"))
-        self.verticalLayout.addWidget(self.messageTextEdit)
+        self.textBrowser = QtGui.QTextBrowser(DlgManageProjects)
+        self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
+        self.verticalLayout.addWidget(self.textBrowser)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setContentsMargins(-1, -1, 20, -1)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
@@ -82,7 +81,6 @@ class Ui_DlgManageProjects(object):
         self.verticalLayout_2.addWidget(self.selectProjectLabel)
         self.selectProjectComboBox = QtGui.QComboBox(DlgManageProjects)
         self.selectProjectComboBox.setEditable(True)
-        self.selectProjectComboBox.setInsertPolicy(QtGui.QComboBox.NoInsert)
         self.selectProjectComboBox.setObjectName(_fromUtf8("selectProjectComboBox"))
         self.verticalLayout_2.addWidget(self.selectProjectComboBox)
         self.gridLayout.addLayout(self.verticalLayout_2, 0, 1, 1, 3)
@@ -114,7 +112,7 @@ class Ui_DlgManageProjects(object):
         self.gridLayout.addItem(spacerItem1, 2, 2, 1, 1)
         self.addScenarioButton = QtGui.QPushButton(DlgManageProjects)
         self.addScenarioButton.setMaximumSize(QtCore.QSize(40, 16777215))
-        self.addScenarioButton.setCursor(QtCore.Qt.ArrowCursor)
+        self.addScenarioButton.setCursor(QtCore.Qt.BusyCursor)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/moveForward.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.addScenarioButton.setIcon(icon)
@@ -133,26 +131,26 @@ class Ui_DlgManageProjects(object):
         '''QtCore.QObject.connect(self.sendButton, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), DlgManageProjects.sendProject)
         QtCore.QObject.connect(self.projectsButtonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), DlgManageProjects.saveProject)
         QtCore.QObject.connect(self.projectsButtonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), DlgManageProjects.reject)
-        QtCore.QObject.connect(self.projectsButtonBox, QtCore.SIGNAL(_fromUtf8("clicked(QAbstractButton*)")), DlgManageProjects.deleteProject)
+        QtCore.QObject.connect(self.projectsButtonBox, QtCore.SIGNAL(_fromUtf8("destroyed()")), DlgManageProjects.deleteProject)
         QtCore.QObject.connect(self.addScenarioButton, QtCore.SIGNAL(_fromUtf8("clicked()")), DlgManageProjects.addScenarioToProject)
         QtCore.QObject.connect(self.removeScenarioButton, QtCore.SIGNAL(_fromUtf8("clicked()")), DlgManageProjects.removeScenarioFromProject)
-        QtCore.QObject.connect(self.selectProjectComboBox, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), DlgManageProjects.displayProjectInfo)'''
+        QtCore.QObject.connect(self.selectProjectComboBox, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), DlgManageProjects.displayProject)'''
         QtCore.QMetaObject.connectSlotsByName(DlgManageProjects)
 
     def retranslateUi(self, DlgManageProjects):
         DlgManageProjects.setWindowTitle(QtGui.QApplication.translate("DlgManageProjects", "Manage Projects", None, QtGui.QApplication.UnicodeUTF8))
+        #DlgManageProjects.setToolTip(QtGui.QApplication.translate("DlgManageProjects", "Create, ", None, QtGui.QApplication.UnicodeUTF8))
         self.senderNameLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Sender\'s name:", None, QtGui.QApplication.UnicodeUTF8))
         self.senderEmailLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Sender\'s email:", None, QtGui.QApplication.UnicodeUTF8))
         self.dateSentLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Date sent:", None, QtGui.QApplication.UnicodeUTF8))
         self.dateSentTextLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Unsent", None, QtGui.QApplication.UnicodeUTF8))
         self.messageLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Message or comments:", None, QtGui.QApplication.UnicodeUTF8))
-        self.sendButton.setToolTip(QtGui.QApplication.translate("DlgManageProjects", "Upload the project to the UMass, Amherst SFTP server.", None, QtGui.QApplication.UnicodeUTF8))
         self.sendButton.setText(QtGui.QApplication.translate("DlgManageProjects", "Send to UMass", None, QtGui.QApplication.UnicodeUTF8))
         self.selectProjectLabel.setToolTip(QtGui.QApplication.translate("DlgManageProjects", "Create a new project or open, copy or rename an existing project.", None, QtGui.QApplication.UnicodeUTF8))
-        self.selectProjectLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Project name:", None, QtGui.QApplication.UnicodeUTF8))
+        self.selectProjectLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Project Name:", None, QtGui.QApplication.UnicodeUTF8))
         self.scenarioListLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Existing Scenario files:", None, QtGui.QApplication.UnicodeUTF8))
         self.projectListLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Scenario files in Project:", None, QtGui.QApplication.UnicodeUTF8))
         self.addScenarioButton.setToolTip(QtGui.QApplication.translate("DlgManageProjects", "Add selected scenario(s) to the project.", None, QtGui.QApplication.UnicodeUTF8))
         self.removeScenarioButton.setToolTip(QtGui.QApplication.translate("DlgManageProjects", "Remove selected scenario(s) from the project.", None, QtGui.QApplication.UnicodeUTF8))
-
+        
 import resources_rc

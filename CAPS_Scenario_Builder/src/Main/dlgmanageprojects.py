@@ -29,7 +29,7 @@
 # 
 #---------------------------------------------------------------------
 # general python imports
-import os #, shutil, time, os.path #  copy, subprocess, sys,  stat,
+import os, re #, shutil, time, os.path #  copy, subprocess, sys,  stat,
 # import Qt libraries
 from PyQt4 import QtCore, QtGui
 # import qgis API
@@ -52,7 +52,7 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         
         self.mainwindow = mainwindow
         
-        ''' Set the initial dialog display to 'create a new project' mode ''' 
+        ''' Set the initial dialog to display 'create a new project' mode ''' 
         self.setCreateNewProjectMode()     
       
         QtCore.QObject.connect(self.sendButton, QtCore.SIGNAL(("clicked()")), self.sendProject)
@@ -68,28 +68,61 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
 #################################################################################    
             
     def displayProjectInfo(self, filename):        
-        ''' Display the project information for the project selected in selectProjectComboBox. '''
+        '''
+         Display the project information for the project selected in selectProjectComboBox. This method
+         is called when the current item is changed in the selectProjectComboBox. 
+
+        '''
         # debugging
         print "Main.manageprojects.DlgManageProjects().displayProjectInfo"
         print "Project Name is: " + filename 
         
-        # If the filename == "" then check if project is dirty and warn the user about losing data.
-        if not filename:
+        # Convert the QString to unicode
+        filename = unicode(filename)
+        
+        # If the user has chosen to 'Create a new project'
+        if filename == "Create a new project (type name here)":
+            # check if project is dirty and warn user then set the 'Create a new project' mode.
             self.checkIsProjectDirty()
             self.setCreateNewProjectMode()
+            return
         
         # Parse the project file to set needed instance variables with project information.
-        self.readProjectFile()
+        path = config.projectsPath + filename
+        print path
+        self.readProjectFile(path)
         
+        # Display the 'Sender's name:
+        self.senderNameEdit.clear()
+        self.senderNameEdit.setText(self.sender)
+        
+        # Display the 'Sender's email'
+        self.sendersEmailEdit.clear()
+        self.sendersEmailEdit.setText(self.senderEmail)
+        
+        # Display the date sent if it exists.
+        if self.dateSent:
+            self.dateSentLabel.clear()
+            self.dateSentLabel.setText(self.dateSent)
+        
+        # Display any saved message
+        self.messageTextEdit.clear()
+        self.messageTextEdit.setText(self.message)
+        
+        # Clear the list and populate the 'Existing Scenario files' list widget 
+        # with the existing scenario files that are NOT already in the project.
+        self.existingScenarioFileList.clear()
+        self.existingScenarioFileList.addItems(self.existingScenarioFilesNotInProject)
+        
+        # Display the scenario files in the project (if they exist in the file system).
         # If there are no project scenario files then display the following message.
-        if self.scenariosInProject == []:
+        if self.scenariosInProjectThatExist == []:
             noScenariosMessage = ["You have not added any Scenarios."]
             self.projectScenarioFileList.clear()
             self.projectScenarioFileList.addItems(noScenariosMessage)
-        
-        # We are opening a project so check if all the scenario files listed in the project's text file
-        # actually exist in the Scenarios directory.
-        self.checkIfScenarioFilesExist()
+        else:
+            self.projectScenarioFileList.clear()
+            self.projectScenarioFileList.addItems(self.scenariosInProjectThatExist)
                      
     def addScenarioToProject(self):
         ''' 
@@ -98,8 +131,8 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         '''
         # debugging
         print "Main.manageprojects.DlgManageProjects().addScenarioToProject()"
-        print "The selected items are: " 
 
+        # Shorten the names of the QT list widgets
         existingList =  self.existingScenarioFileList
         projectList = self.projectScenarioFileList
         
@@ -124,6 +157,7 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         # debugging
         print "Main.manageprojects.DlgManageProjects().removeScenarioFromProject()"
         
+        # Shorten the names of the QT list widgets
         existingList =  self.existingScenarioFileList
         projectList = self.projectScenarioFileList
         
@@ -143,8 +177,11 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         ''' Write the project information to a text file. '''
         # debugging
         print "Main.manageprojects.DlgManageProjects().saveProject()"
-        
-        # make sure project list is refreshed if a new project.
+                
+        self.validateInputData()
+        # make sure that user is not saving a project named "Create a new project"
+        # make sure all form fields are validated.
+        # make sure project list is refreshed if a new project is saved.
         
     def deleteProject(self, button):
         ''' Delete the current project file and leave the dialog open. '''
@@ -165,6 +202,9 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         # debugging
         print "Main.manageprojects.DlgManageProjects().sendProject()"
         
+        # make sure to save project before sending.
+        self.validateSendData()
+        
 #################################################################################   
     ''' Core methods '''   
 #################################################################################
@@ -173,13 +213,24 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         ''' A method to write the project file to disk. '''
         # debugging
         print "Main.manageprojects.DlgManageProjects().writeProjectFile()"
+
+
+
     
-    def readProjectFile(self):
+    def readProjectFile(self, path):
         ''' A method to parse the project file to populate the widgets in this dialog. '''
         # debugging
         print "Main.manageprojects.DlgManageProjects().readProjectFile()"
         
-        self.scenariosInProject = []
+        self.sender = "test"
+        self.senderEmail = "test"
+        self.message = "test"
+        self.dateSent = "test"
+        
+        # We are opening a project so check if all the scenario files listed in the project's text file
+        # actually exist in the Scenarios directory.  Also use this function to set the self.scenariosInProjectThatExist
+        # and self.existingScenarioFilesNotInProject variables
+        self.checkIfScenarioFilesExist()
         
     def listFiles(self, path):
         ''' A method to return the list of scenario files in the Scenarios directory '''
@@ -200,12 +251,10 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
                 return False
     
         if path == "./Projects/":
-            filesList = ["",]
+            filesList = ["Create a new project (type name here)",]
             for dirItem in directoryList:
                 if dirItem.endswith((".cpj", ".CPJ")):
                     filesList.append(dirItem)
-            if filesList == []:
-                filesList = ["You have not created any Projects."]                    
         elif path == "./Scenarios/":
             for dirItem in directoryList:
                     if dirItem.endswith((".cap", ".CAP")):
@@ -215,11 +264,6 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         
         return filesList
     
-    def parseProjectFile(self, filename):
-        ''' A method to read various information from the project file '''
-        # debugging
-        print "Main.manageprojects.DlgManageProjects().parseProjectFile()"
-       
     def checkIfScenarioFilesExist(self):
         ''' 
             A method to verify that scenario files listed in the project's text file actually exist in the file system, 
@@ -227,28 +271,52 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
             only files in the file system but not in the project, and sets the 'Scenario files in Project' only to show 
             files that are in the project's text file and actually exist in the file system.
         '''
-    
         # debugging
         print "Main.manageprojects.DlgManageProjects().checkIfScenarioFilesExist()"
+        
+        # list the scenarios in the project but not in the file system and warn the user.
+        
+        
+        # These two variables will be the variables used to populate the list widgets when an existing project is opened.
+        self.scenariosInProjectThatExist = ["test"]
+        self.existingScenarioFilesNotInProject = ["test"]
     
     def setCreateNewProjectMode(self):
-        ''' A method to set the Manage Projects dialog configuration to create a new project. '''
+        ''' 
+            A method to set the Manage Projects dialog configuration to create a new project. This method is called
+            when the Manage Projects dialog is first loaded and whenever the user chooses 'Create new project' from 
+            the selectProjectComboBox.
+        '''
         # debugging
-        print "Main.manageprojects.DlgManageProjects().setCreateProjectMode()"
+        print "Main.manageprojects.DlgManageProjects().setCreateNewProjectMode()"
         
-        # Populate the 'selectProjectComboBox' widget and set the displayed item to none.
-        # This ComboBox is editable, so the user can enter a new project name.
+        # Clear the Sender's name, Sender's email, Date sent and any Messages.
+        self.senderNameEdit.clear()
+        self.sendersEmailEdit.clear()
+        self.dateSentLabel.setText("Unsent")
+        self.messageTextEdit.clear()
+        
+        # Block signals to prevent self.displayProject() from being called
+        self.selectProjectComboBox.blockSignals(True)
+        # Clear the 'selectProjectComboBox' in case the user has chosen 'Create a new project (type name here)' 
+        # creating or viewing other projects.
         self.selectProjectComboBox.clear()
-        self.selectProjectComboBox.addItems(self.listFiles(config.projectsPath))
+        # Populate the 'selectProjectComboBox' widget and set the displayed item to 'Create a new project (type name here)'
+        # This ComboBox is editable, so the user can enter a new project name.
+        self.listedProjectFiles = self.listFiles(config.projectsPath)
+        self.selectProjectComboBox.addItems(self.listedProjectFiles)
         self.selectProjectComboBox.setCurrentIndex(0)
+        # Turn signals back on
+        self.selectProjectComboBox.blockSignals(False)
         
-        # populate the 'Existing Scenario files' list widget
+        # Clear the list and populate the 'Existing Scenario files' list widget
         self.existingScenarioFileList.clear()
         self.existingScenarioFileList.addItems(self.listFiles(config.scenariosPath))
 
         # Populate the 'Project Scenario files list' with a "newProjectMessage."
         if self.selectProjectComboBox.currentIndex() == 0:
-            newProjectMessage = ["To create a new project,", "type a Project Name above,", "optionally add a scenario here,", "and click 'Save'"] 
+            newProjectMessage = ["To create a new project,", "fill in the text boxes above,", "optionally add a scenario here,", "and click 'Save'"] 
+            self.projectScenarioFileList.clear()
             self.projectScenarioFileList.addItems(newProjectMessage)
         
     def checkIsProjectDirty(self):
@@ -256,6 +324,31 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         # debugging
         print "Main.manageprojects.DlgManageProjects().checkIsProjectDirty"
         
+    def validateSaveData(self):
+        ''' A method to validate the user inputs to the Manage Projects dialog when saving a project. '''
+        #debugging
+        print "Main.manageproject.DlgManageProjects().validateSaveData()"
         
+        text = unicode(self.selectProjectComboBox.currentText())
+        if text == "Create a new project (type name here)" or text == "":
+            QtGui.QMessageBox.Information(self, "Save Project Error:", "Please enter the 'Project name:'")
+        elif unicode(self.senderNameEdit.text()) == "":
+            QtGui.QMessageBox.Information(self, "Save Project Error:", "Please enter the 'Sender's name:'")
+        elif not self.validateEmail(unicode(self.sendersEmailEdit.text())):
+            QtGui.QMessageBox.Information(self, "Save Project Error:", "Please enter a valid email address.")
+            
+    def validateSendData(self):
+        ''' A method to validate the user inputs to the Manage Projects dialog when sending a project. '''        
+        # debugging
+        print "Main.manageproject.DlgManageProjects().validateSendData()"    
         
+        self.validateSaveData()
+        
+        # validate that there are scenario files to send.    
+    
+    def validateEmail(self, email):
+        ''' A method to validate email addresses. '''
+        if re.match(r"^[a-zA-Z0-9._%-+]+\@[a-zA-Z0-9._%-]+\.[a-zA-Z]{2,}$", email) !=  None: 
+            return True
+        else: return False  
         
