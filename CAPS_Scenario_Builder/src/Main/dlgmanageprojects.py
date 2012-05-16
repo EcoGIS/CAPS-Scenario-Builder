@@ -29,7 +29,7 @@
 # 
 #---------------------------------------------------------------------
 # general python imports
-import os, re #, shutil, time, os.path #  copy, subprocess, sys,  stat,
+import os, re, codecs, datetime #, shutil, time, os.path #  copy, subprocess, sys,  stat,
 # import Qt libraries
 from PyQt4 import QtCore, QtGui
 # import qgis API
@@ -52,6 +52,7 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         
         self.mainwindow = mainwindow
         
+        
         ''' Set the initial dialog to display 'create a new project' mode ''' 
         self.setCreateNewProjectMode()     
       
@@ -70,7 +71,7 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
     def displayProjectInfo(self, filename):        
         '''
          Display the project information for the project selected in selectProjectComboBox. This method
-         is called when the current item is changed in the selectProjectComboBox. 
+         is called when the current item is changed in the selectProjectComboBox widget. 
 
         '''
         # debugging
@@ -109,15 +110,15 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         self.messageTextEdit.clear()
         self.messageTextEdit.setText(self.message)
         
-        # Clear the list and populate the 'Existing Scenario files' list widget 
-        # with the existing scenario files that are NOT already in the project.
+        # Clear the list and populate the 'Existing Exported Scenarios' list widget 
+        # with the existing exported scenario files that are NOT already in the project.
         self.existingScenarioFileList.clear()
-        self.existingScenarioFileList.addItems(self.existingScenarioFilesNotInProject)
+        self.existingScenarioFileList.addItems(self.existingScenariosNotInProject)
         
         # Display the scenario files in the project (if they exist in the file system).
         # If there are no project scenario files then display the following message.
         if self.scenariosInProjectThatExist == []:
-            noScenariosMessage = ["You have not added any Scenarios."]
+            noScenariosMessage = ["You have not added any Exported Scenarios."]
             self.projectScenarioFileList.clear()
             self.projectScenarioFileList.addItems(noScenariosMessage)
         else:
@@ -137,13 +138,13 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         projectList = self.projectScenarioFileList
         
         # if noting is selected in the list widget tell the user.
-        if existingList.selectedItems() == [] or existingList.item(0).text() == "You have not created any Scenarios.":
-            QtGui.QMessageBox.warning(self, "Add Scenario error:", "You must select at least one scenario from the \
-'Existing Scenario files:' list before you can add  a scenario to the project.")
+        if existingList.selectedItems() == [] or existingList.item(0).text() == "You have not created any Exported Scenarios.":
+            QtGui.QMessageBox.warning(self, "Add Exported Scenario Error:", "You must select at least one Exported Scenario from the \
+'Existing Exported Scenarios:' list before you can add an Exported Scenario to the project.")
         else:
-            # If the 'newProject' text was set then clear the projectScenarioFileList widget.             
+            # If the 'new project' text was set then clear the projectScenarioFileList widget.             
             if projectList.item(0):
-                if projectList.item(0).text() == "To create a new project," or projectList.item(0).text() == "You have not added any Scenarios.":
+                if projectList.item(0).text() == "To create a new project," or projectList.item(0).text() == "You have not added any Exported Scenarios.":
                     projectList.clear()
               
             addScenarioList = []
@@ -163,9 +164,9 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         
         # if nothing is selected in the list widget tell the user.
         if (projectList.selectedItems() == [] or projectList.item(0).text() == "To create a new project,"
-                                              or projectList.item(0).text() == "You have not added any Scenarios."):
-            QtGui.QMessageBox.warning(self, "Remove Scenario error:", "You must select at least one scenario from the \
-'Scenario files in Project:' list before you can remove a scenario from the project.")
+                                              or projectList.item(0).text() == "You have not added any Exported Scenarios."):
+            QtGui.QMessageBox.warning(self, "Remove Exported Scenario Error:", "You must select at least one Exported Scenario from the \
+'Exported Scenarios in Project:' list before you can remove an Exported Scenario from the project.")
         else:
             removeScenarioList = []
             for selectedItem in projectList.selectedItems():
@@ -178,9 +179,18 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         # debugging
         print "Main.manageprojects.DlgManageProjects().saveProject()"
                 
-        self.validateInputData()
-        # make sure that user is not saving a project named "Create a new project"
-        # make sure all form fields are validated.
+        # validate the data input from the user
+        if self.validateSaveData(""):
+            # writeProjectFile() returns a valid file name
+            projectFileName = self.writeProjectFile()
+            # add the file name to the combo box
+            self.selectProjectComboBox.blockSignals(True)
+            self.selectProjectComboBox.addItem(projectFileName)
+
+            # find the index and set the combo box to display the new projectFileName
+            index = self.selectProjectComboBox.findText(projectFileName, QtCore.Qt.MatchCaseSensitive)
+            self.selectProjectComboBox.setCurrentIndex(index)
+            self.selectProjectComboBox.blockSignals(False)
         # make sure project list is refreshed if a new project is saved.
         
     def deleteProject(self, button):
@@ -198,12 +208,19 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         self.hide()
         
     def sendProject(self):
-        ''' Send the project file and associated scenario files to UMass via SFTP. '''
+        ''' Send the project file and associated Exported Scenario files to UMass via SFTP. '''
         # debugging
         print "Main.manageprojects.DlgManageProjects().sendProject()"
         
         # make sure to save project before sending.
-        self.validateSendData()
+        if self.validateSendData():
+            projectFileName = self.writeProjectFile()
+            
+            #add sftp code here
+            
+            # once the project has been successfully sent, display it to show the date sent
+            self.displayProjectInfo(projectFileName)
+            
         
 #################################################################################   
     ''' Core methods '''   
@@ -213,9 +230,44 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         ''' A method to write the project file to disk. '''
         # debugging
         print "Main.manageprojects.DlgManageProjects().writeProjectFile()"
+        
+        error = None
+        fh = None
+        
+        projectFileName = self.getProjectFileName()
+        path = config.projectsPath + projectFileName
+        now = datetime.datetime.now()
+        print "The path is: " + path
+        
+        try:
+            fh = codecs.open(unicode(path), "w", "UTF-8")
+            fh.write(u"{{SENDER}}: %s\n" % unicode(self.selectProjectComboBox.currentText()))
+            fh.write(u"{{SENDER_EMAIL}}: %s\n" % unicode(self.sendersEmailEdit.text()))
+            fh.write(u"{{MESSAGE}}: %s\n" % unicode(self.messageTextEdit.document().toPlainText()))        
+            fh.write(u"{{DATE_SENT}}: %s\n " % unicode(now.strftime("%Y-%m-%d %H:%M")))
+           
+            projectList = self.projectScenarioFileList
+            if projectList.item(0):
+                text = unicode(projectList.item(0).text())
+                print "text is: " + text
+            if ((projectList.item(0) and text != "To create a new project,") and 
+                (projectList.item(0) and text != "You have not added any Exported Scenarios.")):
+                print "hello"
+                fh.write(u"{{SCENARIOS}}:\n")
+                for index in range(0, self.projectScenarioFileList.count()):
+                    fh.write(u"%s\n" % unicode(self.projectScenarioFileList.item(index).text()))
+            else:
+                print "bye"
+                fh.write(u"{{SCENARIOS}}:")
+        except (IOError, OSError), e:
+            error = "Failed to save: %s" % e
+        finally:
+            if fh is not None:
+                fh.close()
+            if error is not None:
+                return False, error
 
-
-
+        return projectFileName
     
     def readProjectFile(self, path):
         ''' A method to parse the project file to populate the widgets in this dialog. '''
@@ -223,17 +275,17 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         print "Main.manageprojects.DlgManageProjects().readProjectFile()"
         
         self.sender = "test"
-        self.senderEmail = "test"
+        self.senderEmail = "test@test.com"
         self.message = "test"
         self.dateSent = "test"
         
-        # We are opening a project so check if all the scenario files listed in the project's text file
-        # actually exist in the Scenarios directory.  Also use this function to set the self.scenariosInProjectThatExist
-        # and self.existingScenarioFilesNotInProject variables
+        # We are opening a project so check if all the Exported Scenario files listed in the project's text file
+        # actually exist in the Exported Scenarios directory.  Also use this function to set the self.scenariosInProjectThatExist
+        # and self.existingScenariosNotInProject variables
         self.checkIfScenarioFilesExist()
         
     def listFiles(self, path):
-        ''' A method to return the list of scenario files in the Scenarios directory '''
+        ''' A method to return the list of Exported Scenarios files in the Exported Scenarios directory '''
         # debugging
         print "Main.manageprojects.DlgManageProjects().listFiles()"
         print "The path is: " + path
@@ -246,29 +298,29 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
             error = e
             if error:
                 print error
-                QtGui.QMessageBox.warning(self, "Export Scenario Error:", "The files in the \
-'Projects' or 'Scenarios' directory could not be listed.  Please try again")
+                QtGui.QMessageBox.warning(self, "Read Directory Error:", "The files in the \
+'Projects' or 'Exported Scenarios' directory could not be listed.  Please try again")
                 return False
     
         if path == "./Projects/":
-            filesList = ["Create a new project (type name here)",]
+            filesList = ["Create a new project (type name here)"]
             for dirItem in directoryList:
                 if dirItem.endswith((".cpj", ".CPJ")):
                     filesList.append(dirItem)
-        elif path == "./Scenarios/":
+        elif path == "./Exported Scenarios/":
             for dirItem in directoryList:
-                    if dirItem.endswith((".cap", ".CAP")):
+                    if dirItem.endswith((".csv", ".CSV")):
                         filesList.append(dirItem)
             if filesList == []:
-                filesList = ["You have not created any Scenarios."]
+                filesList = ["You have not created any Exported Scenarios."]
         
         return filesList
     
     def checkIfScenarioFilesExist(self):
         ''' 
-            A method to verify that scenario files listed in the project's text file actually exist in the file system, 
-            and warn the user if they do not.  This method also sets the 'Existing Scenario files" list widget to show 
-            only files in the file system but not in the project, and sets the 'Scenario files in Project' only to show 
+            A method to verify that Exported Scenarios listed in the project's text file actually exist in the file system, 
+            and warn the user if they do not.  This method also sets the 'Existing Exported Scenarios" list widget to show 
+            only files in the file system but not in the project, and sets the 'Exported Scenarios in Project' only to show 
             files that are in the project's text file and actually exist in the file system.
         '''
         # debugging
@@ -279,7 +331,7 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         
         # These two variables will be the variables used to populate the list widgets when an existing project is opened.
         self.scenariosInProjectThatExist = ["test"]
-        self.existingScenarioFilesNotInProject = ["test"]
+        self.existingScenariosNotInProject = ["test"]
     
     def setCreateNewProjectMode(self):
         ''' 
@@ -308,10 +360,10 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         self.selectProjectComboBox.setCurrentIndex(0)
         # Turn signals back on
         self.selectProjectComboBox.blockSignals(False)
-        
+                
         # Clear the list and populate the 'Existing Scenario files' list widget
         self.existingScenarioFileList.clear()
-        self.existingScenarioFileList.addItems(self.listFiles(config.scenariosPath))
+        self.existingScenarioFileList.addItems(self.listFiles(config.scenarioExportsPath))
 
         # Populate the 'Project Scenario files list' with a "newProjectMessage."
         if self.selectProjectComboBox.currentIndex() == 0:
@@ -324,31 +376,76 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         # debugging
         print "Main.manageprojects.DlgManageProjects().checkIsProjectDirty"
         
-    def validateSaveData(self):
+    def validateSaveData(self, informationText):
         ''' A method to validate the user inputs to the Manage Projects dialog when saving a project. '''
         #debugging
         print "Main.manageproject.DlgManageProjects().validateSaveData()"
-        
-        text = unicode(self.selectProjectComboBox.currentText())
-        if text == "Create a new project (type name here)" or text == "":
-            QtGui.QMessageBox.Information(self, "Save Project Error:", "Please enter the 'Project name:'")
-        elif unicode(self.senderNameEdit.text()) == "":
-            QtGui.QMessageBox.Information(self, "Save Project Error:", "Please enter the 'Sender's name:'")
-        elif not self.validateEmail(unicode(self.sendersEmailEdit.text())):
-            QtGui.QMessageBox.Information(self, "Save Project Error:", "Please enter a valid email address.")
+      
+        comboBoxText = unicode(self.selectProjectComboBox.currentText())
+        if comboBoxText == "Create a new project (type name here)" or comboBoxText == "":
+            informationText += "Please enter the 'Project name:'\n"
+        if not self.validateFileName(comboBoxText):
+            informationText += "Please limit your project name to letters, numbers and -_.()\n"
+        if unicode(self.senderNameEdit.text()) == "":
+            informationText += "Please enter the 'Sender's name:'\n"
+        if not self.validateEmail(unicode(self.sendersEmailEdit.text())):
+            informationText += "Please enter a valid email address.\n"
+            
+        if informationText:
+            validateMessage = QtGui.QMessageBox()
+            validateMessage.setMinimumWidth(400)
+            validateMessage.setWindowTitle("Save Project Error:")
+            validateMessage.setText(informationText)
+            validateMessage.exec_()
+        else: return True
             
     def validateSendData(self):
         ''' A method to validate the user inputs to the Manage Projects dialog when sending a project. '''        
         # debugging
         print "Main.manageproject.DlgManageProjects().validateSendData()"    
         
-        self.validateSaveData()
+        projectList = self.projectScenarioFileList
+        if projectList.item(0):
+            text = unicode(projectList.item(0).text())
         
-        # validate that there are scenario files to send.    
-    
+        # if the "Exported Scenarios in Project" list widget is empty, or the dialog is in "create a new project" mode, 
+        # or if no scenario files have yet been added to the project then validation fails.
+        if not projectList.item(0) or text ==  "To create a new project," or text == "You have not added any Exported Scenarios.":
+            informationText = "Please add an Exported Scenario before sending.\n"
+        else: informationText = ""
+
+        # now  validate the remaining data needed to send.
+        if self.validateSaveData(informationText):
+            return True
+        
     def validateEmail(self, email):
         ''' A method to validate email addresses. '''
+        # debugging
+        print "Main.manageproject.DlgManageProjects().validateEmail()"
+        
         if re.match(r"^[a-zA-Z0-9._%-+]+\@[a-zA-Z0-9._%-]+\.[a-zA-Z]{2,}$", email) !=  None: 
             return True
-        else: return False  
+        else: return False
         
+    def validateFileName(self, fileName):
+        ''' A method to ensure that a string is a valid file name. '''
+        # debugging
+        print "Main.manageproject.DlgManageProjects().validateFileName()"
+        
+        validCharacters = "-_.() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        for c in fileName:
+            if not c in validCharacters:
+                return False
+        return True
+   
+    def getProjectFileName(self):
+        ''' Check for the '.cpj' or '.CPJ' file extension in the projectName and add it if missing. '''
+        # debugging
+        print "Main.dlgmanageprojects.DlgManageProjects.getProjectFileName()"
+        
+        
+        projectName = self.selectProjectComboBox.currentText()
+        if unicode(projectName).endswith((".cpj", ".CPJ")):
+            return projectName
+        else: return projectName + ".cpj"
+            

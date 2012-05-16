@@ -150,8 +150,8 @@ class Ui_DlgManageProjects(object):
         self.sendButton.setText(QtGui.QApplication.translate("DlgManageProjects", "Send to UMass", None, QtGui.QApplication.UnicodeUTF8))
         self.selectProjectLabel.setToolTip(QtGui.QApplication.translate("DlgManageProjects", "Create a new project or open, copy or rename an existing project.", None, QtGui.QApplication.UnicodeUTF8))
         self.selectProjectLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Project name:", None, QtGui.QApplication.UnicodeUTF8))
-        self.scenarioListLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Existing Scenario files:", None, QtGui.QApplication.UnicodeUTF8))
-        self.projectListLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Scenario files in Project:", None, QtGui.QApplication.UnicodeUTF8))
+        self.scenarioListLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Existing Exported Scenarios:", None, QtGui.QApplication.UnicodeUTF8))
+        self.projectListLabel.setText(QtGui.QApplication.translate("DlgManageProjects", "Exported Scenarios in Project:", None, QtGui.QApplication.UnicodeUTF8))
         self.addScenarioButton.setToolTip(QtGui.QApplication.translate("DlgManageProjects", "Add selected scenario(s) to the project.", None, QtGui.QApplication.UnicodeUTF8))
         self.removeScenarioButton.setToolTip(QtGui.QApplication.translate("DlgManageProjects", "Remove selected scenario(s) from the project.", None, QtGui.QApplication.UnicodeUTF8))
 
