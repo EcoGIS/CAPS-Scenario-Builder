@@ -6,6 +6,7 @@
 #
 #--------------------------------------------------------------------- 
 # 
+# Copyright (c) 2007-8 Qtrac Ltd.
 # Copyright (C) 2011  Robert English: Daystar Computing (http://edaystar.com)
 #
 #---------------------------------------------------------------------
@@ -51,8 +52,7 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         print "Main.dlgmanageprojects.DlgManageProjects class"
         
         self.mainwindow = mainwindow
-        
-        
+                
         ''' Set the initial dialog to display 'create a new project' mode ''' 
         self.setCreateNewProjectMode()     
       
@@ -78,6 +78,7 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         print "Main.manageprojects.DlgManageProjects().displayProjectInfo"
         print "Project Name is: " + filename 
         
+        
         # Convert the QString to unicode
         filename = unicode(filename)
         
@@ -89,42 +90,43 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
             return
         
         # Parse the project file to set needed instance variables with project information.
+        # This method warns the user and returns "False" if the read operation fails.
         path = config.projectsPath + filename
         print path
-        self.readProjectFile(path)
-        
-        # Display the 'Sender's name:
-        self.senderNameEdit.clear()
-        self.senderNameEdit.setText(self.sender)
-        
-        # Display the 'Sender's email'
-        self.sendersEmailEdit.clear()
-        self.sendersEmailEdit.setText(self.senderEmail)
-        
-        # Display the date sent if it exists.
-        if self.dateSent:
-            self.dateSentLabel.clear()
-            self.dateSentLabel.setText(self.dateSent)
-        
-        # Display any saved message
-        self.messageTextEdit.clear()
-        self.messageTextEdit.setText(self.message)
-        
-        # Clear the list and populate the 'Existing Exported Scenarios' list widget 
-        # with the existing exported scenario files that are NOT already in the project.
-        self.existingScenarioFileList.clear()
-        self.existingScenarioFileList.addItems(self.existingScenariosNotInProject)
-        
-        # Display the scenario files in the project (if they exist in the file system).
-        # If there are no project scenario files then display the following message.
-        if self.scenariosInProjectThatExist == []:
-            noScenariosMessage = ["You have not added any Exported Scenarios."]
-            self.projectScenarioFileList.clear()
-            self.projectScenarioFileList.addItems(noScenariosMessage)
-        else:
-            self.projectScenarioFileList.clear()
-            self.projectScenarioFileList.addItems(self.scenariosInProjectThatExist)
-                     
+        if self.readProjectFile(path):
+                        
+            # Display the 'Sender's name:
+            self.senderNameEdit.clear()
+            self.senderNameEdit.setText(self.sender)
+            
+            # Display the 'Sender's email'
+            self.sendersEmailEdit.clear()
+            self.sendersEmailEdit.setText(self.senderEmail)
+            
+            # Display the date sent if it exists.
+            if self.dateSent:
+                self.dateSentLabel.clear()
+                self.dateSentLabel.setText(self.dateSent)
+            
+            # Clear the list and populate the 'Existing Exported Scenarios' list widget 
+            # with the existing exported scenario files that are NOT already in the project.
+            self.existingScenarioFileList.clear()
+            self.existingScenarioFileList.addItems(self.existingScenariosNotInProject)
+            
+            # Display the scenario files in the project (if they exist in the file system).
+            # If there are no project scenario files then display the following message.
+            if self.scenariosInProjectThatExist == []:
+                noScenariosMessage = ["You have not added any Exported Scenarios."]
+                self.projectScenarioFileList.clear()
+                self.projectScenarioFileList.addItems(noScenariosMessage)
+            else:
+                self.projectScenarioFileList.clear()
+                self.projectScenarioFileList.addItems(self.scenariosInProjectThatExist)
+             
+            # Display any saved message
+            self.messageTextEdit.clear()
+            self.messageTextEdit.setText(self.message)
+                    
     def addScenarioToProject(self):
         ''' 
             Write the selected project name(s) from the "Existing Scenario files" list widget
@@ -181,17 +183,23 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
                 
         # validate the data input from the user
         if self.validateSaveData(""):
+            
             # writeProjectFile() returns a valid file name
             projectFileName = self.writeProjectFile()
-            # add the file name to the combo box
+            
+            # Block signals to prevent calling self.displayProjectInfo()
             self.selectProjectComboBox.blockSignals(True)
-            self.selectProjectComboBox.addItem(projectFileName)
-
+            
+            # see if the project name is already in the combo box drop down menu
+            index = self.selectProjectComboBox.findText(projectFileName, QtCore.Qt.MatchCaseSensitive)
+            if index == -1: # -1 returned if item not found   
+                # add the file name to the combo box
+                self.selectProjectComboBox.addItem(projectFileName)
+           
             # find the index and set the combo box to display the new projectFileName
             index = self.selectProjectComboBox.findText(projectFileName, QtCore.Qt.MatchCaseSensitive)
             self.selectProjectComboBox.setCurrentIndex(index)
             self.selectProjectComboBox.blockSignals(False)
-        # make sure project list is refreshed if a new project is saved.
         
     def deleteProject(self, button):
         ''' Delete the current project file and leave the dialog open. '''
@@ -230,42 +238,45 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         ''' A method to write the project file to disk. '''
         # debugging
         print "Main.manageprojects.DlgManageProjects().writeProjectFile()"
-        
-        error = None
-        fh = None
-        
+       
         projectFileName = self.getProjectFileName()
         path = config.projectsPath + projectFileName
         now = datetime.datetime.now()
         print "The path is: " + path
+        error = None
+        fh = None
         
         try:
             fh = codecs.open(unicode(path), "w", "UTF-8")
-            fh.write(u"{{SENDER}}: %s\n" % unicode(self.selectProjectComboBox.currentText()))
+            fh.write(u"-*- all files encoded using: utf-8 -*-\n")
+            fh.write(u"{{SENDER}}: %s\n" % unicode(self.senderNameEdit.text()))
             fh.write(u"{{SENDER_EMAIL}}: %s\n" % unicode(self.sendersEmailEdit.text()))
-            fh.write(u"{{MESSAGE}}: %s\n" % unicode(self.messageTextEdit.document().toPlainText()))        
-            fh.write(u"{{DATE_SENT}}: %s\n " % unicode(now.strftime("%Y-%m-%d %H:%M")))
-           
+            fh.write(u"{{PROJECT_NAME}}: %s\n" % unicode(self.selectProjectComboBox.currentText()))
+            fh.write(u"{{DATE_SENT}}: %s\n" % unicode(now.strftime("%Y-%m-%d %H:%M")))
             projectList = self.projectScenarioFileList
             if projectList.item(0):
                 text = unicode(projectList.item(0).text())
                 print "text is: " + text
             if ((projectList.item(0) and text != "To create a new project,") and 
                 (projectList.item(0) and text != "You have not added any Exported Scenarios.")):
-                print "hello"
-                fh.write(u"{{SCENARIOS}}:\n")
+                fh.write(u"{{SCENARIOS}}: ")
                 for index in range(0, self.projectScenarioFileList.count()):
-                    fh.write(u"%s\n" % unicode(self.projectScenarioFileList.item(index).text()))
+                    fh.write(u"%s, " % unicode(self.projectScenarioFileList.item(index).text()))
+                fh.write(u"\n")
             else:
-                print "bye"
-                fh.write(u"{{SCENARIOS}}:")
+                fh.write(u"{{SCENARIOS}}:\n")
+            fh.write(u"{{MESSAGE}}:\n" )
+            fh.write(u"%s\n" % unicode(self.messageTextEdit.document().toPlainText()))
+            fh.write(u"{{END_MESSAGE}}\n")        
         except (IOError, OSError), e:
-            error = "Failed to save: %s" % e
+            error = unicode(e)
         finally:
             if fh is not None:
                 fh.close()
             if error is not None:
-                return False, error
+                print error
+                QtGui.QMessageBox.warning(self, "Save Project Error: ", "The project file could not be written. \
+Please check if a project file with the same name is already open and try again.")
 
         return projectFileName
     
@@ -273,16 +284,109 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         ''' A method to parse the project file to populate the widgets in this dialog. '''
         # debugging
         print "Main.manageprojects.DlgManageProjects().readProjectFile()"
-        
-        self.sender = "test"
-        self.senderEmail = "test@test.com"
-        self.message = "test"
-        self.dateSent = "test"
-        
+
+        error = None
+        fh = None
+        try:
+            # Mode "rU" opens as a text file as platform independent and all line terminations
+            # are seen by Python as '\n'
+            fh = codecs.open(unicode(path), "rU", "UTF-8")
+            lino = 0
+            while True:
+                self.sender = self.senderEmail = self.projectName = self.dateSent = self.scenariosInProjectFile = self.message = None
+                # line 1
+                line = fh.readline()
+                if not line:
+                    break
+                lino += 1
+                if not line.startswith("-*- all files encoded using: utf-8 -*-"):
+                    raise ValueError, "utf-8 header missing"
+                
+                # line 2 (this user QLineEdit input is limited to 75 characters and the QLineEdit does not accept newlines, \n)
+                line = fh.readline()
+                print "The line is: " + line
+                if not line:
+                    raise ValueError, "premature end of file"
+                lino += 1
+                if not line.startswith("{{SENDER}}:"):
+                    raise ValueError, "sender is missing"
+                else:
+                    self.sender = line.strip("{{SENDER}}:")
+                    
+                # line 3 (this user QLineEdit input is limited to 75 characters and the QLineEdit does not accept newlines, \n)
+                line = fh.readline()
+                if not line:
+                    raise ValueError, "premature end of file"
+                lino += 1
+                if not line.startswith("{{SENDER_EMAIL}}:"):
+                    raise ValueError, "sender's email is missing"
+                else:
+                    self.senderEmail = line.strip("{{SENDER_EMAIL}}:")
+                
+                # line 4 (this user QLineEdit input is limited to 50 characters and the QLineEdit does not accept newlines, \n)
+                line = fh.readline()
+                if not line:
+                    raise ValueError, "premature end of file"
+                lino += 1
+                if not line.startswith("{{PROJECT_NAME}}:"):
+                    raise ValueError, "project name is missing"
+                else:
+                    self.projectName = line.strip("{{PROJECT_NAME}}:")
+                
+                # line 5 (the date is inserted by self.writeProjectFile() and is a text string)
+                line = fh.readline()
+                if not line:
+                    raise ValueError, "premature end of file"
+                lino += 1
+                if not line.startswith("{{DATE_SENT}}:"):
+                    raise ValueError, "date sent is missing"
+                else:
+                    self.dateSent = line.strip("{{DATE_SENT}}:")
+                
+                # line 6 (the scenarios in the project are written by self.writeProjectFile() and have no \n newlines)
+                line = fh.readline()
+                if not line:
+                    raise ValueError, "premature end of file"
+                lino += 1
+                if not line.startswith("{{SCENARIOS}}:"):
+                    raise ValueError, "scenarios is missing"
+                else:
+                    self.scenariosInProjectFile = line.strip("{{SCENARIOS}}:")
+                
+                # lines 7+ (this user input has no length limit and does accept newlines, \n)
+                line = fh.readline()
+                if not line:
+                    raise ValueError, "premature end of file"
+                lino += 1
+                if not line.startswith("{{MESSAGE}}:"):
+                    raise ValueError, "message header is missing"
+                else:
+                    self.message = ""
+                    while True:
+                        line = fh.readline()
+                        lino += 1
+                        if line == "{{END_MESSAGE}}\n":
+                            if self.sender is None or self.senderEmail is None or self.projectName is None or self.dateSent is None or \
+                                                    self.scenariosInProjectFile is None or self.message is None:
+                                raise ValueError, "incomplete record"
+                            break
+                        else:
+                            self.message += line
+                break                
+        except (IOError, OSError, ValueError), e:
+            print "Failed to load: %s on line %d" % (e, lino)
+            error = unicode(e)
+            QtGui.QMessageBox.warning(self, "Read Project Error: ", "The project file could not be read. \
+The error on line " + str(lino) + " is '" + error + "'.")
+            if fh is not None:
+                fh.close()
+            return False
+
         # We are opening a project so check if all the Exported Scenario files listed in the project's text file
         # actually exist in the Exported Scenarios directory.  Also use this function to set the self.scenariosInProjectThatExist
         # and self.existingScenariosNotInProject variables
         self.checkIfScenarioFilesExist()
+        return True
         
     def listFiles(self, path):
         ''' A method to return the list of Exported Scenarios files in the Exported Scenarios directory '''
