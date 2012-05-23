@@ -55,6 +55,7 @@ scenariosPath = './Scenarios/'
 projectsPath = './Projects/'
 #scenarioExportsPath = 'C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Exported Scenarios/' 
 scenarioExportsPath = './Exported Scenarios/'
+sftpUploadPath = '/D:/inetpub/streamcontinuity/'
 
 
 ''' Field names, which appear in the editing layer attribute table, for each scenario edit type. '''     

@@ -840,7 +840,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         # Now we handle if a scenario is open
         # Check the flag to see if all scenario layers are loaded
         if self.origScenarioLyrsLoaded:
-            # compare the lenth of the list for the original and current layers
+            # compare the length of the list for the original and current layers
             if len(self.originalScenarioLayers) != self.currentLayersCount:
                 # if they are not the same length, the scenario is dirty
                 self.scenarioDirty = True

@@ -33,9 +33,8 @@
 import os, re, codecs, datetime, traceback, sys
 # import sftp functions
 import paramiko
+# import Qt libraries
 from PyQt4 import QtCore, QtGui
-# import qgis API
-#from qgis.core import *
 # import the ui made with Qt Designer
 from dlgmanageprojects_ui import Ui_DlgManageProjects
 # CAPS application imports
@@ -77,7 +76,7 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
     ''' Custom slots '''
 #################################################################################    
             
-    def displayProjectInfo(self, filename):        
+    def displayProjectInfo(self, filename, sendFlag=False):        
         '''
          Display the project information for the project selected in selectProjectComboBox. This method
          is called when the current item is changed in the selectProjectComboBox widget. It is also called
@@ -91,10 +90,10 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         
         # The user is changing the displayed project or has selected the option to create a new project.
         # In either case, the data displayed in the dialog will be lost if it has changed. So, we check if the project is 
-        # dirty. The isProjectDirty() method prompts the user if the project is dirty and returns True if they decide to 
-        # cancel and save the data.
+        # dirty, but only if the project has not just been sent to UMass. The isProjectDirty() method prompts the user 
+        # if the project is dirty and returns True if they decide to cancel and save the data.
         
-        if self.isProjectDirty(self.oldProjectFileName):
+        if not sendFlag and self.isProjectDirty(self.oldProjectFileName):
             # The project isDirty and the user wants to save it, so we return after resetting the oldProjectFileName.
             # Block signals to avoid calling this method again and return the combo box to its original state.
             # This allows the user the option of canceling the change if the project is dirty.
@@ -266,10 +265,14 @@ from the file system. Please check if the project file is open in another progra
     def reject(self):
         ''' User clicked the "Cancel" button. '''
         # debugging
-        
         print "Main.manageprojects.DlgManageProjects().reject(): user closed the dialog"
-        self.hide()
-        
+
+        # Check if the project is dirty on closing the dialog.  This method will prompt the user and allow
+        # them to either continue (returns False) or stop the action and save the project (returns True).
+        if self.isProjectDirty(self.oldProjectFileName):
+            return
+        else: self.hide()
+
     def sendProject(self):
         ''' Send the project file and associated Exported Scenario files to UMass via SFTP. '''
         # debugging
@@ -279,32 +282,46 @@ from the file system. Please check if the project file is open in another progra
         if self.dateSentTextLabel.text() != 'Unsent':
             QtGui.QMessageBox.warning(self, "Send Project Error: ", "This project has already been sent to UMass.")
             return
-        
-        # Make sure to validate the data before sending. This method warns the user on bad data and returns True if data is OK.
+
+        # Make sure to validate the data before sending. The user could have opened an existing file and made changes.
+        # This method warns the user on bad data and returns True if data is OK.
         if self.validateSendData():
             
-            # Now that we have a valid project name get the name of the file to be written from the 
-            # self.selectProjectComboBox. This method adds the ".cpj" extension if it is not already there.
+            # Now that we have a validated project name get the name of the file to be written from the self.selectProjectComboBox. 
+            # This method strips whitespace at beginning and end and adds the ".cpj" extension if it is not already there.
             projectFileName = self.getProjectFileName()
             
-            # Now send the project.  This method returns True on a successful upload.
-            if self.sftpUpload(projectFileName):
-                print "sftp success!!"
-                
-                # The user may have created a new project and clicked 'Send' without saving first, or
-                # the user may have opened an existing project and modified it before sending.  Rather
-                # than check if the project is dirty and prompt the user to save, we just save the project.
-                # The writeProjectFile() warns the user on write error and returns True on successful write operation.
-                # The "True" parameter is a "sendFlag" to tell the method to write the "DATE_SENT" to the project file,
-                # so that it cannot be modified in the future.
-                if self.writeProjectFile(projectFileName, True):
-                                
-                    # Once the project has been successfully sent, display it to show the date sent
-                    # and thus let the user know the project was successfully sent. Note that this method
-                    # sets the self.oldProjectFileName at the end of the method.
-                    self.displayProjectInfo(projectFileName)
-            
-        
+            # The user may have created a new project and clicked 'Send' without saving first, or
+            # the user may have opened an existing project and modified it before sending.  Rather
+            # than check if the project is dirty and prompt the user to save, we just save the project.
+            # The writeProjectFile() warns the user on write error and returns True on successful write operation.
+            # The "True" parameter is a "sendFlag" to tell the method to write the "DATE_SENT" to the project file,
+            # so that it cannot be modified in the future. We need to write the scenario file before sending
+            # in order to have the current file in the directory. We include the date in case the transfer is successful.
+            # If the transfer is not successful, we overwrite the file with no date at the end of this method.
+            if self.writeProjectFile(projectFileName, True):
+                # Add the new file name to the combo box.
+                self.refreshSelectProjectComboBox(projectFileName)
+                # Now get a list of exported scenarios to send with the project file and add the project file.
+                scenarios = self.getScenariosInProject()
+    
+                # Now send the project.  This method returns True on a successful upload and False otherwise.
+                if self.sftpUpload(projectFileName, scenarios):
+                    print "sftp success!!"
+                    QtGui.QMessageBox.information(self, 'Send project:', 'The project was successfully sent.')
+                else:
+                    QtGui.QMessageBox.warning(self, 'Send project:', 'The send failed. Please try again.')
+                    # if the send fails, we overwrite the project file without the date
+                    self.writeProjectFile(projectFileName, False)
+
+                # Once the project has been either successfully sent or failed to be sent, display it to show 
+                # the date sent and thus let the user know the project was successfully, or unsuccessfully sent. 
+                # Set the "sendFlag" to true to prevent self.displayProject Info from calling self.isDirty() since the
+                # project has just been saved and uploaded and is not dirty. Note that this method
+                # sets the self.oldProjectFileName at the end of the method.
+                self.displayProjectInfo(projectFileName, True)
+
+
 #################################################################################   
     ''' Core methods '''   
 #################################################################################
@@ -325,9 +342,9 @@ from the file system. Please check if the project file is open in another progra
         try:
             fh = codecs.open(path, "w", "UTF-8")
             fh.write(u"-*- all files encoded using: utf-8 -*-\n")
-            fh.write(u"{{SENDER}}: %s\n" % unicode(self.senderNameEdit.text()))
-            fh.write(u"{{SENDER_EMAIL}}: %s\n" % unicode(self.sendersEmailEdit.text()))
-            fh.write(u"{{PROJECT_NAME}}: %s\n" % unicode(self.selectProjectComboBox.currentText()))
+            fh.write(u"{{SENDER}}: %s\n" % unicode(self.senderNameEdit.text()).strip())
+            fh.write(u"{{SENDER_EMAIL}}: %s\n" % unicode(self.sendersEmailEdit.text()).strip())
+            fh.write(u"{{PROJECT_NAME}}: %s\n" % unicode(self.selectProjectComboBox.currentText()).strip())
             # Only write the date sent if the file is being sent.
             if sendFlag:
                 fh.write(u"{{DATE_SENT}}: %s\n" % unicode(now.strftime("%Y-%m-%d %H:%M")))
@@ -347,7 +364,7 @@ from the file system. Please check if the project file is open in another progra
             else:
                 fh.write(u"{{SCENARIOS}}: \n")
             fh.write(u"{{MESSAGE}}:\n" )
-            fh.write(u"%s\n" % unicode(self.messageTextEdit.document().toPlainText())#.strip())
+            fh.write(u"%s\n" % unicode(self.messageTextEdit.document().toPlainText()).strip())
             fh.write(u"{{END_MESSAGE}}\n")        
         except (IOError, OSError), e:
             error = unicode(e)
@@ -356,8 +373,8 @@ from the file system. Please check if the project file is open in another progra
                 fh.close()
             if error is not None:
                 print error
-                QtGui.QMessageBox.warning(self, "Save Project Error: ", "The project file could not be written. \
-Please check if a project file with the same name is already open and try again.")
+                QtGui.QMessageBox.warning(self, "Save Project Error: ", "The project file could not be written to \
+the local file system. Please check if the project file is open in another program and try again.")
                 return False
         
         # Now we have to read the file we just wrote to set variables needed for checking isDirty when or if
@@ -449,6 +466,8 @@ Please check if a project file with the same name is already open and try again.
                     self.message = ""
                     while True:
                         line = fh.readline()
+                        if not line:
+                            raise ValueError, "end message is missing"
                         lino += 1
                         if line == "{{END_MESSAGE}}\n":
                             if self.sender is None or self.senderEmail is None or self.projectName is None or self.dateSent is None or \
@@ -457,6 +476,7 @@ Please check if a project file with the same name is already open and try again.
                             break
                         else:
                             self.message += line
+                self.message = self.message.strip()
                 break                
         except (IOError, OSError, ValueError), e:
             print "Failed to load: %s on line %d" % (e, lino)
@@ -471,12 +491,12 @@ The error on line " + str(lino) + " is '" + error + "'.")
 
         # We are opening a project so check if all the Exported Scenario files listed in the project's text file
         # actually exist in the Exported Scenarios directory.  Also use this function to set the self.scenariosInProjectThatExist
-        # and self.existingScenariosNotInProject variables
-        
+        # and self.existingScenariosNotInProject variables. If a file listed in the project is missing from the file system, this
+        # method will warn the user.
         projectFileName = os.path.basename(path)
         self.checkIfScenarioFilesExist(projectFileName)
         return True
-        
+
     def listFiles(self, path):
         ''' 
             A method to return the list of Exported Scenarios files in the Exported Scenarios directory. This method is 
@@ -536,7 +556,7 @@ The error on line " + str(lino) + " is '" + error + "'.")
         missingScenarios = [scenario for scenario in scenariosInProjectFileList if scenario not in allExportedScenarios] 
 
         # create a string from the list to display in the message box
-        ms = ','.join(missingScenarios)
+        ms = ', '.join(missingScenarios)
         
         if ms: 
             QtGui.QMessageBox.warning(self, "Missing Files Error: ", "The exported scenario(s) (" + ms + ") \
@@ -601,9 +621,10 @@ in the project, just save the project as it is displayed to overwrite the old pr
         print 'self.senderEmail is ' + str(self.senderEmail)
         print 'self.message is ' + str(self.message)        
         
-        sName = unicode(self.senderNameEdit.text())
-        sEmail = unicode(self.sendersEmailEdit.text())
-        sMsg = unicode(self.messageTextEdit.document().toPlainText())
+        # set some needed variables for the current values in the dialog.
+        sName = unicode(self.senderNameEdit.text()).strip()
+        sEmail = unicode(self.sendersEmailEdit.text()).strip()
+        sMsg = unicode(self.messageTextEdit.document().toPlainText()).strip()
         
         # First check if the project is set to create project mode and return False if it is.
         if (self.projectScenarioFileList.item(0)
@@ -614,15 +635,14 @@ in the project, just save the project as it is displayed to overwrite the old pr
             and unicode(self.projectScenarioFileList.item(0).text()) == 'To create a new project,'):
             return False
         
-        # Write the current list of the scenarios in the project.
-        projectList = self.projectScenarioFileList
-        if projectList.item(0):
-            text = unicode(projectList.item(0).text())
-        currentScenariosInProject = []
-        if projectList.item(0) and text !=  "To create a new project," and text != "You have not added Scenarios.":
-            cnt = self.projectScenarioFileList.count()
-            for index in range(0, cnt):
-                currentScenariosInProject.append(str(projectList.item(index).text()))
+        # Get a Python list of the scenarios currently in the self.projectScenarioFileList
+        currentScenariosInProject = self.getScenariosInProject()
+
+        # Now check if the current list is the same as the list in the project file. Note that we cannot just use '=='
+        #  to compare the two lists because the elements may be equal but the order different.
+        differences = []
+        # this is what Python calls a "list comprehension"
+        differences = [scenario for scenario in currentScenariosInProject if scenario not in self.scenariosInProjectThatExist]
 
         print 'currentScenariosInProject are: '
         print currentScenariosInProject
@@ -632,8 +652,8 @@ in the project, just save the project as it is displayed to overwrite the old pr
         if sName == self.sender: print 't2'
         if sEmail == self.senderEmail: print 't3' 
         if sMsg == self.message: print 't4' 
-        if currentScenariosInProject == self.scenariosInProjectThatExist: print 't5'
-        
+        if differences == []: print 't5'
+
         # Now check the value of each field against the instance variables set in self.readProjectFile() and 
         # checkIfScenarioFilesExist(). Note that it doesn't matter whether the "oldProjectFileName" was a new 
         # project that the user created, or whether they opened a project file from a previous session. Also note that
@@ -644,7 +664,7 @@ in the project, just save the project as it is displayed to overwrite the old pr
             or sName != self.sender 
             or sEmail != self.senderEmail 
             or sMsg != self.message
-            or currentScenariosInProject != self.scenariosInProjectThatExist):
+            or differences != []):
 
             # Different message and message box if the user has tried to edit a previously sent project
             if self.dateSentTextLabel.text() != 'Unsent':
@@ -662,6 +682,7 @@ and continue, click 'OK.'"
                 if reply == QtGui.QMessageBox.Ok: 
                     return False
                 else: return True
+        # no differences found so return False
         else: return False        
         
     def validateSaveData(self, informationText):
@@ -669,14 +690,14 @@ and continue, click 'OK.'"
         #debugging
         print "Main.manageproject.DlgManageProjects().validateSaveData()"
       
-        comboBoxText = unicode(self.selectProjectComboBox.currentText())
+        comboBoxText = unicode(self.selectProjectComboBox.currentText()).strip()
         if comboBoxText == "Create a new project (type name here)" or comboBoxText == "":
             informationText += "Please enter the 'Project name:'\n"
         if not self.validateFileName(comboBoxText):
             informationText += "Please limit your project name to letters, numbers and -_.()\n"
-        if unicode(self.senderNameEdit.text()) == "":
+        if unicode(self.senderNameEdit.text()).strip() == "":
             informationText += "Please enter the 'Sender's name:'\n"
-        if not self.validateEmail(unicode(self.sendersEmailEdit.text())):
+        if not self.validateEmail(unicode(self.sendersEmailEdit.text()).strip()):
             informationText += "Please enter a valid email address.\n"
             
         if informationText:
@@ -731,7 +752,7 @@ and continue, click 'OK.'"
         # debugging
         print "Main.dlgmanageprojects.DlgManageProjects.getProjectFileName()"
         
-        projectName = unicode(self.selectProjectComboBox.currentText())
+        projectName = unicode(self.selectProjectComboBox.currentText()).strip()
         if projectName.endswith((".cpj", ".CPJ")):
             return projectName
         else: return projectName + ".cpj"
@@ -739,7 +760,7 @@ and continue, click 'OK.'"
     def refreshSelectProjectComboBox(self, projectFileName):
         ''' 
             Update the self.selectProjectComboBox with the files existing in the "Projects" directory.
-            This method is called by self.setCreateNewProjectMode()and self.saveProject().
+            This method is called by self.setCreateNewProjectMode(), self.saveProject() and self.sendProject().
         '''
         # debugging
         print "Main.dlgmanageprojects.DlgManageProjects.refreshSelectProjectComboBox()"    
@@ -770,54 +791,84 @@ and continue, click 'OK.'"
         # combo box drop down list.
         self.oldProjectFileName = projectFileName
     
-    def sftpUpload(self, projectFileName):
+    def sftpUpload(self, projectFile, scenarios):
         ''' This method uploads a project and associated scenario files to UMass using sftp. '''
         # debugging
         print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload()"
-        print "projectFileName is: " + projectFileName
+
         paramiko.util.log_to_file('./paramiko.log')
         hostname = '128.119.213.17'
         port = 22
         username = "urbanec" 
         password = "Ur8@nec0"
-        
-        filepath = '/D:/inetpub/streamcontinuity'
-        localpath = './copy.text'
-        #sftp.put(filepath, localpath)
-        #sftp.close()
-        #transport.close()
-        
+        projectDirectory = self.sender[:15]
+
+        serverPath = config.sftpUploadPath
+        serverProjectDirectoryPath = serverPath + projectDirectory
+        localProjectPath = config.projectsPath + projectFile
+        remoteProjectPath = serverProjectDirectoryPath + '/' + projectFile
+        localScenariosPath = config.scenarioExportsPath
+        remoteScenariosPath = serverProjectDirectoryPath + '/'
+
+        print "localProjectPath is: " + localProjectPath
+        print "remoteProjectPath is: " + remoteProjectPath
+        print "serverProjectDirectory is: " + serverProjectDirectoryPath
+
         # now, connect and use paramiko Transport to negotiate SSH2 across the connection
         try:
+            print 'making connection...'
             t = paramiko.Transport((hostname, port))
             t.connect(username=username, password=password)
             sftp = paramiko.SFTPClient.from_transport(t)
-        
-            # dirlist on remote host
-            dirlist = sftp.listdir('.')
-            print "Dirlist:", dirlist
-        
-            '''# copy this demo onto the server
+
+            # Make the directory to store the project files. Note that paramiko will not
+            # overwrite the directory if it already exists.  However paramiko will overwrite
+            # files in the directory if they exist!
             try:
-                sftp.mkdir("demo_sftp_folder")
-            except IOError:
-                print '(assuming demo_sftp_folder/ already exists)'
-            sftp.open('demo_sftp_folder/README', 'w').write('This was created by demo_sftp.py.\n')
-            data = open('demo_sftp.py', 'r').read()
-            sftp.open('demo_sftp_folder/demo_sftp.py', 'w').write(data)
-            print 'created demo_sftp_folder/ on the server'
+                print 'writing directory...'
+                sftp.mkdir(serverProjectDirectoryPath)
+            except IOError, e:
+                print e
+
+            print 'listing directory...'
+            # list the files in this sender's directory
+            dirlist = sftp.listdir(serverProjectDirectoryPath)
+            print "Dirlist:", dirlist
             
-            # copy the README back here
-            data = sftp.open('demo_sftp_folder/README', 'r').read()
-            open('README_demo_sftp', 'w').write(data)
-            print 'copied README back here'
+            # Check if any of the scenarios to be uploaded are already on the server.
+            matches = []
+            matches = [scenario for scenario in scenarios if scenario in dirlist]
             
-            # BETTER: use the get() and put() methods
-            sftp.put('demo_sftp.py', 'demo_sftp_folder/demo_sftp.py')
-            sftp.get('demo_sftp_folder/README', 'README_demo_sftp')'''
-        
+            # Check if the project file already exists in the directory and add to list if it does.
+            if projectFile in dirlist:
+                matches.append(projectFile)
+            # create a string from the list to display in the message box
+            m = ', '.join(matches)
+            
+            # Warn the user and give them a choice of whether to continue or not.
+            if matches:
+                text = "The files (" + m + ") already exist in your directory \
+on the server.  If you click 'OK' the files on the server will be overwritten with the ones you are uploading. \
+If you click 'Cancel' the upload will be canceled, and you may rename the files and try your upload again."
+                reply = QtGui.QMessageBox.question(self, "Confirm", text, QtGui.QMessageBox.Cancel|QtGui.QMessageBox.Ok)
+                if reply == QtGui.QMessageBox.Cancel:
+                    t.close
+                    return False
+
+            # Either no files with the same name or the user has chosen to continue 
+            # so write the scenario files to the project directory on the server.
+            print 'writing scenario and project files...'
+            for scenario in scenarios:
+                localPath = localScenariosPath + scenario
+                remotePath = remoteScenariosPath + scenario
+                sftp.put(localPath, remotePath)
+
+            # write the project file to the project directory on the server
+            sftp.put(localProjectPath, remoteProjectPath)
+
+            # close the connection
             t.close()
-        
+
         except Exception, e:
             print '*** Caught exception: %s: %s' % (e.__class__, e)
             traceback.print_exc()
@@ -827,10 +878,26 @@ and continue, click 'OK.'"
                 pass
             sys.exit(1)
             return False
-        
+
         return True
 
+    def getScenariosInProject(self):
+        ''' 
+            This method returns a list of the exported scenario files that are currently in the project.
+            This method is called by self.isProjectDirty() and self.sendProject.
+        '''    
+        print "Main.dlgmanageprojects.DlgManageProjects.getScenariosInProject()"
         
-        
+        projectList = self.projectScenarioFileList
+        # check if there is any item in the list or we get an error when trying to return text from a 'None' object.
+        if projectList.item(0):
+            # No need to strip whitespace because the exported scenario file names can't be changed in this dialog.
+            text = unicode(projectList.item(0).text())
+        currentScenariosInProject = []
+        if projectList.item(0) and text != "To create a new project," and text != "You have not added Scenarios.":
+            cnt = self.projectScenarioFileList.count()
+            for index in range(0, cnt):
+                currentScenariosInProject.append(str(projectList.item(index).text()))
+        return currentScenariosInProject
             
             
