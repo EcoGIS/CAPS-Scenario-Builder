@@ -94,7 +94,7 @@ class DlgAddAttributes(QtGui.QDialog):
             
             # make each combo box
             self.comboBoxWidgets[c] = QtGui.QComboBox(self)
-            self.comboBoxWidgets[c].setEditable(True)
+            #self.comboBoxWidgets[c].setEditable(True)
             self.comboBoxWidgets[c].setObjectName(comboBoxName)
             self.comboBoxWidgets[c].addItems(self.comboBoxOptions[c])
             self.gridLayout.addWidget(self.comboBoxWidgets[c], c, 1, 1, 1)

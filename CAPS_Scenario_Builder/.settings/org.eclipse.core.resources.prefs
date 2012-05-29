@@ -1,10 +1,12 @@
-#Wed May 16 17:28:35 EDT 2012
+#Tue May 29 15:28:29 EDT 2012
 eclipse.preferences.version=1
+encoding//src/Main/052412_dlgsftpproperties_ui.py=utf-8
 encoding//src/Main/dlgmanageprojects.py=utf-8
 encoding//src/Main/dlgmanageprojects_ui.py=utf-8
-encoding//src/Main/dlgmanageprojects_ui_051512.py=utf-8
 encoding//src/Main/dlgscenarioedittypes.py=utf-8
 encoding//src/Main/dlgscenarioedittypes_ui.py=utf-8
+encoding//src/Main/dlgsftpproperties.py=utf-8
+encoding//src/Main/dlgsftpproperties_ui.py=utf-8
 encoding//src/Main/legend.py=utf-8
 encoding//src/Main/mainwindow.py=utf-8
 encoding//src/Main/mainwindow_ui.py=utf-8

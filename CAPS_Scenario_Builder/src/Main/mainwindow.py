@@ -52,6 +52,7 @@ from Tools.addlinespolygons import *
 from Tools.identify import Identify
 from Main.dlgscenarioedittypes import DlgScenarioEditTypes
 from Main.dlgmanageprojects import DlgManageProjects
+from Main.dlgsftpproperties import DlgSftpProperties
 import Tools.shared
 import config
 
@@ -60,13 +61,14 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
     ''' Display the main window and manage all user actions '''
     def __init__(self, splash):
         QtGui.QMainWindow.__init__(self)
-    
+
         # add the Qt4 designer code elements to the MainWindow
         self.setupUi(self)
         # get the splash screen
         self.splash = splash
-        
+
         ''' Set instance variables '''
+
         # LISTS AND DICTIONARIES
         self.originalScenarioLayers = []
         self.currentLayers = []
@@ -75,7 +77,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.originalScenarioLayersNames = []
         self.coloredLayers = {}
         self.defaultColors = config.setDefaultColors() # a list of QColors 
-        
+
         # FLAGS
         self.scenarioDirty = False
         self.origScenarioLyrsLoaded = False 
@@ -85,7 +87,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # used to remember if edit_scenario(polygons).shp was loaded from a scenario file
         self.openingOrientingLayers = False
         self.openingScenario = False 
-                
+
         # OBJECTS
         self.attrTable = None
         self.dwAttrTable = None
@@ -108,7 +110,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.toolAddPoints = None
         self.toolAddLinesPolygons = None
         self.editTypeLabel = None
-     
+
         # VALUES
         self.scenarioFilePath = None
         self.scenarioFileName = None
@@ -121,7 +123,14 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # when the layer loads after updating extents (see shared.updateExtents
         self.layerColor = None
         self.editLayerName = None
+        
+        ''' Store persistent application settings. '''
 
+        settings = QtCore.QSettings()
+        self.sftpHost = unicode(settings.value("sftpHost", "128.119.213.17").toString())
+        self.sftpUser = unicode(settings.value("sftpUser", "urbanec").toString())
+        self.sftpPassword = unicode(settings.value("sftpPassword", "Ur8@nec0").toString())
+        self.sftpPath = unicode(settings.value("sftpPath", "/D:/inetpub/streamcontinuity/").toString())
         ''' Begin construction of main window '''
         
         # create map canvas
@@ -187,8 +196,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         QtCore.QObject.connect(self.mpActionIdentifyFeatures, QtCore.SIGNAL("toggled(bool)"), self.identifyFeatures)
         QtCore.QObject.connect(QgsProject.instance(), QtCore.SIGNAL("layerLoaded(int, int)"), self.getOriginalScenarioLayers)
         QtCore.QObject.connect(self.mpActionModifyPoints, QtCore.SIGNAL("triggered()"), self.modifyFeatures)
-        QtCore.QObject.connect(self.mpActionManageProjects, QtCore.SIGNAL(("triggered()")), self.manageProjects)
-        QtCore.QObject.connect(self.mpActionSftpProperties, QtCore.SIGNAL(("triggered()")), self.sftpProperties)
+        QtCore.QObject.connect(self.mpActionManageProjects, QtCore.SIGNAL("triggered()"), self.manageProjects)
+        QtCore.QObject.connect(self.mpActionSftpProperties, QtCore.SIGNAL("triggered()"), self.sftpProperties)
         # Instantiate all tools.  They are written so their variables update from
         # the main window, so there is no need to repeat the instantiation process 
         # when layers or other variables change.
@@ -265,17 +274,23 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         ''' Project menu SLOT '''
         # debugging
         print "Main.mainwindow.manageProjects()"
-        
+
+        # check for unsaved edits and scenario changes
+        if self.appStateChanged("manageProjects") == "Cancel":
+            # debugging
+            print "canceling Main.mainwindow.manageProjects()"
+            return
+
         self.dlgManageProjects = DlgManageProjects(self)
         self.dlgManageProjects.exec_()
-        
+
     def sftpProperties(self):
         ''' Project menu SLOT '''
         # debugging
         print "Main.mainwindow.sftpProperties()"
         
-        QtGui.QMessageBox.information(self, "Create SFTP Dialog", "Make a dialog to store the sftp host \
-and password as using the QSettings() class")
+        self.dlgSftpProperties = DlgSftpProperties(self)
+        self.dlgSftpProperties.exec_()
 
 
 
@@ -2571,7 +2586,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             Actions that call this method are: newScenario, openScenario, saveScenario, saveScenarioAs, 
             exportScenario, appClosing, selectFeatures, stoppingEditing, zoomIn, zoomOut, pan,
             zoomToMapExtent, identifyFeatures, addVector, addRaster, openVectorAttributeTable, 
-            openRasterCategoryTable, legendMousePress.
+            openRasterCategoryTable, legendMousePress, manageProjects.
         '''
         
         # If no layer is loaded then user is loading first layer after app start (num layers = 0),
@@ -2612,17 +2627,17 @@ before taking another action!")
         '''
 
         # We should check for unsaved edits when stopping editing,
-        # on all scenario menu actions, or on closing the app.  
+        # on all scenario menu actions, when managing projects or on closing the app.  
         callingList = ["newScenario", "openScenario", "saveScenario", "saveScenarioAs", "exportScenario",
-                       "appClosing", "modifyingEdits", "stoppingEditing"] # "startingEditing",,  
+                       "appClosing", "modifyingEdits", "stoppingEditing", "manageProjects"] # "startingEditing",,  
         if self.editDirty:
             if callingAction in callingList:
                 if self.checkEditsState(callingAction) == "Cancel": return "Cancel"
 
         # We only want to check for a dirty scenario when:
         # creating a new scenario, opening a scenario, 
-        # exporting a scenario, or closing the app.
-        callingList = ["newScenario", "openScenario", "exportScenario", "appClosing"]
+        # exporting a scenario, managing projects or closing the app.
+        callingList = ["newScenario", "openScenario", "exportScenario", "manageProjects", "appClosing"]
         if self.scenarioDirty:
             if callingAction in callingList:
                 if self.checkScenarioState(callingAction) == "Cancel": return "Cancel"

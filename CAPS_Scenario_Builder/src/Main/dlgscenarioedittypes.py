@@ -206,7 +206,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
 
     def reject(self):
         print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().reject(): user closed the dialog"
-        self.hide()
+        QtGui.QDialog.reject(self)
         return
     
 #################################################################################   
