@@ -945,7 +945,7 @@ the file system. All changes to these files will be lost. Do you want to delete 
         self.updateLayerSet()
         
     def deleteEditingLayer(self, editFilePath):
-        ''' Removes an editing shapefile and any associated "Export Scenario" file. '''
+        ''' Removes an editing shapefile. '''
         # debugging
         print "Main.legend.deleteEditingLayer()"
         print "Main.legend.deleteEditingLayer(): editFilePath is " + editFilePath

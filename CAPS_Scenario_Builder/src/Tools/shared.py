@@ -548,20 +548,6 @@ def snapToNewRoad(mainwindow, qPoint):
         return snappedQgsPoint
     else: return False # will return false without this line, but for clarity
 
-def isLayerOpen(self, legend, layerBaseName):
-        ''' Check if editLayer or baseLayer is open in the layer panel '''
-        # debugging
-        print "Tools.shared.isLayerOpen()"
-        
-        if not layerBaseName: 
-            return False # if this layers name is None
-            print "Tools.shared.isLayerOpen(): layer base name is None?"
-        items = legend.findItems(layerBaseName, QtCore.Qt.MatchFixedString, 0)
-        print "length of item list is " + str(len(items))
-        if len(items) > 0: return True
-        else: return False # set the editLayerOpen flag
-        
-        
 #**************************************************************
 ''' Testing '''
 #**************************************************************

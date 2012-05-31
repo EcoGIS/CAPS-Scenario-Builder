@@ -140,8 +140,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.newEditLayerPath is " + self.newEditLayerPath
         print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.baseFilePath is " + str(self.baseFilePath)
         print "Main.dlgscenarioedittypes.DlgScenarioEditTypes(): self.constraintFilePath is " + str(self.constraintFilePath)
-      
-        
+
         # if the editing layer is not open, create it
         # note: If the editing layer is not open in the scenario, then it does not exist because
         # the editing layer is deleted if removed from the scenario. This is done to ensure that 
@@ -201,8 +200,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
         # now update the layer set to ensure proper rendering by QGIS
         legend.updateLayerSet()
         
-        self.setResult(1)
-        self.hide()    
+        QtGui.QDialog.accept(self)
 
     def reject(self):
         print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().reject(): user closed the dialog"
@@ -260,17 +258,6 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
             self.baseLayerFileName = config.polygonBaseLayersFileNames[1]
         else: print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().getEditBaseConstraintLayerNames(): No baseLayer Found"    
 
-    def isLayerOpen(self, legend, layerBaseName):
-        ''' Check if editLayer or baseLayer is open in the layer panel '''
-        # debugging
-        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().isLayerOpen()"
-        
-        if not layerBaseName: return False # if this layers name is None
-        items = legend.findItems(layerBaseName, QtCore.Qt.MatchFixedString, 0)
-        print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().isLayerOpen(): length of item list is " + str(len(items))
-        if len(items) > 0: return True
-        else: return False # set the editLayerOpen flag
-  
     def writeNewEditingShapefile(self):
         ''' Write a new editing shapefile for the current scenario type '''
         # debugging
@@ -417,4 +404,15 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
                                                                                                     + constraintItems[0].text(0)) 
         print "Main.dlgscenariotypes.DlgScenarioEditTypes().colorEditBaseConstraintLayers(): The brush color is: " + str(brush.color())
         
+    def isLayerOpen(self, legend, layerBaseName):
+        ''' Check if editLayer or baseLayer is open in the layer panel '''
+        # debugging
+        print "Tools.shared.isLayerOpen()"
         
+        if not layerBaseName: 
+            return False # if this layers name is None
+            print "Tools.shared.isLayerOpen(): layer base name is None?"
+        items = legend.findItems(layerBaseName, QtCore.Qt.MatchFixedString, 0)
+        print "Tools.shared.isLayerOpen(): length of item list is " + str(len(items))
+        if len(items) > 0: return True
+        else: return False # set the editLayerOpen flag

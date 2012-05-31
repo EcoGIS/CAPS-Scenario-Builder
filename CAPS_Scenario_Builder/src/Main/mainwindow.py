@@ -270,6 +270,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
 ############################################################################################   
     ''' PROJECT MENU CUSTOM SLOTS AND METHODS'''
 ############################################################################################ 
+
     def manageProjects(self):
         ''' Project menu SLOT '''
         # debugging
@@ -291,8 +292,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         
         self.dlgSftpProperties = DlgSftpProperties(self)
         self.dlgSftpProperties.exec_()
-
-
 
 ############################################################################################   
     ''' SCENARIO MENU CUSTOM SLOTS AND METHODS'''
@@ -537,7 +536,7 @@ scenario file is open in another program.")
         ''' Scenario menu SLOT to export scenario edits as a CSV file '''
         # debugging
         print "Main.mainwindow.exportScenario()"
-        
+
         # check the app state for unsaved edits and scenario changes
         if self.appStateChanged("exportScenario") == "Cancel":
             # debugging
@@ -550,15 +549,15 @@ scenario file is open in another program.")
         scenarioDirectoryPath = config.scenariosPath + scenarioDirectoryName
         exportFileName = scenarioDirectoryName + ".csv"
         exportPath = config.scenarioExportsPath + exportFileName
-        
+
         # List the edit files in the scenario's edit file directory.  Returns False if the 
         # directory does not exist or is empty.  The method warns the user on errors.
         scenarioEditFileList = self.listScenarioEditFiles(scenarioDirectoryPath)
         if not scenarioEditFileList: return
 
-        # Delete any old export files before writing a new one. 
-        # This method warns the user on errors.
-        self.deleteExportScenarioFile()
+        # Delete any old export files before writing a new one. This method warns the user on errors
+        # and returns true if the file does not exist or has been successfully deleted.
+        if not self.deleteExportScenarioFile(): return
 
         # Get a count of the number of editing shapefiles for use below.
         shapefileCount = 0
@@ -576,6 +575,7 @@ scenario file is open in another program.")
             if not ".shp" in fileName: continue # only looking for the .shp files
             loopCount += 1
             print "Main.mainwindow.exportScenario(): The loopCount begin is " + str(loopCount)
+            
             # get the path to write the csv file to
             csvInfo = QtCore.QFileInfo(fileName)
             csvBaseName = unicode(csvInfo.completeBaseName()) # csvBaseName = editing shapefile BaseName
@@ -592,7 +592,7 @@ scenario file is open in another program.")
             # If the layer exists in the scenario's directory but is not open in the
             # legend, the user is prompted with a warning, and the return value = False.
             vlayer = self.getEditLayerToExport(csvBaseName, scenarioDirectoryPath, fileName)
-            if not vlayer:  return
+            if not vlayer: return
 
             # Check if there are any features in the layer because the QgsVectorFileWriter fails to 
             # write the csv file if there are no features and does NOT return an error!!
@@ -609,34 +609,57 @@ scenario file is open in another program.")
                     QtGui.QMessageBox.warning(self, "Export Scenario Error:", "There are no features to export.  Please \
 make some edits to your scenario and try again.")
                     return   
-            
+
             # Delete previously written CSV shapefiles so current ones can take their place.
+            # The QgsVectorFileWriter will not overwrite existing files.
             # Return if deletion fails (deleteOldCsvSapefile() warns on error)
             if not self.deleteOldCsvShapefile(csvPath, csvFileName): return
-            
+
+            # Delete any old temporary shapefiles that may exist.  This is a double check against a deletion error below.
+            writePath = config.scenarioExportsPath + 'tempVlayer'
+            deletePath = writePath + '.shp'
+            if not self.deleteTempShapefile(deletePath): return
+
+            # create a temporary copy of the vlayer to avoid rounding values in the permanent editing layer.
+            error = QgsVectorFileWriter.writeAsVectorFormat(vlayer, writePath, "utf-8", None, "ESRI Shapefile" )
+            if error != QgsVectorFileWriter.NoError:
+                QtGui.QMessageBox.warning(self, "File write error", "A needed temporary file could \
+not be written. Please try again.")
+                return
+
+            readPath = writePath + '.shp'
+            tempVlayer = self.openHiddenVectorLayer(readPath)
+            if not tempVlayer: return
+
             # round values to shorten csv file output (roundGeometryValues() warns on error)
-            vlayer = self.roundGeometryValues(vlayer, "export")
-            if not vlayer: return
-        
+            tempVlayer = self.roundGeometryValues(tempVlayer)
+            if not tempVlayer: return
+
             ''' Convert the editing shapefiles to CSV format '''
-                
+
             # Returns False if the write operation failed and writeCsvShapefile warns on error
-            if not self.writeCsvShapefile(vlayer, csvPath, csvFileName): return
-        
-            ''' Now append the CSV shapefile text to the CSV file to be exported to UMass (use Python) '''
+            if not self.writeCsvShapefile(tempVlayer, csvPath, csvFileName): return
+
+            # Close the temporary shapefile so that it can be deleted
+            tempVlayer = None
             
+            # Delete the temporary shapefile
+            self.deleteTempShapefile(deletePath)
+
+            ''' Now append the CSV shapefile text to the CSV file to be exported to UMass (use Python) '''
+
             # writeCsvExportFile returns True if successful False if not and warns user on error
             exportFileWritten = self.writeCsvExportFile(exportPath, csvPath, exportFileName)
             if not exportFileWritten: return
-            
+
         # We have exited the for loop, so let the user know things worked.
         exportFileInfo = QtCore.QFileInfo(exportPath)
         findExportPath = exportFileInfo.absolutePath()
         QtGui.QMessageBox.information(self, 'Export Scenario Succeeded:', "The export file is named "\
  + exportFileName + ". It can be found in " + findExportPath)
-     
+
     # Scenario Methods -----------------------------------------------------------------------------------------------    
-    
+
     def getEditLayerToExport(self, csvBaseName, scenarioDirectoryPath, fileName):
         '''Scenario method to get the layer id of an editing layer to convert to CSV format '''
         # debugging
@@ -677,8 +700,23 @@ of your scenario export file.")
 csv file '" + csvFileName + " could not be deleted.  Please check if the file is open in \
 another program and then try again.")
                 return False
-            else: return True
-        else: return True
+        return True
+
+    def deleteTempShapefile(self, path):
+        ''' Removes an editing shapefile and any associated "Export Scenario" file. '''
+        # debugging
+        print "Main.mainwindow.deleteTempShapefile()"
+        print "Main.mainwindow.deleteTempShapefile(): path is " + path
+
+        tempFile = QtCore.QFile(path)
+        if tempFile.exists():
+            print "Main.mainwindow.deleteTempShapefile(): tempFile exists is True"
+            writer = QgsVectorFileWriter.deleteShapeFile(path)
+            if not writer: # writer returns true if delete successful
+                QtGui.QMessageBox.warning(self, "File Error", "A temporary shapefile could not be deleted. \
+Please try to export your scenario again.")
+                return False
+        return True
 
     def writeCsvShapefile(self, vlayer, csvPath, csvFileName):
         ''' Scenario method to write the CSV shapefile '''
@@ -699,7 +737,7 @@ another program and then try again.")
 was not written.  Please check that a file with the same name is not open in another program.")
             return False
         else: 
-            print "The csv file " + csvPath + " was successfully written."
+            print "Main.mainwindow.writeCSVShapefile(): The csv file " + csvPath + " was successfully written."
             return True
 
     def writeCsvExportFile(self, exportPath, csvPath, exportFileName):
@@ -2475,7 +2513,7 @@ attribute table is very large and can take a few seconds to load.  Do you want t
             print "alc Setting app state for vector layer" 
             print "alc copyFlag is " + str(self.copyFlag)
             
-            # set the active vector layer
+            # set the active vector layer instance variable
             self.activeVLayer = self.legend.activeLayer().layer()
             # set the data provider
             self.provider = self.activeVLayer.dataProvider()
@@ -2914,9 +2952,13 @@ choose 'Export Scenario' for this scenario in the future.")
             vlayer = QgsVectorLayer(vfilePath, info.completeBaseName(), "ogr")
         except (IOError, OSError), e:
             error = unicode(e)
-            print error                
+            print error
+            QtGui.QMessageBox.warning(self, 'File error:', 'A needed vector layer could not be opened. \
+Please try to export your scenario again.')
+            return False
         # double check for error using qgis methods
         if not self.checkLayerLoadError(vlayer): return False
+        else: return vlayer
  
     def openRasterLayer(self, rfilePath):
         ''' Open a raster layer '''
@@ -3095,6 +3137,8 @@ choose 'Export Scenario' for this scenario in the future.")
                 print error
                 QtGui.QMessageBox.warning(self, 'Export Scenario Error:', 'The previously saved scenario '\
 + exportFileName + ' could not be deleted.  Please try again.')
+                return False
+        return True
        
     def checkLayerLoadError(self, layer):
         # debugging
