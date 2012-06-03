@@ -30,7 +30,7 @@
 # 
 #---------------------------------------------------------------------
 # general python imports
-import os, re, codecs, datetime, traceback, sys
+import os, re, codecs, datetime, traceback, sys, time
 # import sftp functions
 import paramiko
 # import Qt libraries
@@ -132,7 +132,6 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
                 self.sendersEmailEdit.setText(self.senderEmail)
 
                 # Display the date sent if it exists.
-
                 if self.dateSent:
                     self.dateSentTextLabel.clear()
                     self.dateSentTextLabel.setText(self.dateSent)
@@ -319,7 +318,11 @@ from the file system. Please check if the project file is open in another progra
                 # Now get a list of exported scenarios to send with the project file and add the project file.
                 scenarios = self.getScenariosInProject()
 
-                # Now send the project.  This method returns True on a successful upload and False otherwise.
+                ''' Now send the project.  This method returns True on a successful upload and False otherwise. '''
+                
+                # Pop up a QLabel to let the user know the project is being sent.
+                self.displaySendMsg()
+
                 if self.sftpUpload(projectFileName, scenarios):
                     print "Main.manageprojects.DlgManageProjects().sendProject(): sftp success!!"
                     QtGui.QMessageBox.information(self, 'Send project:', 'The project was successfully sent.')
@@ -327,6 +330,9 @@ from the file system. Please check if the project file is open in another progra
                     QtGui.QMessageBox.warning(self, 'Send project:', 'The send failed. Please try again.')
                     # if the send fails, we overwrite the project file without the date
                     self.writeProjectFile(projectFileName, False)
+
+                # Close the QLabel that self.displaySendMessage created.
+                self.sendMsg.close()
 
                 # Once the project has been either successfully sent or failed to be sent, display it to show 
                 # the date sent and thus let the user know the project was successfully, or unsuccessfully sent. 
@@ -624,15 +630,15 @@ in the project, just save the project as it is displayed to overwrite the old pr
         # debugging
         print "Main.manageprojects.DlgManageProjects().isProjectDirty()"
         print "Main.manageprojects.DlgManageProjects().isProjectDirty(): oldProjectFileName is " + str(oldProjectFileName)
-        print 'Main.manageprojects.DlgManageProjects().isProjectDirty: self.selectProjectComboBox.currentText() is ' + str(self.selectProjectComboBox.currentText())
-        print 'Main.manageprojects.DlgManageProjects().isProjectDirty: self.senderNameEdit is ' + str(self.senderNameEdit.text())                    
-        print 'Main.manageprojects.DlgManageProjects().isProjectDirty: self.sendersEmailEdit is ' +     str(self.sendersEmailEdit.text())              
-        print 'Main.manageprojects.DlgManageProjects().isProjectDirty: self.messageTextEdit.document().toPlainText() is: ' + str(self.messageTextEdit.document().toPlainText())
+        print 'Main.manageprojects.DlgManageProjects().isProjectDirty(): self.selectProjectComboBox.currentText() is ' + str(self.selectProjectComboBox.currentText())
+        print 'Main.manageprojects.DlgManageProjects().isProjectDirty(): self.senderNameEdit is ' + str(self.senderNameEdit.text())                    
+        print 'Main.manageprojects.DlgManageProjects().isProjectDirty(): self.sendersEmailEdit is ' +     str(self.sendersEmailEdit.text())              
+        print 'Main.manageprojects.DlgManageProjects().isProjectDirty(): self.messageTextEdit.document().toPlainText() is: ' + str(self.messageTextEdit.document().toPlainText())
         if self.projectScenarioFileList.item(0):
-            print 'Main.manageprojects.DlgManageProjects().isProjectDirty: self.projectScenarioFileList.item(0) is ' + str(self.projectScenarioFileList.item(0).text())
-        print 'Main.manageprojects.DlgManageProjects().isProjectDirty: self.sender is ' + str(self.sender)
-        print 'Main.manageprojects.DlgManageProjects().isProjectDirty: self.senderEmail is ' + str(self.senderEmail)
-        print 'Main.manageprojects.DlgManageProjects().isProjectDirty: self.message is ' + str(self.message)        
+            print 'Main.manageprojects.DlgManageProjects().isProjectDirty(): self.projectScenarioFileList.item(0) is ' + str(self.projectScenarioFileList.item(0).text())
+        print 'Main.manageprojects.DlgManageProjects().isProjectDirty(): self.sender is ' + str(self.sender)
+        print 'Main.manageprojects.DlgManageProjects().isProjectDirty(): self.senderEmail is ' + str(self.senderEmail)
+        print 'Main.manageprojects.DlgManageProjects().isProjectDirty(): self.message is ' + str(self.message)        
 
         # set some needed variables for the current values in the dialog.
         sName = unicode(self.senderNameEdit.text()).strip()
@@ -657,9 +663,9 @@ in the project, just save the project as it is displayed to overwrite the old pr
         # this is what Python calls a "list comprehension"
         differences = [scenario for scenario in currentScenariosInProject if scenario not in self.scenariosInProjectThatExist]
 
-        print 'Main.manageprojects.DlgManageProjects().isProjectDirty: currentScenariosInProject are '
+        print 'Main.manageprojects.DlgManageProjects().isProjectDirty(): currentScenariosInProject are '
         print currentScenariosInProject
-        print 'Main.manageprojects.DlgManageProjects().isProjectDirty: self.scenariosInProjectThatExist'
+        print 'Main.manageprojects.DlgManageProjects().isProjectDirty(): self.scenariosInProjectThatExist'
         print self.scenariosInProjectThatExist
         if oldProjectFileName != 'Create a new project (type name here)': print "Main.manageprojects.DlgManageProjects().isProjectDirty: t1"
         if sName == self.sender: print 'Main.manageprojects.DlgManageProjects().isProjectDirty: t2'
@@ -816,7 +822,7 @@ and continue, click 'OK.'"
 
         settings = QtCore.QSettings()
         
-        paramiko.util.log_to_file('./paramiko.log')
+        paramiko.util.log_to_file('./Log/paramiko.log')
         hostname = self.mainwindow.sftpHost
         username = self.mainwindow.sftpUser 
         password = self.mainwindow.sftpPassword
@@ -825,7 +831,7 @@ and continue, click 'OK.'"
         # debugging
         print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): hostname is: ", hostname
         print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): username is: ", username
-        print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): password is: ", password
+        #print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): password is: ", password
 
         projectDirectory = self.sender[:15]
         serverPath = self.mainwindow.sftpPath
@@ -898,7 +904,6 @@ on the server and cannot be overwritten. Please rename the file(s) and then send
                 t.close()
             except:
                 pass
-            sys.exit(1)
             return False
 
         return True
@@ -953,3 +958,33 @@ The error on line 5 is '" + error + "'.")
                 fh.close()
             if error is not None:
                 return 'Error'
+            
+    def displaySendMsg(self):
+        ''' A message to let the user know something is happening while files are uploading. '''
+        print 'Main.dlgmanageprojects.DlgManagProjects().sendMsg()'
+        
+        # I tried using a QMessageBox and a QDialog instead of QLabel, but they really want to have
+        # buttons, so I went with the simplest message you can do, a QLabel.  It probably would be easier 
+        # to simply embed an empty QLabel in the dialog and then just set and unset its text, but it
+        # wouldn't have a frame and probably wouldn't stand out as well.
+        self.sendMsg = QtGui.QLabel(self)
+        
+        self.sendMsg.setText('Sending....')
+        
+        # Setting the FrameStle appears to pass the 'parent' to QFrame.  Without it,
+        # the QLabel was always outside the main window.
+        self.sendMsg.setFrameStyle(QtGui.QFrame.StyledPanel)
+        
+        # Now that the widget has a parent, we can move it relative to the parent.
+        self.sendMsg.setGeometry(300,50,120,50)
+        
+        # This is another way to move a widget, for reference.
+        #self.sendMsg.move(300,300)
+        
+        # Without this the background is transparent.
+        self.sendMsg.setAutoFillBackground(True)
+        self.sendMsg.show()
+        
+        # Without a repaint(), the text doesn't appear for quite some time.  
+        # Must be low priority in the dialog's event loop.
+        self.sendMsg.repaint()

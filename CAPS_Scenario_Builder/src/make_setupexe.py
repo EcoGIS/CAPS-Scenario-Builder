@@ -40,11 +40,16 @@
 
     By default, the installer will be created as dist\Output\setup.exe.
     
+    Run this file from a command line using 'python make_setupexe.py py2exe'
 '''
 
 from distutils.core import setup
 import py2exe
 import os
+
+# debugging
+#def df(data_files):
+    #print 'data_files are: ', data_files
 
 # Build tree of data_files of the form [dir, [py2exe data_files]], which is what distutils.setup() requires.
 # The parameter "src" is the full path to the data files, and "base" is the part of the path that will
@@ -55,7 +60,7 @@ def tree(base, src):
     list = [(root, map(lambda f: os.path.join(root, f), files)) for (root, dirs, files) in os.walk(os.path.normpath(src))]
     new_list = []
     for (root, files) in list:
-    #print "%s , %s" % (root,files)
+        #print "%s , %s" % (root,files)
         #print "%s" % root
         #if len(files) > 0: #and file.count('.gitignore') == 0:
         new_files = []
@@ -64,6 +69,10 @@ def tree(base, src):
                 new_files.append(file)    
         root = root[len(base):]
         new_list.append((root, new_files))
+    
+    #print'new_list is: '
+    #print new_list
+    
     return new_list
     
 ################################################################
@@ -75,25 +84,35 @@ class InnoScript:
                  dist_dir,
                  windows_exe_files = [],
                  lib_files = [],
-                 version = 0.8):
+                 version = 0.9):
         self.lib_dir = lib_dir
         self.dist_dir = dist_dir
         if not self.dist_dir[-1] in "\\/":
             self.dist_dir += "\\"
         self.name = name
         self.version = version
+        
+        # debugging
+        print 'self.dist_dir is: ', self.dist_dir
+        print 'windows_exe_files are: '
+        for path in windows_exe_files: print path
+        print 'lib_files are: '
+        for path in lib_files: print path
+        
         self.windows_exe_files = [self.chop(p) for p in windows_exe_files]
         self.lib_files = [self.chop(p) for p in lib_files]
 
     def chop(self, pathname):
+        print 'pathname is: ', pathname
         assert pathname.startswith(self.dist_dir)
         return pathname[len(self.dist_dir):]
     
     def create(self, pathname="dist\\CAPSScenarioBuilder.iss"):
         self.pathname = pathname
-        rootPath = "C:\Git_CAPS_Scenario_Builder\CAPS_Scenario_Builder\src"
+        rootPath = "C:\egit_repositories\CAPS-Scenario-Builder\CAPS_Scenario_Builder\src"
         ofi = self.file = open(pathname, "w")
         
+        # The '>>' tells python to print to the file object 'ofi'
         print >> ofi, "; WARNING: This script has been created by py2exe. Changes to this script"
         print >> ofi, "; will be overwritten the next time py2exe is run!"
         print >> ofi
@@ -136,8 +155,10 @@ class InnoScript:
         print >> ofi
           
         print >> ofi, r"[Dirs]"
-        print >> ofi, r'Name: "{app}\Scenarios"'
-        print >> ofi, r'Name: "{app}\Exported Scenarios"'
+        print >> ofi, r'Name: "{app}\Scenarios"; Permissions: users-modify'
+        print >> ofi, r'Name: "{app}\Exported Scenarios"; Permissions: users-modify'
+        print >> ofi, r'Name: "{app}\Projects"; Permissions: users-modify'
+        print >> ofi, r'Name: "{app}\Log"; Permissions: users-modify'
         print >> ofi
         
         print >> ofi, r"[Run]"
@@ -152,6 +173,7 @@ class InnoScript:
                 import win32api
             except ImportError:
                 import os
+                print 'Using os but no compiling.'
                 os.startfile(self.pathname)
             else:
                 print "Ok, using win32api."
@@ -201,19 +223,34 @@ class build_installer(py2exe):
 
 zipfile = r"lib\shardlib"
 #"excludes": ['backend_gtkagg', 'backend_wxagg'],
-options = {"py2exe": {"compressed": 1, "optimize": 2, "includes": ['sip'], "dll_excludes": ['POWRPROF.dll'], 
-          "excludes": ['backend_gtkagg', 'backend_wxagg'], "packages": ["qgis", "PyQt4"], "dist_dir": "dist"}}
+options = {
+           "py2exe": {
+                      "compressed": 1, 
+                      "optimize": 2, 
+                      "includes": ['sip'], 
+                      "dll_excludes": ['POWRPROF.dll', 'QtAssistantClient4.dll'], 
+                      "excludes": ['backend_gtkagg', 'backend_wxagg'], 
+                      "packages": ["qgis", "PyQt4", "paramiko"], 
+                      "dist_dir": "dist"}
+           }
 
 # Note that I had to paste the file 'C:\Program Files\Quantum GIS Wroclaw\bin\lti_dsk.dll' into 
 # the "C:\Program Files\Quantum GIS Wroclaw\apps\qgis\plugins" directory to get MrSID support to work.  py2exe 
 # apparently missed that dll?
-data_files = (tree("C:/Git_CAPS_Scenario_Builder/CAPS_Scenario_Builder/src/", "C:/Git_CAPS_Scenario_Builder/CAPS_Scenario_Builder/src/base_layers") + 
-              tree('C:/Program Files/Quantum GIS Wroclaw/apps/qgis/', 'C:/Program Files/Quantum GIS Wroclaw/apps/qgis/plugins') + 
-              tree('C:/Program Files/Quantum GIS Wroclaw/apps/qgis/', 'C:/Program Files/Quantum GIS Wroclaw/apps/qgis/resources') +
-              tree('C:/Program Files/Quantum GIS Wroclaw/bin/', 'C:/Program Files/Quantum GIS Wroclaw/bin/gdalplugins/1.8') +
-              tree('C:/Program Files/Quantum GIS Wroclaw/share/', 'C:/Program Files/Quantum GIS Wroclaw/share/gdal'))
+data_files = (tree("C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/", "C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/base_layers") + 
+              tree('C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/', 'C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/plugins') + 
+              tree('C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/', 'C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/resources') +
+              tree('C:/Program Files (x86)/Quantum GIS Wroclaw/bin/', 'C:/Program Files (x86)/Quantum GIS Wroclaw/bin/gdalplugins/1.8') +
+              tree('C:/Program Files (x86)/Quantum GIS Wroclaw/share/', 'C:/Program Files (x86)/Quantum GIS Wroclaw/share/gdal'))
 
-              
-setup(options = options, zipfile = zipfile, windows=[{"script": "caps.py", "icon_resources": [(1, "setup_program_icon.ico")]}],
-    # 'cmdclass=' says to use the build_installer class, which is a subclassed py2exe build command
-    cmdclass = {"py2exe": build_installer}, data_files = data_files)
+# debugging
+#df(data_files)
+
+# 'cmdclass=' says to use the build_installer class, which is a subclassed py2exe build command
+setup(
+      options = options, 
+      zipfile = zipfile, 
+      windows=[{"script": "caps.py", "icon_resources": [(1, "setup_program_icon.ico")]}],
+      cmdclass = {"py2exe": build_installer},
+      data_files = data_files
+      )

@@ -353,7 +353,8 @@ class Ui_MainWindow(object):
         self.mpActionIdentifyFeatures.setToolTip(QtGui.QApplication.translate("MainWindow", "Identify Features: get feature attributes and raster values", None, QtGui.QApplication.UnicodeUTF8))
         self.mpActionModifyPoints.setText(QtGui.QApplication.translate("MainWindow", "Modify Selected", None, QtGui.QApplication.UnicodeUTF8))
         self.mpActionModifyPoints.setToolTip(QtGui.QApplication.translate("MainWindow", "Modify selected base layer points", None, QtGui.QApplication.UnicodeUTF8))
-        self.mpActionManageProjects.setText(QtGui.QApplication.translate("MainWindow", "Create, modify or discard a project.", None, QtGui.QApplication.UnicodeUTF8))
+        self.mpActionManageProjects.setText(QtGui.QApplication.translate("MainWindow", "Manage Projects", None, QtGui.QApplication.UnicodeUTF8))
+        self.mpActionManageProjects.setToolTip(QtGui.QApplication.translate("MainWindow", "Manage Projects: Create, modify or discard a project.", None, QtGui.QApplication.UnicodeUTF8))
         self.mpActionSftpProperties.setText(QtGui.QApplication.translate("MainWindow", "SFTP Properties", None, QtGui.QApplication.UnicodeUTF8))
 
 import resources_rc

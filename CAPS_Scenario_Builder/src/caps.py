@@ -48,9 +48,15 @@ from Main.mainwindow import MainWindow
 # Version variable in case the app changes later
 __version__ = "0.8"
 
-# Path to local QGIS install
+''' Path to local QGIS install '''
+
+# The path below is the proper syntax for explicitly specifying the local path to qgis
 #qgis_prefix = "C:\\Program Files (x86)\\Quantum GIS Wroclaw\\apps\\qgis"
+
+# The qgis_prefix variable is temporarily set by C:\eclipse\Eclipse64_wroclaw.bat when eclipse starts. 
 qgis_prefix = os.getenv("qgis_prefix")
+
+# This is the proper prefix to use when making setup.exe
 #qgis_prefix = "."
 
 # the below does not work on Windows in any variation
@@ -60,8 +66,8 @@ qgis_prefix = os.getenv("qgis_prefix")
 def main(argv):
     # write errors to a log file
     '''try:
-        sys.stderr = open('error.log', 'w')
-        sys.stdout = open('output.log', 'w')
+        sys.stderr = open('Log/error.log', 'w')
+        sys.stdout = open('Log/output.log', 'w')
     except (IOError, OSError), e:
         error = unicode(e)
         #print "output.log write error " + error
@@ -81,7 +87,7 @@ for the CAPS Scenario Builder Beta version.  The error is: " + error, "Debug Err
     mySplashPixScaled = mySplashPix.scaled(500,300,QtCore.Qt.KeepAspectRatio)
     mySplash = QtGui.QSplashScreen(mySplashPixScaled)
     mySplash.show()
-   
+
     # initialize qgis libraries
     QgsApplication.setPrefixPath(qgis_prefix, True)
     QgsApplication.initQgis()

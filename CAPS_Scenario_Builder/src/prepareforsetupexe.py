@@ -29,11 +29,11 @@
 #-----------------------------------------------------------------------
 import os, shutil
 
-setupPath = "C:/alpha"
-workPath = "C:\Git_CAPS_Scenario_Builder\CAPS_Scenario_Builder\src"
+setupPath = "C:/beta"
+workPath = "C:\egit_repositories\CAPS-Scenario-Builder\CAPS_Scenario_Builder\src"
 workPathMain = workPath + "\Main"
 workPathTools = workPath + "\Tools"
-miscFiles = ["caps.py", "CAPS_splash.png", "config.py", "make_setupexe.py", "resources_rc.py", "setup_program_icon.ico"]
+miscFiles = ["caps_setupexe.py", "CAPS_splash.png", "config.py", "make_setupexe.py", "resources_rc.py", "setup_program_icon.ico"]
 
 def getFilePathsInDirectory(path):
     list = os.listdir(path)
@@ -55,6 +55,8 @@ os.mkdir(dstTools)
 
 for name in miscFiles:
     src = os.path.join(workPath, name)
+    if name == 'caps_setupexe.py':
+        name = 'caps.py'
     dst = os.path.join(setupPath, name)
     print "misc src path is " + src
     print "misc dst path is " + dst

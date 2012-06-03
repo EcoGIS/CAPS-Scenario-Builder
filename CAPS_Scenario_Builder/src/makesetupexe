@@ -1,0 +1,31 @@
+######################################################################################
+
+To make setup.exe for CAPS Scenario Builder
+
+1) run prepareforsetup.exe to move necessary current project files to c:\alph or c:\beta
+2) open a command prompt as administrator
+3) set the PYTHONPATH with the command below
+4) cd to the alph or beta directory
+5) run one of the commands below to get py2exe to run make_stupexe.py
+
+#######################################################################################
+
+
+We need to temporaraly set the PYTHON PATH so py2exe can find things:
+set PYTHONPATH=C:\Program Files (x86)\Quantum GIS Wroclaw\bin;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\Lib;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\DLLs;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages;C:\Program Files(x86)\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\PyQt4;C:\Program Files(x86)\Quantum GIS Wroclaw\apps\qgis\bin;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\qgis\python;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\qgis\python\qgis;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\paramiko-1.7.7.1
+
+path to make_setupexe.py:
+cd C:\alpha
+cd C:\beta
+
+Path to the ver 2.4 python interpreter:
+C:\Python25\python.exe make_setupexe.py py2exe
+
+Path to the  ver 2.2 Wroclaw python interpreter:
+C:\PROGRA~2\QUANTU~1\bin\python.exe
+
+From C:\alpha> or C:\beta> the command to build:
+C:\Python25\python.exe make_setupexe.py py2exe
+
+This is the better version because it's using the python version shipped with the qgis API:
+C:\PROGRA~2\QUANTU~1\bin\python.exe make_setupexe.py py2exe
