@@ -1,4 +1,4 @@
-#Thu May 31 14:57:58 EDT 2012
+#Wed Jun 06 09:31:59 EDT 2012
 eclipse.preferences.version=1
 encoding//src/Main/dlgmanageprojects.py=utf-8
 encoding//src/Main/dlgmanageprojects_ui.py=utf-8
@@ -20,4 +20,5 @@ encoding//src/Tools/selectfeatures.py=utf-8
 encoding//src/Tools/shared.py=utf-8
 encoding//src/config.py=utf-8
 encoding//src/make_setupexe.py=utf-8
+encoding//src/make_setupexe_config.py=utf-8
 encoding//src/prepareforsetupexe.py=utf-8

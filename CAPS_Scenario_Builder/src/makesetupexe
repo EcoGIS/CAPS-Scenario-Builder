@@ -4,15 +4,16 @@ To make setup.exe for CAPS Scenario Builder
 
 1) run prepareforsetup.exe to move necessary current project files to c:\alph or c:\beta
 2) open a command prompt as administrator
-3) set the PYTHONPATH with the command below
+3) set the PYTHONPATH with the value below using control panel/system/advanced
 4) cd to the alph or beta directory
-5) run one of the commands below to get py2exe to run make_stupexe.py
+5) run one of the commands below to get py2exe to run make_stupexe.py (ALT+SPACE+E+P to paste from the keyboard in the command window)
+6) delete the PYTHONPATH through control panel when you are done making setup files!
 
+cls clears the windows command screen between makes.
 #######################################################################################
 
-
 We need to temporaraly set the PYTHON PATH so py2exe can find things:
-set PYTHONPATH=C:\Program Files (x86)\Quantum GIS Wroclaw\bin;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\Lib;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\DLLs;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages;C:\Program Files(x86)\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\PyQt4;C:\Program Files(x86)\Quantum GIS Wroclaw\apps\qgis\bin;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\qgis\python;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\qgis\python\qgis;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\paramiko-1.7.7.1
+PYTHONPATH=C:\Program Files (x86)\Quantum GIS Wroclaw\bin;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\Lib;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\DLLs;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages;C:\Program Files(x86)\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\PyQt4;C:\Program Files(x86)\Quantum GIS Wroclaw\apps\qgis\bin;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\qgis\python;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\qgis\python\qgis;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\paramiko-1.7.7.1
 
 path to make_setupexe.py:
 cd C:\alpha
@@ -29,3 +30,6 @@ C:\Python25\python.exe make_setupexe.py py2exe
 
 This is the better version because it's using the python version shipped with the qgis API:
 C:\PROGRA~2\QUANTU~1\bin\python.exe make_setupexe.py py2exe
+
+To make a setup file that exposes config.py:
+C:\PROGRA~2\QUANTU~1\bin\python.exe make_setupexe_config.py py2exe

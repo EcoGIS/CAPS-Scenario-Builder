@@ -41,6 +41,12 @@
     By default, the installer will be created as dist\Output\setup.exe.
     
     Run this file from a command line using 'python make_setupexe.py py2exe'
+    See makesetupexe for more details.
+
+    Also note that I have edited C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\py2exe\boot_common.py
+    to make py2exe write the startup logfile to 'log\' because the installer gives simple 'users' permissions to write to that
+    directory.
+    
 '''
 
 from distutils.core import setup
@@ -158,7 +164,7 @@ class InnoScript:
         print >> ofi, r'Name: "{app}\Scenarios"; Permissions: users-modify'
         print >> ofi, r'Name: "{app}\Exported Scenarios"; Permissions: users-modify'
         print >> ofi, r'Name: "{app}\Projects"; Permissions: users-modify'
-        print >> ofi, r'Name: "{app}\Log"; Permissions: users-modify'
+        print >> ofi, r'Name: "{app}\log"; Permissions: users-modify'
         print >> ofi
         
         print >> ofi, r"[Run]"

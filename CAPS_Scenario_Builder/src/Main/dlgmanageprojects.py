@@ -56,7 +56,7 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
         self.scenariosInProjectThatExist = self.existingScenariosNotInProject = []
         self.sender = self.senderEmail = self.message = self.projectName = self.oldProjectFileName = ''
 
-        # This turns off auto complete in the selectProjectComboBox
+        # This turns off auto complete in the selectProjectComboBox.
         completer = QtGui.QCompleter()
         self.selectProjectComboBox.setCompleter(completer)
 
@@ -539,12 +539,12 @@ The error on line " + str(lino) + " is '" + error + "'.")
 'Projects' or 'Exported Scenarios' directory could not be listed.  Please try again")
                 return False
 
-        if path == "./Projects/":
+        if path == config.projectsPath:
             filesList = ["Create a new project (type name here)"]
             for dirItem in directoryList:
                 if dirItem.endswith((".cpj", ".CPJ")):
                     filesList.append(dirItem)
-        elif path == "./Exported Scenarios/":
+        elif path == config.scenarioExportsPath:
             for dirItem in directoryList:
                     if dirItem.endswith((".csv", ".CSV")):
                         filesList.append(dirItem)

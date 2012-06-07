@@ -40,21 +40,32 @@ from qgis.core import QgsCoordinateReferenceSystem, QgsRectangle
 The following are variables that might change over time.
 They can be altered throughout the application by changing values here.
 
-Changing field labels, field values and field names will be reflected in 
-the 'Add Attributes' dialog and the editing shapefiles created for the 
-various scenario edit types.
+Changing field labels, field values and field names will be reflected in the 'Add Attributes' dialog
+and the editing shapefiles created for the 7 scenario edit types. Note that the numbers 0-6 in the 
+variable names below each correspond to a single scenario edit type.  For example, the number 0 corresponds
+to the 'Culverts/bridges (points)' scenario edit type in all variables below.  The remaining numbers are in the
+order that the scenario edit types appear in the 'Edit Scenario' dialog.  Although you cannot add a new scenario
+edit type, you can add, remove or edit combination box labels, combination boxes and combination box dropdown
+choices in "Add Attributes" dialog for each scenario edit type.  When doing this, you must also add a new field
+to the attribute table for the editing shapefile corresponding to that scenario edit type.  Each section has a 
+more detailed explanation below. 
+  
 ''' 
    
-# Paths to important files.  These cannot change for most users without altering
-# the application installer. Sophisticated users could move these folders and change
-# the paths to the new locations here.  The paths may be relative or absolute
+# Paths to important files.  
+# These cannot change for most users without altering the application installer.
+# Sophisticated users who have a version of caps.exe that allows access to config.py can move these folders and change
+# the paths to the new locations here.  The paths may be relative or absolute.
+
 #baseLayersPath =  'C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/base_layers/'
 baseLayersPath =  './base_layers/'
 #scenariosPath = 'C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Scenarios/' 
 scenariosPath = './Scenarios/' 
+#projectsPath = 'C:/Projects'
 projectsPath = './Projects/'
-#scenarioExportsPath = 'C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Exported Scenarios/' 
+#scenarioExportsPath = 'C:/Exported Scenarios/' 
 scenarioExportsPath = './Exported Scenarios/'
+
 
 ''' Field names, which appear in the editing layer attribute table, for each scenario edit type. '''     
 # To change the data users input into the application in the 'Add Attributes' dialog,
@@ -73,6 +84,7 @@ inputFieldNames4 = ['newrd_id', 'newrd_rate', 'nrd_class', 'nrd_descr']
 inputFieldNames5 = ['modrd_id', 'modrd_rate', 'nrd_class', 'mrd_descr']
 inputFieldNames6 = ['ldcvr_id', 'ldcvr_cls', 'l_describe']
 
+
 ''' Labels for the combo boxes in the 'Add Attributes' dialog '''
 # If you add a new field label here, it will create a corresponding combo box
 # in the 'Add Attributes' dialog for the corresponding scenarioEditType. A new 'field values' 
@@ -90,6 +102,7 @@ fieldLabels3 = ['Tidal Restriction severity:']
 fieldLabels4 = ['New road traffic rate:', 'New road class:'] 
 fieldLabels5 = ['Modified road traffic rate:', 'New road class:']
 fieldLabels6 = ['Land cover class:']
+
 
 ''' Field values for the comboBox dropdown lists '''
 # If a fieldLabel is added above, a python list [] of field values for the
@@ -140,6 +153,8 @@ comboBoxOptions6 = [['', '1 - Commercial', '2 - Industrial', '3 - Urban open', '
                      '61 - Vegetated dune ', '62 - Coastal dune', '63 - Coastal beach', '70 - Salt marsh', 
                      '71 - Tidal flat', '72 - Rocky intertidal', '75 - Salt pond/bay']]
 
+# This Python dictionary is used to look up values for the identify tool.  If new values are added to the 'base_land' raster,
+# they should also be added here with the corresponding description.
 baseLandLookup = {1: 'Commercial', 2: 'Industrial', 3: 'Urban open', 4: 'Urban public ', 
                   5: 'Transportation', 6: 'Mining', 7: 'Waste disposal', 8: 'Junkyard', 
                  10: 'Multi-family  residential', 11: 'High-density residential', 

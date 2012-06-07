@@ -32,6 +32,7 @@
 # 
 #---------------------------------------------------------------------
 # General system includes
+import sys, os
 from os.path import isfile
 # PyQt4 includes for python bindings to QT
 from PyQt4 import QtCore, QtGui
@@ -51,6 +52,7 @@ class LegendItem(QtGui.QTreeWidgetItem):
         
         # debugging
         print "Main.legend.LegendItem() class"
+        print 'Main.legend: The system path is', sys.path
         
         self.legend = parent
         self.canvasLayer = canvasLayer

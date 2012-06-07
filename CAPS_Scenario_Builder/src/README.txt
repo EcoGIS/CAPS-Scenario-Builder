@@ -1,10 +1,14 @@
-This is the Beta version of CAPS_Scenario_Builder and is intended to be used by the CAPS project team members for purposes of testing and debugging, but anyone is welcome to use the program and submit issues. 
-------------------------------------------------------------------------------- 
+This is the Beta version 0.9 of CAPS_Scenario_Builder and is intended to be used by the CAPS project team members for purposes of testing and debugging, but anyone is welcome to use the program and submit issues. 
+
+For those users who have a version that exposes config.py, that file can be found in install directory/CAPS Scenario Builder/lib/shardlib.  Please note that shardlib is a zip archive and must be opened with a zip utility.  After editing config.py, you must replace the old version in the shardlib zip archive with the edited version.
+ 
+-------------------------------------------------------------------------------
+ 
 Please report any issues or bugs at.  
 
 https://github.com/EcoGIS/CAPS-Scenario-Builder/issues/1
 
-Please, make sure to include the Windows operating system you are using (including service pack number) and a detailed description of the issue so that I can duplicate it.
+Please, make sure to include the Windows operating system you are using (including service pack number) and a detailed description of the issue.  If a bug does occur, please copy the log files from install directory/log and then close the application. Please send the log files to bobengl@gmail.com along with the issue number from github.
 
 Some terminology that may make descriptions easier:
 
@@ -17,24 +21,8 @@ Some terminology that may make descriptions easier:
 "editing layer": edit_scenario(points), edit_scenario(lines) or edit_scenario(polygons)
 
 -------------------------------------------------------------------------------- 
-Since there is no documentation yet, I expect that some people may be confused by some of the application's behavior. In general, only buttons that are usable in the current circumstances are active.  Buttons that cannot be used in the current circumstances are grayed out.  This serves to make it difficult for users to make mistakes that might result in submitting bad scenarios. It also serves to reduce the number of possibilities for user action and thus reduces the number of potential user errors that must be handled.
-Here are a few notes that might help for folks unfamiliar with the app:
- 
-You can't edit rasters so no edit buttons will be active while a raster layer is selected, and since a raster doesn't have an attribute table, the "Open Vector Attribute Table" will be grayed out.
 
-All editing actions, or changing the scenario edit type (i.e. dams, add roads etc.), require you to click the "Edit Scenario" button.
-
-The modify features button will only be active if a point baselayer is selected. (i.e. base_culverts_bridges, base_dams, base_terrestrial_passage or base_tidal_restrictions).
-
-To delete a feature on a point base layer or on an editing layer just select the feature and click "Delete Selected."
-
-You must have an edit layer selected for the add points, lines or polygons buttons to be active.
-
-All edits are stored in the three editing layers.  A red X in the edit_scenario(points) layer indicates a deleted point feature, red triangle indicates a modified point feature, and a simple point indicates a new feature.
-
-The "Export Scenario" exports a scenario's changes in csv file format.
-
-etc.....
+Please see the CAPS Scenario Builder Users Manual.pdf at github in the git root for more information.
 
 Thanks,
 Bob English

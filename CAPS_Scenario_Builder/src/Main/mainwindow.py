@@ -33,7 +33,7 @@
 # 
 #---------------------------------------------------------------------
 # general python imports
-import os, shutil, time, os.path #  copy, subprocess, sys,  stat,
+import os, sys, shutil, time, os.path #  copy, subprocess, sys,  stat,
 # import Qt libraries
 from PyQt4 import QtCore, QtGui
 # import qgis API
@@ -54,6 +54,8 @@ from Main.dlgscenarioedittypes import DlgScenarioEditTypes
 from Main.dlgmanageprojects import DlgManageProjects
 from Main.dlgsftpproperties import DlgSftpProperties
 import Tools.shared
+# debugging
+print 'The main.mainwindow.system path is: ', sys.path
 import config
 
 
