@@ -820,7 +820,7 @@ and continue, click 'OK.'"
         # debugging
         print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload()"
 
-        settings = QtCore.QSettings()
+        #settings = QtCore.QSettings()
         
         paramiko.util.log_to_file('./Log/paramiko.log')
         hostname = self.mainwindow.sftpHost

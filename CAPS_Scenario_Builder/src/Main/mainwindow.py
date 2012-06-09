@@ -130,9 +130,13 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         settings = QtCore.QSettings()
         self.sftpHost = unicode(settings.value("sftpHost", "jamba.provost.ads.umass.edu").toString())
-        self.sftpUser = unicode(settings.value("sftpUser", "provost\ambystoma").toString())
-        self.sftpPassword = unicode(settings.value("sftpPassword", "Opacum99").toString())
+        self.sftpUser = unicode(settings.value("sftpUser",  "provost\\ambystoma").toString())
+        self.sftpPassword = unicode(settings.value("sftpPassword",  "Opacum99").toString())
         self.sftpPath = unicode(settings.value("sftpPath", "/public/").toString())
+        print "Main.mainwindow self.sftpHost is: ", self.sftpHost
+        
+        
+        
         ''' Begin construction of main window '''
         
         # create map canvas

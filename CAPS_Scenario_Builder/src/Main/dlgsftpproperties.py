@@ -55,7 +55,7 @@ class DlgSftpProperties(QtGui.QDialog, Ui_DlgSftpProperties):
         self.mainwindow = mainwindow
 
         # Populate the dialog with the settings stored in the windows registry
-        settings = QtCore.QSettings()
+        # settings = QtCore.QSettings()
         self.hostEdit.setText(self.mainwindow.sftpHost)
         self.userEdit.setText(self.mainwindow.sftpUser)
         self.passwordEdit.setText(self.mainwindow.sftpPassword)
@@ -78,6 +78,7 @@ class DlgSftpProperties(QtGui.QDialog, Ui_DlgSftpProperties):
         settings.setValue("sftpHost", self.hostEdit.text())
         settings.setValue("sftpUser", self.userEdit.text())
         settings.setValue("sftpPassword", self.passwordEdit.text())
+        settings.setValue("sftpPath", self.pathEdit.text())
         
         # reset the instance variables that are used in dlgmanageprojects.DlgManageProjects.sftpUpload() to make connections.
         self.mainwindow.sftpHost = unicode(self.hostEdit.text())
