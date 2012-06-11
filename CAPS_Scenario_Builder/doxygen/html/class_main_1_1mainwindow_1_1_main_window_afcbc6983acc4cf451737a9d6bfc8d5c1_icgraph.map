@@ -1,0 +1,9 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$class_main_1_1mainwindow_1_1_main_window.html#a6f544b2818a0e48d29bb72f689fe8aae" title="Main.mainwindow.MainWindow.pasteBaseLayerDeletions" alt="" coords="381,19,736,45"/>
+<area shape="rect" id="node7" href="$class_main_1_1mainwindow_1_1_main_window.html#abb85b007a1f3985c6461917878381a7e" title="Main.mainwindow.MainWindow.setPasteModifySuccess" alt="" coords="385,95,732,121"/>
+<area shape="rect" id="node5" href="$class_main_1_1mainwindow_1_1_main_window.html#afc4a0a314a29e08ffeb8c99ca304c4ff" title="Main.mainwindow.MainWindow.deleteFeatures" alt="" coords="829,5,1121,32"/>
+<area shape="rect" id="node9" href="$class_main_1_1mainwindow_1_1_main_window.html#a4f9fe5e4110a80c73de90c414453a9c6" title="Main.mainwindow.MainWindow.pasteFeatures" alt="" coords="830,56,1119,83"/>
+<area shape="rect" id="node11" href="$class_main_1_1mainwindow_1_1_main_window.html#a47078cff6b77098553fe90af9d11bcb4" title="Main.mainwindow.MainWindow.pasteModifiedBaseLayerFeats" alt="" coords="784,107,1165,133"/>
+<area shape="rect" id="node15" href="$class_main_1_1mainwindow_1_1_main_window.html#a259a172ffea440d3a9b602e142be0b01" title="Main.mainwindow.MainWindow.modifyEditLayerFeatures" alt="" coords="799,157,1150,184"/>
+<area shape="rect" id="node13" href="$class_main_1_1mainwindow_1_1_main_window.html#a109ba8fb3cc8337f378250cb600613fe" title="Main.mainwindow.MainWindow.modifyFeatures" alt="" coords="1214,132,1509,159"/>
+</map>

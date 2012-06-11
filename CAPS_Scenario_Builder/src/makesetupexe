@@ -14,6 +14,8 @@ cls clears the windows command screen between makes.
 
 We need to temporaraly set the PYTHON PATH so py2exe can find things:
 PYTHONPATH=C:\Program Files (x86)\Quantum GIS Wroclaw\bin;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\Lib;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\DLLs;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages;C:\Program Files(x86)\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\PyQt4;C:\Program Files(x86)\Quantum GIS Wroclaw\apps\qgis\bin;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\qgis\python;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\qgis\python\qgis;C:\Program Files (x86)\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\paramiko-1.7.7.1
+Make sure the system PATH contains the following
+PATH =C:\Program Files\Quantum GIS Wroclaw\apps\qgis\bin;C:\Program Files\Quantum GIS Wroclaw\bin
 
 path to make_setupexe.py:
 cd C:\alpha

@@ -43,7 +43,9 @@
     Run this file from a command line using 'python make_setupexe.py py2exe'
     See makesetupexe for more details.
 
-    Also note that I have edited z:\Program Files\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\py2exe\boot_common.py
+    This script assumes the directory c:\beta but it's easy to change (only 2 places).
+
+    Also note that I have edited C:\Program Files\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\py2exe\boot_common.py
     to make py2exe write the startup logfile to 'log\' because the installer gives simple 'users' permissions to write to that
     directory.
     
@@ -119,6 +121,8 @@ class InnoScript:
         ofi = self.file = open(pathname, "w")
         
         # The '>>' tells python to print to the file object 'ofi'
+        # When an 'r' or 'R' prefix is present, a character following a backslash is included in the string without change, 
+        # and all backslashes are left in the string
         print >> ofi, "; WARNING: This script has been created by py2exe. Changes to this script"
         print >> ofi, "; will be overwritten the next time py2exe is run!"
         print >> ofi
@@ -168,8 +172,8 @@ class InnoScript:
         print >> ofi
         
         print >> ofi, r"[Run]"
-        print >> ofi, r'Filename: "{app}\vcredist_2005English_x86.exe"; Description: "Install required system files"; Parameters: "/q:a /c:""VCREDI~3.EXE /q:a /c:""""msiexec /i vcredist.msi /qn"""" """'
-        print >> ofi, r'Filename: "{app}\vcredist_2008_x86.exe"; Description: "Install required system files"; Parameters: "/q:a /c:""VCREDI~1.EXE /q:a /c:""""msiexec /i vcredist.msi /qn"""" """'
+        print >> ofi, r'Filename: "{app}\vcredist_2005English_x86.exe"; Description: "Install required system files"; Parameters: "/q:a /c:""VCREDI~3.EXE /q:a /c:""""msiexec /i vcredist.msi /qn"""" """; Flags: runascurrentuser'
+        print >> ofi, r'Filename: "{app}\vcredist_2008_x86.exe"; Description: "Install required system files"; Parameters: "/q:a /c:""VCREDI~1.EXE /q:a /c:""""msiexec /i vcredist.msi /qn"""" """; Flags: runascurrentuser'
         
     def compile(self):
         try:
@@ -227,7 +231,7 @@ class build_installer(py2exe):
 
 ######################## py2exe setup options ########################################
 
-zipfile = r"lib\shardlib"
+azipfile = r"lib\shardlib"
 #"excludes": ['backend_gtkagg', 'backend_wxagg'],
 options = {
            "py2exe": {
@@ -243,11 +247,11 @@ options = {
 # Note that I had to paste the file 'C:\Program Files\Quantum GIS Wroclaw\bin\lti_dsk.dll' into 
 # the "C:\Program Files\Quantum GIS Wroclaw\apps\qgis\plugins" directory to get MrSID support to work.  py2exe 
 # apparently missed that dll?
-data_files = (tree("z:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/", "z:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/base_layers") + 
-              tree('z:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/', 'z:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/plugins') + 
-              tree('z:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/', 'z:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/resources') +
-              tree('z:/Program Files (x86)/Quantum GIS Wroclaw/bin/', 'z:/Program Files (x86)/Quantum GIS Wroclaw/bin/gdalplugins/1.8') +
-              tree('z:/Program Files (x86)/Quantum GIS Wroclaw/share/', 'z:/Program Files (x86)/Quantum GIS Wroclaw/share/gdal'))
+data_files = (tree("C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/", "C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/base_layers") + 
+              tree('C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/', 'C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/plugins') + 
+              tree('C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/', 'C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/resources') +
+              tree('C:/Program Files (x86)/Quantum GIS Wroclaw/bin/', 'C:/Program Files (x86)/Quantum GIS Wroclaw/bin/gdalplugins/1.8') +
+              tree('C:/Program Files (x86)/Quantum GIS Wroclaw/share/', 'C:/Program Files (x86)/Quantum GIS Wroclaw/share/gdal'))
 
 # debugging
 #df(data_files)
@@ -255,7 +259,7 @@ data_files = (tree("z:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Bui
 # 'cmdclass=' says to use the build_installer class, which is a subclassed py2exe build command
 setup(
       options = options, 
-      zipfile = zipfile, 
+      zipfile = azipfile, 
       windows=[{"script": "caps.py", "icon_resources": [(1, "setup_program_icon.ico")]}],
       cmdclass = {"py2exe": build_installer},
       data_files = data_files

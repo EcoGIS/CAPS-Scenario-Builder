@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$namespace_tools_1_1shared.html#a552723889033b5c8feaba95981e26b2a" title="Tools.shared.getCurrentFeats" alt="" coords="470,5,663,32"/>
+<area shape="rect" id="node5" href="$namespace_tools_1_1shared.html#a9f5b7632224b72b150a25515e2e1dc55" title="Tools.shared.getFeatsToDelete" alt="" coords="219,31,421,57"/>
+<area shape="rect" id="node8" href="$namespace_tools_1_1shared.html#abc11ef5d38063ff85b1a688430c02c85" title="Tools.shared.printFeatures" alt="" coords="232,81,408,108"/>
+<area shape="rect" id="node10" href="$namespace_tools_1_1shared.html#a9a2f8f670d9ac7bd7aadff7b84168393" title="Tools.shared.updateExtents" alt="" coords="228,132,412,159"/>
+</map>

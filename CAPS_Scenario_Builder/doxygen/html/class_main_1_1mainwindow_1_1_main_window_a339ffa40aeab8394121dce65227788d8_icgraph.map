@@ -1,0 +1,30 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$class_main_1_1mainwindow_1_1_main_window.html#a040676f98a7d4a64423c25a3bb90788f" title="Main.mainwindow.MainWindow.activeLayerChanged" alt="" coords="421,436,744,463"/>
+<area shape="rect" id="node5" href="$class_main_1_1mainwindow_1_1_main_window.html#adc1327fe8b3d5412fec271376828011f" title="Main.mainwindow.MainWindow.checkEditsState" alt="" coords="431,487,734,513"/>
+<area shape="rect" id="node52" href="$class_main_1_1mainwindow_1_1_main_window.html#afc4a0a314a29e08ffeb8c99ca304c4ff" title="Main.mainwindow.MainWindow.deleteFeatures" alt="" coords="853,613,1145,640"/>
+<area shape="rect" id="node54" href="$class_main_1_1mainwindow_1_1_main_window.html#a6f544b2818a0e48d29bb72f689fe8aae" title="Main.mainwindow.MainWindow.pasteBaseLayerDeletions" alt="" coords="405,639,760,665"/>
+<area shape="rect" id="node57" href="$class_main_1_1mainwindow_1_1_main_window.html#abb85b007a1f3985c6461917878381a7e" title="Main.mainwindow.MainWindow.setPasteModifySuccess" alt="" coords="409,841,756,868"/>
+<area shape="rect" id="node7" href="$class_main_1_1mainwindow_1_1_main_window.html#aaa3b80540a73fcf6e73128e069ba99e5" title="Main.mainwindow.MainWindow.appStateChanged" alt="" coords="844,487,1153,513"/>
+<area shape="rect" id="node9" href="$class_main_1_1mainwindow_1_1_main_window.html#a810f41bccc1ab7ed6ca3689fde544c91" title="Main.mainwindow.MainWindow.addRasterLayer" alt="" coords="1266,5,1563,32"/>
+<area shape="rect" id="node11" href="$class_main_1_1mainwindow_1_1_main_window.html#a2f68537b998ce4ede7a7ff202ccd69cc" title="Main.mainwindow.MainWindow.addVectorLayer" alt="" coords="1266,56,1563,83"/>
+<area shape="rect" id="node13" href="$class_main_1_1mainwindow_1_1_main_window.html#a90655cfa2b01fdf27dd163326be239f8" title="Main.mainwindow.MainWindow.closeEvent" alt="" coords="1280,107,1549,133"/>
+<area shape="rect" id="node15" href="$class_main_1_1mainwindow_1_1_main_window.html#a2bf126e280ad6c341fa6c9e22eb743f8" title="Main.mainwindow.MainWindow.editScenario" alt="" coords="1275,157,1554,184"/>
+<area shape="rect" id="node17" href="$class_main_1_1mainwindow_1_1_main_window.html#aeadf1678033028ea918a2d334ca2a9d6" title="Main.mainwindow.MainWindow.exportScenario" alt="" coords="1268,208,1561,235"/>
+<area shape="rect" id="node19" href="$class_main_1_1mainwindow_1_1_main_window.html#a8bb6e5911a0feb62e3e6e24f4b9dcff1" title="Main.mainwindow.MainWindow.identifyFeatures" alt="" coords="1265,259,1564,285"/>
+<area shape="rect" id="node21" href="$class_main_1_1mainwindow_1_1_main_window.html#a25315f72bd7c8863e7ef1533eac340e7" title="Main.mainwindow.MainWindow.manageProjects" alt="" coords="1265,309,1565,336"/>
+<area shape="rect" id="node23" href="$class_main_1_1mainwindow_1_1_main_window.html#a109ba8fb3cc8337f378250cb600613fe" title="Main.mainwindow.MainWindow.modifyFeatures" alt="" coords="1267,917,1562,944"/>
+<area shape="rect" id="node25" href="$class_main_1_1mainwindow_1_1_main_window.html#af9882043181d78dedcae36b62e4111c2" title="Main.mainwindow.MainWindow.newScenario" alt="" coords="1275,360,1555,387"/>
+<area shape="rect" id="node27" href="$class_main_1_1mainwindow_1_1_main_window.html#ac641f1a45f2be810f001bcff030ee7c2" title="Main.mainwindow.MainWindow.openRasterCategoryTable" alt="" coords="1237,411,1592,437"/>
+<area shape="rect" id="node29" href="$class_main_1_1mainwindow_1_1_main_window.html#a586fd570001acb460472a2de67e9fd14" title="Main.mainwindow.MainWindow.openScenario" alt="" coords="1272,461,1557,488"/>
+<area shape="rect" id="node32" href="$class_main_1_1mainwindow_1_1_main_window.html#a4049c71662ec82924a2cce7d7bb728f9" title="Main.mainwindow.MainWindow.pan" alt="" coords="1301,512,1528,539"/>
+<area shape="rect" id="node34" href="$class_main_1_1mainwindow_1_1_main_window.html#a02314ab862338c7904e7fe94a3004280" title="Main.mainwindow.MainWindow.saveScenario" alt="" coords="1273,613,1556,640"/>
+<area shape="rect" id="node36" href="$class_main_1_1mainwindow_1_1_main_window.html#ae327eb45dea2d9553cb912805fcc7a59" title="Main.mainwindow.MainWindow.saveScenarioAs" alt="" coords="1640,613,1939,640"/>
+<area shape="rect" id="node44" href="$class_main_1_1mainwindow_1_1_main_window.html#a535c4e12daffd81aafaf5b5e197d416d" title="Main.mainwindow.MainWindow.selectFeatures" alt="" coords="1269,664,1561,691"/>
+<area shape="rect" id="node46" href="$class_main_1_1mainwindow_1_1_main_window.html#a4d7fe47b94dca7e8fd90d300f3daad4d" title="Main.mainwindow.MainWindow.zoomIn" alt="" coords="1291,715,1539,741"/>
+<area shape="rect" id="node48" href="$class_main_1_1mainwindow_1_1_main_window.html#a799f4dbc0386b33b76fc028a785b9af6" title="Main.mainwindow.MainWindow.zoomOut" alt="" coords="1285,765,1544,792"/>
+<area shape="rect" id="node50" href="$class_main_1_1mainwindow_1_1_main_window.html#aa706eece6ffe2e1fbe071b2662dde709" title="Main.mainwindow.MainWindow.zoomToMapExtent" alt="" coords="1257,816,1572,843"/>
+<area shape="rect" id="node39" href="$class_main_1_1mainwindow_1_1_main_window.html#a561ac3756d474ceb8dc22396c1d063c8" title="Main.mainwindow.MainWindow.checkScenarioState" alt="" coords="1987,664,2309,691"/>
+<area shape="rect" id="node59" href="$class_main_1_1mainwindow_1_1_main_window.html#a4f9fe5e4110a80c73de90c414453a9c6" title="Main.mainwindow.MainWindow.pasteFeatures" alt="" coords="854,816,1143,843"/>
+<area shape="rect" id="node61" href="$class_main_1_1mainwindow_1_1_main_window.html#a47078cff6b77098553fe90af9d11bcb4" title="Main.mainwindow.MainWindow.pasteModifiedBaseLayerFeats" alt="" coords="808,867,1189,893"/>
+<area shape="rect" id="node64" href="$class_main_1_1mainwindow_1_1_main_window.html#a259a172ffea440d3a9b602e142be0b01" title="Main.mainwindow.MainWindow.modifyEditLayerFeatures" alt="" coords="823,917,1174,944"/>
+</map>

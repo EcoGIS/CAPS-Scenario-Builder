@@ -1,5 +1,6 @@
-#Wed Jun 06 09:31:59 EDT 2012
+#Mon Jun 11 11:55:24 EDT 2012
 eclipse.preferences.version=1
+encoding//ReferenceCode/legend_annotated.py=utf-8
 encoding//src/Main/dlgmanageprojects.py=utf-8
 encoding//src/Main/dlgmanageprojects_ui.py=utf-8
 encoding//src/Main/dlgscenarioedittypes.py=utf-8
@@ -9,7 +10,6 @@ encoding//src/Main/dlgsftpproperties_ui.py=utf-8
 encoding//src/Main/legend.py=utf-8
 encoding//src/Main/mainwindow.py=utf-8
 encoding//src/Main/mainwindow_ui.py=utf-8
-encoding//src/ReferenceCode/legend_annotated.py=utf-8
 encoding//src/Tools/addlinespolygons.py=utf-8
 encoding//src/Tools/addpoints.py=utf-8
 encoding//src/Tools/dlgaddattributes.py=utf-8

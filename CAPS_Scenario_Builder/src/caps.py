@@ -46,7 +46,7 @@ from qgis.gui import *
 from Main.mainwindow import MainWindow
 
 # Version variable in case the app changes later
-__version__ = "0.8"
+__version__ = "0.9"
 
 ''' Path to local QGIS install '''
 
@@ -64,6 +64,8 @@ qgis_prefix = os.getenv("qgis_prefix")
 
 # Main entry to program.  Set up the main app and create a new window.
 def main(argv):
+    ''' This is the entry point into the application '''
+    
     # write errors to a log file
     '''try:
         sys.stderr = open('Log/error.log', 'w')

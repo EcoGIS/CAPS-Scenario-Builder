@@ -1,0 +1,8 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#ac8cc45e96bb7a163c09c7d76f63d2a9b" title="Main.dlgmanageprojects.DlgManageProjects.isProjectDirty" alt="" coords="479,5,841,32"/>
+<area shape="rect" id="node7" href="$class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#aa300962fbcbdea4a8257a910300bbd61" title="Main.dlgmanageprojects.DlgManageProjects.readProjectFile" alt="" coords="475,56,845,83"/>
+<area shape="rect" id="node9" href="$class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a1a3f3939ded3b4dd9cabbf0f5ad880c7" title="Main.dlgmanageprojects.DlgManageProjects.setCreateNewProjectMode" alt="" coords="441,107,879,133"/>
+<area shape="rect" id="node5" href="$class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a338f4b73e044f87a46aa12a640c21517" title="Main.dlgmanageprojects.DlgManageProjects.getScenariosInProject" alt="" coords="956,5,1367,32"/>
+<area shape="rect" id="node11" href="$class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#ab6b15dc5104d90ed4d84cee6e6d5ec7f" title="Main.dlgmanageprojects.DlgManageProjects.refreshSelectProjectComboBox" alt="" coords="929,81,1394,108"/>
+<area shape="rect" id="node13" href="$class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a1695b27d5ceccab0bc52f44c44eee518" title="Main.dlgmanageprojects.DlgManageProjects.listFiles" alt="" coords="1443,107,1773,133"/>
+</map>

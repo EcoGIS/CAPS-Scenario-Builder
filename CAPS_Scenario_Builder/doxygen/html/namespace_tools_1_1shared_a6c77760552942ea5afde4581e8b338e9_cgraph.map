@@ -1,0 +1,7 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$namespace_tools_1_1shared.html#a876fa64f5cf02e0c830b7b51115c914a" title="Tools.shared.checkRoadConstraints" alt="" coords="262,56,493,83"/>
+<area shape="rect" id="node11" href="$namespace_tools_1_1shared.html#abfb4b37a2a4c1dcbbd0c04841cb927dc" title="Tools.shared.checkStreamsConstraint" alt="" coords="256,5,499,32"/>
+<area shape="rect" id="node5" href="$namespace_tools_1_1shared.html#ad4d1153e9250c93378055b003b933599" title="Tools.shared.openHiddenRasterLayer" alt="" coords="547,5,786,32"/>
+<area shape="rect" id="node7" href="$namespace_tools_1_1shared.html#a2a3afbb71c851a3f9bea24025f27dca4" title="Tools.shared.newRoadExists" alt="" coords="571,56,762,83"/>
+<area shape="rect" id="node9" href="$namespace_tools_1_1shared.html#a13d094a7b3ffb1c9cf81ed04d2e16b6e" title="Tools.shared.snapToNewRoad" alt="" coords="568,107,765,133"/>
+</map>

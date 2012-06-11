@@ -1,0 +1,380 @@
+CAPS Test Suite:
+!!!Make sure you delete entries in PYTHONPATH, PYTHON HOME, and PATH before you start testing!!!
+
+#######################################
+
+Description of tests in order:
+
+CHECK EDITING CONFIG.PY:
+just do the tests below with the config file pointing to a non-standard directory
+
+JUST LAYERS:
+tests loading and deleting raster and vector layers
+
+BASIC SCENARIO MENU CHECK
+tests the basic scenario menu functions
+
+CHECK DLGSCENARIOTYPES AND OPEN EDITING FILES AND BASE LAYER FILES:
+tests if the correced base layers, constraints layers are loaded in proper order.
+
+CHECK COPY PASTE
+tests copy and paste
+
+CHECK ADD POINTS (also good for lines and polygons)
+tests adding points/lines/polygons
+
+CHECK TOOL SELECT
+tests select tool behavior
+
+CHECK SNAPPING OF NEW ROADS
+need to write this
+
+CHECK SAVE SCENARIO AS:
+tests save scenario as
+
+CHECK SCENARIO IO ERRORS
+tests scenario open in another app
+
+CHECK SCENARIO MENU WITH EDITS:
+tests cancel, save and discard in "Save Scenario" dialog 
+
+CHECK DISCARD EDITS:
+test discarding edits
+
+CHECK SCENARIO MENU MESSAGE BOXES:
+tests save, cancel and discard dirty scenario
+
+CHECK MODIFYING FEATURES ON A BASE LAYER
+checks modify feats on a base layer
+
+CHECK MODIFY FEATURES ON  AN EDITING LAYER:
+tests modify feats on an editing layer
+
+CHECK PROJECT MANAGEMENT AND SFTP UPLOAD
+need to write this
+
+TEST EVERY READ/WRITE OCCURANCE IN THE APP WITH THE FILE OPEN
+IN ANOTHER APP, WITH THE FILE NOT EXISTING ETC.
+
+##############################################################
+
+JUST LAYERS:
+Are buttons right on loading?
+Click empty legend:	any problems?
+Load vector: are buttons right?
+Delete vector in legend: does app go back to initial state?
+Load raster: are buttons right?
+Delete raster in legend: does app go back to initial state?
+Load vector again: are buttons right?
+Load raster with the vector: are buttons right?
+Delete the raster: are the buttons right? is the selection right in the legend?
+Load the raster again: are buttons right?
+Load another vector (2 vectors and one raster loaded): are buttons right?
+Load another raster (4 layers loaded): are buttons right?
+Delete a raster: are buttons right?, is selection right in layer panel?
+
+########################################################################################
+
+BASIC SCENARIO MENU CHECK
+Open a scenario" buttons OK? 
+Open a different scenario: buttons OK?
+Make a change to open scenario (i.e. load layer)
+Save scenario
+Open a different scenario: should NOT get message
+Open the previous scenario: Is the added layer there? Buttons OK?
+Add another layer and click "Save Scenario As"
+	save the scenario with the same name
+	are buttons OK"
+Click "New Scenario": should NOT get message
+	are buttons OK?
+Open the previous scenario: is the added layer saved?
+
+########################################################################################
+
+CHECK DLGSCENARIOTYPES AND OPEN EDITING FILES AND BASE LAYER FILES:
+start with new scenario and click edit scenario and choose a scenario type change
+	are the editingLayer and baseLayer names correct and highlighted?
+	Is the color of the features in the base layer correct?
+	are the constraints layers loaded
+	does the console say "WRITE A NEW EDITING LAYER VECTOR FILE"? it should 
+start with the three editing layers open and another layer above them. click "edit scenario" and OK
+	are the editingLayer, baseLayer and constraints layer names correct and highlighted?
+	Is the color of the features in the base layer correct?
+	does the editing layer get moved to the top of the layer list?
+	what is the index of the current layer?
+	try for all editing types
+start with the three editing layers open, base layers open and another layer above them and click edit scenario, 
+	are the editingLayer, base layer and constraints layer names correct and highlighted?
+	Is the color of the features in the base layer correct?
+	does the editLayer and the baseLayer get moved to the top of the layer list?
+	what is the index of the current layer?
+
+	
+########################################################################################
+
+CHECK COPY PASTE
+select a vector, make a selection and click copy: does selection get cleared?  (it should)
+	is select button deactivated (it should be), are buttons right?
+select another vector layer: does anything happen?  (it shouldn't) are buttons right?
+select a raster layer: 	do I get a msgBox? (I should)
+click Add Raster: do I get a msgBox? (I should not), is the layer loaded? (it should be)
+click paste: do I get a message?  I should, are all buttons correct?
+click Add Vector: do I get a msgBox?  (I shouldn't)
+click paste: are the features pasted into the layer?, are the buttons right?
+make a selection, click copy and choose another point vector layer:
+click paste: are the features pasted?
+make a selection, choose another nonpoint vector layer and click paste:
+	do I get a msgBox? (I should)
+select a point layer and click paste: are the features pasted?, are all buttons right?
+make a selection, click copy and remove a layer: do I get msg box? (I should not)
+click the Edit Scenario button: do I get a message box?  I should not
+	is select button deactivated? is selection cleared, is the layer removed?
+make a selection, click copy and remove the layer you are working on:
+	do I get a msgbox?  (I should not)
+make a selection, click copy and click the "toggle edit" button
+	do I get a messagebox?  (I should), choose cancel
+click the edits button again and click discard:	is the copy deleted?
+make a selection, click copy and close the app:	do I get a message?  (I shouldn't )
+click cancel: does the app stay open?, 
+close the app again: click discard,	does the app close properly?
+open a vector layer, make selection and click delete:
+	do I get a message box?  (I should)
+click cancel: is everything OK
+make a selection and click delete: do I get a message box?  (I should)
+	are the features deleted?
+click cancel: is the select tool still on?  (it should be)
+	is the select button still depressed?  (it should be), 	are buttons ok?
+
+########################################################################################
+
+CHECK ADD POINTS (also good for lines and polygons)
+open a point vector layer and click Edit Scenario: does Add Points appear?
+	are selection buttons on? (they shouldn't be except for "Seclect Features")
+	are selection buttons on? (they shouldn't be except for "Seclect Features")
+deselect Edit Scenario: does Add Points dissappear?	are buttons right?
+select Edit Scenario: does Add Points appear? are buttons correct?
+open another vector layer: do I get any messages? (I shouldn't)
+	is Edit Scenario deselected (it should be),	is Add Points deselected (it should be)
+open a a raster layer: do I get any messages? (I shouldn't)
+	are Edit Scenario and add points deselected?, are all other buttons correct?
+select a vector layer, click Edit Scenario and add a point:
+select a different vector layer: do I get a message box?  (I should)
+	click cancel: is selection correct in layer panel?
+	is my added point still there? are all buttons in the proper state?
+select a different vector layer and click discard: are the button states correct?
+	are my edits deleted?
+select a point vector layer, make an edit and select a different vector layer
+	click Yes: are my edits saved? (should get msgbox),	are button states correct?
+open a points layer, add two points and click the select button:
+	are symbols correct
+	is the AddPoints button deselected?
+delete one added point:	do I get a message box?  
+	(I should just get the delete message), are button states correct
+select the second point and deselect it: do I get a message?  I shouldn't
+	are button states correct:
+add another point and select a different vector layer: do I get a message? I should!
+click cancel: does everything stay in the same state? selection correct in the layer menu?
+select a different raster layer: do I get a message?  I should.
+click cancel: does everything stay in the same state, selection correct in the layer menu?
+select a different vector layer and choose discard:	is is the point deleted?
+	is the selection correct in the legend?, 
+	is the add points button and edit button deselected?
+	are the rest of the buttons right for the new layer?
+add a few points, choose a raster layer and choose discard:
+	is the point deleted?, are all the buttons in the right state?
+add a vector layer:	do I get a message?	I should
+choose save: is the point still there?,	is the storage buffer empty?, are the buttons OK?
+add a raster layer:	do I get a message? I should
+click save:	is the storage buffer empty?, are the buttons OK?
+remove a layer:	do I get a message? I should, try cancel, things OK?
+remove a layer:	try discard, things OK
+remove a layer:	try save, things OK?
+close the app: do I get prompted to save?  I should
+click cancel: does the app stay open?
+close the app: click discard, does the app close ok?, any open windows?
+open the app, make a point edit, close the app and choose save:	does the app close ok?
+open the vector layer: is the edit that you saved there?
+Make each of the three point edit types: is there a different symbol for each type?
+
+########################################################################################
+
+CHECK TOOL SELECT
+Add a vector layer and click tocolSelect: are buttons right?
+click clear selelection: do I get msgBox? (I should), are buttons still right?
+click delete selection:	do I get msgBox?, are buttons still right?
+click copy selection: do I get msgBox?, are buttons still right?
+make a selection and click clear selelection: do I get msgBox? (I shouldn't)
+	are buttons still right? is selection cleared? 
+	is select features button deselected? (it shouldn't be)
+open Vector Attribute table, make a selection and click delete selection:
+	do I get msgBox? (I should), are buttons still right?
+	is selection deleted?, did attribute table update?
+	is the select features button deselected? (it should be)
+choose zoom to layer extent from the legend context menu: did the extents update properly?
+make a selection: any messages?  there shouldn't be
+close the app: did you get a message?  you shouldn't, 
+open a vector, make a selection, close the app and click discard, any problems?
+open a vector, make a selection, close the app and click cancel
+	does the app stay open?  it should
+open a vector, make a selection and click Add Raster: are buttons right?
+click the vector layer: are buttons right?, make a selection
+With vector layer selected, delete some layer:
+	are buttons correct for the newly selected layer?
+	try both vector and raster new selections
+Select a vector layer, make a selection and remove some layer:
+	Do I get a msg box? (I shouldn't ),	select cancel, 	is layer remove cancelled?
+	is select button still activated? (it should be), is selection still active? (it should be)
+Make a selection and click all other buttons: do things work properly?
+select a raster and click all other buttons: do things work properly?
+	
+########################################################################################
+
+CHECK SNAPPING OF NEW ROADS
+need to write this
+
+########################################################################################
+
+CHECK SAVE SCENARIO AS:
+1) open the app, save the scenario as s1.  Does the directory get created?, the caps file?
+	click "New Scenario" and reopen.  Is everything correct?
+2) open a new vector file and "save scenario as" with the same name. Click New Scenario
+	reopen the saved scenario.  Are the layers correct?, 
+3) add a all 3 scenario type edits to editing shapefiles, save the scenario as with the same name, 
+	Click "new scenario" then reopen, are the layers correct with edits? are the shapefile in the directory?
+	export the scenario, export it again to check for overwrite problems
+4) save this scenario with a new name 's2'.  Are the editing layers copied? is the export scenario copied?
+5) add a layer, and overwrite the old scenario s1.  are the layers correct?, the editingfiles? the export file?
+	
+
+########################################################################################
+
+
+CHECK SCENARIO IO ERRORS
+Open a scenario.  Any error messages? No is dirty? No
+New scenario.  any messages? No is dirty at end? No
+Open an image as a scenario. Should get error.  is dirty? No
+Open a scenario, add layer and save.  message? No; dirty start?; Yes dirty end? No
+Open the same scenario in Word and save in CAPS.  message Yes.  dirty? No
+Add layer to scenario, close Word, save file.  message? No, dirty start? Yes, dirty end? No
+Save the scenario with another name.  message? No, dirty start? No dirty end? No
+Add a layer, open some scenario in Word, try to save as the file open in Word.
+	message? Yes.  Dirty start? Yes; dirty end? yes
+Close Word.  save as previously open file in Word.  message? NO; dirty start? Yes dirty end? No
+ 
+	
+########################################################################################
+
+CHECK SCENARIO MENU WITH EDITS	
+Load 2 layers, make edit and click on "New Scenario"
+	should get message
+	try cancel, save and cancel file dialog, save
+Reopen saved scenario
+	everything OK? Buttons?, scenario same?
+Load 2 layers, make edit and click on "New Scenario": get message
+	click discard.  Buttons OK?,  	
+Load 2 layers, make edit and click on "Open Scenario":should get message
+	try cancel, save and cancel file dialog, save
+Reopen saved scenario
+	everything OK? Buttons?, scenario same?
+Load 2 layers, make edit and click on "Open Scenario": get message
+	click discard.  Buttons OK?
+Load 2 layers, make edit and click on "Export Scenario": should get message
+	try cancel, save and cancel file dialog, save
+Load 2 layers, make edit and click on "Export Scenario": get message
+	click discard.  Buttons OK?, 	
+Load 2 layers, make edit and click on Exit: should get message
+	try cancel, save and cancel file dialog, save
+Load 2 layers, make edit and click on "Exit": get message
+	click discard.  Buttons OK?
+
+########################################################################################
+
+CHECK DISCARD EDITS (01/31/12)
+make some point edits and save and then make some more point edits, click save scenario, discard and cancel
+	are correct points discarded? is save button OK, are symbols ok?
+make some point edits and save and then make some more point edits, make another layer the active layer,
+click save scenario, discard and cancel
+	are correct points discarded? is save button OK?	
+delete base layer features and save, then delete some more, click open scenario, discard and cancel
+	are correct points discarded? is save button OK?
+delete base layer features and save, then delete some more, make another layer the active layer, click open scenario, discard and cancel
+	are correct points discarded? is save button OK?
+modify base layer features and save, then modify some more, click save scenario as, discard and cancel
+	are corre
+	ct points discarded? is save button OK?
+copy some points from a "paste points" layer and paste into the editing layer and save, copy some more
+click edit scenario, discard and cancel
+	are correct points discarded? is save button OK?
+click edit scenario, discard and cancel
+	are correct points discarded? is save button OK?	
+delete a point on the paste points layer.  is everything OK?
+
+make some line edits and save and then make some more line edits, click save scenario as, discard and save with a new name.
+	are correct lines discarded? is save button OK?
+delete a line on the paste lines layer.  is everything OK?	
+copy some lines from a "paste lines" layer and paste into the editing layer and save, copy some more
+click close app, discard.  Reopen app.
+	are correct lines discarded? is save button OK?
+
+make some polygon edits and save and then make some more polygon edits and discard.
+	are correct polygons discarded? is save button OK?
+copy some points from a "paste polygons" layer and paste into the editing layer and save, copy some more and discard
+	are correct polygons discarded? is save button OK?
+delete a polygon on the paste points layer.  is everything OK?
+
+
+########################################################################################
+
+CHECK SCENARIO MENU MESSAGE BOXES 
+Load 2 layers and click on "New Scenario": should get message
+	try cancel, save and cancel file dialog, save
+Reopen saved scenario: everything OK? Buttons?, scenario same?
+Load 2 layers and click on "New Scenario": should get message
+	click discard.  Buttons OK?, 
+Load 2 layers and click on "Open Scenario": should get message
+	try cancel, save and cancel file dialog, save
+Reopen saved scenario: everything OK? Buttons?, scenario same?
+Load 2 layers and click on "Open Scenario": should get message
+	click discard.  Buttons OK?
+Load 2 layers and click on "Export Scenario": should get message
+	try cancel, save and cancel file dialog, save
+Load 2 layers and click on "Export Scenario": should get message
+	click discard.  Buttons OK?, 	
+Load 2 layers and click on Exit: should get message
+	try cancel, save and cancel file dialog, save
+Load 2 layers and click on "Exit": get message
+	click discard.  Buttons OK?
+	
+########################################################################################
+
+CHECK MODIFYING FEATURES ON A BASE LAYER
+
+select 4 points on a points base layer, click modify, modify the points, 
+	are the features modified?, are all buttons correct, are the symbols correct?
+select 4 points on a points base layer, click modify, modify 3 points, click cancel, click yes	
+	are the features modified (they shouldn't be)?, are all buttons correct, symbols correct?
+select 4 points on a points base layer, click modify, modify 3 points, click cancel, click no and continue
+	are the features modified (they should be)?, are all buttons correct?
+	
+########################################################################################
+
+CHECK MODIFY FEATURES ON  AN EDITING LAYER:
+
+open a points layer, make 6 edits, select 3 edits and click modify features (clear console), modify the features.
+	are the features modified?, are all buttons correct, are the symbols correct?
+do the same for lines and polygons.
+
+select 3 points edits, click modify, modify two features(clear console), cancel and select "yes"
+	are 2 of the three modified, are symbols correct (they should be)?, are all buttons correct?
+select 3 points edits, click modify, modify two features, cancel and select no then finish modifying
+	are the original features changed (they shouldn't be), are all buttons correct, are symbols correct?
+open the points editing layer in QGIS and modify edits.  What happens? close QGIS
+open the points dbf file in open office.  modify edits.  What happens?  If I get a warning dialog,
+	are the features unchanged on the editing layer?, are buttons correct?
+
+########################################################################################	
+	
+CHECK PROJECT MANAGEMENT AND SFTP UPLOAD
+need to write this	
+	
+DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

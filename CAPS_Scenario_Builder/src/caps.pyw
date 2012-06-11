@@ -47,7 +47,7 @@ from qgis.gui import *
 from Main.mainwindow import MainWindow
 
 # Version variable in case the app changes later
-__version__ = "1.0.0"
+__version__ = "0.9"
 
 # Path to local QGIS install
 #qgis_prefix = "C:\\Program Files\\Quantum GIS Copiapo\\apps\\qgis"

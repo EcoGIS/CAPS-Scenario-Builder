@@ -1,0 +1,25 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$class_main_1_1mainwindow_1_1_main_window.html#a5b68a686510c56b0a884e6b3dabdf6f1" title="Main.mainwindow.MainWindow.getAttsForPastedOrModifiedFeats" alt="" coords="435,5,837,32"/>
+<area shape="rect" id="node5" href="$class_main_1_1mainwindow_1_1_main_window.html#a031297c26945e960a6626d78277dac68" title="Main.mainwindow.MainWindow.getLayerFromName" alt="" coords="2013,157,2333,184"/>
+<area shape="rect" id="node9" href="$class_main_1_1mainwindow_1_1_main_window.html#ad3680b4420cf0d420f21ab20f84a1ebb" title="Main.mainwindow.MainWindow.pasteEmptyFeatures" alt="" coords="473,132,799,159"/>
+<area shape="rect" id="node14" href="$class_main_1_1mainwindow_1_1_main_window.html#ad9f1ad24652b2505a54d751181887d5b" title="Main.mainwindow.MainWindow.setBaseLayerActive" alt="" coords="475,259,797,285"/>
+<area shape="rect" id="node16" href="$class_main_1_1mainwindow_1_1_main_window.html#abb85b007a1f3985c6461917878381a7e" title="Main.mainwindow.MainWindow.setPasteModifySuccess" alt="" coords="463,208,809,235"/>
+<area shape="rect" id="node7" href="$class_main_1_1mainwindow_1_1_main_window.html#ad9a1af5f8ca5f11fc63357ff1a7c38c1" title="Main.mainwindow.MainWindow.getCurrentLayers" alt="" coords="3242,183,3547,209"/>
+<area shape="rect" id="node11" href="$class_main_1_1mainwindow_1_1_main_window.html#a4299826871cdfd34d450507844797579" title="Main.mainwindow.MainWindow.getEditFields" alt="" coords="920,107,1203,133"/>
+<area shape="rect" id="node19" href="$class_main_1_1mainwindow_1_1_main_window.html#afcbc6983acc4cf451737a9d6bfc8d5c1" title="Main.mainwindow.MainWindow.setPasteModifyDone" alt="" coords="898,335,1225,361"/>
+<area shape="rect" id="node21" href="$class_main_1_1mainwindow_1_1_main_window.html#a339ffa40aeab8394121dce65227788d8" title="Main.mainwindow.MainWindow.openVectorAttributeTable" alt="" coords="885,284,1237,311"/>
+<area shape="rect" id="node23" href="$class_main_1_1mainwindow_1_1_main_window.html#aaa3b80540a73fcf6e73128e069ba99e5" title="Main.mainwindow.MainWindow.appStateChanged" alt="" coords="1285,309,1595,336"/>
+<area shape="rect" id="node25" href="$class_main_1_1mainwindow_1_1_main_window.html#adc1327fe8b3d5412fec271376828011f" title="Main.mainwindow.MainWindow.checkEditsState" alt="" coords="1653,411,1955,437"/>
+<area shape="rect" id="node30" href="$class_main_1_1mainwindow_1_1_main_window.html#a561ac3756d474ceb8dc22396c1d063c8" title="Main.mainwindow.MainWindow.checkScenarioState" alt="" coords="1643,259,1965,285"/>
+<area shape="rect" id="node28" href="$class_main_1_1mainwindow_1_1_main_window.html#a78d85812fc8e6e8ee4619fb0c0769847" title="Main.mainwindow.MainWindow.saveEdits" alt="" coords="2042,411,2305,437"/>
+<area shape="rect" id="node32" href="$class_main_1_1mainwindow_1_1_main_window.html#ab9e2d19916871290ef5a25332ca6750c" title="Main.mainwindow.MainWindow.getCurrentLayersNames" alt="" coords="2381,183,2728,209"/>
+<area shape="rect" id="node36" href="$class_main_1_1mainwindow_1_1_main_window.html#a02314ab862338c7904e7fe94a3004280" title="Main.mainwindow.MainWindow.saveScenario" alt="" coords="2032,259,2315,285"/>
+<area shape="rect" id="node46" href="$class_main_1_1mainwindow_1_1_main_window.html#ae327eb45dea2d9553cb912805fcc7a59" title="Main.mainwindow.MainWindow.saveScenarioAs" alt="" coords="2405,335,2704,361"/>
+<area shape="rect" id="node39" href="$class_main_1_1mainwindow_1_1_main_window.html#ae3b6fee592899c29167c85a9ee6b5aa9" title="Main.mainwindow.MainWindow.makeScenarioDirectory" alt="" coords="3224,385,3565,412"/>
+<area shape="rect" id="node41" href="$class_main_1_1mainwindow_1_1_main_window.html#ab8a20710f2b31fbc43aa4497ba52be14" title="Main.mainwindow.MainWindow.setScenarioSaved" alt="" coords="2806,233,3117,260"/>
+<area shape="rect" id="node44" href="$class_main_1_1mainwindow_1_1_main_window.html#a2d2773bad47362b8d0a7cc00950b30bc" title="Main.mainwindow.MainWindow.getOriginalScenarioLayersNames" alt="" coords="3195,233,3594,260"/>
+<area shape="rect" id="node49" href="$class_main_1_1mainwindow_1_1_main_window.html#a43d3e19b13236bd03c30d1584217184f" title="Main.mainwindow.MainWindow.checkScenarioDirectoryPath" alt="" coords="2776,335,3147,361"/>
+<area shape="rect" id="node54" href="$class_main_1_1mainwindow_1_1_main_window.html#a734e4275c6972d08b6119d13dfe81cc5" title="Main.mainwindow.MainWindow.copyScenario" alt="" coords="2819,436,3104,463"/>
+<area shape="rect" id="node57" href="$class_main_1_1mainwindow_1_1_main_window.html#a858652cf645f5f97dcdbfb404bb17fd6" title="Main.mainwindow.MainWindow.openVectorLayer" alt="" coords="3243,436,3547,463"/>
+<area shape="rect" id="node59" href="$class_main_1_1mainwindow_1_1_main_window.html#adb5817eab583d47b7a57a1f8a513431f" title="Main.mainwindow.MainWindow.checkLayerLoadError" alt="" coords="3643,436,3973,463"/>
+</map>
