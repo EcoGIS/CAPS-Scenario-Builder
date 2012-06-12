@@ -52,7 +52,8 @@ class LegendItem(QtGui.QTreeWidgetItem):
         
         # debugging
         print "Main.legend.LegendItem() class"
-        print 'Main.legend: The system path is', sys.path
+        print 'Main.legend.LegendItem(): The system path is', sys.path
+        print 'Main.legend.LegendItem.layerName before is: ', self.layerName
         
         self.legend = parent
         self.canvasLayer = canvasLayer
@@ -61,6 +62,7 @@ class LegendItem(QtGui.QTreeWidgetItem):
         # This ensures that we never ask Python to slice a QString, which produces a type error.
         self.layerName = unicode(self.canvasLayer.layer().name())
         self.canvasLayer.layer().setLayerName(self.legend.normalizeLayerName(self.layerName))
+        self.layerName = unicode(self.canvasLayer.layer().name())
         self.setText(0, self.layerName)
         self.isVect = (self.canvasLayer.layer().type() == 0) # 0: Vector, 1: Raster
         self.layerId = self.canvasLayer.layer().id()
@@ -900,13 +902,19 @@ the file system. All changes to these files will be lost. Do you want to delete 
 
     def normalizeLayerName(self, name):
         """ Create an alias to put in the legend and avoid to repeat names """
+        # debugging
+        print 'Main.legend.Legend.normalizeLayerName()'
         # Remove the extension
         if len(name) > 4:
             if name[-4] == '.': name = name[:-4]
+
         return self.createUniqueName(name)
 
     def createUniqueName(self, name):
         """ Avoid to repeat layers names """
+        # debugging
+        print 'Main.legend.Legend.createUniqueName()'
+        
         import re
         name_validation = re.compile("\s\(\d+\)$", re.UNICODE) # Strings like " (1)"
 

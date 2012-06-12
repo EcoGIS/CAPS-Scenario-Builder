@@ -1,6 +1,4 @@
 <map id="G" name="G">
-<area shape="rect" id="node3" href="$class_main_1_1legend_1_1_legend.html#ac3e1bd7fb7999adee0f1e1dcbe31a99c" title="Main.legend.Legend.checkLayerOrderUpdate" alt="" coords="264,5,547,32"/>
-<area shape="rect" id="node7" href="$class_main_1_1legend_1_1_legend.html#a8d4d921da2d372e84665c9b24c400990" title="Main.legend.Legend.storeInitialPosition" alt="" coords="281,56,529,83"/>
-<area shape="rect" id="node5" href="$class_main_1_1legend_1_1_legend.html#ad51cf320373066c8ce7656f902b5bfd2" title="Main.legend.Legend.mouseReleaseEvent" alt="" coords="595,5,855,32"/>
-<area shape="rect" id="node9" href="$class_main_1_1legend_1_1_legend.html#a32bbbd8a359c96ce07febe18d3f0d5d9" title="Main.legend.Legend.mouseMoveEvent" alt="" coords="604,56,847,83"/>
+<area shape="rect" id="node3" href="$class_main_1_1legend_1_1_legend.html#a8d4d921da2d372e84665c9b24c400990" title="Main.legend.Legend.storeInitialPosition" alt="" coords="264,5,512,32"/>
+<area shape="rect" id="node5" href="$class_main_1_1legend_1_1_legend.html#a32bbbd8a359c96ce07febe18d3f0d5d9" title="Main.legend.Legend.mouseMoveEvent" alt="" coords="560,5,803,32"/>
 </map>

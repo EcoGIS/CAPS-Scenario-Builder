@@ -63,6 +63,9 @@ class AddLinesPolygons(QgsMapTool):
    
     def canvasPressEvent(self, event):
         ''' Record the mouse down event '''
+        # debugging
+        print"Tools.addlinespolygons.AddLinesPolygons.canvasPressEvent()"
+        
         # Set the active vector layer. Note that this method cannot be called unless the
         # currently active layer is the correct editing layer for the scenario edit type.
         self.activeVLayer = self.mainwindow.activeVLayer
@@ -76,6 +79,10 @@ class AddLinesPolygons(QgsMapTool):
         self.down = True # starts the drawing process
 
     def canvasReleaseEvent(self, event):
+        ''' Handle the mouse release event '''
+        # debugging
+        print"Tools.addlinespolygons.AddLinesPolygons.canvasReleaseEvent()"
+
         if self.down == True:
             if (self.started == False) and (event.button()== QtCore.Qt.RightButton):
                 # We have a right button but have not started a poly... just return
@@ -122,6 +129,10 @@ class AddLinesPolygons(QgsMapTool):
                     self.getNewAttributes()
                
     def canvasMoveEvent(self,event):
+        ''' Handle the mouse move event '''
+        # debugging
+        print"Tools.addlinespolygons.AddLinesPolygons.canvasMoveEvent()"
+
         if self.started == True:    
             transform = self.canvas.getCoordinateTransform()
             qgsPoint = transform.toMapCoordinates(event.pos().x(), event.pos().y())
@@ -216,7 +227,8 @@ class AddLinesPolygons(QgsMapTool):
     ''' Testing '''
 #**************************************************************
 
-    def printFeatures(self):       
+    def printFeatures(self):
+        ''' A method for testing. '''
         # debugging
         print "Tools.addlinespolygons.AddLinesPolygons().printFeatures: Testing"
         #self.provider.reloadData()

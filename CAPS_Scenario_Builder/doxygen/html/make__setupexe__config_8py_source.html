@@ -44,6 +44,7 @@
       <li><a href="namespaces.html"><span>Packages</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
+      <li><a href="dirs.html"><span>Directories</span></a></li>
     </ul>
   </div>
   <div id="navrow2" class="tabs2">
@@ -51,10 +52,15 @@
       <li><a href="files.html"><span>File&#160;List</span></a></li>
     </ul>
   </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_296f7ef44356f33aabecfab941c14354.html">src</a>      </li>
+    </ul>
+  </div>
 </div>
 <div class="header">
   <div class="headertitle">
-<div class="title">C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/make_setupexe_config.py</div>  </div>
+<div class="title">make_setupexe_config.py</div>  </div>
 </div><!--header-->
 <div class="contents">
 <a href="make__setupexe__config_8py.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a><a class="code" href="namespacemake__setupexe__config.html">00001</a> <span class="comment"># -*- coding:utf-8 -*-</span>
@@ -101,288 +107,289 @@
 <a name="l00042"></a>00042 <span class="stringliteral">    </span>
 <a name="l00043"></a>00043 <span class="stringliteral">    Run this file from a command line using &#39;python make_setupexe_config.py py2exe&#39;</span>
 <a name="l00044"></a>00044 <span class="stringliteral">    See makesetupexe for more details.</span>
-<a name="l00045"></a>00045 <span class="stringliteral">    </span>
+<a name="l00045"></a>00045 <span class="stringliteral"></span>
 <a name="l00046"></a>00046 <span class="stringliteral">    This script assumes the directory c:\beta but it&#39;s easy to change (only 2 places).</span>
-<a name="l00047"></a>00047 <span class="stringliteral">    </span>
-<a name="l00048"></a>00048 <span class="stringliteral">    Also note that I have edited Z:\Program Files\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\py2exe\boot_common.py</span>
+<a name="l00047"></a>00047 <span class="stringliteral"></span>
+<a name="l00048"></a>00048 <span class="stringliteral">    Also note that I have edited C:\Program Files\Quantum GIS Wroclaw\apps\Python25\Lib\site-packages\py2exe\boot_common.py</span>
 <a name="l00049"></a>00049 <span class="stringliteral">    to make py2exe write the startup logfile to &#39;log\&#39; because the installer gives simple &#39;users&#39; permissions to write to that</span>
 <a name="l00050"></a>00050 <span class="stringliteral">    directory.</span>
-<a name="l00051"></a>00051 <span class="stringliteral">&#39;&#39;&#39;</span>
-<a name="l00052"></a>00052 
-<a name="l00053"></a>00053 <span class="keyword">from</span> distutils.core <span class="keyword">import</span> setup
-<a name="l00054"></a>00054 <span class="keyword">import</span> py2exe
-<a name="l00055"></a>00055 <span class="keyword">import</span> os
-<a name="l00056"></a>00056 <span class="keyword">import</span> zipfile
-<a name="l00057"></a>00057 
-<a name="l00058"></a>00058 <span class="comment"># debugging</span>
-<a name="l00059"></a>00059 <span class="comment">#def df(data_files):</span>
-<a name="l00060"></a>00060     <span class="comment">#print &#39;data_files are: &#39;, data_files</span>
-<a name="l00061"></a>00061 
-<a name="l00062"></a>00062 <span class="comment"># Build tree of data_files of the form [dir, [py2exe data_files]], which is what distutils.setup() requires.</span>
-<a name="l00063"></a>00063 <span class="comment"># The parameter &quot;src&quot; is the full path to the data files, and &quot;base&quot; is the part of the path that will</span>
-<a name="l00064"></a>00064 <span class="comment"># be stripped off to leave only the directory names you want to see in the program installation directory.</span>
-<a name="l00065"></a>00065 <span class="comment"># Modified from http://osdir.com/ml/python.py2exe/2006-02/msg00085.html and OpenOceanMap</span>
-<a name="l00066"></a><a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">00066</a> <span class="keyword">def </span><a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(base, src):
-<a name="l00067"></a>00067     <span class="comment">#path = os.path.basename(src)</span>
-<a name="l00068"></a>00068     list = [(root, map(<span class="keyword">lambda</span> f: os.path.join(root, f), files)) <span class="keywordflow">for</span> (root, dirs, files) <span class="keywordflow">in</span> os.walk(os.path.normpath(src))]
-<a name="l00069"></a>00069     new_list = []
-<a name="l00070"></a>00070     <span class="keywordflow">for</span> (root, files) <span class="keywordflow">in</span> list:
-<a name="l00071"></a>00071         <span class="comment">#print &quot;%s , %s&quot; % (root,files)</span>
-<a name="l00072"></a>00072         <span class="comment">#print &quot;%s&quot; % root</span>
-<a name="l00073"></a>00073         <span class="comment">#if len(files) &gt; 0: #and file.count(&#39;.gitignore&#39;) == 0:</span>
-<a name="l00074"></a>00074         new_files = []
-<a name="l00075"></a>00075         <span class="keywordflow">for</span> file <span class="keywordflow">in</span> files:
-<a name="l00076"></a>00076             <span class="keywordflow">if</span> file.count(<span class="stringliteral">&#39;.gitignore&#39;</span>) == 0 <span class="keywordflow">and</span> file.count(<span class="stringliteral">&#39;test&#39;</span>) == 0:
-<a name="l00077"></a>00077                 new_files.append(file)    
-<a name="l00078"></a>00078         root = root[len(base):]
-<a name="l00079"></a>00079         new_list.append((root, new_files))
-<a name="l00080"></a>00080     
-<a name="l00081"></a>00081     <span class="comment">#print&#39;new_list is: &#39;</span>
-<a name="l00082"></a>00082     <span class="comment">#print new_list</span>
-<a name="l00083"></a>00083     
-<a name="l00084"></a>00084     <span class="keywordflow">return</span> new_list
-<a name="l00085"></a>00085     
-<a name="l00086"></a>00086 <span class="comment">################################################################</span>
-<a name="l00087"></a>00087 
-<a name="l00088"></a><a class="code" href="classmake__setupexe__config_1_1_inno_script.html">00088</a> <span class="keyword">class </span><a class="code" href="classmake__setupexe__config_1_1_inno_script.html">InnoScript</a>:
-<a name="l00089"></a><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#aac1e93ddbb430396d8a0fbc622d10c82">00089</a>     <span class="keyword">def </span><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a6f0e3fc1df0333121022e3b18c9f5ce5">__init__</a>(self,
-<a name="l00090"></a>00090                  name,
-<a name="l00091"></a>00091                  lib_dir,
-<a name="l00092"></a>00092                  dist_dir,
-<a name="l00093"></a>00093                  windows_exe_files = [],
-<a name="l00094"></a>00094                  lib_files = [],
-<a name="l00095"></a>00095                  version = 0.9):
-<a name="l00096"></a>00096         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a5bb244ba2edae38c809ac7d8418a10d2">lib_dir</a> = lib_dir
-<a name="l00097"></a>00097         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a58be0bf5b5f51d20a0fda2ff5bb25e69">dist_dir</a> = dist_dir
-<a name="l00098"></a>00098         <span class="keywordflow">if</span> <span class="keywordflow">not</span> self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a58be0bf5b5f51d20a0fda2ff5bb25e69">dist_dir</a>[-1] <span class="keywordflow">in</span> <span class="stringliteral">&quot;\\/&quot;</span>:
-<a name="l00099"></a><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#adf11066d406ccf51a489b78a318b8c06">00099</a>             self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a58be0bf5b5f51d20a0fda2ff5bb25e69">dist_dir</a> += <span class="stringliteral">&quot;\\&quot;</span>
-<a name="l00100"></a>00100         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a> = name
-<a name="l00101"></a>00101         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#aac1e93ddbb430396d8a0fbc622d10c82">version</a> = version
-<a name="l00102"></a>00102         
-<a name="l00103"></a>00103         <span class="comment"># debugging</span>
-<a name="l00104"></a>00104         <span class="keywordflow">print</span> <span class="stringliteral">&#39;self.dist_dir is: &#39;</span>, self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a58be0bf5b5f51d20a0fda2ff5bb25e69">dist_dir</a>
-<a name="l00105"></a>00105         <span class="keywordflow">print</span> <span class="stringliteral">&#39;windows_exe_files are: &#39;</span>
-<a name="l00106"></a>00106         <span class="keywordflow">for</span> path <span class="keywordflow">in</span> windows_exe_files: <span class="keywordflow">print</span> path
-<a name="l00107"></a>00107         <span class="keywordflow">print</span> <span class="stringliteral">&#39;lib_files are: &#39;</span>
-<a name="l00108"></a>00108         <span class="keywordflow">for</span> path <span class="keywordflow">in</span> lib_files: <span class="keywordflow">print</span> path
-<a name="l00109"></a>00109 
-<a name="l00110"></a>00110         <span class="stringliteral">&#39;&#39;&#39;</span>
-<a name="l00111"></a>00111 <span class="stringliteral">         To expose config.py, we have to remove config.pyo from &quot;lib\shardlib.&quot;  </span>
-<a name="l00112"></a>00112 <span class="stringliteral">         shardlib is a zipfile of all the modules needed for the app.  We also </span>
-<a name="l00113"></a>00113 <span class="stringliteral">         need to remove C:/beta/build/bdist.win32/winexe/collect-2.5/config.pyo or</span>
-<a name="l00114"></a>00114 <span class="stringliteral">         py2exe will REWRITE config.pyo to shardlib when running the inno installer!!</span>
-<a name="l00115"></a>00115 <span class="stringliteral">         </span>
-<a name="l00116"></a>00116 <span class="stringliteral">         I tried to import config.py from C:\Program Files\CAPS Scenario Builder, but it seems</span>
-<a name="l00117"></a>00117 <span class="stringliteral">         there is no way to get caps.exe to find it in that location.  So, I put it in shardlib, where</span>
-<a name="l00118"></a>00118 <span class="stringliteral">         it does get imported and can be editied.</span>
-<a name="l00119"></a>00119 <span class="stringliteral"></span>
-<a name="l00120"></a>00120 <span class="stringliteral">        &#39;&#39;&#39;</span>
-<a name="l00121"></a>00121         <span class="comment"># get the path to the shardlib zip archive from the lib_files list</span>
-<a name="l00122"></a>00122         <span class="keywordflow">for</span> path <span class="keywordflow">in</span> lib_files:
-<a name="l00123"></a>00123             <span class="keywordflow">if</span> path.endswith(<span class="stringliteral">&#39;shardlib&#39;</span>):
-<a name="l00124"></a>00124                 shardlibzip = path
-<a name="l00125"></a>00125                 <span class="keywordflow">break</span>
-<a name="l00126"></a>00126         <span class="comment">#debugging</span>
-<a name="l00127"></a>00127         <span class="keywordflow">print</span> <span class="stringliteral">&#39;shardlibzip path is:&#39;</span>, shardlibzip
-<a name="l00128"></a>00128 
-<a name="l00129"></a>00129         <span class="comment"># open the archive from the dist/lib directory where py2exe has written it.</span>
-<a name="l00130"></a>00130         <span class="keywordflow">try</span>:
-<a name="l00131"></a>00131             zin = zipfile.ZipFile(shardlibzip, <span class="stringliteral">&#39;</span><span class="stringliteral">r&#39;)</span>
-<a name="l00132"></a>00132 <span class="stringliteral">        </span><span class="keywordflow">except</span> (IOError, OSError), e:
-<a name="l00133"></a>00133             <span class="keywordflow">print</span> <span class="stringliteral">&#39;zin open error&#39;</span>, e
-<a name="l00134"></a>00134         <span class="comment"># write the new zip file as temp_shardlib to the dist/lib directory</span>
-<a name="l00135"></a>00135         head, tail = os.path.split(shardlibzip)
-<a name="l00136"></a>00136         temp_shardlib = os.path.join(head, <span class="stringliteral">&#39;temp_shardlib&#39;</span>)
-<a name="l00137"></a>00137         
-<a name="l00138"></a>00138         <span class="comment"># debugging</span>
-<a name="l00139"></a>00139         <span class="keywordflow">print</span> <span class="stringliteral">&#39;temp_shardlib is: &#39;</span>, temp_shardlib
-<a name="l00140"></a>00140         
-<a name="l00141"></a>00141         <span class="keywordflow">try</span>:
-<a name="l00142"></a>00142             zout = zipfile.ZipFile(temp_shardlib, <span class="stringliteral">&#39;w&#39;</span>)
-<a name="l00143"></a>00143             <span class="keywordflow">for</span> item <span class="keywordflow">in</span> zin.infolist():
-<a name="l00144"></a>00144                 buffer = zin.read(item.filename)
-<a name="l00145"></a>00145                 <span class="keywordflow">if</span> (item.filename != <span class="stringliteral">&#39;config.pyo&#39;</span>):
-<a name="l00146"></a>00146                     zout.writestr(item, buffer)
-<a name="l00147"></a>00147             <span class="comment"># now write config.py to the zip</span>
-<a name="l00148"></a>00148             zout.write(<span class="stringliteral">&#39;C:/beta/config.py&#39;</span>, <span class="stringliteral">&#39;config.py&#39;</span>)
-<a name="l00149"></a>00149         <span class="keywordflow">except</span> (IOError, OSError), e:
-<a name="l00150"></a>00150             <span class="keywordflow">print</span> <span class="stringliteral">&#39;zout write error&#39;</span>, e
-<a name="l00151"></a>00151         
-<a name="l00152"></a>00152         zout.close()
-<a name="l00153"></a>00153         zin.close()
-<a name="l00154"></a>00154 
-<a name="l00155"></a>00155         <span class="comment"># Now rename the temp file as the original file.  Note that this deletes the original file.</span>
-<a name="l00156"></a>00156         <span class="keywordflow">try</span>:
-<a name="l00157"></a>00157             os.remove(shardlibzip)
-<a name="l00158"></a>00158             <span class="comment"># A config.pyo from CAPS is also found here, and is somehow inserted into shardlib when setup.exe is run!</span>
-<a name="l00159"></a>00159             os.remove(<span class="stringliteral">&#39;C:/beta/build/bdist.win32/winexe/collect-2.5/config.pyo&#39;</span>)
-<a name="l00160"></a>00160             os.rename(temp_shardlib, shardlibzip)
-<a name="l00161"></a>00161         <span class="keywordflow">except</span> (IOError, OSError), e:
-<a name="l00162"></a>00162             <span class="keywordflow">print</span> <span class="stringliteral">&#39;rename error&#39;</span>, e
-<a name="l00163"></a>00163 
-<a name="l00164"></a>00164         <span class="comment"># This eliminates the &quot;dist&quot; from the paths for innosetup, since the innosetup &#39;.iss&#39; file is in &quot;dist/&quot;</span>
-<a name="l00165"></a>00165         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#adf11066d406ccf51a489b78a318b8c06">windows_exe_files</a> = [self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a78bf8849359661f72b569d1137ac190c">chop</a>(p) <span class="keywordflow">for</span> p <span class="keywordflow">in</span> windows_exe_files]
-<a name="l00166"></a>00166         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#aae09971d5dbbadec6a3fbceb7a03e8c8">lib_files</a> = [self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a78bf8849359661f72b569d1137ac190c">chop</a>(p) <span class="keywordflow">for</span> p <span class="keywordflow">in</span> lib_files]
-<a name="l00167"></a>00167 
-<a name="l00168"></a><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a78bf8849359661f72b569d1137ac190c">00168</a>     <span class="keyword">def </span><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a78bf8849359661f72b569d1137ac190c">chop</a>(self, pathname):
-<a name="l00169"></a>00169         <span class="keywordflow">print</span> <span class="stringliteral">&#39;pathname is: &#39;</span>, pathname
-<a name="l00170"></a>00170         <span class="keyword">assert</span> pathname.startswith(self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a58be0bf5b5f51d20a0fda2ff5bb25e69">dist_dir</a>)
-<a name="l00171"></a>00171         <span class="keywordflow">return</span> pathname[len(self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a58be0bf5b5f51d20a0fda2ff5bb25e69">dist_dir</a>):]
-<a name="l00172"></a>00172     
-<a name="l00173"></a><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a49302378b14f563d487830f5f816b61e">00173</a>     <span class="keyword">def </span><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a4e9d1d7dfbbbf321f3d8084ac4c20652">create</a>(self, pathname=&quot;dist\\CAPSScenarioBuilder.iss&quot;):
-<a name="l00174"></a>00174         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a49302378b14f563d487830f5f816b61e">pathname</a> = pathname
-<a name="l00175"></a>00175         rootPath = <span class="stringliteral">&quot;Z:\egit_repositories\CAPS-Scenario-Builder\CAPS_Scenario_Builder\src&quot;</span>
-<a name="l00176"></a>00176         ofi = self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a6403f856fd5f885dff1cf59b88341388">file</a> = open(pathname, <span class="stringliteral">&quot;w&quot;</span>)
-<a name="l00177"></a>00177         
-<a name="l00178"></a>00178         <span class="comment"># The &#39;&gt;&gt;&#39; tells python to print to the file object &#39;ofi&#39;</span>
-<a name="l00179"></a>00179         <span class="comment"># When an &#39;r&#39; or &#39;R&#39; prefix is present, a character following a backslash is included in the string without change, </span>
-<a name="l00180"></a>00180         <span class="comment"># and all backslashes are left in the string</span>
-<a name="l00181"></a>00181         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">&quot;; WARNING: This script has been created by py2exe. Changes to this script&quot;</span>
-<a name="l00182"></a>00182         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">&quot;; will be overwritten the next time py2exe is run!&quot;</span>
-<a name="l00183"></a>00183         <span class="keywordflow">print</span> &gt;&gt; ofi
-<a name="l00184"></a>00184         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;[Setup]&quot;</span>
-<a name="l00185"></a>00185         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;AppName=%s&quot;</span> % self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>
-<a name="l00186"></a>00186         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;AppVerName=%s %s&quot;</span> % (self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>, self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#aac1e93ddbb430396d8a0fbc622d10c82">version</a>)
-<a name="l00187"></a>00187         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;DefaultDirName={pf}\%s&quot;</span> % self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>
-<a name="l00188"></a>00188         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;DefaultGroupName=%s&quot;</span> % self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>
-<a name="l00189"></a>00189         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoVersion=%s&quot;</span> % self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#aac1e93ddbb430396d8a0fbc622d10c82">version</a>
-<a name="l00190"></a>00190         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoCompany=University of Massachusetts: CAPS&quot;</span>
-<a name="l00191"></a>00191         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoDescription=CAPS: Conservation Assessment and Prioritization System&quot;</span>
-<a name="l00192"></a>00192         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoCopyright=University of Massachusetts: CAPS&quot;</span>
-<a name="l00193"></a>00193         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;AppCopyright=Daystar Computing: Robert English&quot;</span>
-<a name="l00194"></a>00194         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;InfoAfterFile=&quot;</span> + rootPath + <span class="stringliteral">r&quot;\README.TXT&quot;</span>
-<a name="l00195"></a>00195         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;LicenseFile=&quot;</span> + rootPath + <span class="stringliteral">r&quot;\LICENSE.TXT&quot;</span>
-<a name="l00196"></a>00196         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;WizardImageBackColor=clBlack&quot;</span>
-<a name="l00197"></a>00197         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;WizardImageFile=&quot;</span> + rootPath + <span class="stringliteral">r&quot;\images\setup_wizard_vert.bmp&quot;</span>
-<a name="l00198"></a>00198         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;WizardSmallImageFile=&quot;</span> + rootPath + <span class="stringliteral">r&quot;\images\setup_wizard_icon.bmp&quot;</span>
-<a name="l00199"></a>00199         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;SetupIconFile=&quot;</span> + rootPath + <span class="stringliteral">r&quot;\setup_program_icon.ico&quot;</span>
-<a name="l00200"></a>00200         <span class="keywordflow">print</span> &gt;&gt; ofi
-<a name="l00201"></a>00201 
-<a name="l00202"></a>00202         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;[Files]&quot;</span>
-<a name="l00203"></a>00203         <span class="keywordflow">for</span> path <span class="keywordflow">in</span> self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#adf11066d406ccf51a489b78a318b8c06">windows_exe_files</a> + self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#aae09971d5dbbadec6a3fbceb7a03e8c8">lib_files</a>:
-<a name="l00204"></a>00204             <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;%s&quot;; DestDir: &quot;{app}\%s&quot;; Flags: ignoreversion&#39;</span> % (path, os.path.dirname(path))
-<a name="l00205"></a>00205         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: lib\QtSvg4.dll; DestDir: {app}\lib; Flags: ignoreversion&#39;</span>
-<a name="l00206"></a>00206         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\README.TXT&quot;; DestDir: &quot;{app}&quot;&#39;</span>
-<a name="l00207"></a>00207         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\copy.txt&quot;; DestDir: &quot;{app}&quot;&#39;</span>
-<a name="l00208"></a>00208         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\RasterCategoryTable.htm&quot;; DestDir: &quot;{app}&quot;&#39;</span>
-<a name="l00209"></a>00209         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\setup_program_icon.ico&quot;; DestDir: &quot;{app}&quot;&#39;</span>
-<a name="l00210"></a>00210         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\CAPS_splash.png&quot;; DestDir: &quot;{app}&quot;&#39;</span>
-<a name="l00211"></a>00211         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\vcredist_2005English_x86.exe&quot;; DestDir: &quot;{app}&quot;&#39;</span>
-<a name="l00212"></a>00212         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\vcredist_2008_x86.exe&quot;; DestDir: &quot;{app}&quot;&#39;</span>
-<a name="l00213"></a>00213         <span class="keywordflow">print</span> &gt;&gt; ofi
-<a name="l00214"></a>00214 
-<a name="l00215"></a>00215         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;[Icons]&quot;</span>
-<a name="l00216"></a>00216         <span class="keywordflow">for</span> path <span class="keywordflow">in</span> self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#adf11066d406ccf51a489b78a318b8c06">windows_exe_files</a>:
-<a name="l00217"></a>00217             <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Name: &quot;{group}\%s&quot;; Filename: &quot;{app}\%s&quot;; WorkingDir: {app}; IconFilename: &quot;{app}\setup_program_icon.ico&quot;&#39;</span> % \
-<a name="l00218"></a>00218                   (self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>, path)
-<a name="l00219"></a>00219         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">&#39;Name: &quot;{group}\Uninstall %s&quot;; Filename: &quot;{uninstallexe}&quot;&#39;</span> % self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>
-<a name="l00220"></a>00220         <span class="keywordflow">print</span> &gt;&gt; ofi
-<a name="l00221"></a>00221           
-<a name="l00222"></a>00222         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;[Dirs]&quot;</span>
-<a name="l00223"></a>00223         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Name: &quot;{app}\Scenarios&quot;; Permissions: users-modify&#39;</span>
-<a name="l00224"></a>00224         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Name: &quot;{app}\Exported Scenarios&quot;; Permissions: users-modify&#39;</span>
-<a name="l00225"></a>00225         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Name: &quot;{app}\Projects&quot;; Permissions: users-modify&#39;</span>
-<a name="l00226"></a>00226         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Name: &quot;{app}\log&quot;; Permissions: users-modify&#39;</span>
-<a name="l00227"></a>00227         <span class="keywordflow">print</span> &gt;&gt; ofi
-<a name="l00228"></a>00228         
-<a name="l00229"></a>00229         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;[Run]&quot;</span>
-<a name="l00230"></a>00230         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Filename: &quot;{app}\vcredist_2005English_x86.exe&quot;; Description: &quot;Install required system files&quot;; Parameters: &quot;/q:a /c:&quot;&quot;VCREDI~3.EXE /q:a /c:&quot;&quot;&quot;&quot;msiexec /i vcredist.msi /qn&quot;&quot;&quot;&quot; &quot;&quot;&quot;; Flags: runascurrentuser&#39;</span>
-<a name="l00231"></a>00231         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Filename: &quot;{app}\vcredist_2008_x86.exe&quot;; Description: &quot;Install required system files&quot;; Parameters: &quot;/q:a /c:&quot;&quot;VCREDI~1.EXE /q:a /c:&quot;&quot;&quot;&quot;msiexec /i vcredist.msi /qn&quot;&quot;&quot;&quot; &quot;&quot;&quot;; Flags: runascurrentuser&#39;</span>
-<a name="l00232"></a>00232         
-<a name="l00233"></a><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a377c90ba3317facc42f67aee1c36b8a4">00233</a>     <span class="keyword">def </span><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a377c90ba3317facc42f67aee1c36b8a4">compile</a>(self):
-<a name="l00234"></a>00234         <span class="keywordflow">try</span>:
-<a name="l00235"></a>00235             <span class="keyword">import</span> ctypes2
-<a name="l00236"></a>00236         <span class="keywordflow">except</span> ImportError:
-<a name="l00237"></a>00237             <span class="keywordflow">try</span>:
-<a name="l00238"></a>00238                 <span class="keyword">import</span> win32api
-<a name="l00239"></a>00239             <span class="keywordflow">except</span> ImportError:
-<a name="l00240"></a>00240                 <span class="keyword">import</span> os
-<a name="l00241"></a>00241                 <span class="keywordflow">print</span> <span class="stringliteral">&#39;Using os but no compiling.&#39;</span>
-<a name="l00242"></a>00242                 os.startfile(self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a49302378b14f563d487830f5f816b61e">pathname</a>)
-<a name="l00243"></a>00243             <span class="keywordflow">else</span>:
-<a name="l00244"></a>00244                 <span class="keywordflow">print</span> <span class="stringliteral">&quot;Ok, using win32api.&quot;</span>
-<a name="l00245"></a>00245                 win32api.ShellExecute(0, <span class="stringliteral">&quot;compile&quot;</span>,
-<a name="l00246"></a>00246                                                 self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a49302378b14f563d487830f5f816b61e">pathname</a>,
-<a name="l00247"></a>00247                                                 <span class="keywordtype">None</span>,
+<a name="l00051"></a>00051 <span class="stringliteral">    </span>
+<a name="l00052"></a>00052 <span class="stringliteral">&#39;&#39;&#39;</span>
+<a name="l00053"></a>00053 
+<a name="l00054"></a>00054 <span class="keyword">from</span> distutils.core <span class="keyword">import</span> setup
+<a name="l00055"></a>00055 <span class="keyword">import</span> py2exe
+<a name="l00056"></a>00056 <span class="keyword">import</span> os
+<a name="l00057"></a>00057 <span class="keyword">import</span> zipfile
+<a name="l00058"></a>00058 
+<a name="l00059"></a>00059 <span class="comment"># debugging</span>
+<a name="l00060"></a>00060 <span class="comment">#def df(data_files):</span>
+<a name="l00061"></a>00061     <span class="comment">#print &#39;data_files are: &#39;, data_files</span>
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 <span class="comment"># Build tree of data_files of the form [dir, [py2exe data_files]], which is what distutils.setup() requires.</span>
+<a name="l00064"></a>00064 <span class="comment"># The parameter &quot;src&quot; is the full path to the data files, and &quot;base&quot; is the part of the path that will</span>
+<a name="l00065"></a>00065 <span class="comment"># be stripped off to leave only the directory names you want to see in the program installation directory.</span>
+<a name="l00066"></a>00066 <span class="comment"># Modified from http://osdir.com/ml/python.py2exe/2006-02/msg00085.html and OpenOceanMap</span>
+<a name="l00067"></a><a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">00067</a> <span class="keyword">def </span><a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(base, src):
+<a name="l00068"></a>00068     <span class="comment">#path = os.path.basename(src)</span>
+<a name="l00069"></a>00069     list = [(root, map(<span class="keyword">lambda</span> f: os.path.join(root, f), files)) <span class="keywordflow">for</span> (root, dirs, files) <span class="keywordflow">in</span> os.walk(os.path.normpath(src))]
+<a name="l00070"></a>00070     new_list = []
+<a name="l00071"></a>00071     <span class="keywordflow">for</span> (root, files) <span class="keywordflow">in</span> list:
+<a name="l00072"></a>00072         <span class="comment">#print &quot;%s , %s&quot; % (root,files)</span>
+<a name="l00073"></a>00073         <span class="comment">#print &quot;%s&quot; % root</span>
+<a name="l00074"></a>00074         <span class="comment">#if len(files) &gt; 0: #and file.count(&#39;.gitignore&#39;) == 0:</span>
+<a name="l00075"></a>00075         new_files = []
+<a name="l00076"></a>00076         <span class="keywordflow">for</span> file <span class="keywordflow">in</span> files:
+<a name="l00077"></a>00077             <span class="keywordflow">if</span> file.count(<span class="stringliteral">&#39;.gitignore&#39;</span>) == 0 <span class="keywordflow">and</span> file.count(<span class="stringliteral">&#39;test&#39;</span>) == 0:
+<a name="l00078"></a>00078                 new_files.append(file)    
+<a name="l00079"></a>00079         root = root[len(base):]
+<a name="l00080"></a>00080         new_list.append((root, new_files))
+<a name="l00081"></a>00081     
+<a name="l00082"></a>00082     <span class="comment">#print&#39;new_list is: &#39;</span>
+<a name="l00083"></a>00083     <span class="comment">#print new_list</span>
+<a name="l00084"></a>00084     
+<a name="l00085"></a>00085     <span class="keywordflow">return</span> new_list
+<a name="l00086"></a>00086     
+<a name="l00087"></a>00087 <span class="comment">################################################################</span>
+<a name="l00088"></a>00088 
+<a name="l00089"></a><a class="code" href="classmake__setupexe__config_1_1_inno_script.html">00089</a> <span class="keyword">class </span><a class="code" href="classmake__setupexe__config_1_1_inno_script.html">InnoScript</a>:
+<a name="l00090"></a><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#aac1e93ddbb430396d8a0fbc622d10c82">00090</a>     <span class="keyword">def </span><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a6f0e3fc1df0333121022e3b18c9f5ce5">__init__</a>(self,
+<a name="l00091"></a>00091                  name,
+<a name="l00092"></a>00092                  lib_dir,
+<a name="l00093"></a>00093                  dist_dir,
+<a name="l00094"></a>00094                  windows_exe_files = [],
+<a name="l00095"></a>00095                  lib_files = [],
+<a name="l00096"></a>00096                  version = 0.9):
+<a name="l00097"></a>00097         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a5bb244ba2edae38c809ac7d8418a10d2">lib_dir</a> = lib_dir
+<a name="l00098"></a>00098         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a58be0bf5b5f51d20a0fda2ff5bb25e69">dist_dir</a> = dist_dir
+<a name="l00099"></a>00099         <span class="keywordflow">if</span> <span class="keywordflow">not</span> self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a58be0bf5b5f51d20a0fda2ff5bb25e69">dist_dir</a>[-1] <span class="keywordflow">in</span> <span class="stringliteral">&quot;\\/&quot;</span>:
+<a name="l00100"></a><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#adf11066d406ccf51a489b78a318b8c06">00100</a>             self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a58be0bf5b5f51d20a0fda2ff5bb25e69">dist_dir</a> += <span class="stringliteral">&quot;\\&quot;</span>
+<a name="l00101"></a>00101         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a> = name
+<a name="l00102"></a>00102         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#aac1e93ddbb430396d8a0fbc622d10c82">version</a> = version
+<a name="l00103"></a>00103         
+<a name="l00104"></a>00104         <span class="comment"># debugging</span>
+<a name="l00105"></a>00105         <span class="keywordflow">print</span> <span class="stringliteral">&#39;self.dist_dir is: &#39;</span>, self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a58be0bf5b5f51d20a0fda2ff5bb25e69">dist_dir</a>
+<a name="l00106"></a>00106         <span class="keywordflow">print</span> <span class="stringliteral">&#39;windows_exe_files are: &#39;</span>
+<a name="l00107"></a>00107         <span class="keywordflow">for</span> path <span class="keywordflow">in</span> windows_exe_files: <span class="keywordflow">print</span> path
+<a name="l00108"></a>00108         <span class="keywordflow">print</span> <span class="stringliteral">&#39;lib_files are: &#39;</span>
+<a name="l00109"></a>00109         <span class="keywordflow">for</span> path <span class="keywordflow">in</span> lib_files: <span class="keywordflow">print</span> path
+<a name="l00110"></a>00110 
+<a name="l00111"></a>00111         <span class="stringliteral">&#39;&#39;&#39;</span>
+<a name="l00112"></a>00112 <span class="stringliteral">         To expose config.py, we have to remove config.pyo from &quot;lib\shardlib.&quot;  </span>
+<a name="l00113"></a>00113 <span class="stringliteral">         shardlib is a zipfile of all the modules needed for the app.  We also </span>
+<a name="l00114"></a>00114 <span class="stringliteral">         need to remove C:/beta/build/bdist.win32/winexe/collect-2.5/config.pyo or</span>
+<a name="l00115"></a>00115 <span class="stringliteral">         py2exe will REWRITE config.pyo to shardlib when running the inno installer!!</span>
+<a name="l00116"></a>00116 <span class="stringliteral">         </span>
+<a name="l00117"></a>00117 <span class="stringliteral">         I tried to import config.py from C:\Program Files\CAPS Scenario Builder, but it seems</span>
+<a name="l00118"></a>00118 <span class="stringliteral">         there is no way to get caps.exe to find it in that location.  So, I put it in shardlib, where</span>
+<a name="l00119"></a>00119 <span class="stringliteral">         it does get imported and can be editied.</span>
+<a name="l00120"></a>00120 <span class="stringliteral"></span>
+<a name="l00121"></a>00121 <span class="stringliteral">        &#39;&#39;&#39;</span>
+<a name="l00122"></a>00122         <span class="comment"># get the path to the shardlib zip archive from the lib_files list</span>
+<a name="l00123"></a>00123         <span class="keywordflow">for</span> path <span class="keywordflow">in</span> lib_files:
+<a name="l00124"></a>00124             <span class="keywordflow">if</span> path.endswith(<span class="stringliteral">&#39;shardlib&#39;</span>):
+<a name="l00125"></a>00125                 shardlibzip = path
+<a name="l00126"></a>00126                 <span class="keywordflow">break</span>
+<a name="l00127"></a>00127         <span class="comment">#debugging</span>
+<a name="l00128"></a>00128         <span class="keywordflow">print</span> <span class="stringliteral">&#39;shardlibzip path is:&#39;</span>, shardlibzip
+<a name="l00129"></a>00129 
+<a name="l00130"></a>00130         <span class="comment"># open the archive from the dist/lib directory where py2exe has written it.</span>
+<a name="l00131"></a>00131         <span class="keywordflow">try</span>:
+<a name="l00132"></a>00132             zin = zipfile.ZipFile(shardlibzip, <span class="stringliteral">&#39;</span><span class="stringliteral">r&#39;)</span>
+<a name="l00133"></a>00133 <span class="stringliteral">        </span><span class="keywordflow">except</span> (IOError, OSError), e:
+<a name="l00134"></a>00134             <span class="keywordflow">print</span> <span class="stringliteral">&#39;zin open error&#39;</span>, e
+<a name="l00135"></a>00135         <span class="comment"># write the new zip file as temp_shardlib to the dist/lib directory</span>
+<a name="l00136"></a>00136         head, tail = os.path.split(shardlibzip)
+<a name="l00137"></a>00137         temp_shardlib = os.path.join(head, <span class="stringliteral">&#39;temp_shardlib&#39;</span>)
+<a name="l00138"></a>00138         
+<a name="l00139"></a>00139         <span class="comment"># debugging</span>
+<a name="l00140"></a>00140         <span class="keywordflow">print</span> <span class="stringliteral">&#39;temp_shardlib is: &#39;</span>, temp_shardlib
+<a name="l00141"></a>00141         
+<a name="l00142"></a>00142         <span class="keywordflow">try</span>:
+<a name="l00143"></a>00143             zout = zipfile.ZipFile(temp_shardlib, <span class="stringliteral">&#39;w&#39;</span>)
+<a name="l00144"></a>00144             <span class="keywordflow">for</span> item <span class="keywordflow">in</span> zin.infolist():
+<a name="l00145"></a>00145                 buffer = zin.read(item.filename)
+<a name="l00146"></a>00146                 <span class="keywordflow">if</span> (item.filename != <span class="stringliteral">&#39;config.pyo&#39;</span>):
+<a name="l00147"></a>00147                     zout.writestr(item, buffer)
+<a name="l00148"></a>00148             <span class="comment"># now write config.py to the zip</span>
+<a name="l00149"></a>00149             zout.write(<span class="stringliteral">&#39;C:/beta/config.py&#39;</span>, <span class="stringliteral">&#39;config.py&#39;</span>)
+<a name="l00150"></a>00150         <span class="keywordflow">except</span> (IOError, OSError), e:
+<a name="l00151"></a>00151             <span class="keywordflow">print</span> <span class="stringliteral">&#39;zout write error&#39;</span>, e
+<a name="l00152"></a>00152         
+<a name="l00153"></a>00153         zout.close()
+<a name="l00154"></a>00154         zin.close()
+<a name="l00155"></a>00155 
+<a name="l00156"></a>00156         <span class="comment"># Now rename the temp file as the original file.  Note that this deletes the original file.</span>
+<a name="l00157"></a>00157         <span class="keywordflow">try</span>:
+<a name="l00158"></a>00158             os.remove(shardlibzip)
+<a name="l00159"></a>00159             <span class="comment"># A config.pyo from CAPS is also found here, and is somehow inserted into shardlib when setup.exe is run!</span>
+<a name="l00160"></a>00160             os.remove(<span class="stringliteral">&#39;C:/beta/build/bdist.win32/winexe/collect-2.5/config.pyo&#39;</span>)
+<a name="l00161"></a>00161             os.rename(temp_shardlib, shardlibzip)
+<a name="l00162"></a>00162         <span class="keywordflow">except</span> (IOError, OSError), e:
+<a name="l00163"></a>00163             <span class="keywordflow">print</span> <span class="stringliteral">&#39;rename error&#39;</span>, e
+<a name="l00164"></a>00164 
+<a name="l00165"></a>00165         <span class="comment"># This eliminates the &quot;dist&quot; from the paths for innosetup, since the innosetup &#39;.iss&#39; file is in &quot;dist/&quot;</span>
+<a name="l00166"></a>00166         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#adf11066d406ccf51a489b78a318b8c06">windows_exe_files</a> = [self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a78bf8849359661f72b569d1137ac190c">chop</a>(p) <span class="keywordflow">for</span> p <span class="keywordflow">in</span> windows_exe_files]
+<a name="l00167"></a>00167         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#aae09971d5dbbadec6a3fbceb7a03e8c8">lib_files</a> = [self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a78bf8849359661f72b569d1137ac190c">chop</a>(p) <span class="keywordflow">for</span> p <span class="keywordflow">in</span> lib_files]
+<a name="l00168"></a>00168 
+<a name="l00169"></a><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a78bf8849359661f72b569d1137ac190c">00169</a>     <span class="keyword">def </span><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a78bf8849359661f72b569d1137ac190c">chop</a>(self, pathname):
+<a name="l00170"></a>00170         <span class="keywordflow">print</span> <span class="stringliteral">&#39;pathname is: &#39;</span>, pathname
+<a name="l00171"></a>00171         <span class="keyword">assert</span> pathname.startswith(self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a58be0bf5b5f51d20a0fda2ff5bb25e69">dist_dir</a>)
+<a name="l00172"></a>00172         <span class="keywordflow">return</span> pathname[len(self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a58be0bf5b5f51d20a0fda2ff5bb25e69">dist_dir</a>):]
+<a name="l00173"></a>00173     
+<a name="l00174"></a><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a49302378b14f563d487830f5f816b61e">00174</a>     <span class="keyword">def </span><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a4e9d1d7dfbbbf321f3d8084ac4c20652">create</a>(self, pathname=&quot;dist\\CAPSScenarioBuilder.iss&quot;):
+<a name="l00175"></a>00175         self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a49302378b14f563d487830f5f816b61e">pathname</a> = pathname
+<a name="l00176"></a>00176         rootPath = <span class="stringliteral">&quot;Z:\egit_repositories\CAPS-Scenario-Builder\CAPS_Scenario_Builder\src&quot;</span>
+<a name="l00177"></a>00177         ofi = self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a6403f856fd5f885dff1cf59b88341388">file</a> = open(pathname, <span class="stringliteral">&quot;w&quot;</span>)
+<a name="l00178"></a>00178         
+<a name="l00179"></a>00179         <span class="comment"># The &#39;&gt;&gt;&#39; tells python to print to the file object &#39;ofi&#39;</span>
+<a name="l00180"></a>00180         <span class="comment"># When an &#39;r&#39; or &#39;R&#39; prefix is present, a character following a backslash is included in the string without change, </span>
+<a name="l00181"></a>00181         <span class="comment"># and all backslashes are left in the string</span>
+<a name="l00182"></a>00182         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">&quot;; WARNING: This script has been created by py2exe. Changes to this script&quot;</span>
+<a name="l00183"></a>00183         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">&quot;; will be overwritten the next time py2exe is run!&quot;</span>
+<a name="l00184"></a>00184         <span class="keywordflow">print</span> &gt;&gt; ofi
+<a name="l00185"></a>00185         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;[Setup]&quot;</span>
+<a name="l00186"></a>00186         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;AppName=%s&quot;</span> % self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>
+<a name="l00187"></a>00187         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;AppVerName=%s %s&quot;</span> % (self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>, self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#aac1e93ddbb430396d8a0fbc622d10c82">version</a>)
+<a name="l00188"></a>00188         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;DefaultDirName={pf}\%s&quot;</span> % self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>
+<a name="l00189"></a>00189         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;DefaultGroupName=%s&quot;</span> % self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>
+<a name="l00190"></a>00190         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoVersion=%s&quot;</span> % self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#aac1e93ddbb430396d8a0fbc622d10c82">version</a>
+<a name="l00191"></a>00191         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoCompany=University of Massachusetts: CAPS&quot;</span>
+<a name="l00192"></a>00192         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoDescription=CAPS: Conservation Assessment and Prioritization System&quot;</span>
+<a name="l00193"></a>00193         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoCopyright=University of Massachusetts: CAPS&quot;</span>
+<a name="l00194"></a>00194         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;AppCopyright=Daystar Computing: Robert English&quot;</span>
+<a name="l00195"></a>00195         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;InfoAfterFile=&quot;</span> + rootPath + <span class="stringliteral">r&quot;\README.TXT&quot;</span>
+<a name="l00196"></a>00196         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;LicenseFile=&quot;</span> + rootPath + <span class="stringliteral">r&quot;\LICENSE.TXT&quot;</span>
+<a name="l00197"></a>00197         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;WizardImageBackColor=clBlack&quot;</span>
+<a name="l00198"></a>00198         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;WizardImageFile=&quot;</span> + rootPath + <span class="stringliteral">r&quot;\images\setup_wizard_vert.bmp&quot;</span>
+<a name="l00199"></a>00199         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;WizardSmallImageFile=&quot;</span> + rootPath + <span class="stringliteral">r&quot;\images\setup_wizard_icon.bmp&quot;</span>
+<a name="l00200"></a>00200         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;SetupIconFile=&quot;</span> + rootPath + <span class="stringliteral">r&quot;\setup_program_icon.ico&quot;</span>
+<a name="l00201"></a>00201         <span class="keywordflow">print</span> &gt;&gt; ofi
+<a name="l00202"></a>00202 
+<a name="l00203"></a>00203         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;[Files]&quot;</span>
+<a name="l00204"></a>00204         <span class="keywordflow">for</span> path <span class="keywordflow">in</span> self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#adf11066d406ccf51a489b78a318b8c06">windows_exe_files</a> + self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#aae09971d5dbbadec6a3fbceb7a03e8c8">lib_files</a>:
+<a name="l00205"></a>00205             <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;%s&quot;; DestDir: &quot;{app}\%s&quot;; Flags: ignoreversion&#39;</span> % (path, os.path.dirname(path))
+<a name="l00206"></a>00206         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: lib\QtSvg4.dll; DestDir: {app}\lib; Flags: ignoreversion&#39;</span>
+<a name="l00207"></a>00207         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\README.TXT&quot;; DestDir: &quot;{app}&quot;&#39;</span>
+<a name="l00208"></a>00208         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\copy.txt&quot;; DestDir: &quot;{app}&quot;&#39;</span>
+<a name="l00209"></a>00209         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\RasterCategoryTable.htm&quot;; DestDir: &quot;{app}&quot;&#39;</span>
+<a name="l00210"></a>00210         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\setup_program_icon.ico&quot;; DestDir: &quot;{app}&quot;&#39;</span>
+<a name="l00211"></a>00211         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\CAPS_splash.png&quot;; DestDir: &quot;{app}&quot;&#39;</span>
+<a name="l00212"></a>00212         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\vcredist_2005English_x86.exe&quot;; DestDir: &quot;{app}&quot;&#39;</span>
+<a name="l00213"></a>00213         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\vcredist_2008_x86.exe&quot;; DestDir: &quot;{app}&quot;&#39;</span>
+<a name="l00214"></a>00214         <span class="keywordflow">print</span> &gt;&gt; ofi
+<a name="l00215"></a>00215 
+<a name="l00216"></a>00216         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;[Icons]&quot;</span>
+<a name="l00217"></a>00217         <span class="keywordflow">for</span> path <span class="keywordflow">in</span> self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#adf11066d406ccf51a489b78a318b8c06">windows_exe_files</a>:
+<a name="l00218"></a>00218             <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Name: &quot;{group}\%s&quot;; Filename: &quot;{app}\%s&quot;; WorkingDir: {app}; IconFilename: &quot;{app}\setup_program_icon.ico&quot;&#39;</span> % \
+<a name="l00219"></a>00219                   (self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>, path)
+<a name="l00220"></a>00220         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">&#39;Name: &quot;{group}\Uninstall %s&quot;; Filename: &quot;{uninstallexe}&quot;&#39;</span> % self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>
+<a name="l00221"></a>00221         <span class="keywordflow">print</span> &gt;&gt; ofi
+<a name="l00222"></a>00222           
+<a name="l00223"></a>00223         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;[Dirs]&quot;</span>
+<a name="l00224"></a>00224         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Name: &quot;{app}\Scenarios&quot;; Permissions: users-modify&#39;</span>
+<a name="l00225"></a>00225         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Name: &quot;{app}\Exported Scenarios&quot;; Permissions: users-modify&#39;</span>
+<a name="l00226"></a>00226         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Name: &quot;{app}\Projects&quot;; Permissions: users-modify&#39;</span>
+<a name="l00227"></a>00227         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Name: &quot;{app}\log&quot;; Permissions: users-modify&#39;</span>
+<a name="l00228"></a>00228         <span class="keywordflow">print</span> &gt;&gt; ofi
+<a name="l00229"></a>00229         
+<a name="l00230"></a>00230         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;[Run]&quot;</span>
+<a name="l00231"></a>00231         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Filename: &quot;{app}\vcredist_2005English_x86.exe&quot;; Description: &quot;Install required system files&quot;; Parameters: &quot;/q:a /c:&quot;&quot;VCREDI~3.EXE /q:a /c:&quot;&quot;&quot;&quot;msiexec /i vcredist.msi /qn&quot;&quot;&quot;&quot; &quot;&quot;&quot;; Flags: runascurrentuser&#39;</span>
+<a name="l00232"></a>00232         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Filename: &quot;{app}\vcredist_2008_x86.exe&quot;; Description: &quot;Install required system files&quot;; Parameters: &quot;/q:a /c:&quot;&quot;VCREDI~1.EXE /q:a /c:&quot;&quot;&quot;&quot;msiexec /i vcredist.msi /qn&quot;&quot;&quot;&quot; &quot;&quot;&quot;; Flags: runascurrentuser&#39;</span>
+<a name="l00233"></a>00233         
+<a name="l00234"></a><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a377c90ba3317facc42f67aee1c36b8a4">00234</a>     <span class="keyword">def </span><a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a377c90ba3317facc42f67aee1c36b8a4">compile</a>(self):
+<a name="l00235"></a>00235         <span class="keywordflow">try</span>:
+<a name="l00236"></a>00236             <span class="keyword">import</span> ctypes2
+<a name="l00237"></a>00237         <span class="keywordflow">except</span> ImportError:
+<a name="l00238"></a>00238             <span class="keywordflow">try</span>:
+<a name="l00239"></a>00239                 <span class="keyword">import</span> win32api
+<a name="l00240"></a>00240             <span class="keywordflow">except</span> ImportError:
+<a name="l00241"></a>00241                 <span class="keyword">import</span> os
+<a name="l00242"></a>00242                 <span class="keywordflow">print</span> <span class="stringliteral">&#39;Using os but no compiling.&#39;</span>
+<a name="l00243"></a>00243                 os.startfile(self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a49302378b14f563d487830f5f816b61e">pathname</a>)
+<a name="l00244"></a>00244             <span class="keywordflow">else</span>:
+<a name="l00245"></a>00245                 <span class="keywordflow">print</span> <span class="stringliteral">&quot;Ok, using win32api.&quot;</span>
+<a name="l00246"></a>00246                 win32api.ShellExecute(0, <span class="stringliteral">&quot;compile&quot;</span>,
+<a name="l00247"></a>00247                                                 self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a49302378b14f563d487830f5f816b61e">pathname</a>,
 <a name="l00248"></a>00248                                                 <span class="keywordtype">None</span>,
-<a name="l00249"></a>00249                                                 0)
-<a name="l00250"></a>00250         <span class="keywordflow">else</span>:
-<a name="l00251"></a>00251             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Cool, you have ctypes installed.&quot;</span>
-<a name="l00252"></a>00252             res = ctypes.windll.shell32.ShellExecuteA(0, <span class="stringliteral">&quot;compile&quot;</span>,
-<a name="l00253"></a>00253                                                       self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a49302378b14f563d487830f5f816b61e">pathname</a>,
-<a name="l00254"></a>00254                                                       <span class="keywordtype">None</span>,
+<a name="l00249"></a>00249                                                 <span class="keywordtype">None</span>,
+<a name="l00250"></a>00250                                                 0)
+<a name="l00251"></a>00251         <span class="keywordflow">else</span>:
+<a name="l00252"></a>00252             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Cool, you have ctypes installed.&quot;</span>
+<a name="l00253"></a>00253             res = ctypes.windll.shell32.ShellExecuteA(0, <span class="stringliteral">&quot;compile&quot;</span>,
+<a name="l00254"></a>00254                                                       self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a49302378b14f563d487830f5f816b61e">pathname</a>,
 <a name="l00255"></a>00255                                                       <span class="keywordtype">None</span>,
-<a name="l00256"></a>00256                                                       0)
-<a name="l00257"></a>00257             <span class="keywordflow">if</span> res &lt; 32:
-<a name="l00258"></a>00258                 <span class="keywordflow">raise</span> RuntimeError, <span class="stringliteral">&quot;ShellExecute failed, error %d&quot;</span> % res
-<a name="l00259"></a>00259 
+<a name="l00256"></a>00256                                                       <span class="keywordtype">None</span>,
+<a name="l00257"></a>00257                                                       0)
+<a name="l00258"></a>00258             <span class="keywordflow">if</span> res &lt; 32:
+<a name="l00259"></a>00259                 <span class="keywordflow">raise</span> RuntimeError, <span class="stringliteral">&quot;ShellExecute failed, error %d&quot;</span> % res
 <a name="l00260"></a>00260 
-<a name="l00261"></a>00261 <span class="comment">################################################################</span>
-<a name="l00262"></a>00262 
-<a name="l00263"></a>00263 <span class="keyword">from</span> py2exe.build_exe <span class="keyword">import</span> py2exe
-<a name="l00264"></a>00264 
-<a name="l00265"></a><a class="code" href="classmake__setupexe__config_1_1build__installer.html">00265</a> <span class="keyword">class </span><a class="code" href="classmake__setupexe__config_1_1build__installer.html">build_installer</a>(py2exe):
-<a name="l00266"></a>00266     <span class="comment"># This class first builds the exe file(s), then creates a Windows installer.</span>
-<a name="l00267"></a>00267     <span class="comment"># You need InnoSetup for it.</span>
-<a name="l00268"></a><a class="code" href="classmake__setupexe__config_1_1build__installer.html#adbe4dbb524f28c00836c1a507bbf444b">00268</a>     <span class="keyword">def </span><a class="code" href="classmake__setupexe__config_1_1build__installer.html#adbe4dbb524f28c00836c1a507bbf444b">run</a>(self):
-<a name="l00269"></a>00269         <span class="comment"># First, let py2exe do its work.</span>
-<a name="l00270"></a>00270         py2exe.run(self)
-<a name="l00271"></a>00271 
-<a name="l00272"></a>00272         lib_dir = self.lib_dir
-<a name="l00273"></a>00273         dist_dir = self.dist_dir
-<a name="l00274"></a>00274         
-<a name="l00275"></a>00275         <span class="comment"># create the Installer, using the files py2exe has created.</span>
-<a name="l00276"></a>00276         script = <a class="code" href="classmake__setupexe__config_1_1_inno_script.html">InnoScript</a>(<span class="stringliteral">&quot;CAPS Scenario Builder&quot;</span>,
-<a name="l00277"></a>00277                             lib_dir,
-<a name="l00278"></a>00278                             dist_dir,
-<a name="l00279"></a>00279                             self.windows_exe_files,
-<a name="l00280"></a>00280                             self.lib_files)
-<a name="l00281"></a>00281         <span class="keywordflow">print</span> <span class="stringliteral">&quot;*** creating the inno setup script***&quot;</span>
-<a name="l00282"></a>00282         script.create()
-<a name="l00283"></a>00283         <span class="keywordflow">print</span> <span class="stringliteral">&quot;*** compiling the inno setup script***&quot;</span>
-<a name="l00284"></a>00284         script.compile()
-<a name="l00285"></a>00285         <span class="comment"># Note: By default the final setup.exe will be in an Output subdirectory.</span>
-<a name="l00286"></a>00286 
-<a name="l00287"></a>00287 <span class="comment">######################## py2exe setup options ########################################</span>
-<a name="l00288"></a>00288 
-<a name="l00289"></a><a class="code" href="namespacemake__setupexe__config.html#a2b122b2d9ce0f7ff9a399254b00b3143">00289</a> azipfile = <span class="stringliteral">r&quot;lib\shardlib&quot;</span>
-<a name="l00290"></a>00290 <span class="comment">#&quot;excludes&quot;: [&#39;backend_gtkagg&#39;, &#39;backend_wxagg&#39;],</span>
-<a name="l00291"></a><a class="code" href="namespacemake__setupexe__config.html#add333c1792e9588e172d7042ab798f12">00291</a> options = {
-<a name="l00292"></a>00292            <span class="stringliteral">&quot;py2exe&quot;</span>: {
-<a name="l00293"></a>00293                       <span class="stringliteral">&quot;compressed&quot;</span>: 1, 
-<a name="l00294"></a>00294                       <span class="stringliteral">&quot;optimize&quot;</span>: 2, 
-<a name="l00295"></a>00295                       <span class="stringliteral">&quot;includes&quot;</span>: [<span class="stringliteral">&#39;sip&#39;</span>], 
-<a name="l00296"></a>00296                       <span class="stringliteral">&quot;dll_excludes&quot;</span>: [<span class="stringliteral">&#39;POWRPROF.dll&#39;</span>, <span class="stringliteral">&#39;QtAssistantClient4.dll&#39;</span>], 
-<a name="l00297"></a>00297                       <span class="stringliteral">&quot;excludes&quot;</span>: [<span class="stringliteral">&#39;backend_gtkagg&#39;</span>, <span class="stringliteral">&#39;backend_wxagg&#39;</span>], 
-<a name="l00298"></a>00298                       <span class="stringliteral">&quot;packages&quot;</span>: [<span class="stringliteral">&quot;qgis&quot;</span>, <span class="stringliteral">&quot;PyQt4&quot;</span>, <span class="stringliteral">&quot;paramiko&quot;</span>], 
-<a name="l00299"></a>00299                       <span class="stringliteral">&quot;dist_dir&quot;</span>: <span class="stringliteral">&quot;dist&quot;</span>}
-<a name="l00300"></a>00300            }
-<a name="l00301"></a>00301 
-<a name="l00302"></a>00302 <span class="comment"># Note that I had to paste the file &#39;Z:\Program Files\Quantum GIS Wroclaw\bin\lti_dsk.dll&#39; into </span>
-<a name="l00303"></a>00303 <span class="comment"># the &quot;Z:\Program Files\Quantum GIS Wroclaw\apps\qgis\plugins&quot; directory to get MrSID support to work.  py2exe </span>
-<a name="l00304"></a>00304 <span class="comment"># apparently missed that dll?</span>
-<a name="l00305"></a><a class="code" href="namespacemake__setupexe__config.html#a880563b8a2f2502fae3d7fd3b37809f1">00305</a> data_files = (<a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&quot;Z:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/&quot;</span>, <span class="stringliteral">&quot;Z:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/base_layers&quot;</span>) + 
-<a name="l00306"></a>00306               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/&#39;</span>, <span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/plugins&#39;</span>) + 
-<a name="l00307"></a>00307               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/&#39;</span>, <span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/resources&#39;</span>) +
-<a name="l00308"></a>00308               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/bin/&#39;</span>, <span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/bin/gdalplugins/1.8&#39;</span>) +
-<a name="l00309"></a>00309               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/share/&#39;</span>, <span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/share/gdal&#39;</span>)) <span class="comment"># + [(&#39;.&#39;, [&#39;Z:\\beta\\config.py&#39;])]</span>
-<a name="l00310"></a>00310 
-<a name="l00311"></a>00311 <span class="comment"># debugging</span>
-<a name="l00312"></a>00312 <span class="comment">#df(data_files)</span>
-<a name="l00313"></a>00313 
-<a name="l00314"></a>00314 <span class="comment"># &#39;cmdclass=&#39; says to use the build_installer class, which is a subclassed py2exe build command</span>
-<a name="l00315"></a>00315 setup(
-<a name="l00316"></a>00316       options = options, 
-<a name="l00317"></a><a class="code" href="namespacemake__setupexe__config.html#a258f789efe243add62aff29ce4663485">00317</a>       zipfile = azipfile, 
-<a name="l00318"></a><a class="code" href="namespacemake__setupexe__config.html#ab3d2c26e8b26ee8cdc1477ad3f99442c">00318</a>       windows=[{<span class="stringliteral">&quot;script&quot;</span>: <span class="stringliteral">&quot;caps.py&quot;</span>, <span class="stringliteral">&quot;icon_resources&quot;</span>: [(1, <span class="stringliteral">&quot;setup_program_icon.ico&quot;</span>)]}],
-<a name="l00319"></a><a class="code" href="namespacemake__setupexe__config.html#ac8f4cb844bac8abb84a913d2c625423a">00319</a>       cmdclass = {<span class="stringliteral">&quot;py2exe&quot;</span>: build_installer},
-<a name="l00320"></a>00320       data_files = data_files
-<a name="l00321"></a>00321       )
+<a name="l00261"></a>00261 
+<a name="l00262"></a>00262 <span class="comment">################################################################</span>
+<a name="l00263"></a>00263 
+<a name="l00264"></a>00264 <span class="keyword">from</span> py2exe.build_exe <span class="keyword">import</span> py2exe
+<a name="l00265"></a>00265 
+<a name="l00266"></a><a class="code" href="classmake__setupexe__config_1_1build__installer.html">00266</a> <span class="keyword">class </span><a class="code" href="classmake__setupexe__config_1_1build__installer.html">build_installer</a>(py2exe):
+<a name="l00267"></a>00267     <span class="comment"># This class first builds the exe file(s), then creates a Windows installer.</span>
+<a name="l00268"></a>00268     <span class="comment"># You need InnoSetup for it.</span>
+<a name="l00269"></a><a class="code" href="classmake__setupexe__config_1_1build__installer.html#adbe4dbb524f28c00836c1a507bbf444b">00269</a>     <span class="keyword">def </span><a class="code" href="classmake__setupexe__config_1_1build__installer.html#adbe4dbb524f28c00836c1a507bbf444b">run</a>(self):
+<a name="l00270"></a>00270         <span class="comment"># First, let py2exe do its work.</span>
+<a name="l00271"></a>00271         py2exe.run(self)
+<a name="l00272"></a>00272 
+<a name="l00273"></a>00273         lib_dir = self.lib_dir
+<a name="l00274"></a>00274         dist_dir = self.dist_dir
+<a name="l00275"></a>00275         
+<a name="l00276"></a>00276         <span class="comment"># create the Installer, using the files py2exe has created.</span>
+<a name="l00277"></a>00277         script = <a class="code" href="classmake__setupexe__config_1_1_inno_script.html">InnoScript</a>(<span class="stringliteral">&quot;CAPS Scenario Builder&quot;</span>,
+<a name="l00278"></a>00278                             lib_dir,
+<a name="l00279"></a>00279                             dist_dir,
+<a name="l00280"></a>00280                             self.windows_exe_files,
+<a name="l00281"></a>00281                             self.lib_files)
+<a name="l00282"></a>00282         <span class="keywordflow">print</span> <span class="stringliteral">&quot;*** creating the inno setup script***&quot;</span>
+<a name="l00283"></a>00283         script.create()
+<a name="l00284"></a>00284         <span class="keywordflow">print</span> <span class="stringliteral">&quot;*** compiling the inno setup script***&quot;</span>
+<a name="l00285"></a>00285         script.compile()
+<a name="l00286"></a>00286         <span class="comment"># Note: By default the final setup.exe will be in an Output subdirectory.</span>
+<a name="l00287"></a>00287 
+<a name="l00288"></a>00288 <span class="comment">######################## py2exe setup options ########################################</span>
+<a name="l00289"></a>00289 
+<a name="l00290"></a><a class="code" href="namespacemake__setupexe__config.html#a2b122b2d9ce0f7ff9a399254b00b3143">00290</a> azipfile = <span class="stringliteral">r&quot;lib\shardlib&quot;</span>
+<a name="l00291"></a>00291 <span class="comment">#&quot;excludes&quot;: [&#39;backend_gtkagg&#39;, &#39;backend_wxagg&#39;],</span>
+<a name="l00292"></a><a class="code" href="namespacemake__setupexe__config.html#add333c1792e9588e172d7042ab798f12">00292</a> options = {
+<a name="l00293"></a>00293            <span class="stringliteral">&quot;py2exe&quot;</span>: {
+<a name="l00294"></a>00294                       <span class="stringliteral">&quot;compressed&quot;</span>: 1, 
+<a name="l00295"></a>00295                       <span class="stringliteral">&quot;optimize&quot;</span>: 2, 
+<a name="l00296"></a>00296                       <span class="stringliteral">&quot;includes&quot;</span>: [<span class="stringliteral">&#39;sip&#39;</span>], 
+<a name="l00297"></a>00297                       <span class="stringliteral">&quot;dll_excludes&quot;</span>: [<span class="stringliteral">&#39;POWRPROF.dll&#39;</span>, <span class="stringliteral">&#39;QtAssistantClient4.dll&#39;</span>], 
+<a name="l00298"></a>00298                       <span class="stringliteral">&quot;excludes&quot;</span>: [<span class="stringliteral">&#39;backend_gtkagg&#39;</span>, <span class="stringliteral">&#39;backend_wxagg&#39;</span>], 
+<a name="l00299"></a>00299                       <span class="stringliteral">&quot;packages&quot;</span>: [<span class="stringliteral">&quot;qgis&quot;</span>, <span class="stringliteral">&quot;PyQt4&quot;</span>, <span class="stringliteral">&quot;paramiko&quot;</span>], 
+<a name="l00300"></a>00300                       <span class="stringliteral">&quot;dist_dir&quot;</span>: <span class="stringliteral">&quot;dist&quot;</span>}
+<a name="l00301"></a>00301            }
+<a name="l00302"></a>00302 
+<a name="l00303"></a>00303 <span class="comment"># Note that I had to paste the file &#39;C:\Program Files\Quantum GIS Wroclaw\bin\lti_dsk.dll&#39; into </span>
+<a name="l00304"></a>00304 <span class="comment"># the &quot;C:\Program Files\Quantum GIS Wroclaw\apps\qgis\plugins&quot; directory to get MrSID support to work.  py2exe </span>
+<a name="l00305"></a>00305 <span class="comment"># apparently missed that dll?</span>
+<a name="l00306"></a><a class="code" href="namespacemake__setupexe__config.html#a880563b8a2f2502fae3d7fd3b37809f1">00306</a> data_files = (<a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&quot;C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/&quot;</span>, <span class="stringliteral">&quot;C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/base_layers&quot;</span>) + 
+<a name="l00307"></a>00307               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/&#39;</span>, <span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/plugins&#39;</span>) + 
+<a name="l00308"></a>00308               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/&#39;</span>, <span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/resources&#39;</span>) +
+<a name="l00309"></a>00309               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/bin/&#39;</span>, <span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/bin/gdalplugins/1.8&#39;</span>) +
+<a name="l00310"></a>00310               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/share/&#39;</span>, <span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/share/gdal&#39;</span>)) <span class="comment"># + [(&#39;.&#39;, [&#39;C:\\beta\\config.py&#39;])]</span>
+<a name="l00311"></a>00311 
+<a name="l00312"></a>00312 <span class="comment"># debugging</span>
+<a name="l00313"></a>00313 <span class="comment">#df(data_files)</span>
+<a name="l00314"></a>00314 
+<a name="l00315"></a>00315 <span class="comment"># &#39;cmdclass=&#39; says to use the build_installer class, which is a subclassed py2exe build command</span>
+<a name="l00316"></a>00316 setup(
+<a name="l00317"></a>00317       options = options, 
+<a name="l00318"></a><a class="code" href="namespacemake__setupexe__config.html#a258f789efe243add62aff29ce4663485">00318</a>       zipfile = azipfile, 
+<a name="l00319"></a><a class="code" href="namespacemake__setupexe__config.html#ab3d2c26e8b26ee8cdc1477ad3f99442c">00319</a>       windows=[{<span class="stringliteral">&quot;script&quot;</span>: <span class="stringliteral">&quot;caps.py&quot;</span>, <span class="stringliteral">&quot;icon_resources&quot;</span>: [(1, <span class="stringliteral">&quot;setup_program_icon.ico&quot;</span>)]}],
+<a name="l00320"></a><a class="code" href="namespacemake__setupexe__config.html#ac8f4cb844bac8abb84a913d2c625423a">00320</a>       cmdclass = {<span class="stringliteral">&quot;py2exe&quot;</span>: build_installer},
+<a name="l00321"></a>00321       data_files = data_files
+<a name="l00322"></a>00322       )
 </pre></div></div><!-- contents -->
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jun 11 2012 14:12:28 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jun 12 2012 10:42:22 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

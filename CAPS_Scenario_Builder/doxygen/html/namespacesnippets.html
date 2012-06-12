@@ -44,6 +44,7 @@
       <li class="current"><a href="namespaces.html"><span>Packages</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="dirs.html"><span>Directories</span></a></li>
     </ul>
   </div>
   <div id="navrow2" class="tabs2">
@@ -67,6 +68,8 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesnippets.html#af65ccdf4ccdc8703e3b954c3123f921e">moveEditLayer</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesnippets.html#a06e17560d6cbc1111180ff809185d65f">moveBaseLayer</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesnippets.html#a56f7bdd51b0c19e2e9eb7376cfd0c876">moveConstraintLayer</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesnippets.html#a0601a4bcb6128720f3dbf739b1a8b470">_get_group_sid</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesnippets.html#a985ec52ae35229f1b6fe2896251be865">_set_file_attributes</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesnippets.html#a3daca2abc299e8fa9ded180c1988496d">set_file_readonly</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesnippets.html#af70e8824e0faa96c888895cded1f8781">oldarrangeOrientingLayers</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesnippets.html#a575af53f3ca33880d21b1b45df8c93e4">openEditLayer</a></td></tr>
@@ -75,6 +78,7 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesnippets.html#a7ccca17cb3458998616fccfab17414e7">clear</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesnippets.html#ac0387a0f88fe9c8ed59fe96401b10549">updateStatusBar</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesnippets.html#a0a834ce9077c39b3ef65b02a790fb688">markPoint</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesnippets.html#ab85df218017e82d5aeb3002f233ae10c">__getIdFeaturesIntersect</a></td></tr>
 <tr><td colspan="2"><h2><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesnippets.html#a63513b3886f54e8e38577a98a5aeadd8">self</a> = &quot;some class&quot;</td></tr>
@@ -135,6 +139,171 @@ Created on Jun 2, 2011
 
 @author: urbanec
 </pre></div> </div><hr/><h2>Function Documentation</h2>
+<a class="anchor" id="ab85df218017e82d5aeb3002f233ae10c"></a><!-- doxytag: member="snippets::__getIdFeaturesIntersect" ref="ab85df218017e82d5aeb3002f233ae10c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacesnippets.html#ab85df218017e82d5aeb3002f233ae10c">snippets.__getIdFeaturesIntersect</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>rect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>lyr</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [private]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="snippets_8py_source.html#l00753">753</a> of file <a class="el" href="snippets_8py_source.html">snippets.py</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00753"></a><a class="code" href="namespacesnippets.html#ab85df218017e82d5aeb3002f233ae10c">00753</a> 
+<a name="l00754"></a>00754 <span class="keyword">def </span><a class="code" href="namespacesnippets.html#ab85df218017e82d5aeb3002f233ae10c">__getIdFeaturesIntersect</a>(self, rect, lyr):
+<a name="l00755"></a><a class="code" href="namespacesnippets.html#a779eba20b4bc15f239403e7a1d9b30b3">00755</a>     prov = lyr.dataProvider()
+<a name="l00756"></a>00756     allAttrs = prov.attributeIndexes()
+<a name="l00757"></a>00757     prov.select(allAttrs, core.QgsRectangle())
+<a name="l00758"></a>00758     idInSpatialIndex = self.__createIndex(prov).intersects(rect)
+<a name="l00759"></a>00759     prov.rewind()
+<a name="l00760"></a>00760     ids = []
+<a name="l00761"></a>00761     feat = core.QgsFeature()
+<a name="l00762"></a>00762     <span class="keywordflow">for</span> id <span class="keywordflow">in</span> idInSpatialIndex:
+<a name="l00763"></a>00763       prov.featureAtId(int(id), feat, <span class="keyword">True</span>)
+<a name="l00764"></a>00764       <span class="keywordflow">if</span> feat.geometry().intersects(rect):
+<a name="l00765"></a>00765         ids.append(int(id)) 
+<a name="l00766"></a>00766     <span class="keywordflow">return</span> ids
+<a name="l00767"></a>00767 
+<a name="l00768"></a>00768 <span class="stringliteral">&#39;&#39;&#39; cursor &#39;&#39;&#39;</span>
+<a name="l00769"></a>00769 self.canvas.setCursor(cursor)
+<a name="l00770"></a>00770 self.canvas.unsetCursor(cursor)
+<a name="l00771"></a>00771 
+<a name="l00772"></a>00772 <span class="stringliteral">&#39;&#39;&#39;make circle ??&#39;&#39;&#39;</span>
+<a name="l00773"></a>00773 self.center = self.toMapCoordinates(e.pos())
+<a name="l00774"></a>00774 self.rb=QgsRubberBand(self.canvas,<span class="keyword">True</span>)
+<a name="l00775"></a>00775 rbcircle(self.rb,self.center,self.center,40)
+<a name="l00776"></a>00776 
+<a name="l00777"></a>00777 
+<a name="l00778"></a>00778 <span class="stringliteral">&#39;&#39;&#39;both of these worked in selectfeatures.py</span>
+<a name="l00779"></a>00779 <span class="stringliteral"> when mainwindow had a variable self.test&#39;&#39;&#39;</span>
+
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="a0601a4bcb6128720f3dbf739b1a8b470"></a><!-- doxytag: member="snippets::_get_group_sid" ref="a0601a4bcb6128720f3dbf739b1a8b470" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacesnippets.html#a0601a4bcb6128720f3dbf739b1a8b470">snippets._get_group_sid</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>group_name</em></td><td>)</td>
+          <td><code> [private]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<div class="fragment"><pre class="fragment">Return the SID for a group with the given name.</pre></div> 
+<p>Definition at line <a class="el" href="snippets_8py_source.html#l00264">264</a> of file <a class="el" href="snippets_8py_source.html">snippets.py</a>.</p>
+
+<p>Referenced by <a class="el" href="snippets_8py_source.html#l00269">_set_file_attributes()</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00264"></a><a class="code" href="namespacesnippets.html#a0601a4bcb6128720f3dbf739b1a8b470">00264</a> 
+<a name="l00265"></a>00265 <span class="keyword">def </span><a class="code" href="namespacesnippets.html#a0601a4bcb6128720f3dbf739b1a8b470">_get_group_sid</a>(group_name):
+<a name="l00266"></a>00266     <span class="stringliteral">&quot;&quot;&quot;Return the SID for a group with the given name.&quot;&quot;&quot;</span>
+<a name="l00267"></a>00267     <span class="keywordflow">return</span> LookupAccountName(<span class="stringliteral">&#39;&#39;</span>, group_name)[0]
+<a name="l00268"></a>00268  
+ 
+</pre></div>
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacesnippets_a0601a4bcb6128720f3dbf739b1a8b470_icgraph.png" border="0" usemap="#namespacesnippets_a0601a4bcb6128720f3dbf739b1a8b470_icgraph" alt=""/></div>
+<map name="namespacesnippets_a0601a4bcb6128720f3dbf739b1a8b470_icgraph" id="namespacesnippets_a0601a4bcb6128720f3dbf739b1a8b470_icgraph">
+<area shape="rect" id="node3" href="namespacesnippets.html#a985ec52ae35229f1b6fe2896251be865" title="snippets._set_file_attributes" alt="" coords="216,5,400,32"/><area shape="rect" id="node5" href="namespacesnippets.html#a3daca2abc299e8fa9ded180c1988496d" title="snippets.set_file_readonly" alt="" coords="449,5,621,32"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a985ec52ae35229f1b6fe2896251be865"></a><!-- doxytag: member="snippets::_set_file_attributes" ref="a985ec52ae35229f1b6fe2896251be865" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacesnippets.html#a985ec52ae35229f1b6fe2896251be865">snippets._set_file_attributes</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>groups</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [private]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<div class="fragment"><pre class="fragment">Set file attributes using the wind32api.</pre></div> 
+<p>Definition at line <a class="el" href="snippets_8py_source.html#l00269">269</a> of file <a class="el" href="snippets_8py_source.html">snippets.py</a>.</p>
+
+<p>References <a class="el" href="snippets_8py_source.html#l00264">_get_group_sid()</a>.</p>
+
+<p>Referenced by <a class="el" href="snippets_8py_source.html#l00283">set_file_readonly()</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00269"></a><a class="code" href="namespacesnippets.html#a985ec52ae35229f1b6fe2896251be865">00269</a> 
+<a name="l00270"></a>00270 <span class="keyword">def </span><a class="code" href="namespacesnippets.html#a985ec52ae35229f1b6fe2896251be865">_set_file_attributes</a>(path, groups):
+<a name="l00271"></a>00271     <span class="stringliteral">&quot;&quot;&quot;Set file attributes using the wind32api.&quot;&quot;&quot;</span>
+<a name="l00272"></a>00272     security_descriptor = GetFileSecurity(path, DACL_SECURITY_INFORMATION)
+<a name="l00273"></a>00273     dacl = ACL()
+<a name="l00274"></a>00274     <span class="keywordflow">for</span> group_name <span class="keywordflow">in</span> groups:
+<a name="l00275"></a>00275         <span class="comment"># set the attributes of the group only if not null</span>
+<a name="l00276"></a>00276         <span class="keywordflow">if</span> groups[group_name]:
+<a name="l00277"></a>00277             group_sid = <a class="code" href="namespacesnippets.html#a0601a4bcb6128720f3dbf739b1a8b470">_get_group_sid</a>(group_name)
+<a name="l00278"></a>00278             dacl.AddAccessAllowedAce(ACL_REVISION, groups[group_name],
+<a name="l00279"></a>00279                 group_sid)
+<a name="l00280"></a>00280     <span class="comment"># the dacl has all the info of the dff groups passed in the parameters</span>
+<a name="l00281"></a>00281     security_descriptor.SetSecurityDescriptorDacl(1, dacl, 0)
+<a name="l00282"></a>00282     SetFileSecurity(path, DACL_SECURITY_INFORMATION, security_descriptor)
+ 
+</pre></div>
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacesnippets_a985ec52ae35229f1b6fe2896251be865_cgraph.png" border="0" usemap="#namespacesnippets_a985ec52ae35229f1b6fe2896251be865_cgraph" alt=""/></div>
+<map name="namespacesnippets_a985ec52ae35229f1b6fe2896251be865_cgraph" id="namespacesnippets_a985ec52ae35229f1b6fe2896251be865_cgraph">
+<area shape="rect" id="node3" href="namespacesnippets.html#a0601a4bcb6128720f3dbf739b1a8b470" title="snippets._get_group_sid" alt="" coords="237,5,400,32"/></map>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacesnippets_a985ec52ae35229f1b6fe2896251be865_icgraph.png" border="0" usemap="#namespacesnippets_a985ec52ae35229f1b6fe2896251be865_icgraph" alt=""/></div>
+<map name="namespacesnippets_a985ec52ae35229f1b6fe2896251be865_icgraph" id="namespacesnippets_a985ec52ae35229f1b6fe2896251be865_icgraph">
+<area shape="rect" id="node3" href="namespacesnippets.html#a3daca2abc299e8fa9ded180c1988496d" title="snippets.set_file_readonly" alt="" coords="238,5,410,32"/></map>
+</div>
+</p>
+
+</div>
+</div>
 <a class="anchor" id="a7ccca17cb3458998616fccfab17414e7"></a><!-- doxytag: member="snippets::clear" ref="a7ccca17cb3458998616fccfab17414e7" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -606,6 +775,8 @@ Created on Jun 2, 2011
 <div class="memdoc">
 <div class="fragment"><pre class="fragment">Change path permissions to readonly in a file.</pre></div> 
 <p>Definition at line <a class="el" href="snippets_8py_source.html#l00283">283</a> of file <a class="el" href="snippets_8py_source.html">snippets.py</a>.</p>
+
+<p>References <a class="el" href="snippets_8py_source.html#l00269">_set_file_attributes()</a>.</p>
 <div class="fragment"><pre class="fragment"><a name="l00283"></a><a class="code" href="namespacesnippets.html#a3daca2abc299e8fa9ded180c1988496d">00283</a> 
 <a name="l00284"></a>00284 <span class="keyword">def </span><a class="code" href="namespacesnippets.html#a3daca2abc299e8fa9ded180c1988496d">set_file_readonly</a>(path):
 <a name="l00285"></a>00285     <span class="stringliteral">&quot;&quot;&quot;Change path permissions to readonly in a file.&quot;&quot;&quot;</span>
@@ -616,7 +787,7 @@ Created on Jun 2, 2011
 <a name="l00290"></a>00290     groups[ADMINISTRATORS_GROUP] = FILE_GENERIC_READ
 <a name="l00291"></a>00291     groups[GetUserName()] = FILE_GENERIC_READ
 <a name="l00292"></a>00292     <span class="comment"># the above equals more or less to 0444</span>
-<a name="l00293"></a>00293     _set_file_attributes(path, groups)
+<a name="l00293"></a>00293     <a class="code" href="namespacesnippets.html#a985ec52ae35229f1b6fe2896251be865">_set_file_attributes</a>(path, groups)
 <a name="l00294"></a>00294 
 <a name="l00295"></a>00295 <span class="stringliteral">&#39;&#39;&#39;Martin Dobias raster transparency</span>
 <a name="l00296"></a>00296 <span class="stringliteral">This way you can access current list of transparency values:</span>
@@ -651,6 +822,15 @@ Created on Jun 2, 2011
 <a name="l00325"></a>00325 
 <span class="comment"># obsolete code.  Use legend.findItems().  much easier</span>
 </pre></div>
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacesnippets_a3daca2abc299e8fa9ded180c1988496d_cgraph.png" border="0" usemap="#namespacesnippets_a3daca2abc299e8fa9ded180c1988496d_cgraph" alt=""/></div>
+<map name="namespacesnippets_a3daca2abc299e8fa9ded180c1988496d_cgraph" id="namespacesnippets_a3daca2abc299e8fa9ded180c1988496d_cgraph">
+<area shape="rect" id="node3" href="namespacesnippets.html#a985ec52ae35229f1b6fe2896251be865" title="snippets._set_file_attributes" alt="" coords="227,5,411,32"/><area shape="rect" id="node5" href="namespacesnippets.html#a0601a4bcb6128720f3dbf739b1a8b470" title="snippets._get_group_sid" alt="" coords="459,5,621,32"/></map>
+</div>
+</p>
+
 </div>
 </div>
 <a class="anchor" id="ac0387a0f88fe9c8ed59fe96401b10549"></a><!-- doxytag: member="snippets::updateStatusBar" ref="ac0387a0f88fe9c8ed59fe96401b10549" args="" -->
@@ -1461,7 +1641,7 @@ Created on Jun 2, 2011
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jun 11 2012 14:12:31 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jun 12 2012 10:42:24 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

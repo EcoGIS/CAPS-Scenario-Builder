@@ -44,6 +44,7 @@
       <li><a href="namespaces.html"><span>Packages</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
+      <li><a href="dirs.html"><span>Directories</span></a></li>
     </ul>
   </div>
   <div id="navrow2" class="tabs2">
@@ -51,10 +52,15 @@
       <li><a href="files.html"><span>File&#160;List</span></a></li>
     </ul>
   </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_296f7ef44356f33aabecfab941c14354.html">src</a>      </li>
+    </ul>
+  </div>
 </div>
 <div class="header">
   <div class="headertitle">
-<div class="title">C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/snippets.py</div>  </div>
+<div class="title">snippets.py</div>  </div>
 </div><!--header-->
 <div class="contents">
 <a href="snippets_8py.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a><a class="code" href="namespacesnippets.html">00001</a> <span class="stringliteral">&#39;&#39;&#39;</span>
@@ -320,19 +326,19 @@
 <a name="l00261"></a><a class="code" href="namespacesnippets.html#ac1510a98c51cdf57e510ff6a51c23c61">00261</a> EVERYONE_GROUP = <span class="stringliteral">&#39;Everyone&#39;</span>
 <a name="l00262"></a><a class="code" href="namespacesnippets.html#ab9b425b32c9889d22b0080b95e3d15f9">00262</a> ADMINISTRATORS_GROUP = <span class="stringliteral">&#39;Administrators&#39;</span>
 <a name="l00263"></a>00263  
-<a name="l00264"></a>00264 <span class="keyword">def </span>_get_group_sid(group_name):
+<a name="l00264"></a><a class="code" href="namespacesnippets.html#a0601a4bcb6128720f3dbf739b1a8b470">00264</a> <span class="keyword">def </span><a class="code" href="namespacesnippets.html#a0601a4bcb6128720f3dbf739b1a8b470">_get_group_sid</a>(group_name):
 <a name="l00265"></a>00265     <span class="stringliteral">&quot;&quot;&quot;Return the SID for a group with the given name.&quot;&quot;&quot;</span>
 <a name="l00266"></a>00266     <span class="keywordflow">return</span> LookupAccountName(<span class="stringliteral">&#39;&#39;</span>, group_name)[0]
 <a name="l00267"></a>00267  
 <a name="l00268"></a>00268  
-<a name="l00269"></a>00269 <span class="keyword">def </span>_set_file_attributes(path, groups):
+<a name="l00269"></a><a class="code" href="namespacesnippets.html#a985ec52ae35229f1b6fe2896251be865">00269</a> <span class="keyword">def </span><a class="code" href="namespacesnippets.html#a985ec52ae35229f1b6fe2896251be865">_set_file_attributes</a>(path, groups):
 <a name="l00270"></a>00270     <span class="stringliteral">&quot;&quot;&quot;Set file attributes using the wind32api.&quot;&quot;&quot;</span>
 <a name="l00271"></a>00271     security_descriptor = GetFileSecurity(path, DACL_SECURITY_INFORMATION)
 <a name="l00272"></a>00272     dacl = ACL()
 <a name="l00273"></a>00273     <span class="keywordflow">for</span> group_name <span class="keywordflow">in</span> groups:
 <a name="l00274"></a>00274         <span class="comment"># set the attributes of the group only if not null</span>
 <a name="l00275"></a>00275         <span class="keywordflow">if</span> groups[group_name]:
-<a name="l00276"></a>00276             group_sid = _get_group_sid(group_name)
+<a name="l00276"></a>00276             group_sid = <a class="code" href="namespacesnippets.html#a0601a4bcb6128720f3dbf739b1a8b470">_get_group_sid</a>(group_name)
 <a name="l00277"></a>00277             dacl.AddAccessAllowedAce(ACL_REVISION, groups[group_name],
 <a name="l00278"></a>00278                 group_sid)
 <a name="l00279"></a>00279     <span class="comment"># the dacl has all the info of the dff groups passed in the parameters</span>
@@ -348,7 +354,7 @@
 <a name="l00289"></a>00289     groups[ADMINISTRATORS_GROUP] = FILE_GENERIC_READ
 <a name="l00290"></a>00290     groups[GetUserName()] = FILE_GENERIC_READ
 <a name="l00291"></a>00291     <span class="comment"># the above equals more or less to 0444</span>
-<a name="l00292"></a>00292     _set_file_attributes(path, groups)
+<a name="l00292"></a>00292     <a class="code" href="namespacesnippets.html#a985ec52ae35229f1b6fe2896251be865">_set_file_attributes</a>(path, groups)
 <a name="l00293"></a>00293 
 <a name="l00294"></a>00294 <span class="stringliteral">&#39;&#39;&#39;Martin Dobias raster transparency</span>
 <a name="l00295"></a>00295 <span class="stringliteral">This way you can access current list of transparency values:</span>
@@ -809,7 +815,7 @@
 <a name="l00750"></a>00750         marker.setCenter(self.qgspoint)
 <a name="l00751"></a>00751 
 <a name="l00752"></a>00752 <span class="stringliteral">&#39;&#39;&#39;example of intersects&#39;&#39;&#39;</span>
-<a name="l00753"></a>00753 <span class="keyword">def </span>__getIdFeaturesIntersect(self, rect, lyr):
+<a name="l00753"></a><a class="code" href="namespacesnippets.html#ab85df218017e82d5aeb3002f233ae10c">00753</a> <span class="keyword">def </span><a class="code" href="namespacesnippets.html#ab85df218017e82d5aeb3002f233ae10c">__getIdFeaturesIntersect</a>(self, rect, lyr):
 <a name="l00754"></a>00754     prov = lyr.dataProvider()
 <a name="l00755"></a><a class="code" href="namespacesnippets.html#a779eba20b4bc15f239403e7a1d9b30b3">00755</a>     allAttrs = prov.attributeIndexes()
 <a name="l00756"></a>00756     prov.select(allAttrs, core.QgsRectangle())
@@ -868,7 +874,7 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jun 11 2012 14:12:28 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jun 12 2012 10:42:22 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -44,6 +44,7 @@
       <li><a href="namespaces.html"><span>Packages</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="dirs.html"><span>Directories</span></a></li>
     </ul>
   </div>
   <div id="navrow2" class="tabs2">
@@ -65,7 +66,8 @@
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a>  </div>
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a>  </div>
   <div class="headertitle">
 <div class="title">Main.legend.Legend Class Reference</div>  </div>
 </div><!--header-->
@@ -123,6 +125,10 @@ Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_main_1_1legend_1_1_legend.html#a1b360ba94a8d35e88dfa2e9e041732c3">currentColor</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_main_1_1legend_1_1_legend.html#a6cdc44abfd3a173dc296add0dc089c8c">menu</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_main_1_1legend_1_1_legend.html#a9f88f6b6027c8cada54c5cece84e8022">lastPressPos</a></td></tr>
+<tr><td colspan="2"><h2><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_main_1_1legend_1_1_legend.html#ae9c3efe90e240e66a79ccf5710ad9d8f">__beforeDragStateLayers</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_main_1_1legend_1_1_legend.html#a396506015bb6aef91616350e0031f169">__afterDragStateLayers</a></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><div class="fragment"><pre class="fragment">
@@ -364,28 +370,17 @@ Here is the call graph for this function:</div>
 </pre></div> 
 <p>Definition at line <a class="el" href="legend_8py_source.html#l00879">879</a> of file <a class="el" href="legend_8py_source.html">legend.py</a>.</p>
 
-<p>References <a class="el" href="legend_8py_source.html#l00882">Main.legend.Legend.__afterDragStateLayers</a>, <a class="el" href="legend_8py_source.html#l00853">Main.legend.Legend.__beforeDragStateLayers</a>, <a class="el" href="legend_8py_source.html#l00857">Main.legend.Legend.getLayerIDs()</a>, and <a class="el" href="legend_8py_source.html#l00814">Main.legend.Legend.updateLayerSet()</a>.</p>
-
 <p>Referenced by <a class="el" href="legend_8py_source.html#l00597">Main.legend.Legend.mouseReleaseEvent()</a>.</p>
 <div class="fragment"><pre class="fragment"><a name="l00879"></a><a class="code" href="class_main_1_1legend_1_1_legend.html#ac3e1bd7fb7999adee0f1e1dcbe31a99c">00879</a> 
 <a name="l00880"></a>00880     <span class="keyword">def </span><a class="code" href="class_main_1_1legend_1_1_legend.html#ac3e1bd7fb7999adee0f1e1dcbe31a99c">checkLayerOrderUpdate</a>(self):
 <a name="l00881"></a>00881         <span class="stringliteral">&quot;&quot;&quot;</span>
-<a name="l00882"></a>00882 <span class="stringliteral">            Check if the initial layers order is equal to the final one.</span>
+<a name="l00882"></a><a class="code" href="class_main_1_1legend_1_1_legend.html#a396506015bb6aef91616350e0031f169">00882</a> <span class="stringliteral">            Check if the initial layers order is equal to the final one.</span>
 <a name="l00883"></a>00883 <span class="stringliteral">            This is used to refresh the legend in the release event.</span>
 <a name="l00884"></a>00884 <span class="stringliteral">        &quot;&quot;&quot;</span>
 <a name="l00885"></a>00885         self.<a class="code" href="class_main_1_1legend_1_1_legend.html#a396506015bb6aef91616350e0031f169">__afterDragStateLayers</a> = self.<a class="code" href="class_main_1_1legend_1_1_legend.html#a058c38ffc644ff330b68d7e9ebd895a6">getLayerIDs</a>()
 <a name="l00886"></a>00886         <span class="keywordflow">if</span> self.<a class="code" href="class_main_1_1legend_1_1_legend.html#a396506015bb6aef91616350e0031f169">__afterDragStateLayers</a> != self.<a class="code" href="class_main_1_1legend_1_1_legend.html#ae9c3efe90e240e66a79ccf5710ad9d8f">__beforeDragStateLayers</a>: self.<a class="code" href="class_main_1_1legend_1_1_legend.html#a07c7c0713de97ae6800a9bf1451ecae3">updateLayerSet</a>()
 
 </pre></div>
-<p><div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="class_main_1_1legend_1_1_legend_ac3e1bd7fb7999adee0f1e1dcbe31a99c_cgraph.png" border="0" usemap="#class_main_1_1legend_1_1_legend_ac3e1bd7fb7999adee0f1e1dcbe31a99c_cgraph" alt=""/></div>
-<map name="class_main_1_1legend_1_1_legend_ac3e1bd7fb7999adee0f1e1dcbe31a99c_cgraph" id="class_main_1_1legend_1_1_legend_ac3e1bd7fb7999adee0f1e1dcbe31a99c_cgraph">
-<area shape="rect" id="node3" href="class_main_1_1legend_1_1_legend.html#a058c38ffc644ff330b68d7e9ebd895a6" title="Main.legend.Legend.getLayerIDs" alt="" coords="348,5,559,32"/><area shape="rect" id="node5" href="class_main_1_1legend_1_1_legend.html#a07c7c0713de97ae6800a9bf1451ecae3" title="Main.legend.Legend.updateLayerSet" alt="" coords="337,56,570,83"/><area shape="rect" id="node7" href="class_main_1_1legend_1_1_legend.html#a5fbe7ff1ffc2c6190a490126a2d95956" title="Main.legend.Legend.getLayerSet" alt="" coords="619,56,831,83"/></map>
-</div>
-</p>
-
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -673,7 +668,7 @@ Here is the caller graph for this function:</div>
 <div class="fragment"><pre class="fragment">Return a list with the layers ids </pre></div> 
 <p>Definition at line <a class="el" href="legend_8py_source.html#l00857">857</a> of file <a class="el" href="legend_8py_source.html">legend.py</a>.</p>
 
-<p>Referenced by <a class="el" href="legend_8py_source.html#l00879">Main.legend.Legend.checkLayerOrderUpdate()</a>, and <a class="el" href="legend_8py_source.html#l00853">Main.legend.Legend.storeInitialPosition()</a>.</p>
+<p>Referenced by <a class="el" href="legend_8py_source.html#l00853">Main.legend.Legend.storeInitialPosition()</a>.</p>
 <div class="fragment"><pre class="fragment"><a name="l00857"></a><a class="code" href="class_main_1_1legend_1_1_legend.html#a058c38ffc644ff330b68d7e9ebd895a6">00857</a> 
 <a name="l00858"></a>00858     <span class="keyword">def </span><a class="code" href="class_main_1_1legend_1_1_legend.html#a058c38ffc644ff330b68d7e9ebd895a6">getLayerIDs</a>(self):
 <a name="l00859"></a>00859         <span class="stringliteral">&quot;&quot;&quot; Return a list with the layers ids &quot;&quot;&quot;</span>
@@ -689,7 +684,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_main_1_1legend_1_1_legend_a058c38ffc644ff330b68d7e9ebd895a6_icgraph.png" border="0" usemap="#class_main_1_1legend_1_1_legend_a058c38ffc644ff330b68d7e9ebd895a6_icgraph" alt=""/></div>
 <map name="class_main_1_1legend_1_1_legend_a058c38ffc644ff330b68d7e9ebd895a6_icgraph" id="class_main_1_1legend_1_1_legend_a058c38ffc644ff330b68d7e9ebd895a6_icgraph">
-<area shape="rect" id="node3" href="class_main_1_1legend_1_1_legend.html#ac3e1bd7fb7999adee0f1e1dcbe31a99c" title="Main.legend.Legend.checkLayerOrderUpdate" alt="" coords="264,5,547,32"/><area shape="rect" id="node7" href="class_main_1_1legend_1_1_legend.html#a8d4d921da2d372e84665c9b24c400990" title="Main.legend.Legend.storeInitialPosition" alt="" coords="281,56,529,83"/><area shape="rect" id="node5" href="class_main_1_1legend_1_1_legend.html#ad51cf320373066c8ce7656f902b5bfd2" title="Main.legend.Legend.mouseReleaseEvent" alt="" coords="595,5,855,32"/><area shape="rect" id="node9" href="class_main_1_1legend_1_1_legend.html#a32bbbd8a359c96ce07febe18d3f0d5d9" title="Main.legend.Legend.mouseMoveEvent" alt="" coords="604,56,847,83"/></map>
+<area shape="rect" id="node3" href="class_main_1_1legend_1_1_legend.html#a8d4d921da2d372e84665c9b24c400990" title="Main.legend.Legend.storeInitialPosition" alt="" coords="264,5,512,32"/><area shape="rect" id="node5" href="class_main_1_1legend_1_1_legend.html#a32bbbd8a359c96ce07febe18d3f0d5d9" title="Main.legend.Legend.mouseMoveEvent" alt="" coords="560,5,803,32"/></map>
 </div>
 </p>
 
@@ -727,7 +722,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_main_1_1legend_1_1_legend_a5fbe7ff1ffc2c6190a490126a2d95956_icgraph.png" border="0" usemap="#class_main_1_1legend_1_1_legend_a5fbe7ff1ffc2c6190a490126a2d95956_icgraph" alt=""/></div>
 <map name="class_main_1_1legend_1_1_legend_a5fbe7ff1ffc2c6190a490126a2d95956_icgraph" id="class_main_1_1legend_1_1_legend_a5fbe7ff1ffc2c6190a490126a2d95956_icgraph">
-<area shape="rect" id="node3" href="class_main_1_1legend_1_1_legend.html#a07c7c0713de97ae6800a9bf1451ecae3" title="Main.legend.Legend.updateLayerSet" alt="" coords="267,157,501,184"/><area shape="rect" id="node5" href="class_main_1_1legend_1_1_legend.html#a0d7b50c29a3f42862ba06ee62e4fac79" title="Main.legend.Legend.addLayer" alt="" coords="611,5,805,32"/><area shape="rect" id="node9" href="class_main_1_1legend_1_1_legend.html#a6e253be72b9d5505bd80b7f4b5bed06e" title="Main.legend.Legend.removeCurrentLayer" alt="" coords="917,208,1174,235"/><area shape="rect" id="node15" href="class_main_1_1legend_1_1_legend.html#a8af5d90bedc94e0f798da40e03756cae" title="Main.legend.Legend.setStatusForAllLayers" alt="" coords="573,107,843,133"/><area shape="rect" id="node17" href="class_main_1_1legend_1_1_legend.html#ac3e1bd7fb7999adee0f1e1dcbe31a99c" title="Main.legend.Legend.checkLayerOrderUpdate" alt="" coords="567,56,849,83"/><area shape="rect" id="node21" href="class_main_1_1legend_1_1_legend.html#add530616509409066991977ff0d53729" title="Main.legend.Legend.removeLayers" alt="" coords="597,208,819,235"/><area shape="rect" id="node23" href="class_main_1_1legend_1_1_legend.html#a23d33c8587e0a753de17c9970c74a8cf" title="Main.legend.Legend.removeEditLayerFromRegistry" alt="" coords="550,259,866,285"/><area shape="rect" id="node26" href="class_main_1_1legend_1_1_legend.html#acbec5c3606c0e20000044b14b91a1898" title="Main.legend.Legend.removeAll" alt="" coords="609,309,807,336"/><area shape="rect" id="node7" href="class_main_1_1legend_1_1_legend.html#afe85d747b75f4f6b011eb43540748976" title="Main.legend.Legend.addLayerToLegend" alt="" coords="920,5,1171,32"/><area shape="rect" id="node11" href="class_main_1_1legend_1_1_legend.html#ad17f8dbf98abb379b69a9b55569fcbcc" title="Main.legend.Legend.getMenu" alt="" coords="1224,208,1416,235"/><area shape="rect" id="node13" href="class_main_1_1legend_1_1_legend.html#a23b5d4b94cffebed6f9000246b4c9288" title="Main.legend.Legend.showMenu" alt="" coords="1465,208,1669,235"/><area shape="rect" id="node19" href="class_main_1_1legend_1_1_legend.html#ad51cf320373066c8ce7656f902b5bfd2" title="Main.legend.Legend.mouseReleaseEvent" alt="" coords="915,56,1175,83"/></map>
+<area shape="rect" id="node3" href="class_main_1_1legend_1_1_legend.html#a07c7c0713de97ae6800a9bf1451ecae3" title="Main.legend.Legend.updateLayerSet" alt="" coords="267,132,501,159"/><area shape="rect" id="node5" href="class_main_1_1legend_1_1_legend.html#a0d7b50c29a3f42862ba06ee62e4fac79" title="Main.legend.Legend.addLayer" alt="" coords="611,5,805,32"/><area shape="rect" id="node9" href="class_main_1_1legend_1_1_legend.html#a6e253be72b9d5505bd80b7f4b5bed06e" title="Main.legend.Legend.removeCurrentLayer" alt="" coords="915,132,1173,159"/><area shape="rect" id="node15" href="class_main_1_1legend_1_1_legend.html#a8af5d90bedc94e0f798da40e03756cae" title="Main.legend.Legend.setStatusForAllLayers" alt="" coords="573,107,843,133"/><area shape="rect" id="node17" href="class_main_1_1legend_1_1_legend.html#add530616509409066991977ff0d53729" title="Main.legend.Legend.removeLayers" alt="" coords="597,157,819,184"/><area shape="rect" id="node19" href="class_main_1_1legend_1_1_legend.html#a23d33c8587e0a753de17c9970c74a8cf" title="Main.legend.Legend.removeEditLayerFromRegistry" alt="" coords="550,208,866,235"/><area shape="rect" id="node22" href="class_main_1_1legend_1_1_legend.html#acbec5c3606c0e20000044b14b91a1898" title="Main.legend.Legend.removeAll" alt="" coords="609,259,807,285"/><area shape="rect" id="node7" href="class_main_1_1legend_1_1_legend.html#afe85d747b75f4f6b011eb43540748976" title="Main.legend.Legend.addLayerToLegend" alt="" coords="919,5,1169,32"/><area shape="rect" id="node11" href="class_main_1_1legend_1_1_legend.html#ad17f8dbf98abb379b69a9b55569fcbcc" title="Main.legend.Legend.getMenu" alt="" coords="1221,132,1413,159"/><area shape="rect" id="node13" href="class_main_1_1legend_1_1_legend.html#a23b5d4b94cffebed6f9000246b4c9288" title="Main.legend.Legend.showMenu" alt="" coords="1462,132,1666,159"/></map>
 </div>
 </p>
 
@@ -1104,7 +1099,7 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_main_1_1legend_1_1_legend_ad51cf320373066c8ce7656f902b5bfd2_cgraph.png" border="0" usemap="#class_main_1_1legend_1_1_legend_ad51cf320373066c8ce7656f902b5bfd2_cgraph" alt=""/></div>
 <map name="class_main_1_1legend_1_1_legend_ad51cf320373066c8ce7656f902b5bfd2_cgraph" id="class_main_1_1legend_1_1_legend_ad51cf320373066c8ce7656f902b5bfd2_cgraph">
-<area shape="rect" id="node3" href="class_main_1_1legend_1_1_legend.html#ac3e1bd7fb7999adee0f1e1dcbe31a99c" title="Main.legend.Legend.checkLayerOrderUpdate" alt="" coords="315,31,597,57"/><area shape="rect" id="node5" href="class_main_1_1legend_1_1_legend.html#a058c38ffc644ff330b68d7e9ebd895a6" title="Main.legend.Legend.getLayerIDs" alt="" coords="657,5,868,32"/><area shape="rect" id="node7" href="class_main_1_1legend_1_1_legend.html#a07c7c0713de97ae6800a9bf1451ecae3" title="Main.legend.Legend.updateLayerSet" alt="" coords="646,56,879,83"/><area shape="rect" id="node9" href="class_main_1_1legend_1_1_legend.html#a5fbe7ff1ffc2c6190a490126a2d95956" title="Main.legend.Legend.getLayerSet" alt="" coords="929,56,1141,83"/></map>
+<area shape="rect" id="node3" href="class_main_1_1legend_1_1_legend.html#ac3e1bd7fb7999adee0f1e1dcbe31a99c" title="Main.legend.Legend.checkLayerOrderUpdate" alt="" coords="315,5,597,32"/></map>
 </div>
 </p>
 
@@ -1972,7 +1967,7 @@ Here is the caller graph for this function:</div>
 
 <p>References <a class="el" href="legend_8py_source.html#l00822">Main.legend.Legend.getLayerSet()</a>, and <a class="el" href="legend_8py_source.html#l00473">Main.legend.Legend.layers</a>.</p>
 
-<p>Referenced by <a class="el" href="legend_8py_source.html#l00619">Main.legend.Legend.addLayer()</a>, <a class="el" href="legend_8py_source.html#l00879">Main.legend.Legend.checkLayerOrderUpdate()</a>, <a class="el" href="legend_8py_source.html#l01032">Main.legend.Legend.removeAll()</a>, <a class="el" href="legend_8py_source.html#l00670">Main.legend.Legend.removeCurrentLayer()</a>, <a class="el" href="legend_8py_source.html#l00965">Main.legend.Legend.removeEditLayerFromRegistry()</a>, <a class="el" href="legend_8py_source.html#l00939">Main.legend.Legend.removeLayers()</a>, and <a class="el" href="legend_8py_source.html#l00798">Main.legend.Legend.setStatusForAllLayers()</a>.</p>
+<p>Referenced by <a class="el" href="legend_8py_source.html#l00619">Main.legend.Legend.addLayer()</a>, <a class="el" href="legend_8py_source.html#l01032">Main.legend.Legend.removeAll()</a>, <a class="el" href="legend_8py_source.html#l00670">Main.legend.Legend.removeCurrentLayer()</a>, <a class="el" href="legend_8py_source.html#l00965">Main.legend.Legend.removeEditLayerFromRegistry()</a>, <a class="el" href="legend_8py_source.html#l00939">Main.legend.Legend.removeLayers()</a>, and <a class="el" href="legend_8py_source.html#l00798">Main.legend.Legend.setStatusForAllLayers()</a>.</p>
 <div class="fragment"><pre class="fragment"><a name="l00814"></a><a class="code" href="class_main_1_1legend_1_1_legend.html#a07c7c0713de97ae6800a9bf1451ecae3">00814</a> 
 <a name="l00815"></a>00815     <span class="keyword">def </span><a class="code" href="class_main_1_1legend_1_1_legend.html#a07c7c0713de97ae6800a9bf1451ecae3">updateLayerSet</a>(self):
 <a name="l00816"></a>00816         <span class="stringliteral">&quot;&quot;&quot; Update the LayerSet and set it to canvas &quot;&quot;&quot;</span>
@@ -1997,7 +1992,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_main_1_1legend_1_1_legend_a07c7c0713de97ae6800a9bf1451ecae3_icgraph.png" border="0" usemap="#class_main_1_1legend_1_1_legend_a07c7c0713de97ae6800a9bf1451ecae3_icgraph" alt=""/></div>
 <map name="class_main_1_1legend_1_1_legend_a07c7c0713de97ae6800a9bf1451ecae3_icgraph" id="class_main_1_1legend_1_1_legend_a07c7c0713de97ae6800a9bf1451ecae3_icgraph">
-<area shape="rect" id="node3" href="class_main_1_1legend_1_1_legend.html#a0d7b50c29a3f42862ba06ee62e4fac79" title="Main.legend.Legend.addLayer" alt="" coords="349,5,544,32"/><area shape="rect" id="node7" href="class_main_1_1legend_1_1_legend.html#ac3e1bd7fb7999adee0f1e1dcbe31a99c" title="Main.legend.Legend.checkLayerOrderUpdate" alt="" coords="305,56,588,83"/><area shape="rect" id="node11" href="class_main_1_1legend_1_1_legend.html#acbec5c3606c0e20000044b14b91a1898" title="Main.legend.Legend.removeAll" alt="" coords="347,107,546,133"/><area shape="rect" id="node13" href="class_main_1_1legend_1_1_legend.html#a6e253be72b9d5505bd80b7f4b5bed06e" title="Main.legend.Legend.removeCurrentLayer" alt="" coords="655,183,913,209"/><area shape="rect" id="node19" href="class_main_1_1legend_1_1_legend.html#a23d33c8587e0a753de17c9970c74a8cf" title="Main.legend.Legend.removeEditLayerFromRegistry" alt="" coords="289,208,605,235"/><area shape="rect" id="node22" href="class_main_1_1legend_1_1_legend.html#add530616509409066991977ff0d53729" title="Main.legend.Legend.removeLayers" alt="" coords="335,259,558,285"/><area shape="rect" id="node24" href="class_main_1_1legend_1_1_legend.html#a8af5d90bedc94e0f798da40e03756cae" title="Main.legend.Legend.setStatusForAllLayers" alt="" coords="311,309,582,336"/><area shape="rect" id="node5" href="class_main_1_1legend_1_1_legend.html#afe85d747b75f4f6b011eb43540748976" title="Main.legend.Legend.addLayerToLegend" alt="" coords="659,5,909,32"/><area shape="rect" id="node9" href="class_main_1_1legend_1_1_legend.html#ad51cf320373066c8ce7656f902b5bfd2" title="Main.legend.Legend.mouseReleaseEvent" alt="" coords="654,56,914,83"/><area shape="rect" id="node15" href="class_main_1_1legend_1_1_legend.html#ad17f8dbf98abb379b69a9b55569fcbcc" title="Main.legend.Legend.getMenu" alt="" coords="963,183,1155,209"/><area shape="rect" id="node17" href="class_main_1_1legend_1_1_legend.html#a23b5d4b94cffebed6f9000246b4c9288" title="Main.legend.Legend.showMenu" alt="" coords="1203,183,1407,209"/></map>
+<area shape="rect" id="node3" href="class_main_1_1legend_1_1_legend.html#a0d7b50c29a3f42862ba06ee62e4fac79" title="Main.legend.Legend.addLayer" alt="" coords="349,5,544,32"/><area shape="rect" id="node7" href="class_main_1_1legend_1_1_legend.html#acbec5c3606c0e20000044b14b91a1898" title="Main.legend.Legend.removeAll" alt="" coords="347,56,546,83"/><area shape="rect" id="node9" href="class_main_1_1legend_1_1_legend.html#a6e253be72b9d5505bd80b7f4b5bed06e" title="Main.legend.Legend.removeCurrentLayer" alt="" coords="654,132,911,159"/><area shape="rect" id="node15" href="class_main_1_1legend_1_1_legend.html#a23d33c8587e0a753de17c9970c74a8cf" title="Main.legend.Legend.removeEditLayerFromRegistry" alt="" coords="289,157,605,184"/><area shape="rect" id="node18" href="class_main_1_1legend_1_1_legend.html#add530616509409066991977ff0d53729" title="Main.legend.Legend.removeLayers" alt="" coords="335,208,558,235"/><area shape="rect" id="node20" href="class_main_1_1legend_1_1_legend.html#a8af5d90bedc94e0f798da40e03756cae" title="Main.legend.Legend.setStatusForAllLayers" alt="" coords="311,259,582,285"/><area shape="rect" id="node5" href="class_main_1_1legend_1_1_legend.html#afe85d747b75f4f6b011eb43540748976" title="Main.legend.Legend.addLayerToLegend" alt="" coords="657,5,908,32"/><area shape="rect" id="node11" href="class_main_1_1legend_1_1_legend.html#ad17f8dbf98abb379b69a9b55569fcbcc" title="Main.legend.Legend.getMenu" alt="" coords="960,132,1152,159"/><area shape="rect" id="node13" href="class_main_1_1legend_1_1_legend.html#a23b5d4b94cffebed6f9000246b4c9288" title="Main.legend.Legend.showMenu" alt="" coords="1201,132,1405,159"/></map>
 </div>
 </p>
 
@@ -2232,6 +2227,38 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <hr/><h2>Member Data Documentation</h2>
+<a class="anchor" id="a396506015bb6aef91616350e0031f169"></a><!-- doxytag: member="Main::legend::Legend::__afterDragStateLayers" ref="a396506015bb6aef91616350e0031f169" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_main_1_1legend_1_1_legend.html#a396506015bb6aef91616350e0031f169">Main::legend.Legend::__afterDragStateLayers</a><code> [private]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="legend_8py_source.html#l00882">882</a> of file <a class="el" href="legend_8py_source.html">legend.py</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae9c3efe90e240e66a79ccf5710ad9d8f"></a><!-- doxytag: member="Main::legend::Legend::__beforeDragStateLayers" ref="ae9c3efe90e240e66a79ccf5710ad9d8f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_main_1_1legend_1_1_legend.html#ae9c3efe90e240e66a79ccf5710ad9d8f">Main::legend.Legend::__beforeDragStateLayers</a><code> [private]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="legend_8py_source.html#l00853">853</a> of file <a class="el" href="legend_8py_source.html">legend.py</a>.</p>
+
+<p>Referenced by <a class="el" href="legend_8py_source.html#l00853">Main.legend.Legend::storeInitialPosition()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a47ff7cdecb67f1477a86074f13ce3a4b"></a><!-- doxytag: member="Main::legend::Legend::bMousePressedFlag" ref="a47ff7cdecb67f1477a86074f13ce3a4b" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -2345,7 +2372,7 @@ Here is the caller graph for this function:</div>
 
 <p>Definition at line <a class="el" href="legend_8py_source.html#l00473">473</a> of file <a class="el" href="legend_8py_source.html">legend.py</a>.</p>
 
-<p>Referenced by <a class="el" href="dlgaddattributes_8py_source.html#l00168">Tools.dlgaddattributes.DlgAddAttributes::cancel()</a>, <a class="el" href="selectfeatures_8py_source.html#l00057">Tools.selectfeatures.SelectTool::canvasPressEvent()</a>, <a class="el" href="identify_8py_source.html#l00193">Tools.identify.Identify::displayInformation()</a>, <a class="el" href="identify_8py_source.html#l00155">Tools.identify.Identify::getGeometryText()</a>, <a class="el" href="addpoints_8py_source.html#l00103">Tools.addpoints.AddPoints::getNewAttributes()</a>, <a class="el" href="addlinespolygons_8py_source.html#l00134">Tools.addlinespolygons.AddLinesPolygons::getNewAttributes()</a>, <a class="el" href="dlgaddattributes_8py_source.html#l00211">Tools.dlgaddattributes.DlgAddAttributes::getNewAttributes()</a>, <a class="el" href="legend_8py_source.html#l00748">Main.legend.Legend::layerSymbology()</a>, <a class="el" href="dlgaddattributes_8py_source.html#l00175">Tools.dlgaddattributes.DlgAddAttributes::reject()</a>, <a class="el" href="legend_8py_source.html#l00670">Main.legend.Legend::removeCurrentLayer()</a>, <a class="el" href="legend_8py_source.html#l00965">Main.legend.Legend::removeEditLayerFromRegistry()</a>, <a class="el" href="selectfeatures_8py_source.html#l00080">Tools.selectfeatures.SelectTool::selectFeat()</a>, <a class="el" href="legend_8py_source.html#l01013">Main.legend.Legend::setActiveLayerVariables()</a>, and <a class="el" href="identify_8py_source.html#l00123">Tools.identify.Identify::vectorIdentifyTool()</a>.</p>
+<p>Referenced by <a class="el" href="dlgaddattributes_8py_source.html#l00168">Tools.dlgaddattributes.DlgAddAttributes::cancel()</a>, <a class="el" href="selectfeatures_8py_source.html#l00057">Tools.selectfeatures.SelectTool::canvasPressEvent()</a>, <a class="el" href="identify_8py_source.html#l00193">Tools.identify.Identify::displayInformation()</a>, <a class="el" href="identify_8py_source.html#l00155">Tools.identify.Identify::getGeometryText()</a>, <a class="el" href="addpoints_8py_source.html#l00103">Tools.addpoints.AddPoints::getNewAttributes()</a>, <a class="el" href="addlinespolygons_8py_source.html#l00145">Tools.addlinespolygons.AddLinesPolygons::getNewAttributes()</a>, <a class="el" href="dlgaddattributes_8py_source.html#l00211">Tools.dlgaddattributes.DlgAddAttributes::getNewAttributes()</a>, <a class="el" href="legend_8py_source.html#l00748">Main.legend.Legend::layerSymbology()</a>, <a class="el" href="dlgaddattributes_8py_source.html#l00175">Tools.dlgaddattributes.DlgAddAttributes::reject()</a>, <a class="el" href="legend_8py_source.html#l00670">Main.legend.Legend::removeCurrentLayer()</a>, <a class="el" href="legend_8py_source.html#l00965">Main.legend.Legend::removeEditLayerFromRegistry()</a>, <a class="el" href="selectfeatures_8py_source.html#l00080">Tools.selectfeatures.SelectTool::selectFeat()</a>, <a class="el" href="legend_8py_source.html#l01013">Main.legend.Legend::setActiveLayerVariables()</a>, and <a class="el" href="identify_8py_source.html#l00123">Tools.identify.Identify::vectorIdentifyTool()</a>.</p>
 
 </div>
 </div>
@@ -2373,7 +2400,7 @@ Here is the caller graph for this function:</div>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jun 11 2012 14:12:30 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jun 12 2012 10:42:23 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -245,6 +245,10 @@ hideEditLayers = ['edit_scenario(points)', 'edit_scenario(lines)',
 ''' Configuration variables that need to be executed to be set '''
 
 def setDefaultColors():
+    ''' 
+        Sets the default colors for base layer point features.  These may be changed using HTML Color Names.
+        see http://www.w3schools.com/html/html_colornames.asp
+    '''
     # debugging
     print "config.setDefaultColors()"
     

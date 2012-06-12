@@ -44,6 +44,7 @@
       <li class="current"><a href="namespaces.html"><span>Packages</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="dirs.html"><span>Directories</span></a></li>
     </ul>
   </div>
   <div id="navrow2" class="tabs2">
@@ -105,27 +106,27 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00066">66</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
-<div class="fragment"><pre class="fragment"><a name="l00066"></a><a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">00066</a> 
-<a name="l00067"></a>00067 <span class="keyword">def </span><a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(base, src):
-<a name="l00068"></a>00068     <span class="comment">#path = os.path.basename(src)</span>
-<a name="l00069"></a>00069     list = [(root, map(<span class="keyword">lambda</span> f: os.path.join(root, f), files)) <span class="keywordflow">for</span> (root, dirs, files) <span class="keywordflow">in</span> os.walk(os.path.normpath(src))]
-<a name="l00070"></a>00070     new_list = []
-<a name="l00071"></a>00071     <span class="keywordflow">for</span> (root, files) <span class="keywordflow">in</span> list:
-<a name="l00072"></a>00072         <span class="comment">#print &quot;%s , %s&quot; % (root,files)</span>
-<a name="l00073"></a>00073         <span class="comment">#print &quot;%s&quot; % root</span>
-<a name="l00074"></a>00074         <span class="comment">#if len(files) &gt; 0: #and file.count(&#39;.gitignore&#39;) == 0:</span>
-<a name="l00075"></a>00075         new_files = []
-<a name="l00076"></a>00076         <span class="keywordflow">for</span> file <span class="keywordflow">in</span> files:
-<a name="l00077"></a>00077             <span class="keywordflow">if</span> file.count(<span class="stringliteral">&#39;.gitignore&#39;</span>) == 0 <span class="keywordflow">and</span> file.count(<span class="stringliteral">&#39;test&#39;</span>) == 0:
-<a name="l00078"></a>00078                 new_files.append(file)    
-<a name="l00079"></a>00079         root = root[len(base):]
-<a name="l00080"></a>00080         new_list.append((root, new_files))
-<a name="l00081"></a>00081     
-<a name="l00082"></a>00082     <span class="comment">#print&#39;new_list is: &#39;</span>
-<a name="l00083"></a>00083     <span class="comment">#print new_list</span>
-<a name="l00084"></a>00084     
-<a name="l00085"></a>00085     <span class="keywordflow">return</span> new_list
+<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00067">67</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00067"></a><a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">00067</a> 
+<a name="l00068"></a>00068 <span class="keyword">def </span><a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(base, src):
+<a name="l00069"></a>00069     <span class="comment">#path = os.path.basename(src)</span>
+<a name="l00070"></a>00070     list = [(root, map(<span class="keyword">lambda</span> f: os.path.join(root, f), files)) <span class="keywordflow">for</span> (root, dirs, files) <span class="keywordflow">in</span> os.walk(os.path.normpath(src))]
+<a name="l00071"></a>00071     new_list = []
+<a name="l00072"></a>00072     <span class="keywordflow">for</span> (root, files) <span class="keywordflow">in</span> list:
+<a name="l00073"></a>00073         <span class="comment">#print &quot;%s , %s&quot; % (root,files)</span>
+<a name="l00074"></a>00074         <span class="comment">#print &quot;%s&quot; % root</span>
+<a name="l00075"></a>00075         <span class="comment">#if len(files) &gt; 0: #and file.count(&#39;.gitignore&#39;) == 0:</span>
+<a name="l00076"></a>00076         new_files = []
+<a name="l00077"></a>00077         <span class="keywordflow">for</span> file <span class="keywordflow">in</span> files:
+<a name="l00078"></a>00078             <span class="keywordflow">if</span> file.count(<span class="stringliteral">&#39;.gitignore&#39;</span>) == 0 <span class="keywordflow">and</span> file.count(<span class="stringliteral">&#39;test&#39;</span>) == 0:
+<a name="l00079"></a>00079                 new_files.append(file)    
+<a name="l00080"></a>00080         root = root[len(base):]
+<a name="l00081"></a>00081         new_list.append((root, new_files))
+<a name="l00082"></a>00082     
+<a name="l00083"></a>00083     <span class="comment">#print&#39;new_list is: &#39;</span>
+<a name="l00084"></a>00084     <span class="comment">#print new_list</span>
+<a name="l00085"></a>00085     
+<a name="l00086"></a>00086     <span class="keywordflow">return</span> new_list
     
 </pre></div>
 </div>
@@ -142,7 +143,7 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00289">289</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
+<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00290">290</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
 
 </div>
 </div>
@@ -157,7 +158,7 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00319">319</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
+<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00320">320</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
 
 </div>
 </div>
@@ -171,13 +172,13 @@ Variables</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<b>Initial value:</b><div class="fragment"><pre class="fragment"><a name="l00001"></a><a class="code" href="namespacemake__setupexe__config.html">00001</a> (<a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&quot;Z:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/&quot;</span>, <span class="stringliteral">&quot;Z:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/base_layers&quot;</span>) + 
-<a name="l00002"></a>00002               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/&#39;</span>, <span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/plugins&#39;</span>) + 
-<a name="l00003"></a>00003               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/&#39;</span>, <span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/resources&#39;</span>) +
-<a name="l00004"></a>00004               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/bin/&#39;</span>, <span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/bin/gdalplugins/1.8&#39;</span>) +
-<a name="l00005"></a>00005               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/share/&#39;</span>, <span class="stringliteral">&#39;Z:/Program Files (x86)/Quantum GIS Wroclaw/share/gdal&#39;</span>))
+<b>Initial value:</b><div class="fragment"><pre class="fragment"><a name="l00001"></a><a class="code" href="namespacemake__setupexe__config.html">00001</a> (<a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&quot;C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/&quot;</span>, <span class="stringliteral">&quot;C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/base_layers&quot;</span>) + 
+<a name="l00002"></a>00002               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/&#39;</span>, <span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/plugins&#39;</span>) + 
+<a name="l00003"></a>00003               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/&#39;</span>, <span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/apps/qgis/resources&#39;</span>) +
+<a name="l00004"></a>00004               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/bin/&#39;</span>, <span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/bin/gdalplugins/1.8&#39;</span>) +
+<a name="l00005"></a>00005               <a class="code" href="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9">tree</a>(<span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/share/&#39;</span>, <span class="stringliteral">&#39;C:/Program Files (x86)/Quantum GIS Wroclaw/share/gdal&#39;</span>))
 </pre></div>
-<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00305">305</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
+<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00306">306</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
 
 </div>
 </div>
@@ -202,7 +203,7 @@ Variables</h2></td></tr>
 <a name="l00009"></a>00009                       <span class="stringliteral">&quot;dist_dir&quot;</span>: <span class="stringliteral">&quot;dist&quot;</span>}
 <a name="l00010"></a>00010            }
 </pre></div>
-<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00291">291</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
+<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00292">292</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
 
 </div>
 </div>
@@ -217,7 +218,7 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00318">318</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
+<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00319">319</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
 
 </div>
 </div>
@@ -232,7 +233,7 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00317">317</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
+<p>Definition at line <a class="el" href="make__setupexe__config_8py_source.html#l00318">318</a> of file <a class="el" href="make__setupexe__config_8py_source.html">make_setupexe_config.py</a>.</p>
 
 </div>
 </div>
@@ -240,7 +241,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jun 11 2012 14:12:31 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jun 12 2012 10:42:24 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -44,6 +44,7 @@
       <li><a href="namespaces.html"><span>Packages</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="dirs.html"><span>Directories</span></a></li>
     </ul>
   </div>
   <div id="navrow2" class="tabs2">
@@ -72,15 +73,11 @@
 Inheritance diagram for make_setupexe.build_installer:</div>
 <div class="dyncontent">
 <div class="center"><img src="classmake__setupexe_1_1build__installer__inherit__graph.png" border="0" usemap="#make__setupexe_8build__installer_inherit__map" alt="Inheritance graph"/></div>
-<map name="make__setupexe_8build__installer_inherit__map" id="make__setupexe_8build__installer_inherit__map">
-</map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for make_setupexe.build_installer:</div>
 <div class="dyncontent">
 <div class="center"><img src="classmake__setupexe_1_1build__installer__coll__graph.png" border="0" usemap="#make__setupexe_8build__installer_coll__map" alt="Collaboration graph"/></div>
-<map name="make__setupexe_8build__installer_coll__map" id="make__setupexe_8build__installer_coll__map">
-</map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 
 <p><a href="classmake__setupexe_1_1build__installer-members.html">List of all members.</a></p>
@@ -91,7 +88,7 @@ Public Member Functions</h2></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="make__setupexe_8py_source.html#l00206">206</a> of file <a class="el" href="make__setupexe_8py_source.html">make_setupexe.py</a>.</p>
+<p>Definition at line <a class="el" href="make__setupexe_8py_source.html#l00210">210</a> of file <a class="el" href="make__setupexe_8py_source.html">make_setupexe.py</a>.</p>
 </div><hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="a557e647434bd80fe17920fd33284b00b"></a><!-- doxytag: member="make_setupexe::build_installer::run" ref="a557e647434bd80fe17920fd33284b00b" args="" -->
 <div class="memitem">
@@ -108,28 +105,28 @@ Public Member Functions</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="make__setupexe_8py_source.html#l00209">209</a> of file <a class="el" href="make__setupexe_8py_source.html">make_setupexe.py</a>.</p>
+<p>Definition at line <a class="el" href="make__setupexe_8py_source.html#l00213">213</a> of file <a class="el" href="make__setupexe_8py_source.html">make_setupexe.py</a>.</p>
 
-<p>References <a class="el" href="make__setupexe_8py_source.html#l00087">make_setupexe.InnoScript.dist_dir</a>, <a class="el" href="make__setupexe__config_8py_source.html#l00089">make_setupexe_config.InnoScript.dist_dir</a>, <a class="el" href="make__setupexe_8py_source.html#l00087">make_setupexe.InnoScript.lib_dir</a>, <a class="el" href="make__setupexe__config_8py_source.html#l00089">make_setupexe_config.InnoScript.lib_dir</a>, <a class="el" href="make__setupexe_8py_source.html#l00087">make_setupexe.InnoScript.lib_files</a>, <a class="el" href="make__setupexe__config_8py_source.html#l00099">make_setupexe_config.InnoScript.lib_files</a>, <a class="el" href="make__setupexe_8py_source.html#l00087">make_setupexe.InnoScript.windows_exe_files</a>, and <a class="el" href="make__setupexe__config_8py_source.html#l00099">make_setupexe_config.InnoScript.windows_exe_files</a>.</p>
-<div class="fragment"><pre class="fragment"><a name="l00209"></a><a class="code" href="classmake__setupexe_1_1build__installer.html#a557e647434bd80fe17920fd33284b00b">00209</a> 
-<a name="l00210"></a>00210     <span class="keyword">def </span><a class="code" href="classmake__setupexe_1_1build__installer.html#a557e647434bd80fe17920fd33284b00b">run</a>(self):
-<a name="l00211"></a>00211         <span class="comment"># First, let py2exe do its work.</span>
-<a name="l00212"></a>00212         py2exe.run(self)
-<a name="l00213"></a>00213 
-<a name="l00214"></a>00214         lib_dir = self.lib_dir
-<a name="l00215"></a>00215         dist_dir = self.dist_dir
-<a name="l00216"></a>00216         
-<a name="l00217"></a>00217         <span class="comment"># create the Installer, using the files py2exe has created.</span>
-<a name="l00218"></a>00218         script = <a class="code" href="classmake__setupexe_1_1_inno_script.html">InnoScript</a>(<span class="stringliteral">&quot;CAPS Scenario Builder&quot;</span>,
-<a name="l00219"></a>00219                             lib_dir,
-<a name="l00220"></a>00220                             dist_dir,
-<a name="l00221"></a>00221                             self.windows_exe_files,
-<a name="l00222"></a>00222                             self.lib_files)
-<a name="l00223"></a>00223         <span class="keywordflow">print</span> <span class="stringliteral">&quot;*** creating the inno setup script***&quot;</span>
-<a name="l00224"></a>00224         script.create()
-<a name="l00225"></a>00225         <span class="keywordflow">print</span> <span class="stringliteral">&quot;*** compiling the inno setup script***&quot;</span>
-<a name="l00226"></a>00226         script.compile()
-<a name="l00227"></a>00227         <span class="comment"># Note: By default the final setup.exe will be in an Output subdirectory.</span>
+<p>References <a class="el" href="make__setupexe_8py_source.html#l00089">make_setupexe.InnoScript.dist_dir</a>, <a class="el" href="make__setupexe__config_8py_source.html#l00090">make_setupexe_config.InnoScript.dist_dir</a>, <a class="el" href="make__setupexe_8py_source.html#l00089">make_setupexe.InnoScript.lib_dir</a>, <a class="el" href="make__setupexe__config_8py_source.html#l00090">make_setupexe_config.InnoScript.lib_dir</a>, <a class="el" href="make__setupexe_8py_source.html#l00089">make_setupexe.InnoScript.lib_files</a>, <a class="el" href="make__setupexe__config_8py_source.html#l00100">make_setupexe_config.InnoScript.lib_files</a>, <a class="el" href="make__setupexe_8py_source.html#l00089">make_setupexe.InnoScript.windows_exe_files</a>, and <a class="el" href="make__setupexe__config_8py_source.html#l00100">make_setupexe_config.InnoScript.windows_exe_files</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00213"></a><a class="code" href="classmake__setupexe_1_1build__installer.html#a557e647434bd80fe17920fd33284b00b">00213</a> 
+<a name="l00214"></a>00214     <span class="keyword">def </span><a class="code" href="classmake__setupexe_1_1build__installer.html#a557e647434bd80fe17920fd33284b00b">run</a>(self):
+<a name="l00215"></a>00215         <span class="comment"># First, let py2exe do its work.</span>
+<a name="l00216"></a>00216         py2exe.run(self)
+<a name="l00217"></a>00217 
+<a name="l00218"></a>00218         lib_dir = self.lib_dir
+<a name="l00219"></a>00219         dist_dir = self.dist_dir
+<a name="l00220"></a>00220         
+<a name="l00221"></a>00221         <span class="comment"># create the Installer, using the files py2exe has created.</span>
+<a name="l00222"></a>00222         script = <a class="code" href="classmake__setupexe_1_1_inno_script.html">InnoScript</a>(<span class="stringliteral">&quot;CAPS Scenario Builder&quot;</span>,
+<a name="l00223"></a>00223                             lib_dir,
+<a name="l00224"></a>00224                             dist_dir,
+<a name="l00225"></a>00225                             self.windows_exe_files,
+<a name="l00226"></a>00226                             self.lib_files)
+<a name="l00227"></a>00227         <span class="keywordflow">print</span> <span class="stringliteral">&quot;*** creating the inno setup script***&quot;</span>
+<a name="l00228"></a>00228         script.create()
+<a name="l00229"></a>00229         <span class="keywordflow">print</span> <span class="stringliteral">&quot;*** compiling the inno setup script***&quot;</span>
+<a name="l00230"></a>00230         script.compile()
+<a name="l00231"></a>00231         <span class="comment"># Note: By default the final setup.exe will be in an Output subdirectory.</span>
 
 </pre></div>
 </div>
@@ -141,7 +138,7 @@ Public Member Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jun 11 2012 14:12:31 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jun 12 2012 10:42:24 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

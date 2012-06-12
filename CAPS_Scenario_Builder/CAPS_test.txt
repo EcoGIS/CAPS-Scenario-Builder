@@ -11,11 +11,11 @@ just do the tests below with the config file pointing to a non-standard director
 JUST LAYERS:
 tests loading and deleting raster and vector layers
 
-BASIC SCENARIO MENU CHECK
-tests the basic scenario menu functions
-
 CHECK DLGSCENARIOTYPES AND OPEN EDITING FILES AND BASE LAYER FILES:
 tests if the correced base layers, constraints layers are loaded in proper order.
+
+BASIC SCENARIO MENU CHECK
+tests the basic scenario menu functions
 
 CHECK COPY PASTE
 tests copy and paste
@@ -27,7 +27,7 @@ CHECK TOOL SELECT
 tests select tool behavior
 
 CHECK SNAPPING OF NEW ROADS
-need to write this
+tests snapping constraints checking and pasting constraints checking
 
 CHECK SAVE SCENARIO AS:
 tests save scenario as
@@ -75,6 +75,31 @@ Delete a raster: are buttons right?, is selection right in layer panel?
 
 ########################################################################################
 
+CHECK DLGSCENARIOTYPES AND OPEN EDITING FILES AND BASE LAYER FILES:
+
+start with new scenario and click edit scenario and choose a scenario type change
+	are the editingLayer and baseLayer names correct and highlighted?
+	Is the color of the features in the base layer correct?
+	are the constraints layers loaded
+	does the console say "WRITE A NEW EDITING LAYER VECTOR FILE"? it should
+	save the scenario	
+
+	start with the three editing layers open and another layer above them. click "edit scenario" and OK
+	are the editingLayer, baseLayer and constraints layer names correct and highlighted?
+	Is the color of the features in the base layer correct?
+	does the editing layer get moved to the top of the layer list?
+	what is the index of the current layer?
+	try for all editing types
+	save the scenario
+
+	start with the three editing layers open, base layers open and another layer above them and click edit scenario, 
+	are the editingLayer, base layer and constraints layer names correct and highlighted?
+	Is the color of the features in the base layer correct?
+	does the editLayer and the baseLayer get moved to the top of the layer list?
+	what is the index of the current layer?
+	
+########################################################################################
+
 BASIC SCENARIO MENU CHECK
 Open a scenario" buttons OK? 
 Open a different scenario: buttons OK?
@@ -89,27 +114,6 @@ Click "New Scenario": should NOT get message
 	are buttons OK?
 Open the previous scenario: is the added layer saved?
 
-########################################################################################
-
-CHECK DLGSCENARIOTYPES AND OPEN EDITING FILES AND BASE LAYER FILES:
-start with new scenario and click edit scenario and choose a scenario type change
-	are the editingLayer and baseLayer names correct and highlighted?
-	Is the color of the features in the base layer correct?
-	are the constraints layers loaded
-	does the console say "WRITE A NEW EDITING LAYER VECTOR FILE"? it should 
-start with the three editing layers open and another layer above them. click "edit scenario" and OK
-	are the editingLayer, baseLayer and constraints layer names correct and highlighted?
-	Is the color of the features in the base layer correct?
-	does the editing layer get moved to the top of the layer list?
-	what is the index of the current layer?
-	try for all editing types
-start with the three editing layers open, base layers open and another layer above them and click edit scenario, 
-	are the editingLayer, base layer and constraints layer names correct and highlighted?
-	Is the color of the features in the base layer correct?
-	does the editLayer and the baseLayer get moved to the top of the layer list?
-	what is the index of the current layer?
-
-	
 ########################################################################################
 
 CHECK COPY PASTE
@@ -230,7 +234,42 @@ select a raster and click all other buttons: do things work properly?
 ########################################################################################
 
 CHECK SNAPPING OF NEW ROADS
-need to write this
+
+open a 'Add roads' scenario edit type and try adding a new road not on an existing road.
+	Do I get an error message? I should
+Add a road that starts on an existing road. Does it work? It should 
+Add a road that starts near but not on a new road.  If too far, do I get error?  I should.
+Add a road that starts near a new road. Does it snap to new road?  Do I get error? I shouldn't. 
+Open a lines 'test' layer and try copying and pasting a new road not on an existing road. Should get error.
+Copy and paste one new road on and one new road off an existing road.  Should get error.
+Copy and paste 3 new roads on existing road.  Did they paste?  They should 
+
+open a terrestrial passage scenario edit type and add not on a road or new road.  Do I get error?  I should.
+Add a terr passage on a new road.  Do I get error?  Does it snap to new road?
+Adopen a points 'test' layer and copy and paste a terr passage not on a road.  Should get error.
+copy and paste one on and one off a road.  Should get error.
+copy and paste 3 new ter passages on roads.  Should workd a ter passage on an existing road.  Do I get error?
+
+open a bridge culvert scenario edit type and add a point not on a new road or stream.
+	Do I get an error?  I should.
+Add a point on a new road but not on a stream. Do I get an error?  I should.
+Add a point on a new road and on a stream.
+	Do I get an error?  I shouldn't.  Is the point snapped to the new road?
+open a points 'test' layer and copy and paste a culvert not on a stream.  Should get error.
+copy and paste one on and one off a stream.  Should get error.
+copy and paste 3 new culverts on streams.  Should work
+	
+open a dam scenario edit type and add a dam not on a stream. Do I get an error?  I should.
+Add a dam on a stream centerline.  Does it work?  It should
+open a points 'test' layer and copy and paste a dam not on a stream.  Should get error.
+copy and paste one on and one off a stream.  Should get error.
+copy and paste 3 new dams on streams.  Should work
+ 
+open a tidal restriction scenario edit type and try to add not on a stream.  Do I get error?  I should.
+Add a tidal restriction on a stream.  Does it work?  It should.
+open a points 'test' layer and copy and paste a tr not on a stream.  Should get error.
+copy and paste one on and one off a stream.  Should get error.
+copy and paste 3 new trs on streams.  Should work
 
 ########################################################################################
 
@@ -372,9 +411,34 @@ open the points editing layer in QGIS and modify edits.  What happens? close QGI
 open the points dbf file in open office.  modify edits.  What happens?  If I get a warning dialog,
 	are the features unchanged on the editing layer?, are buttons correct?
 
+
 ########################################################################################	
 	
 CHECK PROJECT MANAGEMENT AND SFTP UPLOAD
-need to write this	
+
+Click “New Scenario,” open the manage projects dialog and save a project.
+Open project management (pm) dialog.  Do widgets have correct messages?  Are scenario exports displayed?
+Can you move scenario exports back and forth? 
+Try to save a project.  Get validation error?  You should.  
+Fill in one field at a time and save. Get appropriate validation errors?
+Save a project without an export file and try to send.  Correct validation error?
+Add csv files and save.  Is file in file system and in projects drop down list?
+Create another project.  Did appropriate "Create project" msg display?  
+Open first project.  Display ok?
+Delete one of the csv files in the project from the file system and open the project. Should get error.
+Send the first project.  Successful send?  Is date sent filled in?  Did 'sending' msg show?
+Remove the date manually and resend.  Should get error message.  Is date sent filled in?  Should not be.
+Add the send date back manually.  Try to save a project with the same name as the "sent" project.  Should get error.
+Open the sent project and try to edit.  Should not be able to.
+Make an edit to a "new project" and try to open another project.  Get isDirty msg? You should.
+Open an unsent project and try to edit a different field and then try to display another project.
+	Should get message.
+Try to edit a project and 'cancel' the dialog.  Should get isDirty msg.
+Try to delete a sent project.  Should get msg.
+Try to delete an unsent project.  Is it missing from the file system?
+
+Open the sftp dialog.
+Try to change all SFTP settings and save.  Reopen the dialog.  Did it work?
+Set settings back.  Did it work?
 	
 DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
