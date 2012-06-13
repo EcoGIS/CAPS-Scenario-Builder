@@ -775,7 +775,7 @@ was not written.  Please check that a file with the same name is not open in ano
 
         error = None
         try: # trap error if directory is missing for some reason
-            scenarioEditFileList = os.listdir(scenarioDirectoryPath) # use Python os module here
+            scenarioDirectoryList = os.listdir(scenarioDirectoryPath) # use Python os module here
         except (IOError, OSError), e:
             error = e
             if error:
@@ -783,7 +783,13 @@ was not written.  Please check that a file with the same name is not open in ano
                 QtGui.QMessageBox.warning(self, "Export Scenario Error:", "The files in this \
 scenario's directory could not be listed.  Please save the scenario and try again")
                 return False
-              
+
+        # We only want editing shapefiles not any existing csv shapefiles
+        scenarioEditFileList = []
+        for afile in scenarioDirectoryList:
+            if afile.endswith('.shp'):
+                scenarioEditFileList.append(afile)
+
         if scenarioEditFileList == []:
             QtGui.QMessageBox.warning(self, "Export Scenario Error:", "You have not made any scenario edits to export. \
 Please choose 'Edit Scenario' from the Edit menu, make some edits, and then try again." )
@@ -2968,6 +2974,9 @@ Please try to export your scenario again.')
  
     def openRasterLayer(self, rfilePath):
         ''' Open a raster layer '''
+        # debugging
+        print 'Main.mainwindow.MainWindow.openRasterLayer()'
+        
         info = QtCore.QFileInfo(rfilePath)
         
         try:

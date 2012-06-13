@@ -53,14 +53,17 @@ class LegendItem(QtGui.QTreeWidgetItem):
         # debugging
         print "Main.legend.LegendItem() class"
         print 'Main.legend.LegendItem(): The system path is', sys.path
-        print 'Main.legend.LegendItem.layerName before is: ', self.layerName
-        
+
         self.legend = parent
         self.canvasLayer = canvasLayer
         
         # Convert QStrings to unicode unless they are used immediately in a Qt method. 
         # This ensures that we never ask Python to slice a QString, which produces a type error.
         self.layerName = unicode(self.canvasLayer.layer().name())
+        
+        #debugging
+        print 'Main.legend.LegendItem.layerName before is: ', self.layerName
+        
         self.canvasLayer.layer().setLayerName(self.legend.normalizeLayerName(self.layerName))
         self.layerName = unicode(self.canvasLayer.layer().name())
         self.setText(0, self.layerName)
@@ -673,9 +676,9 @@ class Legend(QtGui.QTreeWidget):
         """ Slot. Manage the removeCurrentLayer action in the context Menu """
         # debugging
         print "Mainwindow.legend.removeCurrentLayer()"
-       
+
         ''' Check and warn on removing an editing layer '''
-        
+
         name = unicode(self.currentItem().canvasLayer.layer().name())
         if name in config.editLayersBaseNames:
             reply = QtGui.QMessageBox.warning(self, "Warning!", "Removing '" + name + "' \
@@ -699,24 +702,24 @@ the file system. All changes to these files will be lost. Do you want to delete 
                 self.deleteEditingLayer(editFilePath)
                 # remove the layer from the coloredLayers dictionary
                 self.mainwindow.coloredLayers.pop(name, None)
-                
+
                 # debugging
                 print "Main.legend.Legend.removeCurrentLayer(): The coloredLayers are: "
                 for k, v in self.mainwindow.coloredLayers.iteritems():
                     print "%s: %s" % (k, str(v.getRgb()))
-                    
+
                 # If we have deleted the edit layer for current scenario edit type, then
                 # reset the editLayerName and the editDirty flag.
                 if name == self.mainwindow.editLayerName:
                     self.mainwindow.editLayerName = None
                     self.mainwindow.editDirty = False
                 return # we are done deleting the layer so return
-        
+
         ''' 
             Note that this section handles a layer whether it is a raster or vector
             and NOT an editing layer.
         '''
-           
+
         # Remove the layer from the "mainwindow.originalScenarioLayers" list and 
         # set the scenario as dirty, since it has been changed.
         if self.currentItem().canvasLayer.layer() in self.mainwindow.originalScenarioLayers:
@@ -728,11 +731,11 @@ the file system. All changes to these files will be lost. Do you want to delete 
                                                                     + str(len(self.mainwindow.originalScenarioLayers)))
             self.mainwindow.scenarioDirty = True
             print "Mainwindow.legend.removeCurrentLayer(): layer was removed from originalScenarioLayers"
-            
+
         # be Layer ready to be removed so reset active layer variables to none or we could
         #  get C++ object deleted runtime errors from deleting an object underlying a python variable.
         self.setActiveLayerVariables()
-        
+
         # remove layer from the registry
         layerId = self.currentItem().canvasLayer.layer().id()
         QgsMapLayerRegistry.instance().removeMapLayer(layerId)
@@ -740,7 +743,7 @@ the file system. All changes to these files will be lost. Do you want to delete 
         self.updateLayerSet()
         # remove the layer from the coloredLayers dictionary
         self.mainwindow.coloredLayers.pop(name, None)
-        
+
         # debugging
         print "Main.legend.Legend.removeCurrentLayer(): The coloredLayers are: "
         for k, v in self.mainwindow.coloredLayers.iteritems():
