@@ -1142,7 +1142,7 @@ if this scenario file is open in another program.")
             # debugging
             print "Main.mainwindow.selectFeatures() state is False"
             # select action is not selected so disable the select sub actions if no selections have been made
-            if len(self.activeVLayer.selectedFeatures()) == 0:
+            if self.activeVLayer and len(self.activeVLayer.selectedFeatures()) == 0:
                 self.disableSelectActions()  
  
     def deselectFeatures(self):
