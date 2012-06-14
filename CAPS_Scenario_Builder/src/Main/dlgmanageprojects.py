@@ -579,8 +579,8 @@ The error on line " + str(lino) + " is '" + error + "'.")
 
         if ms: 
             QtGui.QMessageBox.warning(self, "Missing Files Error: ", "The exported scenario(s) (" + ms + ") \
-listed in " + projectFileName + " no longer exist in the Exported Scenarios directory and will not be displayed as part of \
-the project.  You may have moved or deleted them.  If you can locate them and put them in the Exported Scenarios directory \
+listed in " + projectFileName + " no longer exist(s) in the Exported Scenarios directory and will not be displayed as part of \
+the project.  You may have moved or deleted this file or files.  If you can locate them and put them in the Exported Scenarios directory \
 you may close the 'Manage Projects' dialog and then try to open the project again.  If you no longer want the missing scenarios \
 in the project, just save the project as it is displayed to overwrite the old project file.")
 
@@ -657,11 +657,16 @@ in the project, just save the project as it is displayed to overwrite the old pr
         # Get a Python list of the scenarios currently in the self.projectScenarioFileList
         currentScenariosInProject = self.getScenariosInProject()
 
-        # Now check if the current list is the same as the list in the project file. Note that we cannot just use '=='
-        #  to compare the two lists because the elements may be equal but the order different.
+        # First check if the length of the current scenarios list is the same as the projects file list.
+        # If not, we have differences.
         differences = []
+        if len(currentScenariosInProject) != len(self.scenariosInProjectThatExist):
+            differences.append('differentLength')
+        # The length is the same, but are the members the same? Note that we cannot just use '=='
+        #  to compare the two lists because the elements may be equal but the order different.
         # this is what Python calls a "list comprehension"
-        differences = [scenario for scenario in currentScenariosInProject if scenario not in self.scenariosInProjectThatExist]
+        else:
+            differences = [scenario for scenario in self.scenariosInProjectThatExist if scenario not in currentScenariosInProject]
 
         print 'Main.manageprojects.DlgManageProjects().isProjectDirty(): currentScenariosInProject are '
         print currentScenariosInProject

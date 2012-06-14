@@ -2,6 +2,7 @@
 
 To make setup.exe for CAPS Scenario Builder
 
+1a) enter the correct password in Main.mainwindow.MainWindow()
 1) run prepareforsetup.exe to move necessary current project files to c:\alph or c:\beta
 2) open a command prompt as administrator
 3) set the PYTHONPATH with the value below using control panel/system/advanced

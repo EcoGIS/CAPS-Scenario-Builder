@@ -131,7 +131,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         settings = QtCore.QSettings()
         self.sftpHost = unicode(settings.value("sftpHost", "jamba.provost.ads.umass.edu").toString())
         self.sftpUser = unicode(settings.value("sftpUser",  "provost\\ambystoma").toString())
-        self.sftpPassword = unicode(settings.value("sftpPassword",  "Opacum99").toString())
+        self.sftpPassword = unicode(settings.value("sftpPassword", 'addpswd here').toString())
         self.sftpPath = unicode(settings.value("sftpPath", "/public/").toString())
         print "Main.mainwindow self.sftpHost is: ", self.sftpHost
         
@@ -1281,6 +1281,7 @@ scenario edit type that has the features you wish to modify, and then try again.
             title = "Delete Selected Features:"
             text = "Delete " + unicode(count) + " feature(s)? Please note that no \
 changes will be made to the base layer."
+            if not self.checkBaseLayerMatch("Deletion Error:", "delete from"): return
         else: # deleting points from a user's layer
             title = "Delete Selected Features"
             text = "Permanently delete " + unicode(count) + " feature(s)?"
@@ -1291,14 +1292,14 @@ changes will be made to the base layer."
             if vfileName in config.pointBaseLayersBaseNames: # deleting base layer features
                 # This method checks if the base layer matches the scenario edit type. The method warns the user and
                 # returns false on error (title = "Deletion Error:" # (title = "Deletion Error:" text = "delete from")
-                if not self.checkBaseLayerMatch("Deletion Error:", "delete from"): return
-                else:
-                    # We do not allow deleting features from a base layer.  Rather, we copy
-                    # the features the user wants to delete, and paste them into an editing shapefile.
-                    self.copyFeaturesShared()
-                    baseLayerName = vfileName # just for code readability
-                    self.pasteBaseLayerDeletions(baseLayerName)
-                    return
+                #if not self.checkBaseLayerMatch("Deletion Error:", "delete from"): return
+                #else:
+                # We do not allow deleting features from a base layer.  Rather, we copy
+                # the features the user wants to delete, and paste them into an editing shapefile.
+                self.copyFeaturesShared()
+                baseLayerName = vfileName # just for code readability
+                self.pasteBaseLayerDeletions(baseLayerName)
+                return
             else: # handles the cases where we are deleting editing layer features or features on a user's layer
                 pyList = [] # make a Python list of features to delete
                 feat = QgsFeature()
@@ -2685,9 +2686,13 @@ before taking another action!")
                 if self.checkEditsState(callingAction) == "Cancel": return "Cancel"
 
         # We only want to check for a dirty scenario when:
-        # creating a new scenario, opening a scenario, 
-        # exporting a scenario, managing projects or closing the app.
-        callingList = ["newScenario", "openScenario", "exportScenario", "manageProjects", "appClosing"]
+        # creating a new scenario, opening a scenario, saving a scenario as exporting a scenario, managing projects or closing the app.
+        # (note that if we don't check "Save Scenario As," for a dirty scenario, the scenario we are renaming may have editing layers
+        # open that have not been saved.  The user must either save or discard to properly handle the open editing layers or
+        # they may not appear in the legend when the scenario is reopened yet they will appear in exported scenarios!!!
+        
+        # 
+        callingList = ["newScenario", "openScenario", "saveScenarioAs", "exportScenario", "manageProjects", "appClosing"]
         if self.scenarioDirty:
             if callingAction in callingList:
                 if self.checkScenarioState(callingAction) == "Cancel": return "Cancel"
@@ -3170,10 +3175,12 @@ Please try to export your scenario again.')
         print 'Main.mainwindow.checkBaseLayerMatch()'
         name = unicode(self.activeVLayer.name())
         editType = self.scenarioEditType
-        if (editType == config.scenarioEditTypesList[0] and name != config.pointBaseLayersBaseNames[0] or
-             editType == config.scenarioEditTypesList[1] and name != config.pointBaseLayersBaseNames[1] or
-             editType == config.scenarioEditTypesList[2] and name != config.pointBaseLayersBaseNames[2] or
-             editType == config.scenarioEditTypesList[3] and name != config.pointBaseLayersBaseNames[3]):
+        if ((editType == config.scenarioEditTypesList[0] and name != config.pointBaseLayersBaseNames[0]) or
+             (editType == config.scenarioEditTypesList[1] and name != config.pointBaseLayersBaseNames[1]) or
+             (editType == config.scenarioEditTypesList[2] and name != config.pointBaseLayersBaseNames[2]) or
+             (editType == config.scenarioEditTypesList[3] and name != config.pointBaseLayersBaseNames[3]) or
+             editType == config.scenarioEditTypesList[4] or editType == config.scenarioEditTypesList[5] or
+             editType == config.scenarioEditTypesList[6]):
             QtGui.QMessageBox.warning(self, title, "The point base layer which \
 you are trying to " + text + " does not match the scenario edit type you have chosen. \
 For example. If you have chosen to edit 'dams,' then you can only " + text + " the layer \
