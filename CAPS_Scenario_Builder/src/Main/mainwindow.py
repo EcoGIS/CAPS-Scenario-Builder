@@ -131,8 +131,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         settings = QtCore.QSettings()
         self.sftpHost = unicode(settings.value("sftpHost", "jamba.provost.ads.umass.edu").toString())
         self.sftpUser = unicode(settings.value("sftpUser",  "provost\\ambystoma").toString())
-        self.sftpPassword = unicode(settings.value("sftpPassword", 'addpswd here').toString())
-        self.sftpPath = unicode(settings.value("sftpPath", "/public/").toString())
+        self.sftpPassword = unicode(settings.value("sftpPassword", '').toString())
+        self.sftpPath = unicode(settings.value("sftpPath", "/public/csb/").toString())
         print "Main.mainwindow self.sftpHost is: ", self.sftpHost
         
         
@@ -455,7 +455,7 @@ scenario file is open in another program.")
         print "Main.mainwindow.saveScenarioAs()"
         print "Main.mainwindow.saveScenarioAs() start dirty? " + str(self.scenarioDirty)
         
-        # check for unsaved edits
+        # check for unsaved edits and a dirty scenario
         if self.appStateChanged("saveScenarioAs") == "Cancel":
             # debugging
             print "canceling Main.mainwindow.saveScenarioAs()"
@@ -2751,6 +2751,13 @@ you can modify any of them. Please click OK and try again if you still wish to m
         ''' Prompt the user about unsaved scenario changes '''
         # debugging
         print "Main.mainwindow.checkScenarioState()"
+        
+        # We need to check when the calling action is 'saveScenarioAs', and the scenario has been saved because
+        # we either need to save the dirty scenario or we need to delete any editing layers added since the last 
+        # save if the user chooses to discard changes. However, if the scenario has not been saved,
+        #  then we just want to save it, so simply return.
+        if callingAction == "saveScenarioAs" and not self.scenarioFilePath:
+                return
         
         # Prompt the user about a dirty scenario.
         title = "Save Scenario"

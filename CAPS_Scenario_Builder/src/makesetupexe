@@ -2,7 +2,8 @@
 
 To make setup.exe for CAPS Scenario Builder
 
-1a) enter the correct password in Main.mainwindow.MainWindow()
+1a) make sure lti_dsdk.dll is in the C:\Program Files (x86)\Quantum GIS Wroclaw\apps\qgis\plugins directory
+or MrSID files will NOT open!! It can be found in C:\Program Files (x86)\Quantum GIS Wroclaw\bin
 1) run prepareforsetup.exe to move necessary current project files to c:\alph or c:\beta
 2) open a command prompt as administrator
 3) set the PYTHONPATH with the value below using control panel/system/advanced

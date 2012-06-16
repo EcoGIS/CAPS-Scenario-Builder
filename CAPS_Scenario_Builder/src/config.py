@@ -252,8 +252,8 @@ def setDefaultColors():
     # debugging
     print "config.setDefaultColors()"
     
-    defaultColors = [QColor('darkorange'), QColor('fuchsia'), QColor('blueviolet'), QColor('lime'), 
-                    QColor('mediumorchid'),QColor('plum'), QColor('aqua')]
+    defaultColors = [QColor('Darkorange'), QColor('Fuchsia'), QColor('LightGray'), QColor('Lime'), 
+                    QColor('MediumOrchid'),QColor('Aqua'), QColor('Teal')]
                     
     return defaultColors
 
