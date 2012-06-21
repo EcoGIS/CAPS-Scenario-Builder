@@ -33,6 +33,7 @@
 import os, re, codecs, datetime, traceback, sys, time
 # import sftp functions
 import paramiko
+
 # import Qt libraries
 from PyQt4 import QtCore, QtGui
 # import the ui made with Qt Designer
@@ -825,8 +826,6 @@ and continue, click 'OK.'"
         # debugging
         print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload()"
 
-        #settings = QtCore.QSettings()
-        
         paramiko.util.log_to_file('./Log/paramiko.log')
         hostname = self.mainwindow.sftpHost
         username = self.mainwindow.sftpUser 

@@ -212,7 +212,7 @@ def updateExtents(mainwindow, activeVLayer, canvas):
             # associated with deleting underlying C++ objects)
             # and removes the layer from the registry.  Finally it removes the layer 
             # from the legend and updates the legend's layer set.
-            inOriginalScenario = mainwindow.legend.removeEditLayerFromRegistry(activeVLayer, layerId)
+            inOriginalScenario = mainwindow.legend.removeLayerFromRegistry(activeVLayer, layerId)
             # now reopen the layer but give some time to be removed first
             time.sleep(0.1)
             mainwindow.openVectorLayer(vfilePath)

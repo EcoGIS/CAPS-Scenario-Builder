@@ -696,14 +696,16 @@ the file system. All changes to these files will be lost. Do you want to delete 
                 # since we are deleting an editing layer we should be safe and 
                 # remove any exported scenario files.
                 self.mainwindow.deleteExportScenarioFile()
-                # remove the layer from the registry
-                self.removeEditLayerFromRegistry(layer, layerId, True)
+                # Remove the layer from the registry. Note that this method also checks if the layer is in the originalScenarioLayers
+                # list and sets self.mainwindow.scenarioDirty = True and removes the layer from the originalScenarioLayers list.
+                self.removeLayerFromRegistry(layer, layerId, True)
                 # and delete the editing layer
                 self.deleteEditingLayer(editFilePath)
                 # remove the layer from the coloredLayers dictionary
                 self.mainwindow.coloredLayers.pop(name, None)
 
                 # debugging
+                print "Mainwindow.legend.removeCurrentLayer(): layer was removed from originalScenarioLayers"
                 print "Main.legend.Legend.removeCurrentLayer(): The coloredLayers are: "
                 for k, v in self.mainwindow.coloredLayers.iteritems():
                     print "%s: %s" % (k, str(v.getRgb()))
@@ -717,25 +719,25 @@ the file system. All changes to these files will be lost. Do you want to delete 
 
         ''' 
             Note that this section handles a layer whether it is a raster or vector
-            and NOT an editing layer.
+            and NOT an editing layer.  The layer could still be an originalScenarioLayer.
         '''
-
-        # Remove the layer from the "mainwindow.originalScenarioLayers" list and 
-        # set the scenario as dirty, since it has been changed.
-        if self.currentItem().canvasLayer.layer() in self.mainwindow.originalScenarioLayers:
-            layerToDelete = self.currentItem().canvasLayer.layer()
-            print ("Mainwindow.legend.removeCurrentLayer(): length originalScenarioLayers before removal " 
-                                                                    + str(len(self.mainwindow.originalScenarioLayers)))
-            self.mainwindow.originalScenarioLayers.remove(layerToDelete)
-            print ("Mainwindow.legend.removeCurrentLayer(): length originalScenarioLayers after removal " 
-                                                                    + str(len(self.mainwindow.originalScenarioLayers)))
-            self.mainwindow.scenarioDirty = True
-            print "Mainwindow.legend.removeCurrentLayer(): layer was removed from originalScenarioLayers"
 
         # be Layer ready to be removed so reset active layer variables to none or we could
         #  get C++ object deleted runtime errors from deleting an object underlying a python variable.
         self.setActiveLayerVariables()
-
+        
+        # Check if the layer to be moved is in the originalScenarioLayers list and remove if it is. This needs to be done before 
+        # removing the layer from the registry or we sometimes get an "underlying C++ object deleted in the originalScenarioLayers list
+        layerToRemove = None
+        if self.currentItem().canvasLayer.layer() in self.mainwindow.originalScenarioLayers:
+            layerToRemove = self.currentItem().canvasLayer.layer()
+            print ("Mainwindow.legend.removeCurrentLayer(): length originalScenarioLayers before removal " 
+                                                                    + str(len(self.mainwindow.originalScenarioLayers)))
+            self.mainwindow.originalScenarioLayers.remove(layerToRemove)
+            # Set the scenario to dirty and enable 'Save Edits'
+            self.mainwindow.scenarioDirty = True
+            self.mainwindow.mpActionSaveScenario.setDisabled(False)
+            
         # remove layer from the registry
         layerId = self.currentItem().canvasLayer.layer().id()
         QgsMapLayerRegistry.instance().removeMapLayer(layerId)
@@ -745,6 +747,8 @@ the file system. All changes to these files will be lost. Do you want to delete 
         self.mainwindow.coloredLayers.pop(name, None)
 
         # debugging
+        print ("Mainwindow.legend.removeCurrentLayer(): length originalScenarioLayers after removal " 
+                                                                        + str(len(self.mainwindow.originalScenarioLayers)))
         print "Main.legend.Legend.removeCurrentLayer(): The coloredLayers are: "
         for k, v in self.mainwindow.coloredLayers.iteritems():
             print "%s: %s" % (k, str(v.getRgb()))
@@ -973,22 +977,10 @@ Please check if it is open in another program and try again.")
             return False
         else: return True
      
-    def removeEditLayerFromRegistry(self, layer, layerId, removeCurrentLayer = False):
+    def removeLayerFromRegistry(self, layer, layerId, removeCurrentLayer = False):
         ''' Remove an editing layer from the registry, but clean up first. '''
         # debugging
         print "Main.legend.removeEditLayerFrom Registry()"
-        
-        inOriginalScenario = False
-        originalScenarioLayers = self.mainwindow.originalScenarioLayers
-        if layer in originalScenarioLayers:
-            print ("Main.legend.removeEditLayerFrom Registry(): length originalScenarioLayers before removal "
-                                                                                + str(len(originalScenarioLayers)))
-            originalScenarioLayers.remove(layer)
-            self.mainwindow.scenarioDirty = True
-            print 'Main.legend.removeEditLayerFrom Registry(): The activeVLayer was removed from the originalScenarioLayers'
-            print ('Main.legend.removeEditLayerFrom Registry(): length originalScenarioLayers after removal ' 
-                                                                                        + str(len(originalScenarioLayers)))
-            inOriginalScenario = True
         
         # This method is called by self.removeCurrentLayer() and Tools.shared.updateExtents().
         # The method is also called by Main.mainwindow.checkScenarioState(), where the layer to 
@@ -996,17 +988,33 @@ Please check if it is open in another program and try again.")
         # could be "None," or the active layer could be a raster. If the layer is the 
         # activeVLayer, we need to reset activeVLayer variables after removing the layer from the 
         # registry, so we need to record the layer id of the activeVLayer before we delete it.
-        activeVLayerId = None
+        '''activeLayerId = None
         if self.mainwindow.activeVLayer:
-            activeVLayerId = self.mainwindow.activeVLayer.id()
+            activeLayerId = self.mainwindow.activeVLayer.id()
+        elif self.mainwindow.activeRLayer:
+            activeLayerId = self.mainwindow.activeRLayer.id()'''
+        
+        # Check if the layer is in the originalScenarioLayers list and remove it if it is and the layer is successfully deleted.
+        inOriginalScenario = False
+        originalScenarioLayers = self.mainwindow.originalScenarioLayers
+        layerToRemove = None
+        if layer in originalScenarioLayers:
+            print ("Main.legend.removeEditLayerFrom Registry(): length originalScenarioLayers before removal "
+                                                                                + str(len(originalScenarioLayers)))
+            layerToRemove = layer
+
+            print 'Main.legend.removeEditLayerFrom Registry(): The activeVLayer was removed from the originalScenarioLayers'
+            print ('Main.legend.removeEditLayerFrom Registry(): length originalScenarioLayers after removal ' 
+                                                                                        + str(len(originalScenarioLayers)))
+            inOriginalScenario = True
         
         # Remove the layer from the registry
         QgsMapLayerRegistry.instance().removeMapLayer(layerId)
         
         # if the removed layer is the current activeVLayer, reset all associated variables
-        if activeVLayerId == layerId:
-            self.setActiveLayerVariables() 
-       
+        #if activeLayerId == layerId:
+            #self.setActiveLayerVariables() 
+        self.setActiveLayerVariables()
         # If the calling action is removeCurrent layer, we need to let signals proceed normally.
         # If the calling action is shared.updateExtents or mainwindow.chkScenarioState then
         # we do not because either a new layer will immediately load or the app will close.
@@ -1019,7 +1027,12 @@ Please check if it is open in another program and try again.")
             self.removeLayerFromLegendById(layerId)
             self.updateLayerSet()
             self.blockSignals(False)
-            return inOriginalScenario
+            
+        if layerToRemove:
+            originalScenarioLayers.remove(layerToRemove)
+            self.mainwindow.scenarioDirty = True
+            self.mainwindow.mpActionSaveScenario.setDisabled(False)
+        return inOriginalScenario
  
     def setActiveLayerVariables(self):
         ''' Reset the variable to avoid c++ runtime errors for deleted objects '''

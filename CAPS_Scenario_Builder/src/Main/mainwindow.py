@@ -330,7 +330,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         ''' Scenario menu SLOT '''
         # debugging
         print "Main.mainwindow.openScenario()"
-        print "self.scenarioDirty begin is " + str(self.scenarioDirty)
+        print "Main.mainwindow.openScenario() self.scenarioDirty begin is " + str(self.scenarioDirty)
         
         # check for unsaved edits and scenario changes
         if self.appStateChanged("openScenario") == "Cancel":
@@ -394,7 +394,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
              
         # The scenario file (i.e. *.cap) does not save the files in order so:
         self.arrangeOrientingLayers()
-        
+
         # give the user some file info
         self.setWindowTitle("Conservation Assessment and \
 Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
@@ -424,7 +424,7 @@ Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
                 self.makeScenarioDirectory()
             # start a project instance
             scenario = QgsProject.instance()
-            
+
             # try to write (save) the file
             scenario.write(self.scenarioInfo)
             # check for error
@@ -709,7 +709,7 @@ another program and then try again.")
         return True
 
     def deleteTempShapefile(self, path):
-        ''' Removes an editing shapefile and any associated "Export Scenario" file. '''
+        ''' Removes an editing shapefile. '''
         # debugging
         print "Main.mainwindow.deleteTempShapefile()"
         print "Main.mainwindow.deleteTempShapefile(): path is " + path
@@ -859,7 +859,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         # if in the process of opening the orienting layers, just return
         if self.openingOrientingLayers:
             self.scenarioDirty = False
-            print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() end is " + str(self.scenarioDirty)
+            print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() end 862 is " + str(self.scenarioDirty)
             return
         
         # If no scenario is open and the loaded layers are the orienting baselayers,
@@ -889,7 +889,7 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             if difference == []:
                 self.scenarioDirty = False
                 print "Main.mainwindow.setScenarioDirty(): setScenarioDirty() difference == []"
-                print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() end is " + str(self.scenarioDirty)
+                print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() end 892 is " + str(self.scenarioDirty)
                 return
         
         # If the above is not true and if the layer count is > 0 and there is no scenario open 
@@ -898,8 +898,10 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         # baselayer, because that might be a scenario they want to save for some reason.  
         if self.currentLayersCount > 0 and self.scenarioFileName == None:
             self.scenarioDirty = True
+            # enable the 'Save Scenario' action whent the scenario is dirty
+            self.mpActionSaveScenario.setDisabled(False)
             print "Main.mainwindow.setScenarioDirty(): layer count > 0 if statement"
-            print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() end is " + str(self.scenarioDirty)
+            print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() end 904 is " + str(self.scenarioDirty)
             return
     
         # Now we handle if a scenario is open
@@ -909,7 +911,9 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             if len(self.originalScenarioLayers) != self.currentLayersCount:
                 # if they are not the same length, the scenario is dirty
                 self.scenarioDirty = True
-                print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() end is " + str(self.scenarioDirty)
+                # enable the 'Save Scenario' action whent the scenario is dirty
+                self.mpActionSaveScenario.setDisabled(False)
+                print "Main.mainwindow.setScenarioDirty(): self.setScenarioDirty() end 916 is " + str(self.scenarioDirty)
                 return
             
             # the layers are the same length but do they have the same members?
@@ -917,8 +921,14 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             # this is what Python calls a "list comprehension"
             differences = [name for name in self.getCurrentLayersNames() if name not in 
                                                             self.originalScenarioLayersNames]
-            if differences: self.scenarioDirty = True # if there are differences
-            else: self.scenarioDirty = False
+            if differences: 
+                self.scenarioDirty = True # if there are differences
+                # enable the 'Save Scenario' action whent the scenario is dirty
+                self.mpActionSaveScenario.setDisabled(False)
+            else: 
+                self.scenarioDirty = False
+                # disable the 'Save Scenario' action whent the scenario is not dirty
+                self.mpActionSaveScenario.setDisabled(True)
 
             # debugging
             print "Main.mainwindow.setScenarioDirty(): currentLayersNames are"
@@ -927,9 +937,13 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
             for name in self.originalScenarioLayersNames: print name
             print "Main.mainwindow.setScenarioDirty(): differences are "
             for name in differences: print name
-        
+            
+            return
+        # Set the 'Save Edits' button if not set above.  This happens when opening a scenario.
+        if self.scenarioDirty: self.mpActionSaveScenario.setDisabled(False)
+        else: self.mpActionSaveScenario.setDisabled(True)
         # debugging
-        print "Main.mainwindow.setScenarioDirty(): self.scenarioDirty end is " + str(self.scenarioDirty)
+        print "Main.mainwindow.setScenarioDirty(): self.scenarioDirty() end 942 is " + str(self.scenarioDirty)
 
     def setScenarioSaved(self):
         ''' Scenario method to do the housekeeping for a successfully saved scenario '''
@@ -950,6 +964,8 @@ missing files by using the 'Add Vector Layer' or 'Add Raster Layer buttons.'")
         # give the user some info
         self.setWindowTitle("Conservation Assessment and \
 Prioritization System (CAPS) Scenario Builder - " + self.scenarioFileName)
+        # gray out the 'Save Scenario' button after the scenario is saved
+        self.mpActionSaveScenario.setDisabled(True)
 
     def makeScenarioDirectory(self):
         ''' Scenario method to create a directory to store a scenario's editing files '''
@@ -1539,7 +1555,7 @@ before you can make edits.  Please save the current scenario or open an existing
         # Set "Save Edits" action to disabled to let user know edits are saved.
         # Clean up
         self.mpActionSaveEdits.setDisabled(True)
-        self.scenarioDirty = True
+        self.setScenarioDirty()
         self.editDirty = False
 
     # Edit Methods -----------------------------------------------------------------------------------------------    
@@ -2757,8 +2773,8 @@ you can modify any of them. Please click OK and try again if you still wish to m
         # save if the user chooses to discard changes. However, if the scenario has not been saved,
         #  then we just want to save it, so simply return.
         if callingAction == "saveScenarioAs" and not self.scenarioFilePath:
-                return
-        
+            return
+
         # Prompt the user about a dirty scenario.
         title = "Save Scenario"
         text = "Do you want to save the current scenario?"
@@ -2799,21 +2815,24 @@ you can export it. Please click OK and try again if you still wish to export the
             for name in differences: print name
             
             for name in differences:
+                # get the layer object from the name
+                layer = self.getLayerFromName(name)
+                editFilePath = layer.source()
+                print "Main.mainwindow.checkScenarioState() path to remove is: " + editFilePath
+                layerId = layer.id()
+                # need to remove layer from registry before delete.
+                self.legend.removeLayerFromRegistry(layer, layerId)
+                # If the layer is an editing layer, we have to delete it from the scenario's directory
+                # so it won't be included in future scenario export files.
                 if name in config.editLayersBaseNames:
-                    # get the layer object from the name
-                    layer = self.getLayerFromName(name)
-                    editFilePath = layer.source()
-                    print "Main.mainwindow.checkScenarioState() path to remove is: " + editFilePath
-                    layerId = layer.id()
-                    # need to remove layer from registry before delete.
-                    self.legend.removeEditLayerFromRegistry(layer, layerId)
                     if not self.legend.deleteEditingLayer(editFilePath):
                         # Warn and return
                         QtGui.QMessageBox.warning(self, "Deletion Error:", "Caps Scenario Builder \
-could not delete an editing layer that you have chosen not to save with your scenario.  This \
-editing layer will not appear when you reopen this scenario, but it could be mistakenly included if you \
-choose 'Export Scenario' for this scenario in the future.")
+    could not delete an editing layer that you have chosen not to save with your scenario.  This \
+    editing layer will not appear when you reopen this scenario, but it could be mistakenly included if you \
+    choose 'Export Scenario' for this scenario in the future.")
                         return "Cancel"
+                self.mpActionSaveEdits.setDisabled(False)
         elif reply == QtGui.QMessageBox.Cancel:
             print "Main.mainwindow.checkScenarioState() returning 'cancel'"
             return "Cancel"
@@ -2856,6 +2875,7 @@ choose 'Export Scenario' for this scenario in the future.")
         self.mpActionExportScenario.setDisabled(True)
         self.mpActionOpenVectorAttributeTable.setDisabled(True)
         self.mpActionSaveEdits.setDisabled(True)
+        self.mpActionSaveScenario.setDisabled(False)
         self.openingOrientingLayers = False
         self.openingScenario = False
         self.originalEditLayerFeats = []
@@ -3052,12 +3072,25 @@ Please try to export your scenario again.')
         # debugging
         print "Main.mainwindow.arrangeOrientingLayers()"
 
+        names = self.originalScenarioLayersNames
         legend = self.legend
         legendLayers = legend.getLayerIDs()
         numLegendLayers = len(legendLayers)
         oRLayers = config.orientingRasterLayers
         oVLayers = config.orientingVectorLayers
  
+        # Get the names of orententing layers open in this scenario
+        oRLayersCurrent = [name for name in oRLayers if name[0:-4] in names]
+        oVLayersCurrent = [name for name in oVLayers if name[0:-4] in names]
+        
+        # If the number of names in this scenario is less than the total number of orienting layers
+        # then the user has deleted some orienting layers, so we'll just leave the layers as is.
+        # Note that the code below this will not work properly if the number of orienting layers is not equal
+        # (some layers don't show because they are inserted at non-existent indexes). 
+        
+        if (len(oRLayersCurrent) + len(oVLayersCurrent)) != (len(oRLayers) + len(oVLayers)):
+            return
+        
         # debugging
         # Note that the index of the legend layers starts with zero.
         # For a legend having 10 layers the indexes run from 0 to 9.
@@ -3094,7 +3127,7 @@ Please try to export your scenario again.')
             print "Main.mainwindow.arrangeOrientingLayers(): length of item list is " + str(len(item))
             if len(item) != 0:
                 itemToMove = item[0]
-                print str(legend.isLegendLayer(itemToMove))
+                print "Main.mainwindow.arrangeOrientingLayers(): is this a legendLayer? " + str(legend.isLegendLayer(itemToMove))
                 print "Main.mainwindow.arrangeOrientingLayers(): item to move is " + itemToMove.text(0)
                 position = (numLegendLayers - (oVLayers.index(orientingLayer)
                                                            + (len(oRLayers) + 1)))

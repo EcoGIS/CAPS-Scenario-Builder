@@ -223,7 +223,7 @@ editLayersFileNames = ['edit_scenario(points).shp', 'edit_scenario(lines).shp',
 # config.baseLayersPath folder. Layers open in the order they appear in the lists.
 # Raster layers open before vector layers, and the layers will be stacked in 
 # the opening order with the first layer opened on the bottom in the layer panel 
-# (i.e. legend).
+# (i.e. legend).  The extension must have 3 characters (i.e .tif or .shp)
 orientingRasterLayers = ['USGS.SID', 'base_land.tif', 'base_streams.tif', 'base_traffic.tif']
 orientingVectorLayers = ['base_towns.shp']
 orientingVectorLayersBaseNames = ['base_towns']
