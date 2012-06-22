@@ -157,7 +157,7 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
                 self.hide()
                 return
             self.mainwindow.editLayerName = self.editLayerBaseName
-            #self.mainwindow.scenarioDirty = True
+
         # So we have a new editing layer.  If it has been reopened then we have previously saved any edits.
         # If it has just been created then it has no edits.  In either case, we should set the
         # originalEditLayerFeats now.
@@ -312,7 +312,6 @@ class DlgScenarioEditTypes(QtGui.QDialog, Ui_DlgScenarioEditTypes):
             print "Main.dlgscenarioedittypes.DlgScenarioEditTypes().openBaseOrConstraintsLayer(): file exists is True"
             if ".shp" in fileName: self.mainwindow.openVectorLayer(filePath)
             else: self.mainwindow.openRasterLayer(filePath)
-            #self.mainwindow.scenarioDirty = True
         else:
             QtGui.QMessageBox.warning(self, "File Error", "The needed base file, " + self.fileName + ", could not be found.")
        
