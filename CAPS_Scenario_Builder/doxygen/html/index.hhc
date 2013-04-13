@@ -104,8 +104,8 @@
       </UL>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="Main::legend"><param name="Local" value="namespace_main_1_1legend.html"><param name="ImageNumber" value="1"></OBJECT>
       <UL>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="LegendItem"><param name="Local" value="class_main_1_1legend_1_1_legend_item.html"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="Legend"><param name="Local" value="class_main_1_1legend_1_1_legend.html"><param name="ImageNumber" value="11"></OBJECT>
+      <LI><OBJECT type="text/sitemap"><param name="Name" value="LegendItem"><param name="Local" value="class_main_1_1legend_1_1_legend_item.html"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="resources_prefix"><param name="Local" value="namespace_main_1_1legend.html#ad4225e0ddfc2921c0e48961efed676f2"><param name="ImageNumber" value="11"></OBJECT>
       </UL>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="Main::mainwindow"><param name="Local" value="namespace_main_1_1mainwindow.html"><param name="ImageNumber" value="1"></OBJECT>
@@ -119,8 +119,8 @@
       </UL>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="make_setupexe"><param name="Local" value="namespacemake__setupexe.html"><param name="ImageNumber" value="1"></OBJECT>
       <UL>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="InnoScript"><param name="Local" value="classmake__setupexe_1_1_inno_script.html"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="build_installer"><param name="Local" value="classmake__setupexe_1_1build__installer.html"><param name="ImageNumber" value="11"></OBJECT>
+      <LI><OBJECT type="text/sitemap"><param name="Name" value="InnoScript"><param name="Local" value="classmake__setupexe_1_1_inno_script.html"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="tree"><param name="Local" value="namespacemake__setupexe.html#ad8c73896579ea02ab2710a02915942e7"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="azipfile"><param name="Local" value="namespacemake__setupexe.html#a75b057667874ae2291f1c4434d4e793c"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="cmdclass"><param name="Local" value="namespacemake__setupexe.html#a7826277f935c90d6303a09b87e1ac02e"><param name="ImageNumber" value="11"></OBJECT>
@@ -131,8 +131,8 @@
       </UL>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="make_setupexe_config"><param name="Local" value="namespacemake__setupexe__config.html"><param name="ImageNumber" value="1"></OBJECT>
       <UL>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="InnoScript"><param name="Local" value="classmake__setupexe__config_1_1_inno_script.html"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="build_installer"><param name="Local" value="classmake__setupexe__config_1_1build__installer.html"><param name="ImageNumber" value="11"></OBJECT>
+      <LI><OBJECT type="text/sitemap"><param name="Name" value="InnoScript"><param name="Local" value="classmake__setupexe__config_1_1_inno_script.html"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="tree"><param name="Local" value="namespacemake__setupexe__config.html#a94ecab5d0463ff235def050abc654de9"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="azipfile"><param name="Local" value="namespacemake__setupexe__config.html#a2b122b2d9ce0f7ff9a399254b00b3143"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="cmdclass"><param name="Local" value="namespacemake__setupexe__config.html#ac8f4cb844bac8abb84a913d2c625423a"><param name="ImageNumber" value="11"></OBJECT>
@@ -243,12 +243,6 @@
     <LI><OBJECT type="text/sitemap"><param name="Name" value="Tools::addpoints"><param name="Local" value="namespace_tools_1_1addpoints.html"><param name="ImageNumber" value="1"></OBJECT>
       <UL>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="AddPoints"><param name="Local" value="class_tools_1_1addpoints_1_1_add_points.html"><param name="ImageNumber" value="11"></OBJECT>
-      </UL>
-    <LI><OBJECT type="text/sitemap"><param name="Name" value="Tools::caps_setupexe"><param name="Local" value="namespace_tools_1_1caps__setupexe.html"><param name="ImageNumber" value="1"></OBJECT>
-      <UL>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="main"><param name="Local" value="namespace_tools_1_1caps__setupexe.html#a312ea36680f4cd482cbac7999656efd4"><param name="ImageNumber" value="11"></OBJECT>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="__version__"><param name="Local" value="namespace_tools_1_1caps__setupexe.html#a539f66c658d78982b3017fbdd4593809"><param name="ImageNumber" value="11"></OBJECT>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="qgis_prefix"><param name="Local" value="namespace_tools_1_1caps__setupexe.html#ad0199dcdf3f32328d7829bce30c49f1f"><param name="ImageNumber" value="11"></OBJECT>
       </UL>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="Tools::dlgaddattributes"><param name="Local" value="namespace_tools_1_1dlgaddattributes.html"><param name="ImageNumber" value="1"></OBJECT>
       <UL>
@@ -508,8 +502,8 @@
       <LI><OBJECT type="text/sitemap"><param name="Name" value="refreshLayerSymbology"><param name="Local" value="class_main_1_1legend_1_1_legend.html#a32e224479e5f4720eece79693810e523"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="removeAll"><param name="Local" value="class_main_1_1legend_1_1_legend.html#acbec5c3606c0e20000044b14b91a1898"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="removeCurrentLayer"><param name="Local" value="class_main_1_1legend_1_1_legend.html#a6e253be72b9d5505bd80b7f4b5bed06e"><param name="ImageNumber" value="11"></OBJECT>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="removeEditLayerFromRegistry"><param name="Local" value="class_main_1_1legend_1_1_legend.html#a23d33c8587e0a753de17c9970c74a8cf"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="removeLayerFromLegendById"><param name="Local" value="class_main_1_1legend_1_1_legend.html#aeec05f97d1a38926e9485fe39edd3c89"><param name="ImageNumber" value="11"></OBJECT>
+      <LI><OBJECT type="text/sitemap"><param name="Name" value="removeLayerFromRegistry"><param name="Local" value="class_main_1_1legend_1_1_legend.html#a5f622884f4f66c32d89cd383457071b6"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="removeLayers"><param name="Local" value="class_main_1_1legend_1_1_legend.html#add530616509409066991977ff0d53729"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="removeLegendLayer"><param name="Local" value="class_main_1_1legend_1_1_legend.html#a02afdc0325b2e9f264d7fa5ddecf902c"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="setActiveLayerVariables"><param name="Local" value="class_main_1_1legend_1_1_legend.html#ad75ee2f2516b5404d4881e3a3418cea2"><param name="ImageNumber" value="11"></OBJECT>
@@ -1191,12 +1185,6 @@
     <LI><OBJECT type="text/sitemap"><param name="Name" value="C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Tools/__init__.py"><param name="Local" value="_tools_2____init_____8py.html"><param name="ImageNumber" value="11"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Tools/addlinespolygons.py"><param name="Local" value="addlinespolygons_8py.html"><param name="ImageNumber" value="11"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Tools/addpoints.py"><param name="Local" value="addpoints_8py.html"><param name="ImageNumber" value="11"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Name" value="C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Tools/caps_setupexe.py"><param name="Local" value="_tools_2caps__setupexe_8py.html"><param name="ImageNumber" value="1"></OBJECT>
-      <UL>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="main"><param name="Local" value="namespace_tools_1_1caps__setupexe.html#a312ea36680f4cd482cbac7999656efd4"><param name="ImageNumber" value="11"></OBJECT>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="__version__"><param name="Local" value="namespace_tools_1_1caps__setupexe.html#a539f66c658d78982b3017fbdd4593809"><param name="ImageNumber" value="11"></OBJECT>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="qgis_prefix"><param name="Local" value="namespace_tools_1_1caps__setupexe.html#ad0199dcdf3f32328d7829bce30c49f1f"><param name="ImageNumber" value="11"></OBJECT>
-      </UL>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Tools/dlgaddattributes.py"><param name="Local" value="dlgaddattributes_8py.html"><param name="ImageNumber" value="11"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Tools/dlgaddattributes_ui.py"><param name="Local" value="dlgaddattributes__ui_8py.html"><param name="ImageNumber" value="11"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/Tools/identify.py"><param name="Local" value="identify_8py.html"><param name="ImageNumber" value="11"></OBJECT>

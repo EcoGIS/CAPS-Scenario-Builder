@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 #---------------------------------------------------------------------
 #
-# Conservation Assessment and Prioritization System (CAPS) - An Open Source  
+# Conservation Assessment and Prioritization System (CAPS) Scenario Builder - An Open Source  
 # GIS tool to create scenarios for environmental modeling.
 #
 #--------------------------------------------------------------------- 
@@ -14,20 +14,20 @@
 # 
 # licensed under the terms of GNU GPLv3
 # 
-# This file is part of CAPS.
+# This file is part of CAPS Scenario Builder.
 
-# CAPS is free software: you can redistribute it and/or modify
+# CAPS Scenario Builder is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-# CAPS is distributed in the hope that it will be useful,
+# CAPS Scenario Builder is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
 #You should have received a copy of the GNU General Public License
-#along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+#along with CAPS Scenario Builder.  If not, see <http://www.gnu.org/licenses/>..
 # 
 #---------------------------------------------------------------------
 
@@ -132,9 +132,9 @@ class InnoScript:
         print >> ofi, r"DefaultDirName={pf}\%s" % self.name
         print >> ofi, r"DefaultGroupName=%s" % self.name
         print >> ofi, r"VersionInfoVersion=%s" % self.version
-        print >> ofi, r"VersionInfoCompany=University of Massachusetts: CAPS"
-        print >> ofi, r"VersionInfoDescription=CAPS: Conservation Assessment and Prioritization System"
-        print >> ofi, r"VersionInfoCopyright=University of Massachusetts: CAPS"
+        print >> ofi, r"VersionInfoCompany=University of Massachusetts: CAPS Scenario Builder"
+        print >> ofi, r"VersionInfoDescription=CAPS Scenario Builder: CAPS (Conservation Assessment and Prioritization System) Scenario Builder"
+        print >> ofi, r"VersionInfoCopyright=University of Massachusetts: CAPS Scenario Builder"
         print >> ofi, r"AppCopyright=Daystar Computing: Robert English"
         print >> ofi, r"InfoAfterFile=" + rootPath + r"\README.TXT"
         print >> ofi, r"LicenseFile=" + rootPath + r"\LICENSE.TXT"
@@ -152,7 +152,7 @@ class InnoScript:
         print >> ofi, r'Source: "' + rootPath + r'\copy.txt"; DestDir: "{app}"'
         print >> ofi, r'Source: "' + rootPath + r'\RasterCategoryTable.htm"; DestDir: "{app}"'
         print >> ofi, r'Source: "' + rootPath + r'\setup_program_icon.ico"; DestDir: "{app}"'
-        print >> ofi, r'Source: "' + rootPath + r'\CAPS_splash.png"; DestDir: "{app}"'
+        print >> ofi, r'Source: "' + rootPath + r'\csb_splash.png"; DestDir: "{app}"'
         print >> ofi, r'Source: "' + rootPath + r'\vcredist_2005English_x86.exe"; DestDir: "{app}"'
         print >> ofi, r'Source: "' + rootPath + r'\vcredist_2008_x86.exe"; DestDir: "{app}"'
         print >> ofi

@@ -340,7 +340,7 @@ class Ui_MainWindow(object):
         self.mpActionAddLines.setText(QtGui.QApplication.translate("MainWindow", "Add Lines", None, QtGui.QApplication.UnicodeUTF8))
         self.mpActionAddPolygons.setText(QtGui.QApplication.translate("MainWindow", "Add Polygons", None, QtGui.QApplication.UnicodeUTF8))
         self.mpActionExportScenario.setText(QtGui.QApplication.translate("MainWindow", "Export Scenario", None, QtGui.QApplication.UnicodeUTF8))
-        self.mpActionExportScenario.setToolTip(QtGui.QApplication.translate("MainWindow", "Export Scenario: make file to send to the CAPS staff", None, QtGui.QApplication.UnicodeUTF8))
+        self.mpActionExportScenario.setToolTip(QtGui.QApplication.translate("MainWindow", "Export Scenario: make file to send to the CAPS Scenario Builder staff", None, QtGui.QApplication.UnicodeUTF8))
         self.mpActionOpenRasterCategoryTable.setText(QtGui.QApplication.translate("MainWindow", "Open Raster Category Tables", None, QtGui.QApplication.UnicodeUTF8))
         self.mpActionOpenVectorAttributeTable.setText(QtGui.QApplication.translate("MainWindow", "Open Vector Attribute Table", None, QtGui.QApplication.UnicodeUTF8))
         self.mpActionEditScenario.setText(QtGui.QApplication.translate("MainWindow", "Edit Scenario", None, QtGui.QApplication.UnicodeUTF8))

@@ -1,7 +1,8 @@
-#Mon Jun 11 11:55:24 EDT 2012
+#Fri Apr 12 18:51:21 EDT 2013
 eclipse.preferences.version=1
 encoding//ReferenceCode/legend_annotated.py=utf-8
 encoding//src/Main/dlgmanageprojects.py=utf-8
+encoding//src/Main/dlgmanageprojects_fix_dirty.py=utf-8
 encoding//src/Main/dlgmanageprojects_ui.py=utf-8
 encoding//src/Main/dlgscenarioedittypes.py=utf-8
 encoding//src/Main/dlgscenarioedittypes_ui.py=utf-8

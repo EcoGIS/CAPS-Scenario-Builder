@@ -85,7 +85,7 @@ class Ui_DlgManageProjects(object):
         self.verticalLayout_2.addWidget(self.selectProjectLabel)
         self.selectProjectComboBox = QtGui.QComboBox(DlgManageProjects)
         self.selectProjectComboBox.setEditable(True)
-        self.selectProjectComboBox.lineEdit().setMaxLength(50)
+        self.selectProjectComboBox.lineEdit().setMaxLength(80)
         self.selectProjectComboBox.setInsertPolicy(QtGui.QComboBox.NoInsert)
         self.selectProjectComboBox.setObjectName(_fromUtf8("selectProjectComboBox"))
         self.verticalLayout_2.addWidget(self.selectProjectComboBox)

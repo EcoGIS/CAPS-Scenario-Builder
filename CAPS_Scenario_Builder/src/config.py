@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 #---------------------------------------------------------------------
 #
-# Conservation Assessment and Prioritization System (CAPS) - An Open Source  
+# Conservation Assessment and Prioritization System (CAPS) Scenario Builder - An Open Source  
 # GIS tool to create scenarios for environmental modeling.
 #
 #--------------------------------------------------------------------- 
@@ -12,20 +12,20 @@
 # 
 # licensed under the terms of GNU GPLv3
 # 
-# This file is part of CAPS.
+# This file is part of CAPS Scenario Builder.
 
-#CAPS is free software: you can redistribute it and/or modify
+#CAPS Scenario Builder is free software: you can redistribute it and/or modify
 #it under the terms of the GNU General Public License as published by
 #the Free Software Foundation, either version 3 of the License, or
 #(at your option) any later version.
 
-#CAPS is distributed in the hope that it will be useful,
+#CAPS Scenario Builder is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #GNU General Public License for more details.
 
 #You should have received a copy of the GNU General Public License
-#along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+#along with CAPS Scenario Builder.  If not, see <http://www.gnu.org/licenses/>..
 #-----------------------------------------------------------------------
 
 # import Qt libraries
@@ -54,7 +54,7 @@ more detailed explanation below.
    
 # Paths to important files.  
 # These cannot change for most users without altering the application installer.
-# Sophisticated users who have a version of caps.exe that allows access to config.py can move these folders and change
+# Sophisticated users who have a version of CAPS Scenario Builder.exe that allows access to config.py can move these folders and change
 # the paths to the new locations here.  The paths may be relative or absolute.
 
 #baseLayersPath =  'C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/base_layers/'
@@ -147,8 +147,7 @@ comboBoxOptions6 = [['', '1 - Commercial', '2 - Industrial', '3 - Urban open', '
                      '22 - Golf', '23 - Water based recreation ', '24 - Marina', 
                      '30 - Cropland', '31 - Cranberry bog ', '32 - Nursery', '33 - Orchard', 
                      '34 - Cemetery', '35 - Pasture', '36 - Powerline shrubland', '37 - Open land', 
-                     '40 - Forest', '41 - Deciduous forested wetland', '42 - Mixed forested wetland', 
-                     '43 - Coniferous forested wetland', '44 - Shrub swamp', '45 - Bog', '46 - Shallow marsh', 
+                     '40 - Forest', '41 - Forested wetland', '44 - Shrub swamp', '45 - Bog', '46 - Shallow marsh', 
                      '47 - Deep marsh', '48 - Vernal pool', '55 - Pond', '56 - Lake', '60 - Sea cliff', 
                      '61 - Vegetated dune ', '62 - Coastal dune', '63 - Coastal beach', '70 - Salt marsh', 
                      '71 - Tidal flat', '72 - Rocky intertidal', '75 - Salt pond/bay']]
@@ -163,8 +162,7 @@ baseLandLookup = {1: 'Commercial', 2: 'Industrial', 3: 'Urban open', 4: 'Urban p
                  22: 'Golf', 23: 'Water based recreation ', 24: 'Marina', 
                  30: 'Cropland', 31: 'Cranberry bog ', 32: 'Nursery', 33: 'Orchard', 
                  34: 'Cemetery', 35: 'Pasture', 36: 'Powerline shrubland', 37: 'Open land', 
-                 40: 'Forest', 41: 'Deciduous forested wetland', 42: 'Mixed forested wetland', 
-                 43: 'Coniferous forested wetland', 44: 'Shrub swamp', 45: 'Bog', 46: 'Shallow marsh', 
+                 40: 'Forest', 41: 'Forested wetland', 44: 'Shrub swamp', 45: 'Bog', 46: 'Shallow marsh', 
                  47: 'Deep marsh', 48: 'Vernal pool', 50: 'Water (lentic)', 51: 'Water(loic)', 55: 'Pond', 
                  56: 'Lake', 60: 'Sea cliff', 61: 'Vegetated dune', 62: 'Coastal dune', 63: 'Coastal beach', 
                  70: 'Salt marsh', 71: 'Tidal flat', 72: 'Rocky intertidal', 74: 'Ocean', 75: 'Salt pond/bay',

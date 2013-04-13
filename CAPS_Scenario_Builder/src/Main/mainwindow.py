@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 #---------------------------------------------------------------------
 #
-# Conservation Assessment and Prioritization System (CAPS) - An Open Source  
+# Conservation Assessment and Prioritization System (CAPS) Scenario Builder - An Open Source  
 # GIS tool to create scenarios for environmental modeling.
 #
 #--------------------------------------------------------------------- 
@@ -16,20 +16,20 @@
 # 
 # licensed under the terms of GNU GPLv3
 # 
-# This file is part of CAPS.
+# This file is part of CAPS Scenario Builder.
 
-# CAPS is free software: you can redistribute it and/or modify
+# CAPS Scenario Builder is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-# CAPS is distributed in the hope that it will be useful,
+# CAPS Scenario Builder is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+# along with CAPS Scenario Builder.  If not, see <http://www.gnu.org/licenses/>..
 # 
 #---------------------------------------------------------------------
 # general python imports
@@ -43,7 +43,7 @@ from qgis.gui import *
 from Main.mainwindow_ui import *
 # import GeoTux layer widget
 from Main.legend import *
-# CAPS application imports
+# CAPS Scenario Builder application imports
 from Tools.mapcoords import MapCoords
 from Tools.addpoints import AddPoints
 from Tools.selectfeatures import SelectTool
@@ -86,7 +86,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.copyFlag = False # True if selections copied
         self.editDirty = False # True if edits unsaved, false if no unsaved edits
         self.editMode = False # True if "Toggle Edits" is activated
-        # used to remember if edit_scenario(polygons).shp was loaded from a scenario file
         self.openingOrientingLayers = False
         self.openingScenario = False 
 
@@ -102,7 +101,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.crs = config.setCrs()
         # The rough extents of Massachusetts (a QgsRectangle)
         self.rectExtentMA = config.setExtentMA()
-        # get active vlayer to pass to edit tools
         # this variable is updated by self.activeLayerChanged
         self.activeVLayer = None
         self.activeRLayer = None
@@ -125,7 +123,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # when the layer loads after updating extents (see shared.updateExtents
         self.layerColor = None
         self.editLayerName = None
-        
+
         ''' Store persistent application settings. '''
 
         settings = QtCore.QSettings()
@@ -134,12 +132,10 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.sftpPassword = unicode(settings.value("sftpPassword", '').toString())
         self.sftpPath = unicode(settings.value("sftpPath", "/public/csb/").toString())
         print "Main.mainwindow self.sftpHost is: ", self.sftpHost
-        
-        
-        
+
         ''' Begin construction of main window '''
-        
-        # create map canvas
+
+        # create the map canvas
         self.canvas = QgsMapCanvas()
         self.canvas.setCanvasColor(QtGui.QColor(255,255,255))
         
@@ -170,7 +166,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.legendDock.show()
         
         # now that we have self.legend, get active layer changed signal
-        # connect the Python 'short circuit' signal from legend.py to the handler
+        # connect the Python 'short circuit' signal from legend.py to the handler slot
         self.connect( self.legend, QtCore.SIGNAL("activeLayerChanged"), self.activeLayerChanged)
         
         # Create the actions and link to their behaviors.
@@ -204,6 +200,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         QtCore.QObject.connect(self.mpActionModifyPoints, QtCore.SIGNAL("triggered()"), self.modifyFeatures)
         QtCore.QObject.connect(self.mpActionManageProjects, QtCore.SIGNAL("triggered()"), self.manageProjects)
         QtCore.QObject.connect(self.mpActionSftpProperties, QtCore.SIGNAL("triggered()"), self.sftpProperties)
+
         # Instantiate all tools.  They are written so their variables update from
         # the main window, so there is no need to repeat the instantiation process 
         # when layers or other variables change.
@@ -232,7 +229,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.mapToolGroup.addAction(self.mpActionPan)
         self.mapToolGroup.addAction(self.mpActionZoomIn)
         self.mapToolGroup.addAction(self.mpActionZoomOut)
-       
+
         # The following actions are usually disabled (8 actions of 26 total)
         self.mpActionDeselectFeatures.setDisabled(True)
         self.mpActionModifyPoints.setDisabled(True)
@@ -252,13 +249,14 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         time.sleep(2)
         self.splash.hide()
         
-        # make sure the mainwindow paints properly
+        '''# make sure the mainwindow paints properly
         self.menubar.show()
         self.toolBar.show()
         self.statusBar.show()
         self.setVisible(True)
         self.update()
-        self.activateWindow()
+        self.activateWindow()'''
+        
         # if the mainwindow is not maximized on opening we get painting problems
         # on all versions of MS Windows
         self.showMaximized() 
@@ -384,7 +382,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         
         # check for error
         if scenario.error():
-                QtGui.QMessageBox.warning(self, "File Error", "CAPS cannot read this file.")
+                QtGui.QMessageBox.warning(self, "File Error", "CAPS Scenario Builder cannot read this file.")
                 # QgsProject has no "close()" method, so, if error, close the project instance
                 scenario = None
                 return
@@ -471,7 +469,7 @@ scenario file is open in another program.")
         # Get the new file path and change the QString to unicode so that Python 
         # can slice it for the directory name. 
         scenarioFilePath = unicode(qd.getSaveFileName(self, QtCore.QString
-                                    ("Save scenario as ..."), defaultDir, filterString))
+                                    ("Save scenario as ... (Please make name concise and meaningful)"), defaultDir, filterString))
         
         # debugging
         print "scenarioFilePath is: " + scenarioFilePath

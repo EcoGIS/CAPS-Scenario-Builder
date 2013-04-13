@@ -1,18 +1,18 @@
 <map id="G" name="G">
 <area shape="rect" id="node3" href="$class_main_1_1legend_1_1_legend.html#ad17f8dbf98abb379b69a9b55569fcbcc" title="Main.legend.Legend.getMenu" alt="" coords="276,107,468,133"/>
-<area shape="rect" id="node36" href="$class_main_1_1legend_1_1_legend.html#ae62b43626d58aaeedea8486d62cded60" title="Main.legend.Legend.isLegendLayer" alt="" coords="259,157,485,184"/>
+<area shape="rect" id="node33" href="$class_main_1_1legend_1_1_legend.html#ae62b43626d58aaeedea8486d62cded60" title="Main.legend.Legend.isLegendLayer" alt="" coords="259,157,485,184"/>
 <area shape="rect" id="node5" href="$class_main_1_1legend_1_1_legend.html#adb4bf8b655847c305ebc0972fea72248" title="Main.legend.Legend.collapseAll" alt="" coords="560,5,765,32"/>
 <area shape="rect" id="node7" href="$class_main_1_1legend_1_1_legend.html#a5cc17b9ee93882597d42f47a894b4731" title="Main.legend.Legend.expandAll" alt="" coords="563,56,762,83"/>
 <area shape="rect" id="node9" href="$class_main_1_1legend_1_1_legend.html#a24843b8136cbb6a860679c634a2749b3" title="Main.legend.Legend.layerSymbology" alt="" coords="545,107,780,133"/>
 <area shape="rect" id="node13" href="$class_main_1_1legend_1_1_legend.html#a6e253be72b9d5505bd80b7f4b5bed06e" title="Main.legend.Legend.removeCurrentLayer" alt="" coords="534,157,791,184"/>
-<area shape="rect" id="node32" href="$class_main_1_1legend_1_1_legend.html#a69d560ed7e72e0910abb7f22dedc5e1b" title="Main.legend.Legend.zoomToLayer" alt="" coords="553,259,773,285"/>
-<area shape="rect" id="node11" href="$class_main_1_1legend_1_1_legend.html#a32e224479e5f4720eece79693810e523" title="Main.legend.Legend.refreshLayerSymbology" alt="" coords="859,5,1138,32"/>
-<area shape="rect" id="node15" href="$class_main_1_1legend_1_1_legend.html#aa541e80067525773e6696ebcc8985288" title="Main.legend.Legend.deleteEditingLayer" alt="" coords="874,259,1123,285"/>
-<area shape="rect" id="node17" href="$class_main_1_1legend_1_1_legend.html#a23d33c8587e0a753de17c9970c74a8cf" title="Main.legend.Legend.removeEditLayerFromRegistry" alt="" coords="841,107,1157,133"/>
-<area shape="rect" id="node21" href="$class_main_1_1legend_1_1_legend.html#a02afdc0325b2e9f264d7fa5ddecf902c" title="Main.legend.Legend.removeLegendLayer" alt="" coords="1569,157,1826,184"/>
-<area shape="rect" id="node23" href="$class_main_1_1legend_1_1_legend.html#ad75ee2f2516b5404d4881e3a3418cea2" title="Main.legend.Legend.setActiveLayerVariables" alt="" coords="1222,157,1503,184"/>
-<area shape="rect" id="node25" href="$class_main_1_1legend_1_1_legend.html#a07c7c0713de97ae6800a9bf1451ecae3" title="Main.legend.Legend.updateLayerSet" alt="" coords="1246,56,1479,83"/>
-<area shape="rect" id="node19" href="$class_main_1_1legend_1_1_legend.html#aeec05f97d1a38926e9485fe39edd3c89" title="Main.legend.Legend.removeLayerFromLegendById" alt="" coords="1206,107,1519,133"/>
-<area shape="rect" id="node27" href="$class_main_1_1legend_1_1_legend.html#a5fbe7ff1ffc2c6190a490126a2d95956" title="Main.legend.Legend.getLayerSet" alt="" coords="1591,56,1803,83"/>
-<area shape="rect" id="node34" href="$class_main_1_1legend_1_1_legend.html#aca871da01014a16c6dbc20ddbe6ec283" title="Main.legend.Legend.zoomToLegendLayer" alt="" coords="867,309,1130,336"/>
+<area shape="rect" id="node29" href="$class_main_1_1legend_1_1_legend.html#a69d560ed7e72e0910abb7f22dedc5e1b" title="Main.legend.Legend.zoomToLayer" alt="" coords="553,220,773,247"/>
+<area shape="rect" id="node11" href="$class_main_1_1legend_1_1_legend.html#a32e224479e5f4720eece79693810e523" title="Main.legend.Legend.refreshLayerSymbology" alt="" coords="847,93,1126,120"/>
+<area shape="rect" id="node15" href="$class_main_1_1legend_1_1_legend.html#aa541e80067525773e6696ebcc8985288" title="Main.legend.Legend.deleteEditingLayer" alt="" coords="862,144,1111,171"/>
+<area shape="rect" id="node17" href="$class_main_1_1legend_1_1_legend.html#a5f622884f4f66c32d89cd383457071b6" title="Main.legend.Legend.removeLayerFromRegistry" alt="" coords="840,195,1133,221"/>
+<area shape="rect" id="node19" href="$class_main_1_1legend_1_1_legend.html#aeec05f97d1a38926e9485fe39edd3c89" title="Main.legend.Legend.removeLayerFromLegendById" alt="" coords="1182,144,1495,171"/>
+<area shape="rect" id="node23" href="$class_main_1_1legend_1_1_legend.html#ad75ee2f2516b5404d4881e3a3418cea2" title="Main.legend.Legend.setActiveLayerVariables" alt="" coords="1198,195,1479,221"/>
+<area shape="rect" id="node25" href="$class_main_1_1legend_1_1_legend.html#a07c7c0713de97ae6800a9bf1451ecae3" title="Main.legend.Legend.updateLayerSet" alt="" coords="1222,245,1455,272"/>
+<area shape="rect" id="node21" href="$class_main_1_1legend_1_1_legend.html#a02afdc0325b2e9f264d7fa5ddecf902c" title="Main.legend.Legend.removeLegendLayer" alt="" coords="1545,144,1802,171"/>
+<area shape="rect" id="node27" href="$class_main_1_1legend_1_1_legend.html#a5fbe7ff1ffc2c6190a490126a2d95956" title="Main.legend.Legend.getLayerSet" alt="" coords="1567,245,1779,272"/>
+<area shape="rect" id="node31" href="$class_main_1_1legend_1_1_legend.html#aca871da01014a16c6dbc20ddbe6ec283" title="Main.legend.Legend.zoomToLegendLayer" alt="" coords="855,245,1118,272"/>
 </map>

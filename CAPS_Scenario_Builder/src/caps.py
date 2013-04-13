@@ -4,7 +4,7 @@
 # -*- coding:utf-8 -*-
 #------------------------------------------------------------
 # 
-# Conservation Assessment and Prioritization System (CAPS) - An Open Source  
+# Conservation Assessment and Prioritization System (CAPS) Scenario Builder - An Open Source  
 # GIS tool to create scenarios for environmental modeling.
 # 
 # -----------------------------------------------
@@ -15,20 +15,20 @@
 # 
 # licensed under the terms of GNU GPLv3
 # 
-# This file is part of CAPS.
+# This file is part of CAPS Scenario Builder.
 
-# CAPS is free software: you can redistribute it and/or modify
+# CAPS Scenario Builder is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-# CAPS is distributed in the hope that it will be useful,
+# CAPS Scenario Builder is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+# along with CAPS Scenario Builder.  If not, see <http://www.gnu.org/licenses/>..
 # 
 #---------------------------------------------------------------------
 # #@UnresolvedImport blocks import errors
@@ -42,7 +42,7 @@ from PyQt4 import QtGui, QtCore
 # Eclipse Pydev when qgis is added to Eclipse builtins
 from qgis.core import * 
 from qgis.gui import *
-# CAPS application imports
+# CAPS Scenario Builder application imports
 from Main.mainwindow import MainWindow
 
 # Version variable in case the app changes later
@@ -85,7 +85,7 @@ for the CAPS Scenario Builder Beta version.  The error is: " + error, "Debug Err
     app.setApplicationName("CAPS Scenario Builder")
         
     # add a splash screen on startup   
-    mySplashPix = QtGui.QPixmap("./CAPS_splash.png")
+    mySplashPix = QtGui.QPixmap("./csb_splash.png")
     mySplashPixScaled = mySplashPix.scaled(500,300,QtCore.Qt.KeepAspectRatio)
     mySplash = QtGui.QSplashScreen(mySplashPixScaled)
     mySplash.show()

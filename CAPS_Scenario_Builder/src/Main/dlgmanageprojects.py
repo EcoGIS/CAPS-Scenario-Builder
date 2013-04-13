@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 #---------------------------------------------------------------------
 #
-# Conservation Assessment and Prioritization System (CAPS) - An Open Source  
+# Conservation Assessment and Prioritization System (CAPS) Scenario Builder - An Open Source  
 # GIS tool to create scenarios for environmental modeling.
 #
 #--------------------------------------------------------------------- 
@@ -13,20 +13,20 @@
 # 
 # licensed under the terms of GNU GPLv3
 # 
-# This file is part of CAPS.
+# This file is part of CAPS Scenario Builder.
 
-# CAPS is free software: you can redistribute it and/or modify
+# CAPS Scenario Builder is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-# CAPS is distributed in the hope that it will be useful,
+# CAPS Scenario Builder is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with CAPS.  If not, see <http://www.gnu.org/licenses/>..
+# along with CAPS Scenario Builder.  If not, see <http://www.gnu.org/licenses/>..
 # 
 #---------------------------------------------------------------------
 # general python imports
@@ -38,7 +38,7 @@ import paramiko
 from PyQt4 import QtCore, QtGui
 # import the ui made with Qt Designer
 from dlgmanageprojects_ui import Ui_DlgManageProjects
-# CAPS application imports
+# CAPS Scenario Builder application imports
 import config
 
 
@@ -109,7 +109,7 @@ class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
             filename = unicode(filename)
 
             # If the user has chosen to 'Create a new project'
-            if filename == "Create a new project (type name here)":
+            if filename == "Create a new project (type name here) or Click arrow to open saved project":
                 self.setCreateNewProjectMode()
                 return
 
@@ -245,7 +245,16 @@ exists in your projects folder, and that project has already been sent to UMass.
             if self.writeProjectFile(projectFileName):
                 
                 # Now that the file is successfully written update the self.selectProjectComboBox because the file
-                # extension may have been added to the project name. There is no need to read the project file
+                # extension may have been added to the project name. There is no n:eed to read the project file
+                # to update the other dialog fields, since they were just saved with current values.
+                # Note that this method also sets the self.oldProjectFileName instance variable.
+                self.refreshSelectProjectComboBox(projectFileName)
+                
+                # Display a message to let the user know the project has been saved.
+                self.displayMsg("Project saved ...")
+                QtCore.QTimer.singleShot(4000, self.msg.close)
+                # Now that the file is successfully written update the self.selectProjectComboBox because the file
+                # extension may have been added to the project name. There is no n:eed to read the project file
                 # to update the other dialog fields, since they were just saved with current values.
                 # Note that this method also sets the self.oldProjectFileName instance variable.
                 self.refreshSelectProjectComboBox(projectFileName)
@@ -265,7 +274,7 @@ and should not be discarded. If you really want to delete it, please search for 
             projectFileName = unicode(self.selectProjectComboBox.currentText())
             path = config.projectsPath + projectFileName
 
-            if projectFileName != "Create a new project (type name here)":
+            if projectFileName != "Create a new project (type name here) or Click arrow to open saved project":
                 try:
                     os.remove(path)
                 except (IOError, OSError), e:
@@ -322,7 +331,7 @@ from the file system. Please check if the project file is open in another progra
                 ''' Now send the project.  This method returns True on a successful upload and False otherwise. '''
                 
                 # Pop up a QLabel to let the user know the project is being sent.
-                self.displaySendMsg()
+                self.displayMsg("Sending...")
 
                 if self.sftpUpload(projectFileName, scenarios):
                     print "Main.manageprojects.DlgManageProjects().sendProject(): sftp success!!"
@@ -333,7 +342,7 @@ from the file system. Please check if the project file is open in another progra
                     self.writeProjectFile(projectFileName, False)
 
                 # Close the QLabel that self.displaySendMessage created.
-                self.sendMsg.close()
+                self.msg.close()
 
                 # Once the project has been either successfully sent or failed to be sent, display it to show 
                 # the date sent and thus let the user know the project was successfully, or unsuccessfully sent. 
@@ -521,7 +530,7 @@ The error on line " + str(lino) + " is '" + error + "'.")
         ''' 
             A method to return the list of Exported Scenarios files in the Exported Scenarios directory. This method is 
             called by self.setCreateNewProjectMode whenever the Manage Projects dialog is first opened or if 
-            'Create a new project (type name here)' is selected from the "Project name:" combo box.  This method is also
+            'Create a new project (type name here) or Click arrow to open saved project' is selected from the "Project name:" combo box.  This method is also
             called by self.saveProject() to update the "Project name:" combo box after saving a new project.
         '''
         # debugging
@@ -541,7 +550,7 @@ The error on line " + str(lino) + " is '" + error + "'.")
                 return False
 
         if path == config.projectsPath:
-            filesList = ["Create a new project (type name here)"]
+            filesList = ["Create a new project (type name here) or Click arrow to open saved project"]
             for dirItem in directoryList:
                 if dirItem.endswith((".cpj", ".CPJ")):
                     filesList.append(dirItem)
@@ -609,7 +618,7 @@ in the project, just save the project as it is displayed to overwrite the old pr
         # Refresh the combo box to ensure the list of projects is current, or to set
         # it if the dialog is being opened. This method is also called by self.saveProject(),
         # and we set self.oldProjectFileName for both actions in this method.
-        self.refreshSelectProjectComboBox("Create a new project (type name here)")
+        self.refreshSelectProjectComboBox("Create a new project (type name here) or Click arrow to open saved project")
 
         # Clear the list and populate the 'Existing Scenario files' list widget
         self.existingScenarioFileList.clear()
@@ -617,7 +626,8 @@ in the project, just save the project as it is displayed to overwrite the old pr
 
         # Populate the 'Project Scenario files list' with a "newProjectMessage."
         if self.selectProjectComboBox.currentIndex() == 0:
-            newProjectMessage = ["To create a new project,", "fill in the text boxes above,", "optionally add a scenario here,", "and click 'Save'"] 
+            newProjectMessage = ["To create a new project,", "fill in the text boxes above,", "optionally add a scenario here,", "and click 'Save'",
+                                 "", "To open a saved project, click ", "the arrow under 'Project name:'"] 
             self.projectScenarioFileList.clear()
             self.projectScenarioFileList.addItems(newProjectMessage)
 
@@ -648,7 +658,7 @@ in the project, just save the project as it is displayed to overwrite the old pr
 
         # First check if the project is set to create project mode and return False if it is.
         if (self.projectScenarioFileList.item(0)
-            and oldProjectFileName == 'Create a new project (type name here)' 
+            and oldProjectFileName == 'Create a new project (type name here) or Click arrow to open saved project' 
             and sName == '' 
             and sEmail == ''
             and sMsg == ''
@@ -673,7 +683,7 @@ in the project, just save the project as it is displayed to overwrite the old pr
         print currentScenariosInProject
         print 'Main.manageprojects.DlgManageProjects().isProjectDirty(): self.scenariosInProjectThatExist'
         print self.scenariosInProjectThatExist
-        if oldProjectFileName != 'Create a new project (type name here)': print "Main.manageprojects.DlgManageProjects().isProjectDirty: t1"
+        if oldProjectFileName != 'Create a new project (type name here) or Click arrow to open saved project': print "Main.manageprojects.DlgManageProjects().isProjectDirty: t1"
         if sName == self.sender: print 'Main.manageprojects.DlgManageProjects().isProjectDirty: t2'
         if sEmail == self.senderEmail: print 'Main.manageprojects.DlgManageProjects().isProjectDirty: t3' 
         if sMsg == self.message: print 'Main.manageprojects.DlgManageProjects().isProjectDirty: t4' 
@@ -685,7 +695,7 @@ in the project, just save the project as it is displayed to overwrite the old pr
         # it was obvious to the user that they were changing the project name if they had entered one in the  
         # self.selectProjectNameComboBox, so there is no need to check if the text in the combo box has changed.
         # Prompt the user if other values have changed. If the user clicks OK return False, otherwise return True.
-        if (oldProjectFileName == 'Create a new project (type name here)' # new project but data changed
+        if (oldProjectFileName == 'Create a new project (type name here) or Click arrow to open saved project' # new project but data changed
             or sName != self.sender 
             or sEmail != self.senderEmail 
             or sMsg != self.message
@@ -697,9 +707,8 @@ in the project, just save the project as it is displayed to overwrite the old pr
 When you click 'OK', things will proceed normally, but please note that your edits were not saved.")
                 return False
             else: 
-                text = "You are taking an action that will cause the \
-data you just entered to be lost. If you want to save the data, click 'Cancel' and save the project.  To discard the data \
-and continue, click 'OK.'"
+                text = "You have made changes to your project since you last clicked 'Save.' If you want to save these changes click 'Cancel' \
+and save the project.  To discard the changes and continue, click 'OK.'"
             
                 reply = QtGui.QMessageBox.question(self, "Confirm", text, QtGui.QMessageBox.Cancel|QtGui.QMessageBox.Ok)
 
@@ -717,7 +726,7 @@ and continue, click 'OK.'"
 
         sname = unicode(self.senderNameEdit.text()).strip()
         comboBoxText = unicode(self.selectProjectComboBox.currentText()).strip()
-        if comboBoxText == "Create a new project (type name here)" or comboBoxText == "":
+        if comboBoxText == "Create a new project (type name here) or Click arrow to open saved project" or comboBoxText == "":
             informationText += "Please enter the 'Project name:'\n"
         if not self.validateFileName(comboBoxText):
             informationText += "Please limit your project name to letters, numbers and -_.()\n"
@@ -805,7 +814,7 @@ and continue, click 'OK.'"
         # in the project directory at any time by using operating system functions.
         self.selectProjectComboBox.addItems(self.listFiles(config.projectsPath))
        
-        if projectFileName == "Create a new project (type name here)":
+        if projectFileName == "Create a new project (type name here) or Click arrow to open saved project":
             self.selectProjectComboBox.setCurrentIndex(0)
         else: 
             # find the index and set the combo box to display the new projectFileName
@@ -817,7 +826,7 @@ and continue, click 'OK.'"
         
         # This variable remembers the "old" project name which needs to be passed to self.isProjectDirty()
         # whenever the user selects a new project name from the drop down list or saves/sends the project.
-        # This includes 'Create a new project (type name here)', which is passed like any other name in the 
+        # This includes 'Create a new project (type name here) or Click arrow to open saved project', which is passed like any other name in the 
         # combo box drop down list.
         self.oldProjectFileName = projectFileName
 
@@ -852,6 +861,7 @@ and continue, click 'OK.'"
         # now, connect and use paramiko Transport to negotiate SSH2 across the connection
         try:
             print 'Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): making connection...'
+            print 'user: ' + username + '   Password: ' + password
             t = paramiko.Transport((hostname, port))
             t.connect(username=username, password=password)
             sftp = paramiko.SFTPClient.from_transport(t)
@@ -963,32 +973,32 @@ The error on line 5 is '" + error + "'.")
             if error is not None:
                 return 'Error'
             
-    def displaySendMsg(self):
+    def displayMsg(self, msg):
         ''' A message to let the user know something is happening while files are uploading. '''
-        print 'Main.dlgmanageprojects.DlgManagProjects().sendMsg()'
+        print 'Main.dlgmanageprojects.DlgManagProjects().displayMsg()'
         
         # I tried using a QMessageBox and a QDialog instead of QLabel, but they really want to have
         # buttons, so I went with the simplest message you can do, a QLabel.  It probably would be easier 
         # to simply embed an empty QLabel in the dialog and then just set and unset its text, but it
         # wouldn't have a frame and probably wouldn't stand out as well.
-        self.sendMsg = QtGui.QLabel(self)
+        self.msg = QtGui.QLabel(self)
         
-        self.sendMsg.setText('Sending....')
+        self.msg.setText(msg)
         
         # Setting the FrameStle appears to pass the 'parent' to QFrame.  Without it,
         # the QLabel was always outside the main window.
-        self.sendMsg.setFrameStyle(QtGui.QFrame.StyledPanel)
+        self.msg.setFrameStyle(QtGui.QFrame.StyledPanel)
         
         # Now that the widget has a parent, we can move it relative to the parent.
-        self.sendMsg.setGeometry(300,50,120,50)
+        self.msg.setGeometry(300,50,120,50)
         
         # This is another way to move a widget, for reference.
-        #self.sendMsg.move(300,300)
+        #self.msg.move(300,300)
         
         # Without this the background is transparent.
-        self.sendMsg.setAutoFillBackground(True)
-        self.sendMsg.show()
+        self.msg.setAutoFillBackground(True)
+        self.msg.show()
         
         # Without a repaint(), the text doesn't appear for quite some time.  
         # Must be low priority in the dialog's event loop.
-        self.sendMsg.repaint()
+        self.msg.repaint()

@@ -288,7 +288,7 @@
 <a name="l00223"></a>00223 <span class="comment"># config.baseLayersPath folder. Layers open in the order they appear in the lists.</span>
 <a name="l00224"></a>00224 <span class="comment"># Raster layers open before vector layers, and the layers will be stacked in </span>
 <a name="l00225"></a>00225 <span class="comment"># the opening order with the first layer opened on the bottom in the layer panel </span>
-<a name="l00226"></a>00226 <span class="comment"># (i.e. legend).</span>
+<a name="l00226"></a>00226 <span class="comment"># (i.e. legend).  The extension must have 3 characters (i.e .tif or .shp)</span>
 <a name="l00227"></a><a class="code" href="namespaceconfig.html#a239d807c8c60a8e2ed3f04d9af773b67">00227</a> orientingRasterLayers = [<span class="stringliteral">&#39;USGS.SID&#39;</span>, <span class="stringliteral">&#39;base_land.tif&#39;</span>, <span class="stringliteral">&#39;base_streams.tif&#39;</span>, <span class="stringliteral">&#39;base_traffic.tif&#39;</span>]
 <a name="l00228"></a><a class="code" href="namespaceconfig.html#afe093ec4a1cf5d05ebc3e06be10f9d4d">00228</a> orientingVectorLayers = [<span class="stringliteral">&#39;base_towns.shp&#39;</span>]
 <a name="l00229"></a><a class="code" href="namespaceconfig.html#a4984c972837d8a87f9e46de5ff916d7e">00229</a> orientingVectorLayersBaseNames = [<span class="stringliteral">&#39;base_towns&#39;</span>]
@@ -310,32 +310,36 @@
 <a name="l00245"></a>00245 <span class="stringliteral">&#39;&#39;&#39; Configuration variables that need to be executed to be set &#39;&#39;&#39;</span>
 <a name="l00246"></a>00246 
 <a name="l00247"></a><a class="code" href="namespaceconfig.html#a4f1fff4e815f4034a041bbd4e2959725">00247</a> <span class="keyword">def </span><a class="code" href="namespaceconfig.html#a4f1fff4e815f4034a041bbd4e2959725">setDefaultColors</a>():
-<a name="l00248"></a>00248     <span class="comment"># debugging</span>
-<a name="l00249"></a>00249     <span class="keywordflow">print</span> <span class="stringliteral">&quot;config.setDefaultColors()&quot;</span>
-<a name="l00250"></a>00250     
-<a name="l00251"></a>00251     defaultColors = [QColor(<span class="stringliteral">&#39;darkorange&#39;</span>), QColor(<span class="stringliteral">&#39;fuchsia&#39;</span>), QColor(<span class="stringliteral">&#39;blueviolet&#39;</span>), QColor(<span class="stringliteral">&#39;lime&#39;</span>), 
-<a name="l00252"></a>00252                     QColor(<span class="stringliteral">&#39;mediumorchid&#39;</span>),QColor(<span class="stringliteral">&#39;plum&#39;</span>), QColor(<span class="stringliteral">&#39;aqua&#39;</span>)]
-<a name="l00253"></a>00253                     
-<a name="l00254"></a>00254     <span class="keywordflow">return</span> defaultColors
-<a name="l00255"></a>00255 
-<a name="l00256"></a><a class="code" href="namespaceconfig.html#a514f8f44e5d707726d4d2acec7e970e8">00256</a> <span class="keyword">def </span><a class="code" href="namespaceconfig.html#a514f8f44e5d707726d4d2acec7e970e8">setCrs</a>():
-<a name="l00257"></a>00257     <span class="comment"># debugging</span>
-<a name="l00258"></a>00258     <span class="keywordflow">print</span> <span class="stringliteral">&quot;config.setCrs()&quot;</span>
-<a name="l00259"></a>00259     
-<a name="l00260"></a>00260     <span class="comment"># MA State Plane coordinate system used by MassGIS</span>
-<a name="l00261"></a>00261     crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
-<a name="l00262"></a>00262     <span class="keywordflow">return</span> crs
-<a name="l00263"></a>00263 
-<a name="l00264"></a><a class="code" href="namespaceconfig.html#aa72a5786d7ea9b9f2feccbfca61dad98">00264</a> <span class="keyword">def </span><a class="code" href="namespaceconfig.html#aa72a5786d7ea9b9f2feccbfca61dad98">setExtentMA</a>():
-<a name="l00265"></a>00265     <span class="comment"># debugging</span>
-<a name="l00266"></a>00266     <span class="keywordflow">print</span> <span class="stringliteral">&quot;config.setExtentMA&quot;</span>
-<a name="l00267"></a>00267     extentMA = QgsRectangle(26000, 747000, 350000, 989000)
-<a name="l00268"></a>00268     <span class="keywordflow">return</span> extentMA
+<a name="l00248"></a>00248     <span class="stringliteral">&#39;&#39;&#39; </span>
+<a name="l00249"></a>00249 <span class="stringliteral">        Sets the default colors for base layer point features.  These may be changed using HTML Color Names.</span>
+<a name="l00250"></a>00250 <span class="stringliteral">        see http://www.w3schools.com/html/html_colornames.asp</span>
+<a name="l00251"></a>00251 <span class="stringliteral">    &#39;&#39;&#39;</span>
+<a name="l00252"></a>00252     <span class="comment"># debugging</span>
+<a name="l00253"></a>00253     <span class="keywordflow">print</span> <span class="stringliteral">&quot;config.setDefaultColors()&quot;</span>
+<a name="l00254"></a>00254     
+<a name="l00255"></a>00255     defaultColors = [QColor(<span class="stringliteral">&#39;Darkorange&#39;</span>), QColor(<span class="stringliteral">&#39;Fuchsia&#39;</span>), QColor(<span class="stringliteral">&#39;LightGray&#39;</span>), QColor(<span class="stringliteral">&#39;Lime&#39;</span>), 
+<a name="l00256"></a>00256                     QColor(<span class="stringliteral">&#39;MediumOrchid&#39;</span>),QColor(<span class="stringliteral">&#39;Aqua&#39;</span>), QColor(<span class="stringliteral">&#39;Teal&#39;</span>)]
+<a name="l00257"></a>00257                     
+<a name="l00258"></a>00258     <span class="keywordflow">return</span> defaultColors
+<a name="l00259"></a>00259 
+<a name="l00260"></a><a class="code" href="namespaceconfig.html#a514f8f44e5d707726d4d2acec7e970e8">00260</a> <span class="keyword">def </span><a class="code" href="namespaceconfig.html#a514f8f44e5d707726d4d2acec7e970e8">setCrs</a>():
+<a name="l00261"></a>00261     <span class="comment"># debugging</span>
+<a name="l00262"></a>00262     <span class="keywordflow">print</span> <span class="stringliteral">&quot;config.setCrs()&quot;</span>
+<a name="l00263"></a>00263     
+<a name="l00264"></a>00264     <span class="comment"># MA State Plane coordinate system used by MassGIS</span>
+<a name="l00265"></a>00265     crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
+<a name="l00266"></a>00266     <span class="keywordflow">return</span> crs
+<a name="l00267"></a>00267 
+<a name="l00268"></a><a class="code" href="namespaceconfig.html#aa72a5786d7ea9b9f2feccbfca61dad98">00268</a> <span class="keyword">def </span><a class="code" href="namespaceconfig.html#aa72a5786d7ea9b9f2feccbfca61dad98">setExtentMA</a>():
+<a name="l00269"></a>00269     <span class="comment"># debugging</span>
+<a name="l00270"></a>00270     <span class="keywordflow">print</span> <span class="stringliteral">&quot;config.setExtentMA&quot;</span>
+<a name="l00271"></a>00271     extentMA = QgsRectangle(26000, 747000, 350000, 989000)
+<a name="l00272"></a>00272     <span class="keywordflow">return</span> extentMA
 </pre></div></div><!-- contents -->
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 12 2012 10:42:22 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jun 22 2012 18:23:05 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
