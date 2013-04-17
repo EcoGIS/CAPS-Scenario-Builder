@@ -329,9 +329,8 @@ copied from does not meet this constraint.  Please check all your points careful
             text = "The added feature must fall on the centerline of a stream (dark blue color) \
 in the base_streams layer. If the base_streams layer is not open in your scenario, you may open it by choosing \
 'Add Raster Layer' from the toolbar or the 'Layer' menu.\n\n\
-If you are adding a culvert or bridge to a new road, please try to click as close \
-to the intersection of the stream's center and the new road as possible or you may get this message even though you clicked \
-the centerline of a stream."
+If you are adding a culvert/bridge to a new road, please click as close as possible\
+to the intersection of the stream's center and the new road so that the culvert will 'snap' to the new road."
 
         QtGui.QMessageBox.warning(mainwindow, "Constraints Error:", text)
         # add the layer to the registry here if it is not already open

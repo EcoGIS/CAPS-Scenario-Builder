@@ -830,7 +830,7 @@ and save the project.  To discard the changes and continue, click 'OK.'"
         # combo box drop down list.
         self.oldProjectFileName = projectFileName
 
-    def sftpUpload(self, projectFile, scenarios):
+    def sftpUpload(self, projectFileName, scenarios):
         ''' This method uploads a project and associated scenario files to UMass using sftp. '''
         # debugging
         print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload()"
@@ -846,16 +846,19 @@ and save the project.  To discard the changes and continue, click 'OK.'"
         print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): username is: ", username
         #print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): password is: ", password
 
-        projectDirectory = self.sender[:15]
         serverPath = self.mainwindow.sftpPath
-        serverProjectDirectoryPath = serverPath + projectDirectory
-        localProjectPath = config.projectsPath + projectFile
-        remoteProjectPath = serverProjectDirectoryPath + '/' + projectFile
+        senderDirectory = self.sender[:15]
+        projectDirectory = projectFileName[:-4]
+        serverSenderDirectoryPath = serverPath + senderDirectory
+        serverProjectDirectoryPath = serverSenderDirectoryPath + '/' + projectDirectory
+        localProjectPath = config.projectsPath + projectFileName
+        remoteProjectPath = serverProjectDirectoryPath + '/' + projectFileName
         localScenariosPath = config.scenarioExportsPath
         remoteScenariosPath = serverProjectDirectoryPath + '/'
 
         print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): localProjectPath is: " + localProjectPath
         print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): remoteProjectPath is: " + remoteProjectPath
+        print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): serversenderDirectory is: " + serverSenderDirectoryPath
         print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): serverProjectDirectory is: " + serverProjectDirectoryPath
 
         # now, connect and use paramiko Transport to negotiate SSH2 across the connection
@@ -866,36 +869,21 @@ and save the project.  To discard the changes and continue, click 'OK.'"
             t.connect(username=username, password=password)
             sftp = paramiko.SFTPClient.from_transport(t)
 
-            # Make the directory to store the project files. Note that paramiko will not
+            # Make the sender's directory. Note that paramiko will not
             # overwrite the directory if it already exists.  However paramiko will overwrite
             # files in the directory if they exist!
             try:
-                print 'Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): writing directory...'
+                print 'Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): writing sender directory...'
+                sftp.mkdir(serverSenderDirectoryPath)
+            except IOError, e:
+                print e
+            
+            # Now make the project directory to store the project's files. 
+            try:
+                print 'Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): writing project directory...'
                 sftp.mkdir(serverProjectDirectoryPath)
             except IOError, e:
                 print e
-
-            print 'Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): listing directory...'
-            # list the files in this sender's directory
-            dirlist = sftp.listdir(serverProjectDirectoryPath)
-            print "Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): Dirlist is", dirlist
-
-            # Check if any of the scenarios to be uploaded are already on the server.
-            matches = []
-            matches = [scenario for scenario in scenarios if scenario in dirlist]
-
-            # Check if the project file already exists in the directory and add to list if it does.
-            if projectFile in dirlist:
-                matches.append(projectFile)
-            # create a string from the list to display in the message box
-            m = ', '.join(matches)
-
-            # Warn the user and cancel the operation.
-            if matches:
-                QtGui.QMessageBox.question(self, "Send error", "The file(s) '" + m + "' already exist in your directory \
-on the server and cannot be overwritten. Please rename the file(s) and then send your project again.")
-                t.close
-                return False
 
             # Either no files with the same name or the user has chosen to continue 
             # so write the scenario files to the project directory on the server.
