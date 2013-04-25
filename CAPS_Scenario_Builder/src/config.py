@@ -112,12 +112,16 @@ fieldLabels6 = ['Land cover class:']
 #  to 'comboBoxOptions' represents a scenario edit type.  Each scenario
 # edit type must have a dropdown list for each comboBox needed for that edit type.  Thus we 
 # have a 'list of lists' for each edit type
-comboBoxOptions0 = [['', '1.0 - Full passage', '0.8 - Minor barrier', '0.6 - Moderate barrier', 
-                 '0.4 - Significant barrier', '0.2 - Severe barrier'], ['', '1.0 - Full passage (bear, moose)', 
-                 '0.75 - Large animals (fox, coyote, fisher, bobcat, otter)', 
-                 '0.5 - Medium animals (rabbit, skunk, mink, opossum, raccoon)', 
-                 '0.2 - Small animals (amphibians, reptiles, mice, voles, chipmunk, weasel)', 
-                 '0.0 - No passage structure']]
+comboBoxOptions0 = [['', '1.0 - Full passage (full passage for all fish and other aquatic organisms)', 
+                     '0.8 - Minor barrier (full passage for fish but not other aquatic organisms)', 
+                     '0.6 - Moderate barrier (full passage for some but not all species of fish)', 
+                     '0.4 - Significant barrier (some passage for strong-swimming fish but not for other species)',
+                     '0.2 - Severe barrier (little or no passage for fish or other aquatic organisms)'], 
+                    ['', '1.0 - Full passage (bear, moose)', 
+                    '0.75 - Large animals (fox, coyote, fisher, bobcat, otter)', 
+                    '0.5 - Medium animals (rabbit, skunk, mink, opossum, raccoon)', 
+                    '0.2 - Small animals (amphibians, reptiles, mice, voles, chipmunk, weasel)', 
+                    '0.0 - No passage structure']]
 comboBoxOptions1 = [['', '0.6 - Fishway/breached dam', '0.2 - Eel passage only', '0.0 - Full barrier']]
 comboBoxOptions2 = [['', '1.0 - Full passage (bear, moose)', 
                  '0.75 - Large animals (fox, coyote, fisher, bobcat, otter)', 

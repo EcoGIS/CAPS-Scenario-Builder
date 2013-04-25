@@ -47,6 +47,7 @@ from Main.mainwindow import MainWindow
 
 # Version variable in case the app changes later
 __version__ = "0.9"
+print "CSB version: " + __version__
 
 ''' Path to local QGIS install '''
 
@@ -86,7 +87,7 @@ for the CAPS Scenario Builder Beta version.  The error is: " + error, "Debug Err
         
     # add a splash screen on startup   
     mySplashPix = QtGui.QPixmap("./csb_splash.png")
-    mySplashPixScaled = mySplashPix.scaled(500,300,QtCore.Qt.KeepAspectRatio)
+    mySplashPixScaled = mySplashPix.scaled(648,408,QtCore.Qt.KeepAspectRatio)
     mySplash = QtGui.QSplashScreen(mySplashPixScaled)
     mySplash.show()
 

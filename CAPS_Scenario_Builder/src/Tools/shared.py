@@ -33,10 +33,11 @@ from PyQt4 import QtGui, QtCore
 # QGIS bindings for mapping functions
 from qgis.core import *
 from qgis.gui import *
+
 # CAPS Scenario Builder application imports
 import config
 
-  
+
 def listOriginalFeatures(mainwindow, editingLayerName):
         ''' Track original features so we can delete unsaved added features '''
         # debugging
@@ -546,6 +547,20 @@ def snapToNewRoad(mainwindow, qPoint):
         snappedQgsPoint = QgsPoint(x, y)
         return snappedQgsPoint
     else: return False # will return false without this line, but for clarity
+
+def validateFileName(fileName):
+        ''' A method to ensure that a string is a valid file name and not longer than 40 characters. '''
+        # debugging
+        print "Tools.shared.validateFileName()"
+        
+        if len(fileName) > 40:
+            return False
+        
+        validCharacters = "-_.() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        for c in fileName:
+            if not c in validCharacters:
+                return False
+        return True
 
 #**************************************************************
 ''' Testing '''

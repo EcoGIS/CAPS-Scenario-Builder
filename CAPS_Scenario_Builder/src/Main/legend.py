@@ -254,7 +254,7 @@ class LegendItem(QtGui.QTreeWidgetItem):
             print "Main.legend.LegendItem.setRendererV2(): geometry = 1"
             symbolLayer = vlayer.rendererV2().symbols()[0].symbolLayer(0)
             print "Main.legend.LegendItem.setRendererV2(): The line width before setting is: " + str(symbolLayer.width())
-            symbolLayer.setWidth(0.4)
+            symbolLayer.setWidth(1.5)
             print "Main.legend.LegendItem.setRendererV2(): The line width after setting is: " + str(symbolLayer.width())
             vlayer.triggerRepaint()
         
@@ -429,7 +429,7 @@ class LegendItem(QtGui.QTreeWidgetItem):
             self.addLayerToColoredLayers() 
         else: print "Main.legend.LegendItem.setRendererVretvalThere is a 'retval' error"
         
-        symbolLayer.setWidth(0.4)
+        symbolLayer.setWidth(1.5)
         vlayer.triggerRepaint()
         
     def setPolygonColor(self, vlayer, red, vlayerName):

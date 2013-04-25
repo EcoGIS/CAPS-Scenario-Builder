@@ -40,6 +40,7 @@ from PyQt4 import QtCore, QtGui
 from dlgmanageprojects_ui import Ui_DlgManageProjects
 # CAPS Scenario Builder application imports
 import config
+import Tools.shared
 
 
 class DlgManageProjects(QtGui.QDialog, Ui_DlgManageProjects):
@@ -728,12 +729,12 @@ and save the project.  To discard the changes and continue, click 'OK.'"
         comboBoxText = unicode(self.selectProjectComboBox.currentText()).strip()
         if comboBoxText == "Create a new project (type name here) or Click arrow to open saved project" or comboBoxText == "":
             informationText += "Please enter the 'Project name:'\n"
-        if not self.validateFileName(comboBoxText):
-            informationText += "Please limit your project name to letters, numbers and -_.()\n"
+        if not Tools.shared.validateFileName(comboBoxText):
+            informationText += "Please limit your project name to 40 characters that include only letters, numbers or -_.()\n"
         if sname == "":
             informationText += "Please enter the 'Sender's name:'\n"
-        if sname and not self.validateFileName(sname):
-            informationText += "Please limit your Sender's name to letters, numbers and -_.()\n"
+        if sname and not Tools.shared.validateFileName(sname):
+            informationText += "Please limit your Sender's name to 40 characters that include only letters, numbers or -_.()\n"
         if not self.validateEmail(unicode(self.sendersEmailEdit.text()).strip()):
             informationText += "Please enter a valid email address.\n"
 
@@ -772,17 +773,6 @@ and save the project.  To discard the changes and continue, click 'OK.'"
         if re.match(r"^[a-zA-Z0-9._%-+]+\@[a-zA-Z0-9._%-]+\.[a-zA-Z]{2,}$", email) !=  None: 
             return True
         else: return False
-
-    def validateFileName(self, fileName):
-        ''' A method to ensure that a string is a valid file name. '''
-        # debugging
-        print "Main.manageproject.DlgManageProjects().validateFileName()"
-        
-        validCharacters = "-_.() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        for c in fileName:
-            if not c in validCharacters:
-                return False
-        return True
 
     def getProjectFileName(self):
         ''' Check for the '.cpj' or '.CPJ' file extension in the projectName and add it if missing. '''

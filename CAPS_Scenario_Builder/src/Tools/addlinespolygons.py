@@ -91,7 +91,7 @@ class AddLinesPolygons(QgsMapTool):
             if self.started==False:
                 # Initialize Rubber Band
                 self.rubberBand = QgsRubberBand(self.canvas, self.geom)
-                self.rubberBand.setWidth(.6)
+                self.rubberBand.setWidth(5)
                 self.rubberBand.show()
                 self.numberOfPoints = 0
                             

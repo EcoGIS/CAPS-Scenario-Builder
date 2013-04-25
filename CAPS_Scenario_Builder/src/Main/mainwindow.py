@@ -463,20 +463,31 @@ scenario file is open in another program.")
         
         qd = QtGui.QFileDialog()
         qd.setDefaultSuffix(".cap")
-        filterString = "CAPS Scenario (*.cap)" #\nAll Files(*)")
+        filterString = "CAPS Scenario (*.cap) - Please make name concise and meaningful" #\nAll Files(*)")
         # get the path to the default scenario's directory 
         defaultDir = config.scenariosPath
         # Get the new file path and change the QString to unicode so that Python 
         # can slice it for the directory name. 
         scenarioFilePath = unicode(qd.getSaveFileName(self, QtCore.QString
-                                    ("Save scenario as ... (Please make name concise and meaningful)"), defaultDir, filterString))
+                                    ("Save scenario as ..."), defaultDir, filterString))
         
         # debugging
         print "scenarioFilePath is: " + scenarioFilePath
         print "defaultDir is " + defaultDir
-
+        
         # Check for cancel of the file dialog
         if len(scenarioFilePath) == 0: return "Cancel"
+        
+        # get the filename and validate
+        scenarioFileInfo = QtCore.QFileInfo(scenarioFilePath)
+        scenarioFileName = unicode(scenarioFileInfo.fileName())
+        
+        print "scenarioFileName is: " + scenarioFileName
+        
+        if not shared.validateFileName(scenarioFileName):
+             QtGui.QMessageBox.warning(self,"Save Scenario Error:","Your file has not been saved.  Please limit your file name \
+name to 40 characters that include only letters, numbers or -_.() and try again.\n")
+             return
         
         # The user can browse to anywhere and try to save the scenario with
         # any extension, so check for an incorrect directory or file extension
@@ -1023,7 +1034,7 @@ different name.")
 
         if (scenarioDirectoryPath != defaultScenarioDirectoryPath  and 
             scenarioDirectoryPath != defaultScenarioDirectoryPath[:-1]): # not fileName.endswith(".cap")
-            QtGui.QMessageBox.warning(self, "File Save Error:", "Scenarios must be saved in the 'Scenarios' directory, \
+            QtGui.QMessageBox.warning(self, "Save Scenario Error:", "Scenarios must be saved in the 'Scenarios' directory, \
 which the 'Save Scenario as...' dialog opens by default.  Also, the file name must end with the extension \
 '.cap'. If you save a scenario name without adding an extension, the file dialog will add the '.cap' extension for you. \n\n\
 Your scenario was not saved.  Please try again.")
