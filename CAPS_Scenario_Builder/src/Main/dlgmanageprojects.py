@@ -443,7 +443,10 @@ the local file system. Please check if the project file is open in another progr
                 if not line.startswith("{{SENDER}}:"):
                     raise ValueError, "sender is missing"
                 else:
-                    self.sender = line.lstrip("{{SENDER}}: ").strip()
+                    # reads cott Jackson instead of Scott Jackson?????
+                    print 'line before: ' + line
+                    self.sender = line.replace("{{SENDER}}: ", "").strip()
+                    print 'line after: ' + self.sender
 
                 # line 3 (this user QLineEdit input is limited to 75 characters and the QLineEdit does not accept newlines, \n)
                 line = fh.readline()
@@ -453,7 +456,7 @@ the local file system. Please check if the project file is open in another progr
                 if not line.startswith("{{SENDER_EMAIL}}:"):
                     raise ValueError, "sender's email is missing"
                 else:
-                    self.senderEmail = line.lstrip("{{SENDER_EMAIL}}: ").strip()
+                    self.senderEmail = line.replace("{{SENDER_EMAIL}}: ", "").strip()
 
                 # line 4 (this user QLineEdit input is limited to 50 characters and the QLineEdit does not accept newlines, \n)
                 line = fh.readline()
@@ -463,7 +466,7 @@ the local file system. Please check if the project file is open in another progr
                 if not line.startswith("{{PROJECT_NAME}}:"):
                     raise ValueError, "project name is missing"
                 else:
-                    self.projectName = line.lstrip("{{PROJECT_NAME}}: ").strip()
+                    self.projectName = line.replace("{{PROJECT_NAME}}: ", "").strip()
 
                 # line 5 (the date is inserted by self.writeProjectFile() and is a text string)
                 line = fh.readline()
@@ -473,7 +476,7 @@ the local file system. Please check if the project file is open in another progr
                 if not line.startswith("{{DATE_SENT}}:"):
                     raise ValueError, "date sent is missing"
                 else:
-                    self.dateSent = line.lstrip("{{DATE_SENT}}: ").strip()
+                    self.dateSent = line.replace("{{DATE_SENT}}: ", "").strip()
 
                 # line 6 (the scenarios in the project are written by self.writeProjectFile() and have no \n newlines)
                 line = fh.readline()
@@ -483,7 +486,7 @@ the local file system. Please check if the project file is open in another progr
                 if not line.startswith("{{SCENARIOS}}:"):
                     raise ValueError, "scenarios is missing"
                 else:
-                    self.scenariosInProjectFile = line.lstrip("{{SCENARIOS}}: ").strip()
+                    self.scenariosInProjectFile = line.replace("{{SCENARIOS}}: ", "").strip()
 
                 # lines 7+ (this user input has no length limit and does accept newlines, \n)
                 line = fh.readline()
@@ -935,7 +938,7 @@ and save the project.  To discard the changes and continue, click 'OK.'"
                     if not line.startswith("{{DATE_SENT}}:"):
                         raise ValueError, "date sent is missing"
                     else:
-                        dateSent = line.lstrip("{{DATE_SENT}}: ").strip()
+                        dateSent = line.replace("{{DATE_SENT}}: ", "").strip()
                         print 'Main.dlgmanageprojects.DlgManageProjects.sftpUpload(): dateSent is ' + dateSent
                         if dateSent:
                             return True

@@ -249,14 +249,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         time.sleep(2)
         self.splash.hide()
         
-        '''# make sure the mainwindow paints properly
-        self.menubar.show()
-        self.toolBar.show()
-        self.statusBar.show()
-        self.setVisible(True)
-        self.update()
-        self.activateWindow()'''
-        
         # if the mainwindow is not maximized on opening we get painting problems
         # on all versions of MS Windows
         self.showMaximized() 

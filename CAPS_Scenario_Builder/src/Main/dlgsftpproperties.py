@@ -55,7 +55,6 @@ class DlgSftpProperties(QtGui.QDialog, Ui_DlgSftpProperties):
         self.mainwindow = mainwindow
 
         # Populate the dialog with the settings stored in the windows registry
-        # settings = QtCore.QSettings()
         self.hostEdit.setText(self.mainwindow.sftpHost)
         self.userEdit.setText(self.mainwindow.sftpUser)
         self.passwordEdit.setText(self.mainwindow.sftpPassword)
