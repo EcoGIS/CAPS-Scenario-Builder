@@ -20,12 +20,12 @@
  <tbody>
  <tr style="height: 56px;">
   
-  <td id="projectlogo"><img alt="Logo" src="CAPS_icon.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="setup_wizard_icon.bmp"/></td>
   
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Caps Scenario Builder
-   &#160;<span id="projectnumber">0.9</span>
+   &#160;<span id="projectnumber">1.0</span>
    </div>
    
   </td>
@@ -179,7 +179,7 @@ Public Attributes</h2></td></tr>
 <a name="l00116"></a>00116 <span class="stringliteral">         py2exe will REWRITE config.pyo to shardlib when running the inno installer!!</span>
 <a name="l00117"></a>00117 <span class="stringliteral">         </span>
 <a name="l00118"></a>00118 <span class="stringliteral">         I tried to import config.py from C:\Program Files\CAPS Scenario Builder, but it seems</span>
-<a name="l00119"></a>00119 <span class="stringliteral">         there is no way to get caps.exe to find it in that location.  So, I put it in shardlib, where</span>
+<a name="l00119"></a>00119 <span class="stringliteral">         there is no way to get CAPS Scenario Builder.exe to find it in that location.  So, I put it in shardlib, where</span>
 <a name="l00120"></a>00120 <span class="stringliteral">         it does get imported and can be editied.</span>
 <a name="l00121"></a>00121 <span class="stringliteral"></span>
 <a name="l00122"></a>00122 <span class="stringliteral">        &#39;&#39;&#39;</span>
@@ -220,7 +220,7 @@ Public Attributes</h2></td></tr>
 <a name="l00157"></a>00157         <span class="comment"># Now rename the temp file as the original file.  Note that this deletes the original file.</span>
 <a name="l00158"></a>00158         <span class="keywordflow">try</span>:
 <a name="l00159"></a>00159             os.remove(shardlibzip)
-<a name="l00160"></a>00160             <span class="comment"># A config.pyo from CAPS is also found here, and is somehow inserted into shardlib when setup.exe is run!</span>
+<a name="l00160"></a>00160             <span class="comment"># A config.pyo from CAPS Scenario Builder is also found here, and is somehow inserted into shardlib when setup.exe is run!</span>
 <a name="l00161"></a>00161             os.remove(<span class="stringliteral">&#39;C:/beta/build/bdist.win32/winexe/collect-2.5/config.pyo&#39;</span>)
 <a name="l00162"></a>00162             os.rename(temp_shardlib, shardlibzip)
 <a name="l00163"></a>00163         <span class="keywordflow">except</span> (IOError, OSError), e:
@@ -365,9 +365,9 @@ Public Attributes</h2></td></tr>
 <a name="l00189"></a>00189         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;DefaultDirName={pf}\%s&quot;</span> % self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>
 <a name="l00190"></a>00190         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;DefaultGroupName=%s&quot;</span> % self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#a43414583294791104b6c69863d4721ba">name</a>
 <a name="l00191"></a>00191         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoVersion=%s&quot;</span> % self.<a class="code" href="classmake__setupexe__config_1_1_inno_script.html#aac1e93ddbb430396d8a0fbc622d10c82">version</a>
-<a name="l00192"></a>00192         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoCompany=University of Massachusetts: CAPS&quot;</span>
-<a name="l00193"></a>00193         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoDescription=CAPS: Conservation Assessment and Prioritization System&quot;</span>
-<a name="l00194"></a>00194         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoCopyright=University of Massachusetts: CAPS&quot;</span>
+<a name="l00192"></a>00192         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoCompany=University of Massachusetts: CAPS Scenario Builder&quot;</span>
+<a name="l00193"></a>00193         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoDescription=CAPS Scenario Builder: CAPS (Conservation Assessment and Prioritization System) Scenario Builder&quot;</span>
+<a name="l00194"></a>00194         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;VersionInfoCopyright=University of Massachusetts: CAPS Scenario Builder&quot;</span>
 <a name="l00195"></a>00195         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;AppCopyright=Daystar Computing: Robert English&quot;</span>
 <a name="l00196"></a>00196         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;InfoAfterFile=&quot;</span> + rootPath + <span class="stringliteral">r&quot;\README.TXT&quot;</span>
 <a name="l00197"></a>00197         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&quot;LicenseFile=&quot;</span> + rootPath + <span class="stringliteral">r&quot;\LICENSE.TXT&quot;</span>
@@ -385,7 +385,7 @@ Public Attributes</h2></td></tr>
 <a name="l00209"></a>00209         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\copy.txt&quot;; DestDir: &quot;{app}&quot;&#39;</span>
 <a name="l00210"></a>00210         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\RasterCategoryTable.htm&quot;; DestDir: &quot;{app}&quot;&#39;</span>
 <a name="l00211"></a>00211         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\setup_program_icon.ico&quot;; DestDir: &quot;{app}&quot;&#39;</span>
-<a name="l00212"></a>00212         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\CAPS_splash.png&quot;; DestDir: &quot;{app}&quot;&#39;</span>
+<a name="l00212"></a>00212         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\csb_splash.png&quot;; DestDir: &quot;{app}&quot;&#39;</span>
 <a name="l00213"></a>00213         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\vcredist_2005English_x86.exe&quot;; DestDir: &quot;{app}&quot;&#39;</span>
 <a name="l00214"></a>00214         <span class="keywordflow">print</span> &gt;&gt; ofi, <span class="stringliteral">r&#39;Source: &quot;&#39;</span> + rootPath + <span class="stringliteral">r&#39;\vcredist_2008_x86.exe&quot;; DestDir: &quot;{app}&quot;&#39;</span>
 <a name="l00215"></a>00215         <span class="keywordflow">print</span> &gt;&gt; ofi
@@ -549,7 +549,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 22 2012 18:23:09 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 30 2013 15:07:42 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -455,13 +455,13 @@ scenario file is open in another program.")
         
         qd = QtGui.QFileDialog()
         qd.setDefaultSuffix(".cap")
-        filterString = "CAPS Scenario (*.cap) - Please make name concise and meaningful" #\nAll Files(*)")
+        filterString = "CAPS Scenario (*.cap)" #\nAll Files(*)")
         # get the path to the default scenario's directory 
         defaultDir = config.scenariosPath
         # Get the new file path and change the QString to unicode so that Python 
         # can slice it for the directory name. 
         scenarioFilePath = unicode(qd.getSaveFileName(self, QtCore.QString
-                                    ("Save scenario as ..."), defaultDir, filterString))
+                                    ("Save scenario as ... Please make name concise and meaningful"), defaultDir, filterString))
         
         # debugging
         print "scenarioFilePath is: " + scenarioFilePath
@@ -478,7 +478,7 @@ scenario file is open in another program.")
         
         if not shared.validateFileName(scenarioFileName):
              QtGui.QMessageBox.warning(self,"Save Scenario Error:","Your file has not been saved.  Please limit your file name \
-name to 40 characters that include only letters, numbers or -_.() and try again.\n")
+to 40 characters that include only letters, numbers or -_.() and try again.\n")
              return
         
         # The user can browse to anywhere and try to save the scenario with

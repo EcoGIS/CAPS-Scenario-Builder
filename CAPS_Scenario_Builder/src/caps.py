@@ -46,7 +46,7 @@ from qgis.gui import *
 from Main.mainwindow import MainWindow
 
 # Version variable in case the app changes later
-__version__ = "0.9"
+__version__ = "1.0"
 print "CSB version: " + __version__
 
 ''' Path to local QGIS install '''
@@ -67,15 +67,17 @@ qgis_prefix = os.getenv("qgis_prefix")
 def main(argv):
     ''' This is the entry point into the application '''
     
-    # write errors to a log file
-    '''try:
-        sys.stderr = open('Log/error.log', 'w')
-        sys.stdout = open('Log/output.log', 'w')
-    except (IOError, OSError), e:
-        error = unicode(e)
-        #print "output.log write error " + error
-        MessageBox(0, "This is an error message related to writing debugging files \
-for the CAPS Scenario Builder Beta version.  The error is: " + error, "Debug Error")'''
+#===============================================================================
+#    # write errors to a log file
+#    try:
+#        sys.stderr = open('Log/error.log', 'w')
+#        sys.stdout = open('Log/output.log', 'w')
+#    except (IOError, OSError), e:
+#        error = unicode(e)
+#        #print "output.log write error " + error
+#        MessageBox(0, "This is an error message related to writing debugging files \
+# for the CAPS Scenario Builder Beta version.  The error is: " + error, "Debug Error")
+#===============================================================================
 
     # create Qt application
     app = QtGui.QApplication(argv, True)

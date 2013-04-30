@@ -20,12 +20,12 @@
  <tbody>
  <tr style="height: 56px;">
   
-  <td id="projectlogo"><img alt="Logo" src="CAPS_icon.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="setup_wizard_icon.bmp"/></td>
   
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Caps Scenario Builder
-   &#160;<span id="projectnumber">0.9</span>
+   &#160;<span id="projectnumber">1.0</span>
    </div>
    
   </td>
@@ -67,7 +67,7 @@
 <a href="dlgscenarioedittypes_8py.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a><a class="code" href="namespace_main_1_1dlgscenarioedittypes.html">00001</a> <span class="comment"># -*- coding:utf-8 -*-</span>
 <a name="l00002"></a>00002 <span class="comment">#---------------------------------------------------------------------</span>
 <a name="l00003"></a>00003 <span class="comment">#</span>
-<a name="l00004"></a>00004 <span class="comment"># Conservation Assessment and Prioritization System (CAPS) - An Open Source  </span>
+<a name="l00004"></a>00004 <span class="comment"># Conservation Assessment and Prioritization System (CAPS) Scenario Builder - An Open Source  </span>
 <a name="l00005"></a>00005 <span class="comment"># GIS tool to create scenarios for environmental modeling.</span>
 <a name="l00006"></a>00006 <span class="comment">#</span>
 <a name="l00007"></a>00007 <span class="comment">#--------------------------------------------------------------------- </span>
@@ -78,20 +78,20 @@
 <a name="l00012"></a>00012 <span class="comment"># </span>
 <a name="l00013"></a>00013 <span class="comment"># licensed under the terms of GNU GPLv3</span>
 <a name="l00014"></a>00014 <span class="comment"># </span>
-<a name="l00015"></a>00015 <span class="comment"># This file is part of CAPS.</span>
+<a name="l00015"></a>00015 <span class="comment"># This file is part of CAPS Scenario Builder.</span>
 <a name="l00016"></a>00016 
-<a name="l00017"></a>00017 <span class="comment"># CAPS is free software: you can redistribute it and/or modify</span>
+<a name="l00017"></a>00017 <span class="comment"># CAPS Scenario Builder is free software: you can redistribute it and/or modify</span>
 <a name="l00018"></a>00018 <span class="comment"># it under the terms of the GNU General Public License as published by</span>
 <a name="l00019"></a>00019 <span class="comment"># the Free Software Foundation, either version 3 of the License, or</span>
 <a name="l00020"></a>00020 <span class="comment"># (at your option) any later version.</span>
 <a name="l00021"></a>00021 
-<a name="l00022"></a>00022 <span class="comment"># CAPS is distributed in the hope that it will be useful,</span>
+<a name="l00022"></a>00022 <span class="comment"># CAPS Scenario Builder is distributed in the hope that it will be useful,</span>
 <a name="l00023"></a>00023 <span class="comment"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
 <a name="l00024"></a>00024 <span class="comment"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
 <a name="l00025"></a>00025 <span class="comment"># GNU General Public License for more details.</span>
 <a name="l00026"></a>00026 
 <a name="l00027"></a>00027 <span class="comment"># You should have received a copy of the GNU General Public License</span>
-<a name="l00028"></a>00028 <span class="comment"># along with CAPS.  If not, see &lt;http://www.gnu.org/licenses/&gt;..</span>
+<a name="l00028"></a>00028 <span class="comment"># along with CAPS Scenario Builder.  If not, see &lt;http://www.gnu.org/licenses/&gt;..</span>
 <a name="l00029"></a>00029 <span class="comment"># </span>
 <a name="l00030"></a>00030 <span class="comment">#---------------------------------------------------------------------</span>
 <a name="l00031"></a>00031 <span class="comment"># import Qt libraries</span>
@@ -100,7 +100,7 @@
 <a name="l00034"></a>00034 <span class="keyword">from</span> qgis.core <span class="keyword">import</span> *
 <a name="l00035"></a>00035 <span class="comment"># import the ui made with Qt Designer</span>
 <a name="l00036"></a>00036 <span class="keyword">from</span> dlgscenarioedittypes_ui <span class="keyword">import</span> Ui_DlgScenarioEditTypes
-<a name="l00037"></a>00037 <span class="comment"># CAPS application imports</span>
+<a name="l00037"></a>00037 <span class="comment"># CAPS Scenario Builder application imports</span>
 <a name="l00038"></a>00038 <span class="keyword">import</span> config
 <a name="l00039"></a>00039 <span class="keyword">import</span> Tools.shared
 <a name="l00040"></a>00040 
@@ -171,7 +171,7 @@
 <a name="l00105"></a>00105         <span class="comment"># note that some names may have a value of None</span>
 <a name="l00106"></a>00106         self.<a class="code" href="class_main_1_1dlgscenarioedittypes_1_1_dlg_scenario_edit_types.html#ad13de3fbd2d22050df3b3788296bccb9">getEditBaseConstraintLayerNames</a>(scenarioEditType)
 <a name="l00107"></a>00107         
-<a name="l00108"></a>00108         <span class="comment"># set paths (edit file directory has same name as the scenario file (i.e. somedirectory.caps))</span>
+<a name="l00108"></a>00108         <span class="comment"># set paths (edit file directory has same name as the scenario file (i.e. somedirectory.csb))</span>
 <a name="l00109"></a>00109         self.<a class="code" href="class_main_1_1dlgscenarioedittypes_1_1_dlg_scenario_edit_types.html#aff149f0dd97591be84236041587a409e">baseLayersPath</a> = config.baseLayersPath
 <a name="l00110"></a>00110         self.<a class="code" href="class_main_1_1dlgscenarioedittypes_1_1_dlg_scenario_edit_types.html#a339b1cf6758714cf966ed2e6b512f5a2">scenariosPath</a> = config.scenariosPath
 <a name="l00111"></a>00111 
@@ -485,7 +485,7 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 22 2012 18:23:06 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 30 2013 15:07:37 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -20,12 +20,12 @@
  <tbody>
  <tr style="height: 56px;">
   
-  <td id="projectlogo"><img alt="Logo" src="CAPS_icon.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="setup_wizard_icon.bmp"/></td>
   
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Caps Scenario Builder
-   &#160;<span id="projectnumber">0.9</span>
+   &#160;<span id="projectnumber">1.0</span>
    </div>
    
   </td>
@@ -69,7 +69,7 @@
 <a name="l00004"></a>00004 <span class="comment"># -*- coding:utf-8 -*-</span>
 <a name="l00005"></a>00005 <span class="comment">#------------------------------------------------------------</span>
 <a name="l00006"></a>00006 <span class="comment"># </span>
-<a name="l00007"></a>00007 <span class="comment"># Conservation Assessment and Prioritization System (CAPS) - An Open Source  </span>
+<a name="l00007"></a>00007 <span class="comment"># Conservation Assessment and Prioritization System (CAPS) Scenario Builder - An Open Source  </span>
 <a name="l00008"></a>00008 <span class="comment"># GIS tool to create scenarios for environmental modeling.</span>
 <a name="l00009"></a>00009 <span class="comment"># </span>
 <a name="l00010"></a>00010 <span class="comment"># -----------------------------------------------</span>
@@ -80,20 +80,20 @@
 <a name="l00015"></a>00015 <span class="comment"># </span>
 <a name="l00016"></a>00016 <span class="comment"># licensed under the terms of GNU GPLv3</span>
 <a name="l00017"></a>00017 <span class="comment"># </span>
-<a name="l00018"></a>00018 <span class="comment"># This file is part of CAPS.</span>
+<a name="l00018"></a>00018 <span class="comment"># This file is part of CAPS Scenario Builder.</span>
 <a name="l00019"></a>00019 
-<a name="l00020"></a>00020 <span class="comment"># CAPS is free software: you can redistribute it and/or modify</span>
+<a name="l00020"></a>00020 <span class="comment"># CAPS Scenario Builder is free software: you can redistribute it and/or modify</span>
 <a name="l00021"></a>00021 <span class="comment"># it under the terms of the GNU General Public License as published by</span>
 <a name="l00022"></a>00022 <span class="comment"># the Free Software Foundation, either version 3 of the License, or</span>
 <a name="l00023"></a>00023 <span class="comment"># (at your option) any later version.</span>
 <a name="l00024"></a>00024 
-<a name="l00025"></a>00025 <span class="comment"># CAPS is distributed in the hope that it will be useful,</span>
+<a name="l00025"></a>00025 <span class="comment"># CAPS Scenario Builder is distributed in the hope that it will be useful,</span>
 <a name="l00026"></a>00026 <span class="comment"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
 <a name="l00027"></a>00027 <span class="comment"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
 <a name="l00028"></a>00028 <span class="comment"># GNU General Public License for more details.</span>
 <a name="l00029"></a>00029 
 <a name="l00030"></a>00030 <span class="comment"># You should have received a copy of the GNU General Public License</span>
-<a name="l00031"></a>00031 <span class="comment"># along with CAPS.  If not, see &lt;http://www.gnu.org/licenses/&gt;..</span>
+<a name="l00031"></a>00031 <span class="comment"># along with CAPS Scenario Builder.  If not, see &lt;http://www.gnu.org/licenses/&gt;..</span>
 <a name="l00032"></a>00032 <span class="comment"># </span>
 <a name="l00033"></a>00033 <span class="comment">#---------------------------------------------------------------------</span>
 <a name="l00034"></a>00034 <span class="comment"># #@UnresolvedImport blocks import errors</span>
@@ -107,90 +107,91 @@
 <a name="l00042"></a>00042 <span class="comment"># Eclipse Pydev when qgis is added to Eclipse builtins</span>
 <a name="l00043"></a>00043 <span class="keyword">from</span> qgis.core <span class="keyword">import</span> * 
 <a name="l00044"></a>00044 <span class="keyword">from</span> qgis.gui <span class="keyword">import</span> *
-<a name="l00045"></a>00045 <span class="comment"># CAPS application imports</span>
+<a name="l00045"></a>00045 <span class="comment"># CAPS Scenario Builder application imports</span>
 <a name="l00046"></a>00046 <span class="keyword">from</span> Main.mainwindow <span class="keyword">import</span> MainWindow
 <a name="l00047"></a>00047 
 <a name="l00048"></a>00048 <span class="comment"># Version variable in case the app changes later</span>
-<a name="l00049"></a><a class="code" href="namespacecaps__setupexe.html#a23ada5d5a0cf44fe4e519d1752d00e58">00049</a> __version__ = <span class="stringliteral">&quot;0.9&quot;</span>
-<a name="l00050"></a>00050 
-<a name="l00051"></a>00051 <span class="stringliteral">&#39;&#39;&#39; Path to local QGIS install &#39;&#39;&#39;</span>
-<a name="l00052"></a>00052 
-<a name="l00053"></a>00053 <span class="comment"># The path below is the proper syntax for explicitly specifying the local path to qgis</span>
-<a name="l00054"></a>00054 <span class="comment">#qgis_prefix = &quot;C:\\Program Files (x86)\\Quantum GIS Wroclaw\\apps\\qgis&quot;</span>
-<a name="l00055"></a>00055 
-<a name="l00056"></a>00056 <span class="comment"># The qgis_prefix variable is temporarily set by C:\eclipse\Eclipse64_wroclaw.bat when eclipse starts. </span>
-<a name="l00057"></a>00057 <span class="comment">#qgis_prefix = os.getenv(&quot;qgis_prefix&quot;)</span>
-<a name="l00058"></a>00058 
-<a name="l00059"></a>00059 <span class="comment"># This is the proper prefix to use when making setup.exe</span>
-<a name="l00060"></a><a class="code" href="namespacecaps__setupexe.html#a35a6a8613bf40b47d99feb668a84f4e8">00060</a> qgis_prefix = <span class="stringliteral">&quot;.&quot;</span>
-<a name="l00061"></a>00061 
-<a name="l00062"></a>00062 <span class="comment"># the below does not work on Windows in any variation</span>
-<a name="l00063"></a>00063 <span class="comment">#QgsApplication.setPrefixPath(&quot;C:\Program Files\Quantum GIS Copiapo\apps\qgis&quot;, True)</span>
-<a name="l00064"></a>00064 
-<a name="l00065"></a>00065 <span class="comment"># Main entry to program.  Set up the main app and create a new window.</span>
-<a name="l00066"></a><a class="code" href="namespacecaps__setupexe.html#a1c650536ccf3311aeb967ca6e9b6ee24">00066</a> <span class="keyword">def </span><a class="code" href="namespacecaps__setupexe.html#a1c650536ccf3311aeb967ca6e9b6ee24">main</a>(argv):
-<a name="l00067"></a>00067     <span class="stringliteral">&#39;&#39;&#39; This is the entry point into the application. This Pthon file differs from caps.py because it has </span>
-<a name="l00068"></a>00068 <span class="stringliteral">        settings used to create a standalone Windows installer versus running as a Python run. &#39;&#39;&#39;</span>
-<a name="l00069"></a>00069     
-<a name="l00070"></a>00070     <span class="comment"># write errors to a log file</span>
-<a name="l00071"></a>00071     <span class="keywordflow">try</span>:
-<a name="l00072"></a>00072         sys.stderr = open(<span class="stringliteral">&#39;Log/error.log&#39;</span>, <span class="stringliteral">&#39;w&#39;</span>)
-<a name="l00073"></a>00073         sys.stdout = open(<span class="stringliteral">&#39;Log/output.log&#39;</span>, <span class="stringliteral">&#39;w&#39;</span>)
-<a name="l00074"></a>00074     <span class="keywordflow">except</span> (IOError, OSError), e:
-<a name="l00075"></a>00075         error = unicode(e)
-<a name="l00076"></a>00076         <span class="comment">#print &quot;output.log write error &quot; + error</span>
-<a name="l00077"></a>00077         MessageBox(0, <span class="stringliteral">&quot;This is an error message related to writing debugging files \</span>
-<a name="l00078"></a>00078 <span class="stringliteral">for the CAPS Scenario Builder Beta version.  The error is: &quot;</span> + error, <span class="stringliteral">&quot;Debug Error&quot;</span>)
-<a name="l00079"></a>00079 
-<a name="l00080"></a>00080     <span class="comment"># create Qt application</span>
-<a name="l00081"></a>00081     app = QtGui.QApplication(argv, <span class="keyword">True</span>)
-<a name="l00082"></a>00082     
-<a name="l00083"></a>00083     <span class="comment"># set parameters for using the QSettings class to store persistent values</span>
-<a name="l00084"></a>00084     app.setOrganizationName(<span class="stringliteral">&quot;UMass, Amherst&quot;</span>)
-<a name="l00085"></a>00085     app.setOrganizationDomain(<span class="stringliteral">&quot;umass.edu&quot;</span>)
-<a name="l00086"></a>00086     app.setApplicationName(<span class="stringliteral">&quot;CAPS Scenario Builder&quot;</span>)
-<a name="l00087"></a>00087         
-<a name="l00088"></a>00088     <span class="comment"># add a splash screen on startup   </span>
-<a name="l00089"></a>00089     mySplashPix = QtGui.QPixmap(<span class="stringliteral">&quot;./CAPS_splash.png&quot;</span>)
-<a name="l00090"></a>00090     mySplashPixScaled = mySplashPix.scaled(500,300,QtCore.Qt.KeepAspectRatio)
-<a name="l00091"></a>00091     mySplash = QtGui.QSplashScreen(mySplashPixScaled)
-<a name="l00092"></a>00092     mySplash.show()
-<a name="l00093"></a>00093 
-<a name="l00094"></a>00094     <span class="comment"># initialize qgis libraries</span>
-<a name="l00095"></a>00095     QgsApplication.setPrefixPath(qgis_prefix, <span class="keyword">True</span>)
-<a name="l00096"></a>00096     QgsApplication.initQgis()
-<a name="l00097"></a>00097    
-<a name="l00098"></a>00098     <span class="comment"># create main window</span>
-<a name="l00099"></a>00099     mainwindow = <a class="code" href="class_main_1_1mainwindow_1_1_main_window.html">MainWindow</a>(mySplash)
-<a name="l00100"></a>00100     mainwindow.show()
-<a name="l00101"></a>00101 
-<a name="l00102"></a>00102     <span class="comment"># Start the app up </span>
-<a name="l00103"></a>00103     retval = app.exec_()
-<a name="l00104"></a>00104 
-<a name="l00105"></a>00105     <span class="keyword">def </span>closeApp():
-<a name="l00106"></a>00106         <span class="stringliteral">&#39;&#39;&#39; Manage app termination &#39;&#39;&#39;</span>
-<a name="l00107"></a>00107         <span class="keywordflow">print</span> <span class="stringliteral">&quot;caps.closeApp() called&quot;</span>
-<a name="l00108"></a>00108             
-<a name="l00109"></a>00109         app.closeAllWindows
-<a name="l00110"></a>00110         app.quit() 
-<a name="l00111"></a>00111 
-<a name="l00112"></a>00112         <span class="comment"># We exited the Qt app so time to clean up the Qgis app</span>
-<a name="l00113"></a>00113         QgsApplication.exitQgis()
-<a name="l00114"></a>00114     
-<a name="l00115"></a>00115         <span class="comment">#app.exitQgis()</span>
-<a name="l00116"></a>00116         sys.exit(retval)
-<a name="l00117"></a>00117     
-<a name="l00118"></a>00118     <span class="comment"># Create connection for app finish</span>
-<a name="l00119"></a>00119     QtCore.QObject.connect(app, QtCore.SIGNAL(<span class="stringliteral">&quot;aboutToQuit()&quot;</span>), closeApp())
-<a name="l00120"></a>00120     <span class="comment">#app.connect(app, QtCore.SIGNAL(&quot;lastWindowClosed()&quot;), app, QtCore.SLOT(&quot;quit()&quot;))</span>
-<a name="l00121"></a>00121 
-<a name="l00122"></a>00122 <span class="keywordflow">if</span> __name__ == <span class="stringliteral">&quot;__main__&quot;</span>:
-<a name="l00123"></a>00123     <a class="code" href="namespacecaps__setupexe.html#a1c650536ccf3311aeb967ca6e9b6ee24">main</a>(sys.argv)
+<a name="l00049"></a><a class="code" href="namespacecaps__setupexe.html#a23ada5d5a0cf44fe4e519d1752d00e58">00049</a> __version__ = <span class="stringliteral">&quot;1.0&quot;</span>
+<a name="l00050"></a>00050 <span class="keywordflow">print</span> <span class="stringliteral">&quot;CSB version: &quot;</span> + __version__
+<a name="l00051"></a>00051 
+<a name="l00052"></a>00052 <span class="stringliteral">&#39;&#39;&#39; Path to local QGIS install &#39;&#39;&#39;</span>
+<a name="l00053"></a>00053 
+<a name="l00054"></a>00054 <span class="comment"># The path below is the proper syntax for explicitly specifying the local path to qgis</span>
+<a name="l00055"></a>00055 <span class="comment">#qgis_prefix = &quot;C:\\Program Files (x86)\\Quantum GIS Wroclaw\\apps\\qgis&quot;</span>
+<a name="l00056"></a>00056 
+<a name="l00057"></a>00057 <span class="comment"># The qgis_prefix variable is temporarily set by C:\eclipse\Eclipse64_wroclaw.bat when eclipse starts. </span>
+<a name="l00058"></a>00058 <span class="comment">#qgis_prefix = os.getenv(&quot;qgis_prefix&quot;)</span>
+<a name="l00059"></a>00059 
+<a name="l00060"></a>00060 <span class="comment"># This is the proper prefix to use when making setup.exe</span>
+<a name="l00061"></a><a class="code" href="namespacecaps__setupexe.html#a35a6a8613bf40b47d99feb668a84f4e8">00061</a> qgis_prefix = <span class="stringliteral">&quot;.&quot;</span>
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 <span class="comment"># the below does not work on Windows in any variation</span>
+<a name="l00064"></a>00064 <span class="comment">#QgsApplication.setPrefixPath(&quot;C:\Program Files\Quantum GIS Copiapo\apps\qgis&quot;, True)</span>
+<a name="l00065"></a>00065 
+<a name="l00066"></a>00066 <span class="comment"># Main entry to program.  Set up the main app and create a new window.</span>
+<a name="l00067"></a><a class="code" href="namespacecaps__setupexe.html#a1c650536ccf3311aeb967ca6e9b6ee24">00067</a> <span class="keyword">def </span><a class="code" href="namespacecaps__setupexe.html#a1c650536ccf3311aeb967ca6e9b6ee24">main</a>(argv):
+<a name="l00068"></a>00068     <span class="stringliteral">&#39;&#39;&#39; This is the entry point into the application. This Python file differs from caps.py because it has </span>
+<a name="l00069"></a>00069 <span class="stringliteral">        settings used to create a standalone Windows installer versus running as a Python run. &#39;&#39;&#39;</span>
+<a name="l00070"></a>00070     
+<a name="l00071"></a>00071     <span class="comment"># write errors to a log file</span>
+<a name="l00072"></a>00072     <span class="keywordflow">try</span>:
+<a name="l00073"></a>00073         sys.stderr = open(<span class="stringliteral">&#39;Log/error.log&#39;</span>, <span class="stringliteral">&#39;w&#39;</span>)
+<a name="l00074"></a>00074         sys.stdout = open(<span class="stringliteral">&#39;Log/output.log&#39;</span>, <span class="stringliteral">&#39;w&#39;</span>)
+<a name="l00075"></a>00075     <span class="keywordflow">except</span> (IOError, OSError), e:
+<a name="l00076"></a>00076         error = unicode(e)
+<a name="l00077"></a>00077         <span class="comment">#print &quot;output.log write error &quot; + error</span>
+<a name="l00078"></a>00078         MessageBox(0, <span class="stringliteral">&quot;This is an error message related to writing debugging files \</span>
+<a name="l00079"></a>00079 <span class="stringliteral">for the CAPS Scenario Builder Beta version.  The error is: &quot;</span> + error, <span class="stringliteral">&quot;Debug Error&quot;</span>)
+<a name="l00080"></a>00080 
+<a name="l00081"></a>00081     <span class="comment"># create Qt application</span>
+<a name="l00082"></a>00082     app = QtGui.QApplication(argv, <span class="keyword">True</span>)
+<a name="l00083"></a>00083     
+<a name="l00084"></a>00084     <span class="comment"># set parameters for using the QSettings class to store persistent values</span>
+<a name="l00085"></a>00085     app.setOrganizationName(<span class="stringliteral">&quot;UMass, Amherst&quot;</span>)
+<a name="l00086"></a>00086     app.setOrganizationDomain(<span class="stringliteral">&quot;umass.edu&quot;</span>)
+<a name="l00087"></a>00087     app.setApplicationName(<span class="stringliteral">&quot;CAPS Scenario Builder&quot;</span>)
+<a name="l00088"></a>00088         
+<a name="l00089"></a>00089     <span class="comment"># add a splash screen on startup   </span>
+<a name="l00090"></a>00090     mySplashPix = QtGui.QPixmap(<span class="stringliteral">&quot;./csb_splash.png&quot;</span>)
+<a name="l00091"></a>00091     mySplashPixScaled = mySplashPix.scaled(648,408,QtCore.Qt.KeepAspectRatio)
+<a name="l00092"></a>00092     mySplash = QtGui.QSplashScreen(mySplashPixScaled)
+<a name="l00093"></a>00093     mySplash.show()
+<a name="l00094"></a>00094 
+<a name="l00095"></a>00095     <span class="comment"># initialize qgis libraries</span>
+<a name="l00096"></a>00096     QgsApplication.setPrefixPath(qgis_prefix, <span class="keyword">True</span>)
+<a name="l00097"></a>00097     QgsApplication.initQgis()
+<a name="l00098"></a>00098    
+<a name="l00099"></a>00099     <span class="comment"># create main window</span>
+<a name="l00100"></a>00100     mainwindow = <a class="code" href="class_main_1_1mainwindow_1_1_main_window.html">MainWindow</a>(mySplash)
+<a name="l00101"></a>00101     mainwindow.show()
+<a name="l00102"></a>00102 
+<a name="l00103"></a>00103     <span class="comment"># Start the app up </span>
+<a name="l00104"></a>00104     retval = app.exec_()
+<a name="l00105"></a>00105 
+<a name="l00106"></a>00106     <span class="keyword">def </span>closeApp():
+<a name="l00107"></a>00107         <span class="stringliteral">&#39;&#39;&#39; Manage app termination &#39;&#39;&#39;</span>
+<a name="l00108"></a>00108         <span class="keywordflow">print</span> <span class="stringliteral">&quot;caps.closeApp() called&quot;</span>
+<a name="l00109"></a>00109             
+<a name="l00110"></a>00110         app.closeAllWindows
+<a name="l00111"></a>00111         app.quit() 
+<a name="l00112"></a>00112 
+<a name="l00113"></a>00113         <span class="comment"># We exited the Qt app so time to clean up the Qgis app</span>
+<a name="l00114"></a>00114         QgsApplication.exitQgis()
+<a name="l00115"></a>00115     
+<a name="l00116"></a>00116         <span class="comment">#app.exitQgis()</span>
+<a name="l00117"></a>00117         sys.exit(retval)
+<a name="l00118"></a>00118     
+<a name="l00119"></a>00119     <span class="comment"># Create connection for app finish</span>
+<a name="l00120"></a>00120     QtCore.QObject.connect(app, QtCore.SIGNAL(<span class="stringliteral">&quot;aboutToQuit()&quot;</span>), closeApp())
+<a name="l00121"></a>00121     <span class="comment">#app.connect(app, QtCore.SIGNAL(&quot;lastWindowClosed()&quot;), app, QtCore.SLOT(&quot;quit()&quot;))</span>
+<a name="l00122"></a>00122 
+<a name="l00123"></a>00123 <span class="keywordflow">if</span> __name__ == <span class="stringliteral">&quot;__main__&quot;</span>:
+<a name="l00124"></a>00124     <a class="code" href="namespacecaps__setupexe.html#a1c650536ccf3311aeb967ca6e9b6ee24">main</a>(sys.argv)
 </pre></div></div><!-- contents -->
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 22 2012 18:23:05 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 30 2013 15:07:37 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

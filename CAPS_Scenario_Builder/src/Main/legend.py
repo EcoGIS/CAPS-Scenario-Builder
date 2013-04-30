@@ -680,6 +680,7 @@ class Legend(QtGui.QTreeWidget):
         # set some variables
         layer = self.currentItem().canvasLayer.layer()
         layerId = self.currentItem().canvasLayer.layer().id()
+        editFilePath = unicode(layer.source())
         name = unicode(layer.name())
 
         ''' Check and warn on removing an editing layer '''
@@ -700,7 +701,6 @@ the file system. All changes to these files will be lost. Do you want to delete 
                 # and removes the layer from the originalScenarioLayers list.
                 self.removeLayerFromRegistry(layer, layerId, True)
                 # Finally, delete the editing layer
-                editFilePath = unicode(layer.source())
                 self.deleteEditingLayer(editFilePath)
                 # If the layer name exists in coloredLayers dictionary, remove it.
                 self.mainwindow.coloredLayers.pop(name, None)
@@ -977,7 +977,7 @@ Please check if it is open in another program and try again.")
         elif self.mainwindow.activeRLayer:
             activeLayerId = self.mainwindow.activeRLayer.id()
 
-        # Check if the layer to be moved is in the originalScenarioLayers list and remove if it is. This needs to be done before 
+        # Check if the layer to be removed is in the originalScenarioLayers list and remove if it is. This needs to be done before 
         # removing the layer from the registry, which calls Main.mainwindow.MainWindow.activeLayerChanged(), or we sometimes 
         # get an "underlying C++ object deleted when debugging or other code tries to read originalScenarioLayers list.
         inOriginalScenario = False

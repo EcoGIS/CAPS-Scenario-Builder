@@ -20,12 +20,12 @@
  <tbody>
  <tr style="height: 56px;">
   
-  <td id="projectlogo"><img alt="Logo" src="CAPS_icon.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="setup_wizard_icon.bmp"/></td>
   
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Caps Scenario Builder
-   &#160;<span id="projectnumber">0.9</span>
+   &#160;<span id="projectnumber">1.0</span>
    </div>
    
   </td>
@@ -66,7 +66,7 @@
 <a href="config_8py.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a><a class="code" href="namespaceconfig.html">00001</a> <span class="comment"># -*- coding:utf-8 -*-</span>
 <a name="l00002"></a>00002 <span class="comment">#---------------------------------------------------------------------</span>
 <a name="l00003"></a>00003 <span class="comment">#</span>
-<a name="l00004"></a>00004 <span class="comment"># Conservation Assessment and Prioritization System (CAPS) - An Open Source  </span>
+<a name="l00004"></a>00004 <span class="comment"># Conservation Assessment and Prioritization System (CAPS) Scenario Builder - An Open Source  </span>
 <a name="l00005"></a>00005 <span class="comment"># GIS tool to create scenarios for environmental modeling.</span>
 <a name="l00006"></a>00006 <span class="comment">#</span>
 <a name="l00007"></a>00007 <span class="comment">#--------------------------------------------------------------------- </span>
@@ -77,20 +77,20 @@
 <a name="l00012"></a>00012 <span class="comment"># </span>
 <a name="l00013"></a>00013 <span class="comment"># licensed under the terms of GNU GPLv3</span>
 <a name="l00014"></a>00014 <span class="comment"># </span>
-<a name="l00015"></a>00015 <span class="comment"># This file is part of CAPS.</span>
+<a name="l00015"></a>00015 <span class="comment"># This file is part of CAPS Scenario Builder.</span>
 <a name="l00016"></a>00016 
-<a name="l00017"></a>00017 <span class="comment">#CAPS is free software: you can redistribute it and/or modify</span>
+<a name="l00017"></a>00017 <span class="comment">#CAPS Scenario Builder is free software: you can redistribute it and/or modify</span>
 <a name="l00018"></a>00018 <span class="comment">#it under the terms of the GNU General Public License as published by</span>
 <a name="l00019"></a>00019 <span class="comment">#the Free Software Foundation, either version 3 of the License, or</span>
 <a name="l00020"></a>00020 <span class="comment">#(at your option) any later version.</span>
 <a name="l00021"></a>00021 
-<a name="l00022"></a>00022 <span class="comment">#CAPS is distributed in the hope that it will be useful,</span>
+<a name="l00022"></a>00022 <span class="comment">#CAPS Scenario Builder is distributed in the hope that it will be useful,</span>
 <a name="l00023"></a>00023 <span class="comment">#but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
 <a name="l00024"></a>00024 <span class="comment">#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
 <a name="l00025"></a>00025 <span class="comment">#GNU General Public License for more details.</span>
 <a name="l00026"></a>00026 
 <a name="l00027"></a>00027 <span class="comment">#You should have received a copy of the GNU General Public License</span>
-<a name="l00028"></a>00028 <span class="comment">#along with CAPS.  If not, see &lt;http://www.gnu.org/licenses/&gt;..</span>
+<a name="l00028"></a>00028 <span class="comment">#along with CAPS Scenario Builder.  If not, see &lt;http://www.gnu.org/licenses/&gt;..</span>
 <a name="l00029"></a>00029 <span class="comment">#-----------------------------------------------------------------------</span>
 <a name="l00030"></a>00030 
 <a name="l00031"></a>00031 <span class="comment"># import Qt libraries</span>
@@ -119,7 +119,7 @@
 <a name="l00054"></a>00054    
 <a name="l00055"></a>00055 <span class="comment"># Paths to important files.  </span>
 <a name="l00056"></a>00056 <span class="comment"># These cannot change for most users without altering the application installer.</span>
-<a name="l00057"></a>00057 <span class="comment"># Sophisticated users who have a version of caps.exe that allows access to config.py can move these folders and change</span>
+<a name="l00057"></a>00057 <span class="comment"># Sophisticated users who have a version of CAPS Scenario Builder.exe that allows access to config.py can move these folders and change</span>
 <a name="l00058"></a>00058 <span class="comment"># the paths to the new locations here.  The paths may be relative or absolute.</span>
 <a name="l00059"></a>00059 
 <a name="l00060"></a>00060 <span class="comment">#baseLayersPath =  &#39;C:/egit_repositories/CAPS-Scenario-Builder/CAPS_Scenario_Builder/src/base_layers/&#39;</span>
@@ -177,169 +177,171 @@
 <a name="l00112"></a>00112 <span class="comment">#  to &#39;comboBoxOptions&#39; represents a scenario edit type.  Each scenario</span>
 <a name="l00113"></a>00113 <span class="comment"># edit type must have a dropdown list for each comboBox needed for that edit type.  Thus we </span>
 <a name="l00114"></a>00114 <span class="comment"># have a &#39;list of lists&#39; for each edit type</span>
-<a name="l00115"></a><a class="code" href="namespaceconfig.html#acd2ec4a3a16b538c7642eddaa8d2d7ea">00115</a> comboBoxOptions0 = [[<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;1.0 - Full passage&#39;</span>, <span class="stringliteral">&#39;0.8 - Minor barrier&#39;</span>, <span class="stringliteral">&#39;0.6 - Moderate barrier&#39;</span>, 
-<a name="l00116"></a>00116                  <span class="stringliteral">&#39;0.4 - Significant barrier&#39;</span>, <span class="stringliteral">&#39;0.2 - Severe barrier&#39;</span>], [<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;1.0 - Full passage (bear, moose)&#39;</span>, 
-<a name="l00117"></a>00117                  <span class="stringliteral">&#39;0.75 - Large animals (fox, coyote, fisher, bobcat, otter)&#39;</span>, 
-<a name="l00118"></a>00118                  <span class="stringliteral">&#39;0.5 - Medium animals (rabbit, skunk, mink, opossum, raccoon)&#39;</span>, 
-<a name="l00119"></a>00119                  <span class="stringliteral">&#39;0.2 - Small animals (amphibians, reptiles, mice, voles, chipmunk, weasel)&#39;</span>, 
-<a name="l00120"></a>00120                  <span class="stringliteral">&#39;0.0 - No passage structure&#39;</span>]]
-<a name="l00121"></a><a class="code" href="namespaceconfig.html#afaf69eb82d1ee5e2168d327d45c7a69d">00121</a> comboBoxOptions1 = [[<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;0.6 - Fishway/breached dam&#39;</span>, <span class="stringliteral">&#39;0.2 - Eel passage only&#39;</span>, <span class="stringliteral">&#39;0.0 - Full barrier&#39;</span>]]
-<a name="l00122"></a><a class="code" href="namespaceconfig.html#a674bf64926d59bce57cc75c867a17033">00122</a> comboBoxOptions2 = [[<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;1.0 - Full passage (bear, moose)&#39;</span>, 
-<a name="l00123"></a>00123                  <span class="stringliteral">&#39;0.75 - Large animals (fox, coyote, fisher, bobcat, otter)&#39;</span>, 
-<a name="l00124"></a>00124                  <span class="stringliteral">&#39;0.5 - Medium animals (rabbit, skunk, mink, opossum, raccoon)&#39;</span>, 
-<a name="l00125"></a>00125                  <span class="stringliteral">&#39;0.2 - Small animals (amphibians, reptiles, mice, voles, chipmunk, weasel)&#39;</span>, 
-<a name="l00126"></a>00126                  <span class="stringliteral">&#39;0.0 - No passage structure&#39;</span>]]
-<a name="l00127"></a><a class="code" href="namespaceconfig.html#a7fc29feb4daf41062244f65d9075baf7">00127</a> comboBoxOptions3 = [[<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;0.0 m - No restriction&#39;</span>, <span class="stringliteral">&#39;0.5 m - Minor restriction&#39;</span>, 
-<a name="l00128"></a>00128                  <span class="stringliteral">&#39;1.0 m - Moderate restriction&#39;</span>, <span class="stringliteral">&#39;2.0 m - Severe restriction&#39;</span>]]
-<a name="l00129"></a><a class="code" href="namespaceconfig.html#a63f61508f68360ef781bfd260257cedb">00129</a> comboBoxOptions4 = [[<span class="stringliteral">&#39;&#39;</span>,<span class="stringliteral">&#39;0.0 - none(closed road; 0 cars/day)&#39;</span>, <span class="stringliteral">&#39;0.025 - very low(tiny road; 100 cars/day)&#39;</span>,
-<a name="l00130"></a>00130                  <span class="stringliteral">&#39;0.2 - low(minor road; 800 cars/day)&#39;</span>, <span class="stringliteral">&#39;0.5 - medium(collector; 2500 cars/day)&#39;</span>,
-<a name="l00131"></a>00131                  <span class="stringliteral">&#39;0.75 - medium-high(secondary highway; 5000 cars/day)&#39;</span>, 
-<a name="l00132"></a>00132                  <span class="stringliteral">&#39;0.94 - high(primary highway; 10,000 cars/day)&#39;</span>,  <span class="stringliteral">&#39;1.0 - extreme(expressway; &gt;40,000 cars/day)&#39;</span>],
-<a name="l00133"></a>00133                    [<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;81 - Expressway&#39;</span>, <span class="stringliteral">&#39;82 - Primary highway&#39;</span>, <span class="stringliteral">&#39;83 - Secondary highway&#39;</span>, <span class="stringliteral">&#39;84 - Light duty road&#39;</span>,
-<a name="l00134"></a>00134                    <span class="stringliteral">&#39;85 - Unpaved road&#39;</span>, <span class="stringliteral">&#39;90 - Railroad&#39;</span>, <span class="stringliteral">&#39;91 - Abandoned railbed&#39;</span>, <span class="stringliteral">&#39;92 - Rail trail&#39;</span>]] 
-<a name="l00135"></a><a class="code" href="namespaceconfig.html#a6528909b0231460a672820df5d2c5d20">00135</a> comboBoxOptions5 = [[<span class="stringliteral">&#39;&#39;</span>,<span class="stringliteral">&#39;0.0 - none(closed road; 0 cars/day)&#39;</span>, <span class="stringliteral">&#39;0.025 - very low(tiny road; 100 cars/day)&#39;</span>,
-<a name="l00136"></a>00136                 <span class="stringliteral">&#39;0.2 - low(minor road; 800 cars/day)&#39;</span>, <span class="stringliteral">&#39;0.5 - medium(collector; 2500 cars/day)&#39;</span>,
-<a name="l00137"></a>00137                 <span class="stringliteral">&#39;0.75 - medium-high(secondary highway; 5000 cars/day)&#39;</span>, 
-<a name="l00138"></a>00138                 <span class="stringliteral">&#39;0.94 - high(primary highway; 10,000 cars/day)&#39;</span>, 
-<a name="l00139"></a>00139                 <span class="stringliteral">&#39;1.0 - extreme(expressway; &gt;40,000 cars/day)&#39;</span>], [<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;81 - Expressway&#39;</span>, <span class="stringliteral">&#39;82 - Primary highway&#39;</span>, 
-<a name="l00140"></a>00140                 <span class="stringliteral">&#39;83 - Secondary highway&#39;</span>, <span class="stringliteral">&#39;84 - Light duty road&#39;</span>, <span class="stringliteral">&#39;85 - Unpaved road&#39;</span>, <span class="stringliteral">&#39;90 - Railroad&#39;</span>, 
-<a name="l00141"></a>00141                 <span class="stringliteral">&#39;91 - Abandoned railbed&#39;</span>, <span class="stringliteral">&#39;92 - Rail trail&#39;</span>]]
-<a name="l00142"></a><a class="code" href="namespaceconfig.html#acf368dabca77ded5f0b409bd0875898b">00142</a> comboBoxOptions6 = [[<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;1 - Commercial&#39;</span>, <span class="stringliteral">&#39;2 - Industrial&#39;</span>, <span class="stringliteral">&#39;3 - Urban open&#39;</span>, <span class="stringliteral">&#39;4 - Urban public &#39;</span>, 
-<a name="l00143"></a>00143                      <span class="stringliteral">&#39;5 - Transportation &#39;</span>, <span class="stringliteral">&#39;6 - Mining&#39;</span>, <span class="stringliteral">&#39;7 - Waste disposal&#39;</span>, <span class="stringliteral">&#39;8 - Junkyard&#39;</span>, 
-<a name="l00144"></a>00144                      <span class="stringliteral">&#39;10 - Multi-family  residential&#39;</span>, <span class="stringliteral">&#39;11 - High-density residential&#39;</span>, 
-<a name="l00145"></a>00145                      <span class="stringliteral">&#39;12 - Medium-density residential&#39;</span>, <span class="stringliteral">&#39;13 - Low-density residential&#39;</span>, 
-<a name="l00146"></a>00146                      <span class="stringliteral">&#39;20 - Spectator recreation&#39;</span>, <span class="stringliteral">&#39;21 - Participatory recreation&#39;</span>, 
-<a name="l00147"></a>00147                      <span class="stringliteral">&#39;22 - Golf&#39;</span>, <span class="stringliteral">&#39;23 - Water based recreation &#39;</span>, <span class="stringliteral">&#39;24 - Marina&#39;</span>, 
-<a name="l00148"></a>00148                      <span class="stringliteral">&#39;30 - Cropland&#39;</span>, <span class="stringliteral">&#39;31 - Cranberry bog &#39;</span>, <span class="stringliteral">&#39;32 - Nursery&#39;</span>, <span class="stringliteral">&#39;33 - Orchard&#39;</span>, 
-<a name="l00149"></a>00149                      <span class="stringliteral">&#39;34 - Cemetery&#39;</span>, <span class="stringliteral">&#39;35 - Pasture&#39;</span>, <span class="stringliteral">&#39;36 - Powerline shrubland&#39;</span>, <span class="stringliteral">&#39;37 - Open land&#39;</span>, 
-<a name="l00150"></a>00150                      <span class="stringliteral">&#39;40 - Forest&#39;</span>, <span class="stringliteral">&#39;41 - Deciduous forested wetland&#39;</span>, <span class="stringliteral">&#39;42 - Mixed forested wetland&#39;</span>, 
-<a name="l00151"></a>00151                      <span class="stringliteral">&#39;43 - Coniferous forested wetland&#39;</span>, <span class="stringliteral">&#39;44 - Shrub swamp&#39;</span>, <span class="stringliteral">&#39;45 - Bog&#39;</span>, <span class="stringliteral">&#39;46 - Shallow marsh&#39;</span>, 
-<a name="l00152"></a>00152                      <span class="stringliteral">&#39;47 - Deep marsh&#39;</span>, <span class="stringliteral">&#39;48 - Vernal pool&#39;</span>, <span class="stringliteral">&#39;55 - Pond&#39;</span>, <span class="stringliteral">&#39;56 - Lake&#39;</span>, <span class="stringliteral">&#39;60 - Sea cliff&#39;</span>, 
-<a name="l00153"></a>00153                      <span class="stringliteral">&#39;61 - Vegetated dune &#39;</span>, <span class="stringliteral">&#39;62 - Coastal dune&#39;</span>, <span class="stringliteral">&#39;63 - Coastal beach&#39;</span>, <span class="stringliteral">&#39;70 - Salt marsh&#39;</span>, 
-<a name="l00154"></a>00154                      <span class="stringliteral">&#39;71 - Tidal flat&#39;</span>, <span class="stringliteral">&#39;72 - Rocky intertidal&#39;</span>, <span class="stringliteral">&#39;75 - Salt pond/bay&#39;</span>]]
-<a name="l00155"></a>00155 
-<a name="l00156"></a>00156 <span class="comment"># This Python dictionary is used to look up values for the identify tool.  If new values are added to the &#39;base_land&#39; raster,</span>
-<a name="l00157"></a>00157 <span class="comment"># they should also be added here with the corresponding description.</span>
-<a name="l00158"></a><a class="code" href="namespaceconfig.html#a7ce465e668fe6630cfa12bb241c501d6">00158</a> baseLandLookup = {1: <span class="stringliteral">&#39;Commercial&#39;</span>, 2: <span class="stringliteral">&#39;Industrial&#39;</span>, 3: <span class="stringliteral">&#39;Urban open&#39;</span>, 4: <span class="stringliteral">&#39;Urban public &#39;</span>, 
-<a name="l00159"></a>00159                   5: <span class="stringliteral">&#39;Transportation&#39;</span>, 6: <span class="stringliteral">&#39;Mining&#39;</span>, 7: <span class="stringliteral">&#39;Waste disposal&#39;</span>, 8: <span class="stringliteral">&#39;Junkyard&#39;</span>, 
-<a name="l00160"></a>00160                  10: <span class="stringliteral">&#39;Multi-family  residential&#39;</span>, 11: <span class="stringliteral">&#39;High-density residential&#39;</span>, 
-<a name="l00161"></a>00161                  12: <span class="stringliteral">&#39;Medium-density residential&#39;</span>, 13: <span class="stringliteral">&#39;Low-density residential&#39;</span>, 
-<a name="l00162"></a>00162                  20: <span class="stringliteral">&#39;Spectator recreation&#39;</span>, 21: <span class="stringliteral">&#39;Participatory recreation&#39;</span>, 
-<a name="l00163"></a>00163                  22: <span class="stringliteral">&#39;Golf&#39;</span>, 23: <span class="stringliteral">&#39;Water based recreation &#39;</span>, 24: <span class="stringliteral">&#39;Marina&#39;</span>, 
-<a name="l00164"></a>00164                  30: <span class="stringliteral">&#39;Cropland&#39;</span>, 31: <span class="stringliteral">&#39;Cranberry bog &#39;</span>, 32: <span class="stringliteral">&#39;Nursery&#39;</span>, 33: <span class="stringliteral">&#39;Orchard&#39;</span>, 
-<a name="l00165"></a>00165                  34: <span class="stringliteral">&#39;Cemetery&#39;</span>, 35: <span class="stringliteral">&#39;Pasture&#39;</span>, 36: <span class="stringliteral">&#39;Powerline shrubland&#39;</span>, 37: <span class="stringliteral">&#39;Open land&#39;</span>, 
-<a name="l00166"></a>00166                  40: <span class="stringliteral">&#39;Forest&#39;</span>, 41: <span class="stringliteral">&#39;Deciduous forested wetland&#39;</span>, 42: <span class="stringliteral">&#39;Mixed forested wetland&#39;</span>, 
-<a name="l00167"></a>00167                  43: <span class="stringliteral">&#39;Coniferous forested wetland&#39;</span>, 44: <span class="stringliteral">&#39;Shrub swamp&#39;</span>, 45: <span class="stringliteral">&#39;Bog&#39;</span>, 46: <span class="stringliteral">&#39;Shallow marsh&#39;</span>, 
-<a name="l00168"></a>00168                  47: <span class="stringliteral">&#39;Deep marsh&#39;</span>, 48: <span class="stringliteral">&#39;Vernal pool&#39;</span>, 50: <span class="stringliteral">&#39;Water (lentic)&#39;</span>, 51: <span class="stringliteral">&#39;Water(loic)&#39;</span>, 55: <span class="stringliteral">&#39;Pond&#39;</span>, 
-<a name="l00169"></a>00169                  56: <span class="stringliteral">&#39;Lake&#39;</span>, 60: <span class="stringliteral">&#39;Sea cliff&#39;</span>, 61: <span class="stringliteral">&#39;Vegetated dune&#39;</span>, 62: <span class="stringliteral">&#39;Coastal dune&#39;</span>, 63: <span class="stringliteral">&#39;Coastal beach&#39;</span>, 
-<a name="l00170"></a>00170                  70: <span class="stringliteral">&#39;Salt marsh&#39;</span>, 71: <span class="stringliteral">&#39;Tidal flat&#39;</span>, 72: <span class="stringliteral">&#39;Rocky intertidal&#39;</span>, 74: <span class="stringliteral">&#39;Ocean&#39;</span>, 75: <span class="stringliteral">&#39;Salt pond/bay&#39;</span>,
-<a name="l00171"></a>00171                  81: <span class="stringliteral">&#39;Expressway&#39;</span>, 82: <span class="stringliteral">&#39;Primary highway&#39;</span>, 83: <span class="stringliteral">&#39;Secondary highway&#39;</span>, 84: <span class="stringliteral">&#39;Light duty road&#39;</span>, 
-<a name="l00172"></a>00172                  90: <span class="stringliteral">&#39;Railroad&#39;</span>, 91: <span class="stringliteral">&#39;Abandoned raibed&#39;</span>, 92: <span class="stringliteral">&#39;Rail trail&#39;</span>, 95: <span class="stringliteral">&#39;Bridge/culvert&#39;</span>, 96: <span class="stringliteral">&#39;Dam&#39;</span>}
-<a name="l00173"></a>00173 
-<a name="l00174"></a>00174 <span class="comment"># If the raster value falls between the two numbers in baseTrafficKeys[x] then displayed value is baseTrafficValues[x]</span>
-<a name="l00175"></a>00175 <span class="comment"># these numbers and values can be modified as needed as long is there is a one-to-one correspondence in order.</span>
-<a name="l00176"></a><a class="code" href="namespaceconfig.html#a74021671eccd4321351638c1ce5e18ff">00176</a> baseTrafficValues = [[-1, 0], [1, 60], [61, 121], [122, 182], [183, 244], [245, 255]]
-<a name="l00177"></a><a class="code" href="namespaceconfig.html#a2c3bf82f3f7d5857658b903161c0cc5e">00177</a> baseTrafficDisplay = [<span class="stringliteral">&#39;No road&#39;</span>, <span class="stringliteral">&#39;Unpaved road&#39;</span>, <span class="stringliteral">&#39;Light duty road&#39;</span>, <span class="stringliteral">&#39;Secondary highway&#39;</span>, <span class="stringliteral">&#39;Primary highway&#39;</span>, <span class="stringliteral">&#39;Expressway&#39;</span>]
-<a name="l00178"></a>00178 
-<a name="l00179"></a>00179 <span class="stringliteral">&#39;&#39;&#39; The fields lists for the three editing shapefiles &#39;&#39;&#39;</span>
-<a name="l00180"></a>00180 <span class="comment"># no changes should be made to the code under this heading</span>
-<a name="l00181"></a><a class="code" href="namespaceconfig.html#ae826bc25c299a992f98d0debb7250ff4">00181</a> editPointsFields = (inputFieldNames0 + inputFieldNames1
-<a name="l00182"></a>00182                          + inputFieldNames2 + inputFieldNames3) <span class="comment"># 21 fields</span>
-<a name="l00183"></a><a class="code" href="namespaceconfig.html#a560d65fbf44b789010766f2941365725">00183</a> editLinesFields = inputFieldNames4 <span class="comment"># 4 fields</span>
-<a name="l00184"></a><a class="code" href="namespaceconfig.html#a03a42d6567885f0e51651538a250e4da">00184</a> editPolygonsFields = inputFieldNames5 + inputFieldNames6 <span class="comment"># 7 fields</span>
-<a name="l00185"></a>00185 
-<a name="l00186"></a>00186 <span class="comment"># The list of scenario edit types for populating the &#39;Edit Scenario&#39; dialog.</span>
-<a name="l00187"></a>00187 <span class="comment"># Changing these values will only change the names shown in the &#39;ScenarioEditTypes&#39; dialog</span>
-<a name="l00188"></a>00188 <span class="comment"># Adding a value here will NOT create a new scenario type complete with base layers</span>
-<a name="l00189"></a>00189 <span class="comment"># and editing shapefile fields.</span>
-<a name="l00190"></a><a class="code" href="namespaceconfig.html#a51199df2d274c03d715c3728ba4e7787">00190</a> scenarioEditTypesList = [<span class="stringliteral">&#39;Culverts/bridges (points)&#39;</span>, <span class="stringliteral">&#39;Dams (points)&#39;</span>,  
-<a name="l00191"></a>00191                           <span class="stringliteral">&#39;Terrestrial passage structures (points)&#39;</span>, <span class="stringliteral">&#39;Tidal restrictions (points)&#39;</span>,
-<a name="l00192"></a>00192                           <span class="stringliteral">&#39;Add roads (lines)&#39;</span>, <span class="stringliteral">&#39;Modify roads (polygons)&#39;</span>,       
-<a name="l00193"></a>00193                           <span class="stringliteral">&#39;Land cover change (polygons)&#39;</span>]
-<a name="l00194"></a>00194 
-<a name="l00195"></a>00195 <span class="comment"># This list is used to open the proper constraint layer for the scenario edit type</span>
-<a name="l00196"></a><a class="code" href="namespaceconfig.html#aa5dc3d239c06082ad63736707a9fe375">00196</a> scenarioConstraintLayersBaseNames = [<span class="stringliteral">&#39;base_streams&#39;</span>, <span class="stringliteral">&#39;base_traffic&#39;</span>]
-<a name="l00197"></a><a class="code" href="namespaceconfig.html#ac61b009fe9395ede929fe70b989bc905">00197</a> scenarioConstraintLayersFileNames = [<span class="stringliteral">&#39;base_streams.tif&#39;</span>, <span class="stringliteral">&#39;base_traffic.tif&#39;</span>]
-<a name="l00198"></a>00198 
-<a name="l00199"></a>00199 
-<a name="l00200"></a>00200 <span class="comment"># The below are used in various places to check that correct layers are active for editing operations.</span>
-<a name="l00201"></a>00201 <span class="comment"># The spelling of these names can be changed, but not the number or order of them.</span>
-<a name="l00202"></a><a class="code" href="namespaceconfig.html#ae4a1c8cc549c8d07b8653e407f3857ff">00202</a> pointBaseLayersBaseNames = [<span class="stringliteral">&#39;base_culverts_bridges&#39;</span>, <span class="stringliteral">&#39;base_dams&#39;</span>, <span class="stringliteral">&#39;base_terrestrial_passage&#39;</span>,
-<a name="l00203"></a>00203                              <span class="stringliteral">&#39;base_tidal_restrictions&#39;</span>]
-<a name="l00204"></a><a class="code" href="namespaceconfig.html#a0d96a09a250c6f10837bc07d86b33073">00204</a> pointBaseLayersFileNames = [<span class="stringliteral">&#39;base_culverts_bridges.shp&#39;</span>, <span class="stringliteral">&#39;base_dams.shp&#39;</span>, <span class="stringliteral">&#39;base_terrestrial_passage.shp&#39;</span>,
-<a name="l00205"></a>00205                              <span class="stringliteral">&#39;base_tidal_restrictions.shp&#39;</span>]
-<a name="l00206"></a><a class="code" href="namespaceconfig.html#af8ec119db3715bd3671bc7e24292a5dd">00206</a> polygonBaseLayersBaseNames = [<span class="stringliteral">&#39;base_traffic&#39;</span>, <span class="stringliteral">&#39;base_land&#39;</span>]
-<a name="l00207"></a><a class="code" href="namespaceconfig.html#a9f9a02b2950f579e5a13a049c9ba3768">00207</a> polygonBaseLayersFileNames   = [<span class="stringliteral">&#39;base_traffic.tif&#39;</span>, <span class="stringliteral">&#39;base_land.tif&#39;</span>]
-<a name="l00208"></a>00208 
-<a name="l00209"></a>00209 <span class="comment"># This is used to warn users of slow loading attribute tables.</span>
-<a name="l00210"></a><a class="code" href="namespaceconfig.html#a153bbd0584201353f02589efedd61dd3">00210</a> slowLoadingLayers = [<span class="stringliteral">&#39;base_culverts_bridges&#39;</span>]
-<a name="l00211"></a>00211 
-<a name="l00212"></a>00212 <span class="comment"># names of just the editing layers (used in Main.legend.removeCurrentLayer()</span>
-<a name="l00213"></a>00213 <span class="comment"># and Main.mainwindow.deleteFeatures()).  These should not be changed unless</span>
-<a name="l00214"></a>00214 <span class="comment"># major changes are made to the application.</span>
-<a name="l00215"></a><a class="code" href="namespaceconfig.html#afdd9ee3817c0ef7f82fdc05ab515fce9">00215</a> editLayersBaseNames = [<span class="stringliteral">&#39;edit_scenario(points)&#39;</span>, <span class="stringliteral">&#39;edit_scenario(lines)&#39;</span>,
-<a name="l00216"></a>00216                        <span class="stringliteral">&#39;edit_scenario(polygons)&#39;</span>]
-<a name="l00217"></a><a class="code" href="namespaceconfig.html#a4f0e19c0d16db31fb1aa2da0f5f29c6b">00217</a> editLayersFileNames = [<span class="stringliteral">&#39;edit_scenario(points).shp&#39;</span>, <span class="stringliteral">&#39;edit_scenario(lines).shp&#39;</span>,
-<a name="l00218"></a>00218                        <span class="stringliteral">&#39;edit_scenario(polygons).shp&#39;</span>]
-<a name="l00219"></a>00219 
-<a name="l00220"></a>00220 <span class="comment"># These are the lists of layers that open when the app is first opened</span>
-<a name="l00221"></a>00221 <span class="comment"># or when the &#39;New Scenario&#39; action is clicked.  The orienting layers that</span>
-<a name="l00222"></a>00222 <span class="comment"># open can be changed by changing the lists below, assuming they exist in the </span>
-<a name="l00223"></a>00223 <span class="comment"># config.baseLayersPath folder. Layers open in the order they appear in the lists.</span>
-<a name="l00224"></a>00224 <span class="comment"># Raster layers open before vector layers, and the layers will be stacked in </span>
-<a name="l00225"></a>00225 <span class="comment"># the opening order with the first layer opened on the bottom in the layer panel </span>
-<a name="l00226"></a>00226 <span class="comment"># (i.e. legend).  The extension must have 3 characters (i.e .tif or .shp)</span>
-<a name="l00227"></a><a class="code" href="namespaceconfig.html#a239d807c8c60a8e2ed3f04d9af773b67">00227</a> orientingRasterLayers = [<span class="stringliteral">&#39;USGS.SID&#39;</span>, <span class="stringliteral">&#39;base_land.tif&#39;</span>, <span class="stringliteral">&#39;base_streams.tif&#39;</span>, <span class="stringliteral">&#39;base_traffic.tif&#39;</span>]
-<a name="l00228"></a><a class="code" href="namespaceconfig.html#afe093ec4a1cf5d05ebc3e06be10f9d4d">00228</a> orientingVectorLayers = [<span class="stringliteral">&#39;base_towns.shp&#39;</span>]
-<a name="l00229"></a><a class="code" href="namespaceconfig.html#a4984c972837d8a87f9e46de5ff916d7e">00229</a> orientingVectorLayersBaseNames = [<span class="stringliteral">&#39;base_towns&#39;</span>]
-<a name="l00230"></a><a class="code" href="namespaceconfig.html#a12c895693cc94bfa4ba8f997682506f8">00230</a> allOrientingLayers = orientingRasterLayers + orientingVectorLayers
-<a name="l00231"></a>00231 
-<a name="l00232"></a>00232 <span class="comment"># Orienting base layer names can be added here to make them visible (i.e. checked) when they are opened.</span>
-<a name="l00233"></a><a class="code" href="namespaceconfig.html#add58fce6fa90c3798ece4de559771e3a">00233</a> orientingLayersChecked = [<span class="stringliteral">&#39;base_towns&#39;</span>]
-<a name="l00234"></a>00234 
-<a name="l00235"></a>00235 <span class="comment"># A list of the non-orienting base layers and editing layers. </span>
-<a name="l00236"></a>00236 <span class="comment"># Main.dlgscenarioedittypes.hideEditBaseLayers() uses this list to hide (uncheck) unneeded layers.</span>
-<a name="l00237"></a>00237 <span class="comment"># Adding a name to this list will hide (uncheck) that layer if not needed when opening a</span>
-<a name="l00238"></a>00238 <span class="comment"># new scenario edit type. </span>
-<a name="l00239"></a><a class="code" href="namespaceconfig.html#a79d07fd12c08cb51a90f831fac8e267c">00239</a> hideEditLayers = [<span class="stringliteral">&#39;edit_scenario(points)&#39;</span>, <span class="stringliteral">&#39;edit_scenario(lines)&#39;</span>,
-<a name="l00240"></a>00240                   <span class="stringliteral">&#39;edit_scenario(polygons)&#39;</span>, <span class="stringliteral">&#39;base_culverts_bridges&#39;</span>, <span class="stringliteral">&#39;base_dams&#39;</span>,
-<a name="l00241"></a>00241                   <span class="stringliteral">&#39;base_terrestrial_passage&#39;</span>, <span class="stringliteral">&#39;base_tidal_restrictions&#39;</span>, <span class="stringliteral">&#39;base_traffic&#39;</span>, <span class="stringliteral">&#39;base_streams&#39;</span>]
-<a name="l00242"></a>00242 
-<a name="l00243"></a>00243 
-<a name="l00244"></a>00244 <span class="comment">############################################################################################</span>
-<a name="l00245"></a>00245 <span class="stringliteral">&#39;&#39;&#39; Configuration variables that need to be executed to be set &#39;&#39;&#39;</span>
-<a name="l00246"></a>00246 
-<a name="l00247"></a><a class="code" href="namespaceconfig.html#a4f1fff4e815f4034a041bbd4e2959725">00247</a> <span class="keyword">def </span><a class="code" href="namespaceconfig.html#a4f1fff4e815f4034a041bbd4e2959725">setDefaultColors</a>():
-<a name="l00248"></a>00248     <span class="stringliteral">&#39;&#39;&#39; </span>
-<a name="l00249"></a>00249 <span class="stringliteral">        Sets the default colors for base layer point features.  These may be changed using HTML Color Names.</span>
-<a name="l00250"></a>00250 <span class="stringliteral">        see http://www.w3schools.com/html/html_colornames.asp</span>
-<a name="l00251"></a>00251 <span class="stringliteral">    &#39;&#39;&#39;</span>
-<a name="l00252"></a>00252     <span class="comment"># debugging</span>
-<a name="l00253"></a>00253     <span class="keywordflow">print</span> <span class="stringliteral">&quot;config.setDefaultColors()&quot;</span>
-<a name="l00254"></a>00254     
-<a name="l00255"></a>00255     defaultColors = [QColor(<span class="stringliteral">&#39;Darkorange&#39;</span>), QColor(<span class="stringliteral">&#39;Fuchsia&#39;</span>), QColor(<span class="stringliteral">&#39;LightGray&#39;</span>), QColor(<span class="stringliteral">&#39;Lime&#39;</span>), 
-<a name="l00256"></a>00256                     QColor(<span class="stringliteral">&#39;MediumOrchid&#39;</span>),QColor(<span class="stringliteral">&#39;Aqua&#39;</span>), QColor(<span class="stringliteral">&#39;Teal&#39;</span>)]
-<a name="l00257"></a>00257                     
-<a name="l00258"></a>00258     <span class="keywordflow">return</span> defaultColors
-<a name="l00259"></a>00259 
-<a name="l00260"></a><a class="code" href="namespaceconfig.html#a514f8f44e5d707726d4d2acec7e970e8">00260</a> <span class="keyword">def </span><a class="code" href="namespaceconfig.html#a514f8f44e5d707726d4d2acec7e970e8">setCrs</a>():
-<a name="l00261"></a>00261     <span class="comment"># debugging</span>
-<a name="l00262"></a>00262     <span class="keywordflow">print</span> <span class="stringliteral">&quot;config.setCrs()&quot;</span>
-<a name="l00263"></a>00263     
-<a name="l00264"></a>00264     <span class="comment"># MA State Plane coordinate system used by MassGIS</span>
-<a name="l00265"></a>00265     crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
-<a name="l00266"></a>00266     <span class="keywordflow">return</span> crs
-<a name="l00267"></a>00267 
-<a name="l00268"></a><a class="code" href="namespaceconfig.html#aa72a5786d7ea9b9f2feccbfca61dad98">00268</a> <span class="keyword">def </span><a class="code" href="namespaceconfig.html#aa72a5786d7ea9b9f2feccbfca61dad98">setExtentMA</a>():
-<a name="l00269"></a>00269     <span class="comment"># debugging</span>
-<a name="l00270"></a>00270     <span class="keywordflow">print</span> <span class="stringliteral">&quot;config.setExtentMA&quot;</span>
-<a name="l00271"></a>00271     extentMA = QgsRectangle(26000, 747000, 350000, 989000)
-<a name="l00272"></a>00272     <span class="keywordflow">return</span> extentMA
+<a name="l00115"></a><a class="code" href="namespaceconfig.html#acd2ec4a3a16b538c7642eddaa8d2d7ea">00115</a> comboBoxOptions0 = [[<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;1.0 - Full passage (full passage for all fish and other aquatic organisms)&#39;</span>, 
+<a name="l00116"></a>00116                      <span class="stringliteral">&#39;0.8 - Minor barrier (full passage for fish but not other aquatic organisms)&#39;</span>, 
+<a name="l00117"></a>00117                      <span class="stringliteral">&#39;0.6 - Moderate barrier (full passage for some but not all species of fish)&#39;</span>, 
+<a name="l00118"></a>00118                      <span class="stringliteral">&#39;0.4 - Significant barrier (some passage for strong-swimming fish but not for other species)&#39;</span>,
+<a name="l00119"></a>00119                      <span class="stringliteral">&#39;0.2 - Severe barrier (little or no passage for fish or other aquatic organisms)&#39;</span>], 
+<a name="l00120"></a>00120                     [<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;1.0 - Full passage (bear, moose)&#39;</span>, 
+<a name="l00121"></a>00121                     <span class="stringliteral">&#39;0.75 - Large animals (fox, coyote, fisher, bobcat, otter)&#39;</span>, 
+<a name="l00122"></a>00122                     <span class="stringliteral">&#39;0.5 - Medium animals (rabbit, skunk, mink, opossum, raccoon)&#39;</span>, 
+<a name="l00123"></a>00123                     <span class="stringliteral">&#39;0.2 - Small animals (amphibians, reptiles, mice, voles, chipmunk, weasel)&#39;</span>, 
+<a name="l00124"></a>00124                     <span class="stringliteral">&#39;0.0 - No passage structure&#39;</span>]]
+<a name="l00125"></a><a class="code" href="namespaceconfig.html#afaf69eb82d1ee5e2168d327d45c7a69d">00125</a> comboBoxOptions1 = [[<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;0.6 - Fishway/breached dam&#39;</span>, <span class="stringliteral">&#39;0.2 - Eel passage only&#39;</span>, <span class="stringliteral">&#39;0.0 - Full barrier&#39;</span>]]
+<a name="l00126"></a><a class="code" href="namespaceconfig.html#a674bf64926d59bce57cc75c867a17033">00126</a> comboBoxOptions2 = [[<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;1.0 - Full passage (bear, moose)&#39;</span>, 
+<a name="l00127"></a>00127                  <span class="stringliteral">&#39;0.75 - Large animals (fox, coyote, fisher, bobcat, otter)&#39;</span>, 
+<a name="l00128"></a>00128                  <span class="stringliteral">&#39;0.5 - Medium animals (rabbit, skunk, mink, opossum, raccoon)&#39;</span>, 
+<a name="l00129"></a>00129                  <span class="stringliteral">&#39;0.2 - Small animals (amphibians, reptiles, mice, voles, chipmunk, weasel)&#39;</span>, 
+<a name="l00130"></a>00130                  <span class="stringliteral">&#39;0.0 - No passage structure&#39;</span>]]
+<a name="l00131"></a><a class="code" href="namespaceconfig.html#a7fc29feb4daf41062244f65d9075baf7">00131</a> comboBoxOptions3 = [[<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;0.0 m - No restriction&#39;</span>, <span class="stringliteral">&#39;0.5 m - Minor restriction&#39;</span>, 
+<a name="l00132"></a>00132                  <span class="stringliteral">&#39;1.0 m - Moderate restriction&#39;</span>, <span class="stringliteral">&#39;2.0 m - Severe restriction&#39;</span>]]
+<a name="l00133"></a><a class="code" href="namespaceconfig.html#a63f61508f68360ef781bfd260257cedb">00133</a> comboBoxOptions4 = [[<span class="stringliteral">&#39;&#39;</span>,<span class="stringliteral">&#39;0.0 - none(closed road; 0 cars/day)&#39;</span>, <span class="stringliteral">&#39;0.025 - very low(tiny road; 100 cars/day)&#39;</span>,
+<a name="l00134"></a>00134                  <span class="stringliteral">&#39;0.2 - low(minor road; 800 cars/day)&#39;</span>, <span class="stringliteral">&#39;0.5 - medium(collector; 2500 cars/day)&#39;</span>,
+<a name="l00135"></a>00135                  <span class="stringliteral">&#39;0.75 - medium-high(secondary highway; 5000 cars/day)&#39;</span>, 
+<a name="l00136"></a>00136                  <span class="stringliteral">&#39;0.94 - high(primary highway; 10,000 cars/day)&#39;</span>,  <span class="stringliteral">&#39;1.0 - extreme(expressway; &gt;40,000 cars/day)&#39;</span>],
+<a name="l00137"></a>00137                    [<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;81 - Expressway&#39;</span>, <span class="stringliteral">&#39;82 - Primary highway&#39;</span>, <span class="stringliteral">&#39;83 - Secondary highway&#39;</span>, <span class="stringliteral">&#39;84 - Light duty road&#39;</span>,
+<a name="l00138"></a>00138                    <span class="stringliteral">&#39;85 - Unpaved road&#39;</span>, <span class="stringliteral">&#39;90 - Railroad&#39;</span>, <span class="stringliteral">&#39;91 - Abandoned railbed&#39;</span>, <span class="stringliteral">&#39;92 - Rail trail&#39;</span>]] 
+<a name="l00139"></a><a class="code" href="namespaceconfig.html#a6528909b0231460a672820df5d2c5d20">00139</a> comboBoxOptions5 = [[<span class="stringliteral">&#39;&#39;</span>,<span class="stringliteral">&#39;0.0 - none(closed road; 0 cars/day)&#39;</span>, <span class="stringliteral">&#39;0.025 - very low(tiny road; 100 cars/day)&#39;</span>,
+<a name="l00140"></a>00140                 <span class="stringliteral">&#39;0.2 - low(minor road; 800 cars/day)&#39;</span>, <span class="stringliteral">&#39;0.5 - medium(collector; 2500 cars/day)&#39;</span>,
+<a name="l00141"></a>00141                 <span class="stringliteral">&#39;0.75 - medium-high(secondary highway; 5000 cars/day)&#39;</span>, 
+<a name="l00142"></a>00142                 <span class="stringliteral">&#39;0.94 - high(primary highway; 10,000 cars/day)&#39;</span>, 
+<a name="l00143"></a>00143                 <span class="stringliteral">&#39;1.0 - extreme(expressway; &gt;40,000 cars/day)&#39;</span>], [<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;81 - Expressway&#39;</span>, <span class="stringliteral">&#39;82 - Primary highway&#39;</span>, 
+<a name="l00144"></a>00144                 <span class="stringliteral">&#39;83 - Secondary highway&#39;</span>, <span class="stringliteral">&#39;84 - Light duty road&#39;</span>, <span class="stringliteral">&#39;85 - Unpaved road&#39;</span>, <span class="stringliteral">&#39;90 - Railroad&#39;</span>, 
+<a name="l00145"></a>00145                 <span class="stringliteral">&#39;91 - Abandoned railbed&#39;</span>, <span class="stringliteral">&#39;92 - Rail trail&#39;</span>]]
+<a name="l00146"></a><a class="code" href="namespaceconfig.html#acf368dabca77ded5f0b409bd0875898b">00146</a> comboBoxOptions6 = [[<span class="stringliteral">&#39;&#39;</span>, <span class="stringliteral">&#39;1 - Commercial&#39;</span>, <span class="stringliteral">&#39;2 - Industrial&#39;</span>, <span class="stringliteral">&#39;3 - Urban open&#39;</span>, <span class="stringliteral">&#39;4 - Urban public &#39;</span>, 
+<a name="l00147"></a>00147                      <span class="stringliteral">&#39;5 - Transportation &#39;</span>, <span class="stringliteral">&#39;6 - Mining&#39;</span>, <span class="stringliteral">&#39;7 - Waste disposal&#39;</span>, <span class="stringliteral">&#39;8 - Junkyard&#39;</span>, 
+<a name="l00148"></a>00148                      <span class="stringliteral">&#39;10 - Multi-family  residential&#39;</span>, <span class="stringliteral">&#39;11 - High-density residential&#39;</span>, 
+<a name="l00149"></a>00149                      <span class="stringliteral">&#39;12 - Medium-density residential&#39;</span>, <span class="stringliteral">&#39;13 - Low-density residential&#39;</span>, 
+<a name="l00150"></a>00150                      <span class="stringliteral">&#39;20 - Spectator recreation&#39;</span>, <span class="stringliteral">&#39;21 - Participatory recreation&#39;</span>, 
+<a name="l00151"></a>00151                      <span class="stringliteral">&#39;22 - Golf&#39;</span>, <span class="stringliteral">&#39;23 - Water based recreation &#39;</span>, <span class="stringliteral">&#39;24 - Marina&#39;</span>, 
+<a name="l00152"></a>00152                      <span class="stringliteral">&#39;30 - Cropland&#39;</span>, <span class="stringliteral">&#39;31 - Cranberry bog &#39;</span>, <span class="stringliteral">&#39;32 - Nursery&#39;</span>, <span class="stringliteral">&#39;33 - Orchard&#39;</span>, 
+<a name="l00153"></a>00153                      <span class="stringliteral">&#39;34 - Cemetery&#39;</span>, <span class="stringliteral">&#39;35 - Pasture&#39;</span>, <span class="stringliteral">&#39;36 - Powerline shrubland&#39;</span>, <span class="stringliteral">&#39;37 - Open land&#39;</span>, 
+<a name="l00154"></a>00154                      <span class="stringliteral">&#39;40 - Forest&#39;</span>, <span class="stringliteral">&#39;41 - Forested wetland&#39;</span>, <span class="stringliteral">&#39;44 - Shrub swamp&#39;</span>, <span class="stringliteral">&#39;45 - Bog&#39;</span>, <span class="stringliteral">&#39;46 - Shallow marsh&#39;</span>, 
+<a name="l00155"></a>00155                      <span class="stringliteral">&#39;47 - Deep marsh&#39;</span>, <span class="stringliteral">&#39;48 - Vernal pool&#39;</span>, <span class="stringliteral">&#39;55 - Pond&#39;</span>, <span class="stringliteral">&#39;56 - Lake&#39;</span>, <span class="stringliteral">&#39;60 - Sea cliff&#39;</span>, 
+<a name="l00156"></a>00156                      <span class="stringliteral">&#39;61 - Vegetated dune &#39;</span>, <span class="stringliteral">&#39;62 - Coastal dune&#39;</span>, <span class="stringliteral">&#39;63 - Coastal beach&#39;</span>, <span class="stringliteral">&#39;70 - Salt marsh&#39;</span>, 
+<a name="l00157"></a>00157                      <span class="stringliteral">&#39;71 - Tidal flat&#39;</span>, <span class="stringliteral">&#39;72 - Rocky intertidal&#39;</span>, <span class="stringliteral">&#39;75 - Salt pond/bay&#39;</span>]]
+<a name="l00158"></a>00158 
+<a name="l00159"></a>00159 <span class="comment"># This Python dictionary is used to look up values for the identify tool.  If new values are added to the &#39;base_land&#39; raster,</span>
+<a name="l00160"></a>00160 <span class="comment"># they should also be added here with the corresponding description.</span>
+<a name="l00161"></a><a class="code" href="namespaceconfig.html#a7ce465e668fe6630cfa12bb241c501d6">00161</a> baseLandLookup = {1: <span class="stringliteral">&#39;Commercial&#39;</span>, 2: <span class="stringliteral">&#39;Industrial&#39;</span>, 3: <span class="stringliteral">&#39;Urban open&#39;</span>, 4: <span class="stringliteral">&#39;Urban public &#39;</span>, 
+<a name="l00162"></a>00162                   5: <span class="stringliteral">&#39;Transportation&#39;</span>, 6: <span class="stringliteral">&#39;Mining&#39;</span>, 7: <span class="stringliteral">&#39;Waste disposal&#39;</span>, 8: <span class="stringliteral">&#39;Junkyard&#39;</span>, 
+<a name="l00163"></a>00163                  10: <span class="stringliteral">&#39;Multi-family  residential&#39;</span>, 11: <span class="stringliteral">&#39;High-density residential&#39;</span>, 
+<a name="l00164"></a>00164                  12: <span class="stringliteral">&#39;Medium-density residential&#39;</span>, 13: <span class="stringliteral">&#39;Low-density residential&#39;</span>, 
+<a name="l00165"></a>00165                  20: <span class="stringliteral">&#39;Spectator recreation&#39;</span>, 21: <span class="stringliteral">&#39;Participatory recreation&#39;</span>, 
+<a name="l00166"></a>00166                  22: <span class="stringliteral">&#39;Golf&#39;</span>, 23: <span class="stringliteral">&#39;Water based recreation &#39;</span>, 24: <span class="stringliteral">&#39;Marina&#39;</span>, 
+<a name="l00167"></a>00167                  30: <span class="stringliteral">&#39;Cropland&#39;</span>, 31: <span class="stringliteral">&#39;Cranberry bog &#39;</span>, 32: <span class="stringliteral">&#39;Nursery&#39;</span>, 33: <span class="stringliteral">&#39;Orchard&#39;</span>, 
+<a name="l00168"></a>00168                  34: <span class="stringliteral">&#39;Cemetery&#39;</span>, 35: <span class="stringliteral">&#39;Pasture&#39;</span>, 36: <span class="stringliteral">&#39;Powerline shrubland&#39;</span>, 37: <span class="stringliteral">&#39;Open land&#39;</span>, 
+<a name="l00169"></a>00169                  40: <span class="stringliteral">&#39;Forest&#39;</span>, 41: <span class="stringliteral">&#39;Forested wetland&#39;</span>, 44: <span class="stringliteral">&#39;Shrub swamp&#39;</span>, 45: <span class="stringliteral">&#39;Bog&#39;</span>, 46: <span class="stringliteral">&#39;Shallow marsh&#39;</span>, 
+<a name="l00170"></a>00170                  47: <span class="stringliteral">&#39;Deep marsh&#39;</span>, 48: <span class="stringliteral">&#39;Vernal pool&#39;</span>, 50: <span class="stringliteral">&#39;Water (lentic)&#39;</span>, 51: <span class="stringliteral">&#39;Water(loic)&#39;</span>, 55: <span class="stringliteral">&#39;Pond&#39;</span>, 
+<a name="l00171"></a>00171                  56: <span class="stringliteral">&#39;Lake&#39;</span>, 60: <span class="stringliteral">&#39;Sea cliff&#39;</span>, 61: <span class="stringliteral">&#39;Vegetated dune&#39;</span>, 62: <span class="stringliteral">&#39;Coastal dune&#39;</span>, 63: <span class="stringliteral">&#39;Coastal beach&#39;</span>, 
+<a name="l00172"></a>00172                  70: <span class="stringliteral">&#39;Salt marsh&#39;</span>, 71: <span class="stringliteral">&#39;Tidal flat&#39;</span>, 72: <span class="stringliteral">&#39;Rocky intertidal&#39;</span>, 74: <span class="stringliteral">&#39;Ocean&#39;</span>, 75: <span class="stringliteral">&#39;Salt pond/bay&#39;</span>,
+<a name="l00173"></a>00173                  81: <span class="stringliteral">&#39;Expressway&#39;</span>, 82: <span class="stringliteral">&#39;Primary highway&#39;</span>, 83: <span class="stringliteral">&#39;Secondary highway&#39;</span>, 84: <span class="stringliteral">&#39;Light duty road&#39;</span>, 
+<a name="l00174"></a>00174                  90: <span class="stringliteral">&#39;Railroad&#39;</span>, 91: <span class="stringliteral">&#39;Abandoned raibed&#39;</span>, 92: <span class="stringliteral">&#39;Rail trail&#39;</span>, 95: <span class="stringliteral">&#39;Bridge/culvert&#39;</span>, 96: <span class="stringliteral">&#39;Dam&#39;</span>}
+<a name="l00175"></a>00175 
+<a name="l00176"></a>00176 <span class="comment"># If the raster value falls between the two numbers in baseTrafficKeys[x] then displayed value is baseTrafficValues[x]</span>
+<a name="l00177"></a>00177 <span class="comment"># these numbers and values can be modified as needed as long is there is a one-to-one correspondence in order.</span>
+<a name="l00178"></a><a class="code" href="namespaceconfig.html#a74021671eccd4321351638c1ce5e18ff">00178</a> baseTrafficValues = [[-1, 0], [1, 60], [61, 121], [122, 182], [183, 244], [245, 255]]
+<a name="l00179"></a><a class="code" href="namespaceconfig.html#a2c3bf82f3f7d5857658b903161c0cc5e">00179</a> baseTrafficDisplay = [<span class="stringliteral">&#39;No road&#39;</span>, <span class="stringliteral">&#39;Unpaved road&#39;</span>, <span class="stringliteral">&#39;Light duty road&#39;</span>, <span class="stringliteral">&#39;Secondary highway&#39;</span>, <span class="stringliteral">&#39;Primary highway&#39;</span>, <span class="stringliteral">&#39;Expressway&#39;</span>]
+<a name="l00180"></a>00180 
+<a name="l00181"></a>00181 <span class="stringliteral">&#39;&#39;&#39; The fields lists for the three editing shapefiles &#39;&#39;&#39;</span>
+<a name="l00182"></a>00182 <span class="comment"># no changes should be made to the code under this heading</span>
+<a name="l00183"></a><a class="code" href="namespaceconfig.html#ae826bc25c299a992f98d0debb7250ff4">00183</a> editPointsFields = (inputFieldNames0 + inputFieldNames1
+<a name="l00184"></a>00184                          + inputFieldNames2 + inputFieldNames3) <span class="comment"># 21 fields</span>
+<a name="l00185"></a><a class="code" href="namespaceconfig.html#a560d65fbf44b789010766f2941365725">00185</a> editLinesFields = inputFieldNames4 <span class="comment"># 4 fields</span>
+<a name="l00186"></a><a class="code" href="namespaceconfig.html#a03a42d6567885f0e51651538a250e4da">00186</a> editPolygonsFields = inputFieldNames5 + inputFieldNames6 <span class="comment"># 7 fields</span>
+<a name="l00187"></a>00187 
+<a name="l00188"></a>00188 <span class="comment"># The list of scenario edit types for populating the &#39;Edit Scenario&#39; dialog.</span>
+<a name="l00189"></a>00189 <span class="comment"># Changing these values will only change the names shown in the &#39;ScenarioEditTypes&#39; dialog</span>
+<a name="l00190"></a>00190 <span class="comment"># Adding a value here will NOT create a new scenario type complete with base layers</span>
+<a name="l00191"></a>00191 <span class="comment"># and editing shapefile fields.</span>
+<a name="l00192"></a><a class="code" href="namespaceconfig.html#a51199df2d274c03d715c3728ba4e7787">00192</a> scenarioEditTypesList = [<span class="stringliteral">&#39;Culverts/bridges (points)&#39;</span>, <span class="stringliteral">&#39;Dams (points)&#39;</span>,  
+<a name="l00193"></a>00193                           <span class="stringliteral">&#39;Terrestrial passage structures (points)&#39;</span>, <span class="stringliteral">&#39;Tidal restrictions (points)&#39;</span>,
+<a name="l00194"></a>00194                           <span class="stringliteral">&#39;Add roads (lines)&#39;</span>, <span class="stringliteral">&#39;Modify roads (polygons)&#39;</span>,       
+<a name="l00195"></a>00195                           <span class="stringliteral">&#39;Land cover change (polygons)&#39;</span>]
+<a name="l00196"></a>00196 
+<a name="l00197"></a>00197 <span class="comment"># This list is used to open the proper constraint layer for the scenario edit type</span>
+<a name="l00198"></a><a class="code" href="namespaceconfig.html#aa5dc3d239c06082ad63736707a9fe375">00198</a> scenarioConstraintLayersBaseNames = [<span class="stringliteral">&#39;base_streams&#39;</span>, <span class="stringliteral">&#39;base_traffic&#39;</span>]
+<a name="l00199"></a><a class="code" href="namespaceconfig.html#ac61b009fe9395ede929fe70b989bc905">00199</a> scenarioConstraintLayersFileNames = [<span class="stringliteral">&#39;base_streams.tif&#39;</span>, <span class="stringliteral">&#39;base_traffic.tif&#39;</span>]
+<a name="l00200"></a>00200 
+<a name="l00201"></a>00201 
+<a name="l00202"></a>00202 <span class="comment"># The below are used in various places to check that correct layers are active for editing operations.</span>
+<a name="l00203"></a>00203 <span class="comment"># The spelling of these names can be changed, but not the number or order of them.</span>
+<a name="l00204"></a><a class="code" href="namespaceconfig.html#ae4a1c8cc549c8d07b8653e407f3857ff">00204</a> pointBaseLayersBaseNames = [<span class="stringliteral">&#39;base_culverts_bridges&#39;</span>, <span class="stringliteral">&#39;base_dams&#39;</span>, <span class="stringliteral">&#39;base_terrestrial_passage&#39;</span>,
+<a name="l00205"></a>00205                              <span class="stringliteral">&#39;base_tidal_restrictions&#39;</span>]
+<a name="l00206"></a><a class="code" href="namespaceconfig.html#a0d96a09a250c6f10837bc07d86b33073">00206</a> pointBaseLayersFileNames = [<span class="stringliteral">&#39;base_culverts_bridges.shp&#39;</span>, <span class="stringliteral">&#39;base_dams.shp&#39;</span>, <span class="stringliteral">&#39;base_terrestrial_passage.shp&#39;</span>,
+<a name="l00207"></a>00207                              <span class="stringliteral">&#39;base_tidal_restrictions.shp&#39;</span>]
+<a name="l00208"></a><a class="code" href="namespaceconfig.html#af8ec119db3715bd3671bc7e24292a5dd">00208</a> polygonBaseLayersBaseNames = [<span class="stringliteral">&#39;base_traffic&#39;</span>, <span class="stringliteral">&#39;base_land&#39;</span>]
+<a name="l00209"></a><a class="code" href="namespaceconfig.html#a9f9a02b2950f579e5a13a049c9ba3768">00209</a> polygonBaseLayersFileNames   = [<span class="stringliteral">&#39;base_traffic.tif&#39;</span>, <span class="stringliteral">&#39;base_land.tif&#39;</span>]
+<a name="l00210"></a>00210 
+<a name="l00211"></a>00211 <span class="comment"># This is used to warn users of slow loading attribute tables.</span>
+<a name="l00212"></a><a class="code" href="namespaceconfig.html#a153bbd0584201353f02589efedd61dd3">00212</a> slowLoadingLayers = [<span class="stringliteral">&#39;base_culverts_bridges&#39;</span>]
+<a name="l00213"></a>00213 
+<a name="l00214"></a>00214 <span class="comment"># names of just the editing layers (used in Main.legend.removeCurrentLayer()</span>
+<a name="l00215"></a>00215 <span class="comment"># and Main.mainwindow.deleteFeatures()).  These should not be changed unless</span>
+<a name="l00216"></a>00216 <span class="comment"># major changes are made to the application.</span>
+<a name="l00217"></a><a class="code" href="namespaceconfig.html#afdd9ee3817c0ef7f82fdc05ab515fce9">00217</a> editLayersBaseNames = [<span class="stringliteral">&#39;edit_scenario(points)&#39;</span>, <span class="stringliteral">&#39;edit_scenario(lines)&#39;</span>,
+<a name="l00218"></a>00218                        <span class="stringliteral">&#39;edit_scenario(polygons)&#39;</span>]
+<a name="l00219"></a><a class="code" href="namespaceconfig.html#a4f0e19c0d16db31fb1aa2da0f5f29c6b">00219</a> editLayersFileNames = [<span class="stringliteral">&#39;edit_scenario(points).shp&#39;</span>, <span class="stringliteral">&#39;edit_scenario(lines).shp&#39;</span>,
+<a name="l00220"></a>00220                        <span class="stringliteral">&#39;edit_scenario(polygons).shp&#39;</span>]
+<a name="l00221"></a>00221 
+<a name="l00222"></a>00222 <span class="comment"># These are the lists of layers that open when the app is first opened</span>
+<a name="l00223"></a>00223 <span class="comment"># or when the &#39;New Scenario&#39; action is clicked.  The orienting layers that</span>
+<a name="l00224"></a>00224 <span class="comment"># open can be changed by changing the lists below, assuming they exist in the </span>
+<a name="l00225"></a>00225 <span class="comment"># config.baseLayersPath folder. Layers open in the order they appear in the lists.</span>
+<a name="l00226"></a>00226 <span class="comment"># Raster layers open before vector layers, and the layers will be stacked in </span>
+<a name="l00227"></a>00227 <span class="comment"># the opening order with the first layer opened on the bottom in the layer panel </span>
+<a name="l00228"></a>00228 <span class="comment"># (i.e. legend).  The extension must have 3 characters (i.e .tif or .shp)</span>
+<a name="l00229"></a><a class="code" href="namespaceconfig.html#a239d807c8c60a8e2ed3f04d9af773b67">00229</a> orientingRasterLayers = [<span class="stringliteral">&#39;USGS.SID&#39;</span>, <span class="stringliteral">&#39;base_land.tif&#39;</span>, <span class="stringliteral">&#39;base_streams.tif&#39;</span>, <span class="stringliteral">&#39;base_traffic.tif&#39;</span>]
+<a name="l00230"></a><a class="code" href="namespaceconfig.html#afe093ec4a1cf5d05ebc3e06be10f9d4d">00230</a> orientingVectorLayers = [<span class="stringliteral">&#39;base_towns.shp&#39;</span>]
+<a name="l00231"></a><a class="code" href="namespaceconfig.html#a4984c972837d8a87f9e46de5ff916d7e">00231</a> orientingVectorLayersBaseNames = [<span class="stringliteral">&#39;base_towns&#39;</span>]
+<a name="l00232"></a><a class="code" href="namespaceconfig.html#a12c895693cc94bfa4ba8f997682506f8">00232</a> allOrientingLayers = orientingRasterLayers + orientingVectorLayers
+<a name="l00233"></a>00233 
+<a name="l00234"></a>00234 <span class="comment"># Orienting base layer names can be added here to make them visible (i.e. checked) when they are opened.</span>
+<a name="l00235"></a><a class="code" href="namespaceconfig.html#add58fce6fa90c3798ece4de559771e3a">00235</a> orientingLayersChecked = [<span class="stringliteral">&#39;base_towns&#39;</span>]
+<a name="l00236"></a>00236 
+<a name="l00237"></a>00237 <span class="comment"># A list of the non-orienting base layers and editing layers. </span>
+<a name="l00238"></a>00238 <span class="comment"># Main.dlgscenarioedittypes.hideEditBaseLayers() uses this list to hide (uncheck) unneeded layers.</span>
+<a name="l00239"></a>00239 <span class="comment"># Adding a name to this list will hide (uncheck) that layer if not needed when opening a</span>
+<a name="l00240"></a>00240 <span class="comment"># new scenario edit type. </span>
+<a name="l00241"></a><a class="code" href="namespaceconfig.html#a79d07fd12c08cb51a90f831fac8e267c">00241</a> hideEditLayers = [<span class="stringliteral">&#39;edit_scenario(points)&#39;</span>, <span class="stringliteral">&#39;edit_scenario(lines)&#39;</span>,
+<a name="l00242"></a>00242                   <span class="stringliteral">&#39;edit_scenario(polygons)&#39;</span>, <span class="stringliteral">&#39;base_culverts_bridges&#39;</span>, <span class="stringliteral">&#39;base_dams&#39;</span>,
+<a name="l00243"></a>00243                   <span class="stringliteral">&#39;base_terrestrial_passage&#39;</span>, <span class="stringliteral">&#39;base_tidal_restrictions&#39;</span>, <span class="stringliteral">&#39;base_traffic&#39;</span>, <span class="stringliteral">&#39;base_streams&#39;</span>]
+<a name="l00244"></a>00244 
+<a name="l00245"></a>00245 
+<a name="l00246"></a>00246 <span class="comment">############################################################################################</span>
+<a name="l00247"></a>00247 <span class="stringliteral">&#39;&#39;&#39; Configuration variables that need to be executed to be set &#39;&#39;&#39;</span>
+<a name="l00248"></a>00248 
+<a name="l00249"></a><a class="code" href="namespaceconfig.html#a4f1fff4e815f4034a041bbd4e2959725">00249</a> <span class="keyword">def </span><a class="code" href="namespaceconfig.html#a4f1fff4e815f4034a041bbd4e2959725">setDefaultColors</a>():
+<a name="l00250"></a>00250     <span class="stringliteral">&#39;&#39;&#39; </span>
+<a name="l00251"></a>00251 <span class="stringliteral">        Sets the default colors for base layer point features.  These may be changed using HTML Color Names.</span>
+<a name="l00252"></a>00252 <span class="stringliteral">        see http://www.w3schools.com/html/html_colornames.asp</span>
+<a name="l00253"></a>00253 <span class="stringliteral">    &#39;&#39;&#39;</span>
+<a name="l00254"></a>00254     <span class="comment"># debugging</span>
+<a name="l00255"></a>00255     <span class="keywordflow">print</span> <span class="stringliteral">&quot;config.setDefaultColors()&quot;</span>
+<a name="l00256"></a>00256     
+<a name="l00257"></a>00257     defaultColors = [QColor(<span class="stringliteral">&#39;Darkorange&#39;</span>), QColor(<span class="stringliteral">&#39;Fuchsia&#39;</span>), QColor(<span class="stringliteral">&#39;LightGray&#39;</span>), QColor(<span class="stringliteral">&#39;Lime&#39;</span>), 
+<a name="l00258"></a>00258                     QColor(<span class="stringliteral">&#39;MediumOrchid&#39;</span>),QColor(<span class="stringliteral">&#39;Aqua&#39;</span>), QColor(<span class="stringliteral">&#39;Teal&#39;</span>)]
+<a name="l00259"></a>00259                     
+<a name="l00260"></a>00260     <span class="keywordflow">return</span> defaultColors
+<a name="l00261"></a>00261 
+<a name="l00262"></a><a class="code" href="namespaceconfig.html#a514f8f44e5d707726d4d2acec7e970e8">00262</a> <span class="keyword">def </span><a class="code" href="namespaceconfig.html#a514f8f44e5d707726d4d2acec7e970e8">setCrs</a>():
+<a name="l00263"></a>00263     <span class="comment"># debugging</span>
+<a name="l00264"></a>00264     <span class="keywordflow">print</span> <span class="stringliteral">&quot;config.setCrs()&quot;</span>
+<a name="l00265"></a>00265     
+<a name="l00266"></a>00266     <span class="comment"># MA State Plane coordinate system used by MassGIS</span>
+<a name="l00267"></a>00267     crs = QgsCoordinateReferenceSystem(26986, QgsCoordinateReferenceSystem.EpsgCrsId)
+<a name="l00268"></a>00268     <span class="keywordflow">return</span> crs
+<a name="l00269"></a>00269 
+<a name="l00270"></a><a class="code" href="namespaceconfig.html#aa72a5786d7ea9b9f2feccbfca61dad98">00270</a> <span class="keyword">def </span><a class="code" href="namespaceconfig.html#aa72a5786d7ea9b9f2feccbfca61dad98">setExtentMA</a>():
+<a name="l00271"></a>00271     <span class="comment"># debugging</span>
+<a name="l00272"></a>00272     <span class="keywordflow">print</span> <span class="stringliteral">&quot;config.setExtentMA&quot;</span>
+<a name="l00273"></a>00273     extentMA = QgsRectangle(26000, 747000, 350000, 989000)
+<a name="l00274"></a>00274     <span class="keywordflow">return</span> extentMA
 </pre></div></div><!-- contents -->
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 22 2012 18:23:05 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 30 2013 15:07:37 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

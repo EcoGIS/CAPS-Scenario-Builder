@@ -1,0 +1,12 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$class_main_1_1legend_1_1_legend.html#a07c7c0713de97ae6800a9bf1451ecae3" title="Main.legend.Legend.updateLayerSet" alt="" coords="267,107,501,133"/>
+<area shape="rect" id="node5" href="$class_main_1_1legend_1_1_legend.html#a0d7b50c29a3f42862ba06ee62e4fac79" title="Main.legend.Legend.addLayer" alt="" coords="599,5,793,32"/>
+<area shape="rect" id="node9" href="$class_main_1_1legend_1_1_legend.html#a8af5d90bedc94e0f798da40e03756cae" title="Main.legend.Legend.setStatusForAllLayers" alt="" coords="561,56,831,83"/>
+<area shape="rect" id="node11" href="$class_main_1_1legend_1_1_legend.html#add530616509409066991977ff0d53729" title="Main.legend.Legend.removeLayers" alt="" coords="585,107,807,133"/>
+<area shape="rect" id="node13" href="$class_main_1_1legend_1_1_legend.html#a5f622884f4f66c32d89cd383457071b6" title="Main.legend.Legend.removeLayerFromRegistry" alt="" coords="549,157,843,184"/>
+<area shape="rect" id="node21" href="$class_main_1_1legend_1_1_legend.html#acbec5c3606c0e20000044b14b91a1898" title="Main.legend.Legend.removeAll" alt="" coords="597,208,795,235"/>
+<area shape="rect" id="node7" href="$class_main_1_1legend_1_1_legend.html#afe85d747b75f4f6b011eb43540748976" title="Main.legend.Legend.addLayerToLegend" alt="" coords="895,5,1145,32"/>
+<area shape="rect" id="node15" href="$class_main_1_1legend_1_1_legend.html#a6e253be72b9d5505bd80b7f4b5bed06e" title="Main.legend.Legend.removeCurrentLayer" alt="" coords="891,157,1149,184"/>
+<area shape="rect" id="node17" href="$class_main_1_1legend_1_1_legend.html#ad17f8dbf98abb379b69a9b55569fcbcc" title="Main.legend.Legend.getMenu" alt="" coords="1197,157,1389,184"/>
+<area shape="rect" id="node19" href="$class_main_1_1legend_1_1_legend.html#a23b5d4b94cffebed6f9000246b4c9288" title="Main.legend.Legend.showMenu" alt="" coords="1438,157,1642,184"/>
+</map>

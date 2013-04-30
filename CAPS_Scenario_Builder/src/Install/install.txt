@@ -1,14 +1,13 @@
 INSTALL CAPS SCENARIO BUILDER
 
-The specifications for CAPS Scenario Builder only require it to run on MS Windows, and there is a standalone windows installer for the application available at 
+The specifications for CAPS Scenario Builder only require it to run on MS Windows, and there is a stand-alone windows installer for the application available at 
 https://sourceforge.net/projects/osscripts/files/ or 
 https://github.com/EcoGIS/CAPS-Scenario-Builder/downloads
 
 Because this application is written in Python, you can probably get it to run on nearly
 any platform.  The information below might save some time.
 
-1) Download the contents of CAPS_Scenario_Builder-0.8.tar.gz
-   Everything needed to run the application other than QGIS 1.71 is in that archive.
+1) Download the source files from the project's git repository
    
 2) If you don't have an existing installation of QGIS Wroclaw,
    install using QGIS-1.7.1, which can be found at http://qgis.org/downloads/

@@ -20,12 +20,12 @@
  <tbody>
  <tr style="height: 56px;">
   
-  <td id="projectlogo"><img alt="Logo" src="CAPS_icon.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="setup_wizard_icon.bmp"/></td>
   
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Caps Scenario Builder
-   &#160;<span id="projectnumber">0.9</span>
+   &#160;<span id="projectnumber">1.0</span>
    </div>
    
   </td>
@@ -86,6 +86,7 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_tools_1_1shared.html#ad64a50abb2fa5c4c3d4a4d93983a7b18">resetIdNumbers</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_tools_1_1shared.html#a13d094a7b3ffb1c9cf81ed04d2e16b6e">snapToNewRoad</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_tools_1_1shared.html#a9a2f8f670d9ac7bd7aadff7b84168393">updateExtents</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_tools_1_1shared.html#a5cb5b18ce38612f7b0b0e6fbe045bdfa">validateFileName</a></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="a6c77760552942ea5afde4581e8b338e9"></a><!-- doxytag: member="Tools::shared::checkConstraints" ref="a6c77760552942ea5afde4581e8b338e9" args="" -->
@@ -131,48 +132,48 @@ Functions</h2></td></tr>
     a "featId" is passed as a parameter.  Snapping is not used for checking pasted feature constraints
     
 </pre></div> 
-<p>Definition at line <a class="el" href="shared_8py_source.html#l00253">253</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
+<p>Definition at line <a class="el" href="shared_8py_source.html#l00254">254</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
 
-<p>References <a class="el" href="shared_8py_source.html#l00346">checkRoadConstraints()</a>, and <a class="el" href="shared_8py_source.html#l00292">checkStreamsConstraint()</a>.</p>
-<div class="fragment"><pre class="fragment"><a name="l00253"></a><a class="code" href="namespace_tools_1_1shared.html#a6c77760552942ea5afde4581e8b338e9">00253</a> 
-<a name="l00254"></a>00254 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a6c77760552942ea5afde4581e8b338e9">checkConstraints</a>(mainwindow, qgsPoint, qPoint, featId = None):
-<a name="l00255"></a>00255     <span class="stringliteral">&#39;&#39;&#39; </span>
-<a name="l00256"></a>00256 <span class="stringliteral">        Checks constraints for scenario edits that are new features or pasted features.  Currently point and line  </span>
-<a name="l00257"></a>00257 <span class="stringliteral">        features are checked. If the feature can be snapped to a new road, constraints are considered met and the </span>
-<a name="l00258"></a>00258 <span class="stringliteral">        geometry of the new feature is adjusted to be the snapped point. If the features have been pasted, </span>
-<a name="l00259"></a>00259 <span class="stringliteral">        a &quot;featId&quot; is passed as a parameter.  Snapping is not used for checking pasted feature constraints</span>
-<a name="l00260"></a>00260 <span class="stringliteral">        </span>
-<a name="l00261"></a>00261 <span class="stringliteral">    &#39;&#39;&#39;</span>
-<a name="l00262"></a>00262     <span class="comment"># debugging</span>
-<a name="l00263"></a>00263     <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkConstraints()&quot;</span>
-<a name="l00264"></a>00264     <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkConstraints(): The featId is &quot;</span> + str(featId)
-<a name="l00265"></a>00265     
-<a name="l00266"></a>00266     basePath = config.baseLayersPath
-<a name="l00267"></a>00267     editType = mainwindow.scenarioEditType
-<a name="l00268"></a>00268     typesList = config.scenarioEditTypesList
-<a name="l00269"></a>00269     
-<a name="l00270"></a>00270     <span class="stringliteral">&#39;&#39;&#39; Check whether the qgs point falls on a stream for a culvert/bridge, dam or tidal restriction&#39;&#39;&#39;</span>
-<a name="l00271"></a>00271     
-<a name="l00272"></a>00272     pointsList = [typesList[0], typesList[1], typesList[3]] <span class="comment"># culverts/bridges, dams, tidal restrictions</span>
-<a name="l00273"></a>00273     <span class="keywordflow">if</span> editType <span class="keywordflow">in</span> pointsList:
-<a name="l00274"></a>00274         <span class="keywordflow">if</span> <a class="code" href="namespace_tools_1_1shared.html#abfb4b37a2a4c1dcbbd0c04841cb927dc">checkStreamsConstraint</a>(mainwindow, basePath, qgsPoint, featId):
-<a name="l00275"></a>00275             <span class="keywordflow">return</span> <span class="keyword">True</span>
-<a name="l00276"></a>00276         <span class="keywordflow">else</span>: <span class="keywordflow">return</span> <span class="keyword">False</span>
-<a name="l00277"></a>00277 
-<a name="l00278"></a>00278     <span class="stringliteral">&#39;&#39;&#39; Check whether the point falls on an existing or new road for a terrestrial wildlife passage structure &#39;&#39;&#39;</span>
-<a name="l00279"></a>00279       
-<a name="l00280"></a>00280     <span class="keywordflow">if</span> editType == typesList[2]: <span class="comment"># a terrestrial wildlife structure</span>
-<a name="l00281"></a>00281         <span class="keywordflow">if</span> <a class="code" href="namespace_tools_1_1shared.html#a876fa64f5cf02e0c830b7b51115c914a">checkRoadConstraints</a>(mainwindow, basePath, qgsPoint, qPoint, editType, featId):
-<a name="l00282"></a>00282             <span class="keywordflow">return</span> <span class="keyword">True</span>
-<a name="l00283"></a>00283         <span class="keywordflow">else</span>: <span class="keywordflow">return</span> <span class="keyword">False</span>
-<a name="l00284"></a>00284     
-<a name="l00285"></a>00285     <span class="stringliteral">&#39;&#39;&#39; Check whether the first point of a new line falls on an existing or new road &#39;&#39;&#39;</span>
-<a name="l00286"></a>00286         
-<a name="l00287"></a>00287     <span class="keywordflow">if</span> editType == typesList[4]: <span class="comment"># a new road; repeated code for clarity</span>
-<a name="l00288"></a>00288         <span class="keywordflow">if</span> <a class="code" href="namespace_tools_1_1shared.html#a876fa64f5cf02e0c830b7b51115c914a">checkRoadConstraints</a>(mainwindow, basePath, qgsPoint, qPoint, editType, featId):
-<a name="l00289"></a>00289             <span class="keywordflow">return</span> <span class="keyword">True</span>
-<a name="l00290"></a>00290         <span class="keywordflow">else</span>: <span class="keywordflow">return</span> <span class="keyword">False</span>
-<a name="l00291"></a>00291     <span class="keywordflow">else</span>: <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkConstraints(): Layer does not need constraints checked&quot;</span>    
+<p>References <a class="el" href="shared_8py_source.html#l00346">checkRoadConstraints()</a>, and <a class="el" href="shared_8py_source.html#l00293">checkStreamsConstraint()</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00254"></a><a class="code" href="namespace_tools_1_1shared.html#a6c77760552942ea5afde4581e8b338e9">00254</a> 
+<a name="l00255"></a>00255 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a6c77760552942ea5afde4581e8b338e9">checkConstraints</a>(mainwindow, qgsPoint, qPoint, featId = None):
+<a name="l00256"></a>00256     <span class="stringliteral">&#39;&#39;&#39; </span>
+<a name="l00257"></a>00257 <span class="stringliteral">        Checks constraints for scenario edits that are new features or pasted features.  Currently point and line  </span>
+<a name="l00258"></a>00258 <span class="stringliteral">        features are checked. If the feature can be snapped to a new road, constraints are considered met and the </span>
+<a name="l00259"></a>00259 <span class="stringliteral">        geometry of the new feature is adjusted to be the snapped point. If the features have been pasted, </span>
+<a name="l00260"></a>00260 <span class="stringliteral">        a &quot;featId&quot; is passed as a parameter.  Snapping is not used for checking pasted feature constraints</span>
+<a name="l00261"></a>00261 <span class="stringliteral">        </span>
+<a name="l00262"></a>00262 <span class="stringliteral">    &#39;&#39;&#39;</span>
+<a name="l00263"></a>00263     <span class="comment"># debugging</span>
+<a name="l00264"></a>00264     <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkConstraints()&quot;</span>
+<a name="l00265"></a>00265     <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkConstraints(): The featId is &quot;</span> + str(featId)
+<a name="l00266"></a>00266     
+<a name="l00267"></a>00267     basePath = config.baseLayersPath
+<a name="l00268"></a>00268     editType = mainwindow.scenarioEditType
+<a name="l00269"></a>00269     typesList = config.scenarioEditTypesList
+<a name="l00270"></a>00270     
+<a name="l00271"></a>00271     <span class="stringliteral">&#39;&#39;&#39; Check whether the qgs point falls on a stream for a culvert/bridge, dam or tidal restriction&#39;&#39;&#39;</span>
+<a name="l00272"></a>00272     
+<a name="l00273"></a>00273     pointsList = [typesList[0], typesList[1], typesList[3]] <span class="comment"># culverts/bridges, dams, tidal restrictions</span>
+<a name="l00274"></a>00274     <span class="keywordflow">if</span> editType <span class="keywordflow">in</span> pointsList:
+<a name="l00275"></a>00275         <span class="keywordflow">if</span> <a class="code" href="namespace_tools_1_1shared.html#abfb4b37a2a4c1dcbbd0c04841cb927dc">checkStreamsConstraint</a>(mainwindow, basePath, qgsPoint, featId):
+<a name="l00276"></a>00276             <span class="keywordflow">return</span> <span class="keyword">True</span>
+<a name="l00277"></a>00277         <span class="keywordflow">else</span>: <span class="keywordflow">return</span> <span class="keyword">False</span>
+<a name="l00278"></a>00278 
+<a name="l00279"></a>00279     <span class="stringliteral">&#39;&#39;&#39; Check whether the point falls on an existing or new road for a terrestrial wildlife passage structure &#39;&#39;&#39;</span>
+<a name="l00280"></a>00280       
+<a name="l00281"></a>00281     <span class="keywordflow">if</span> editType == typesList[2]: <span class="comment"># a terrestrial wildlife structure</span>
+<a name="l00282"></a>00282         <span class="keywordflow">if</span> <a class="code" href="namespace_tools_1_1shared.html#a876fa64f5cf02e0c830b7b51115c914a">checkRoadConstraints</a>(mainwindow, basePath, qgsPoint, qPoint, editType, featId):
+<a name="l00283"></a>00283             <span class="keywordflow">return</span> <span class="keyword">True</span>
+<a name="l00284"></a>00284         <span class="keywordflow">else</span>: <span class="keywordflow">return</span> <span class="keyword">False</span>
+<a name="l00285"></a>00285     
+<a name="l00286"></a>00286     <span class="stringliteral">&#39;&#39;&#39; Check whether the first point of a new line falls on an existing or new road &#39;&#39;&#39;</span>
+<a name="l00287"></a>00287         
+<a name="l00288"></a>00288     <span class="keywordflow">if</span> editType == typesList[4]: <span class="comment"># a new road; repeated code for clarity</span>
+<a name="l00289"></a>00289         <span class="keywordflow">if</span> <a class="code" href="namespace_tools_1_1shared.html#a876fa64f5cf02e0c830b7b51115c914a">checkRoadConstraints</a>(mainwindow, basePath, qgsPoint, qPoint, editType, featId):
+<a name="l00290"></a>00290             <span class="keywordflow">return</span> <span class="keyword">True</span>
+<a name="l00291"></a>00291         <span class="keywordflow">else</span>: <span class="keywordflow">return</span> <span class="keyword">False</span>
+<a name="l00292"></a>00292     <span class="keywordflow">else</span>: <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkConstraints(): Layer does not need constraints checked&quot;</span>    
         
 </pre></div>
 <p><div class="dynheader">
@@ -239,7 +240,7 @@ Here is the call graph for this function:</div>
 
 <p>References <a class="el" href="shared_8py_source.html#l00485">newRoadExists()</a>, <a class="el" href="shared_8py_source.html#l00416">openHiddenRasterLayer()</a>, and <a class="el" href="shared_8py_source.html#l00504">snapToNewRoad()</a>.</p>
 
-<p>Referenced by <a class="el" href="shared_8py_source.html#l00253">checkConstraints()</a>.</p>
+<p>Referenced by <a class="el" href="shared_8py_source.html#l00254">checkConstraints()</a>.</p>
 <div class="fragment"><pre class="fragment"><a name="l00346"></a><a class="code" href="namespace_tools_1_1shared.html#a876fa64f5cf02e0c830b7b51115c914a">00346</a> 
 <a name="l00347"></a>00347 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a876fa64f5cf02e0c830b7b51115c914a">checkRoadConstraints</a>(mainwindow, basePath, qgsPoint, qPoint, editType, featId):
 <a name="l00348"></a>00348     <span class="stringliteral">&#39;&#39;&#39; Checks whether a new terrestrial wildlife structure or new road falls on an existing or new road &#39;&#39;&#39;</span>
@@ -372,39 +373,39 @@ Here is the caller graph for this function:</div>
     Check to make sure the user has selected the correct 
     editing layer when adding or pasting features 
 </pre></div> 
-<p>Definition at line <a class="el" href="shared_8py_source.html#l00068">68</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
-<div class="fragment"><pre class="fragment"><a name="l00068"></a><a class="code" href="namespace_tools_1_1shared.html#a4eec2af6d5df6cc2ecd0388c903e0c85">00068</a> 
-<a name="l00069"></a>00069 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a4eec2af6d5df6cc2ecd0388c903e0c85">checkSelectedLayer</a>(mainwindow, scenarioEditType, activeLayerName, msgFlag=True):
-<a name="l00070"></a>00070         <span class="stringliteral">&#39;&#39;&#39; </span>
-<a name="l00071"></a>00071 <span class="stringliteral">            Check to make sure the user has selected the correct </span>
-<a name="l00072"></a>00072 <span class="stringliteral">            editing layer when adding or pasting features </span>
-<a name="l00073"></a>00073 <span class="stringliteral">        &#39;&#39;&#39;</span>
-<a name="l00074"></a>00074         scenarioEditTypesList = config.scenarioEditTypesList
-<a name="l00075"></a>00075 
-<a name="l00076"></a>00076         <span class="comment"># debugging</span>
-<a name="l00077"></a>00077         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkSelectedLayer()&quot;</span>
-<a name="l00078"></a>00078         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkSelectedLayer(): scenarioEditType is &quot;</span> + scenarioEditType
-<a name="l00079"></a>00079         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkSelectedLayer(): activeLayerName is &quot;</span> + activeLayerName
-<a name="l00080"></a>00080 
-<a name="l00081"></a>00081         <span class="keywordflow">if</span> scenarioEditType <span class="keywordflow">in</span> scenarioEditTypesList[:4] <span class="keywordflow">and</span> activeLayerName != config.editLayersBaseNames[0]:
-<a name="l00082"></a>00082             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkSelectedLayer(): edit points&quot;</span>
-<a name="l00083"></a>00083             <span class="keywordflow">if</span> msgFlag:
-<a name="l00084"></a>00084                 QtGui.QMessageBox.warning(mainwindow, <span class="stringliteral">&quot;Scenario Editing Error&quot;</span>, <span class="stringliteral">&quot;You must select the layer \</span>
-<a name="l00085"></a>00085 <span class="stringliteral">named &#39;edit_scenario(points)&#39; in the layer list panel to make the scenario edit type you have chosen.&quot;</span>)
-<a name="l00086"></a>00086             <span class="keywordflow">return</span> <span class="keyword">False</span>
-<a name="l00087"></a>00087         <span class="keywordflow">elif</span> scenarioEditType == scenarioEditTypesList[4] <span class="keywordflow">and</span> activeLayerName != config.editLayersBaseNames[1]:
-<a name="l00088"></a>00088             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkSelectedLayer(): edit lines&quot;</span>
-<a name="l00089"></a>00089             <span class="keywordflow">if</span> msgFlag:
-<a name="l00090"></a>00090                 QtGui.QMessageBox.warning(mainwindow, <span class="stringliteral">&quot;Scenario Editing Error&quot;</span>, <span class="stringliteral">&quot;You must select the layer \</span>
-<a name="l00091"></a>00091 <span class="stringliteral">named &#39;edit_scenario(lines)&#39; in the layer list panel to make the scenario edit type you have chosen.&quot;</span>)
-<a name="l00092"></a>00092             <span class="keywordflow">return</span> <span class="keyword">False</span>
-<a name="l00093"></a>00093         <span class="keywordflow">elif</span> scenarioEditType <span class="keywordflow">in</span> scenarioEditTypesList[5:7] <span class="keywordflow">and</span> activeLayerName != config.editLayersBaseNames[2]:
-<a name="l00094"></a>00094             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkSelectedLayer(): edit polygons&quot;</span>
-<a name="l00095"></a>00095             <span class="keywordflow">if</span> msgFlag:
-<a name="l00096"></a>00096                 QtGui.QMessageBox.warning(mainwindow, <span class="stringliteral">&quot;Scenario Editing Error&quot;</span>, <span class="stringliteral">&quot;You must select the layer \</span>
-<a name="l00097"></a>00097 <span class="stringliteral">named &#39;edit_scenario(polygons)&#39; in the layer list panel to make the scenario edit type you have chosen.&quot;</span>) 
-<a name="l00098"></a>00098             <span class="keywordflow">return</span> <span class="keyword">False</span>
-<a name="l00099"></a>00099         <span class="keywordflow">else</span>: <span class="keywordflow">return</span> <span class="keyword">True</span>           
+<p>Definition at line <a class="el" href="shared_8py_source.html#l00069">69</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00069"></a><a class="code" href="namespace_tools_1_1shared.html#a4eec2af6d5df6cc2ecd0388c903e0c85">00069</a> 
+<a name="l00070"></a>00070 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a4eec2af6d5df6cc2ecd0388c903e0c85">checkSelectedLayer</a>(mainwindow, scenarioEditType, activeLayerName, msgFlag=True):
+<a name="l00071"></a>00071         <span class="stringliteral">&#39;&#39;&#39; </span>
+<a name="l00072"></a>00072 <span class="stringliteral">            Check to make sure the user has selected the correct </span>
+<a name="l00073"></a>00073 <span class="stringliteral">            editing layer when adding or pasting features </span>
+<a name="l00074"></a>00074 <span class="stringliteral">        &#39;&#39;&#39;</span>
+<a name="l00075"></a>00075         scenarioEditTypesList = config.scenarioEditTypesList
+<a name="l00076"></a>00076 
+<a name="l00077"></a>00077         <span class="comment"># debugging</span>
+<a name="l00078"></a>00078         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkSelectedLayer()&quot;</span>
+<a name="l00079"></a>00079         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkSelectedLayer(): scenarioEditType is &quot;</span> + scenarioEditType
+<a name="l00080"></a>00080         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkSelectedLayer(): activeLayerName is &quot;</span> + activeLayerName
+<a name="l00081"></a>00081 
+<a name="l00082"></a>00082         <span class="keywordflow">if</span> scenarioEditType <span class="keywordflow">in</span> scenarioEditTypesList[:4] <span class="keywordflow">and</span> activeLayerName != config.editLayersBaseNames[0]:
+<a name="l00083"></a>00083             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkSelectedLayer(): edit points&quot;</span>
+<a name="l00084"></a>00084             <span class="keywordflow">if</span> msgFlag:
+<a name="l00085"></a>00085                 QtGui.QMessageBox.warning(mainwindow, <span class="stringliteral">&quot;Scenario Editing Error&quot;</span>, <span class="stringliteral">&quot;You must select the layer \</span>
+<a name="l00086"></a>00086 <span class="stringliteral">named &#39;edit_scenario(points)&#39; in the layer list panel to make the scenario edit type you have chosen.&quot;</span>)
+<a name="l00087"></a>00087             <span class="keywordflow">return</span> <span class="keyword">False</span>
+<a name="l00088"></a>00088         <span class="keywordflow">elif</span> scenarioEditType == scenarioEditTypesList[4] <span class="keywordflow">and</span> activeLayerName != config.editLayersBaseNames[1]:
+<a name="l00089"></a>00089             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkSelectedLayer(): edit lines&quot;</span>
+<a name="l00090"></a>00090             <span class="keywordflow">if</span> msgFlag:
+<a name="l00091"></a>00091                 QtGui.QMessageBox.warning(mainwindow, <span class="stringliteral">&quot;Scenario Editing Error&quot;</span>, <span class="stringliteral">&quot;You must select the layer \</span>
+<a name="l00092"></a>00092 <span class="stringliteral">named &#39;edit_scenario(lines)&#39; in the layer list panel to make the scenario edit type you have chosen.&quot;</span>)
+<a name="l00093"></a>00093             <span class="keywordflow">return</span> <span class="keyword">False</span>
+<a name="l00094"></a>00094         <span class="keywordflow">elif</span> scenarioEditType <span class="keywordflow">in</span> scenarioEditTypesList[5:7] <span class="keywordflow">and</span> activeLayerName != config.editLayersBaseNames[2]:
+<a name="l00095"></a>00095             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkSelectedLayer(): edit polygons&quot;</span>
+<a name="l00096"></a>00096             <span class="keywordflow">if</span> msgFlag:
+<a name="l00097"></a>00097                 QtGui.QMessageBox.warning(mainwindow, <span class="stringliteral">&quot;Scenario Editing Error&quot;</span>, <span class="stringliteral">&quot;You must select the layer \</span>
+<a name="l00098"></a>00098 <span class="stringliteral">named &#39;edit_scenario(polygons)&#39; in the layer list panel to make the scenario edit type you have chosen.&quot;</span>) 
+<a name="l00099"></a>00099             <span class="keywordflow">return</span> <span class="keyword">False</span>
+<a name="l00100"></a>00100         <span class="keywordflow">else</span>: <span class="keywordflow">return</span> <span class="keyword">True</span>           
 
 </pre></div>
 </div>
@@ -446,55 +447,54 @@ Here is the caller graph for this function:</div>
 </div>
 <div class="memdoc">
 <div class="fragment"><pre class="fragment">Checks whether a new culvert/bridge, dam, or tidal restriction falls on a stream </pre></div> 
-<p>Definition at line <a class="el" href="shared_8py_source.html#l00292">292</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
+<p>Definition at line <a class="el" href="shared_8py_source.html#l00293">293</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
 
 <p>References <a class="el" href="shared_8py_source.html#l00416">openHiddenRasterLayer()</a>.</p>
 
-<p>Referenced by <a class="el" href="shared_8py_source.html#l00253">checkConstraints()</a>.</p>
-<div class="fragment"><pre class="fragment"><a name="l00292"></a><a class="code" href="namespace_tools_1_1shared.html#abfb4b37a2a4c1dcbbd0c04841cb927dc">00292</a> 
-<a name="l00293"></a>00293 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#abfb4b37a2a4c1dcbbd0c04841cb927dc">checkStreamsConstraint</a>(mainwindow, basePath, qgsPoint, featId):
-<a name="l00294"></a>00294     <span class="stringliteral">&#39;&#39;&#39; Checks whether a new culvert/bridge, dam, or tidal restriction falls on a stream &#39;&#39;&#39;</span>
-<a name="l00295"></a>00295     <span class="comment"># debugging</span>
-<a name="l00296"></a>00296     <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkStreamsConstraint()&quot;</span>
-<a name="l00297"></a>00297     
-<a name="l00298"></a>00298     <span class="comment"># set some variables</span>
-<a name="l00299"></a>00299     streamsFileName = config.scenarioConstraintLayersFileNames[0]
-<a name="l00300"></a>00300     rfilePath = basePath + streamsFileName
-<a name="l00301"></a>00301     
-<a name="l00302"></a>00302     <span class="comment"># Load the raster layer, but do not add it to the registry so that it doesn&#39;t appear to the user.</span>
-<a name="l00303"></a>00303     <span class="comment"># Note we could check to see if the rlayer is already open and use it if it is, but </span>
-<a name="l00304"></a>00304     <span class="comment"># we would still need this code if it was not open, so why bother?</span>
-<a name="l00305"></a>00305     rlayer = <a class="code" href="namespace_tools_1_1shared.html#ad4d1153e9250c93378055b003b933599">openHiddenRasterLayer</a>(mainwindow, rfilePath) <span class="comment"># returns false if the file failed to open</span>
-<a name="l00306"></a>00306     <span class="keywordflow">if</span> rlayer == <span class="keyword">False</span>:    <span class="comment"># if the file failed to open, the constraints have not be met.</span>
-<a name="l00307"></a>00307         <span class="comment"># if the file failed to open, the constraints have not be met.</span>
-<a name="l00308"></a>00308         <span class="keywordflow">return</span> <span class="keyword">False</span>
-<a name="l00309"></a>00309     
-<a name="l00310"></a>00310     <span class="comment"># rlayer.identify returns a tuple with the result code (True or False) and a dictionary</span>
-<a name="l00311"></a>00311     <span class="comment"># with key = band and value = raster value for that band. We only have one band in the   </span>
-<a name="l00312"></a>00312     <span class="comment"># base_streams layer so the key = &quot;Band 1&quot;</span>
-<a name="l00313"></a>00313     result, identifyDict = rlayer.identify(qgsPoint)
-<a name="l00314"></a>00314         
-<a name="l00315"></a>00315     <span class="comment"># Now that we have a result, remove the layer from the registry</span>
-<a name="l00316"></a>00316     QgsMapLayerRegistry.instance().removeMapLayer(rlayer.id())
-<a name="l00317"></a>00317      
-<a name="l00318"></a>00318     <span class="keywordflow">if</span> <span class="keywordflow">not</span> result: <span class="comment"># if the identify method fails, we have not met constraints</span>
-<a name="l00319"></a>00319         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkStreamsConstraint(): base_streams.tif identify failed&quot;</span>
-<a name="l00320"></a>00320         <span class="keywordflow">return</span> <span class="keyword">False</span>
-<a name="l00321"></a>00321     
-<a name="l00322"></a>00322     <span class="keywordflow">if</span> unicode(identifyDict.get(QtCore.QString(<span class="stringliteral">&quot;Band 1&quot;</span>))) != <span class="stringliteral">u&quot;1&quot;</span>: <span class="comment"># stream centerlines have a value of 1</span>
-<a name="l00323"></a>00323         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkStreamsConstraint(): base_streams return False value = &quot;</span> \
-<a name="l00324"></a>00324                                                         + unicode(identifyDict.get(QtCore.QString(<span class="stringliteral">&quot;Band 1&quot;</span>)))
-<a name="l00325"></a>00325         <span class="keywordflow">if</span> featId != <span class="keywordtype">None</span>:
-<a name="l00326"></a>00326             text = <span class="stringliteral">&quot;All pasted features must fall on the centerline of a stream (dark blue color) \</span>
-<a name="l00327"></a>00327 <span class="stringliteral">in the base_streams layer. The feature in row &quot;</span> + unicode(featId+1) + <span class="stringliteral">&quot; in the attribute table of the layer you \</span>
-<a name="l00328"></a>00328 <span class="stringliteral">copied from does not meet this constraint.  Please check all your points carefully and try again.&quot;</span>
-<a name="l00329"></a>00329         <span class="keywordflow">else</span>:
-<a name="l00330"></a>00330             text = <span class="stringliteral">&quot;The added feature must fall on the centerline of a stream (dark blue color) \</span>
-<a name="l00331"></a>00331 <span class="stringliteral">in the base_streams layer. If the base_streams layer is not open in your scenario, you may open it by choosing \</span>
-<a name="l00332"></a>00332 <span class="stringliteral">&#39;Add Raster Layer&#39; from the toolbar or the &#39;Layer&#39; menu.\n\n\</span>
-<a name="l00333"></a>00333 <span class="stringliteral">If you are adding a culvert or bridge to a new road, please try to click as close \</span>
-<a name="l00334"></a>00334 <span class="stringliteral">to the intersection of the stream&#39;s center and the new road as possible or you may get this message even though you clicked \</span>
-<a name="l00335"></a>00335 <span class="stringliteral">the centerline of a stream.&quot;</span>
+<p>Referenced by <a class="el" href="shared_8py_source.html#l00254">checkConstraints()</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00293"></a><a class="code" href="namespace_tools_1_1shared.html#abfb4b37a2a4c1dcbbd0c04841cb927dc">00293</a> 
+<a name="l00294"></a>00294 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#abfb4b37a2a4c1dcbbd0c04841cb927dc">checkStreamsConstraint</a>(mainwindow, basePath, qgsPoint, featId):
+<a name="l00295"></a>00295     <span class="stringliteral">&#39;&#39;&#39; Checks whether a new culvert/bridge, dam, or tidal restriction falls on a stream &#39;&#39;&#39;</span>
+<a name="l00296"></a>00296     <span class="comment"># debugging</span>
+<a name="l00297"></a>00297     <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkStreamsConstraint()&quot;</span>
+<a name="l00298"></a>00298     
+<a name="l00299"></a>00299     <span class="comment"># set some variables</span>
+<a name="l00300"></a>00300     streamsFileName = config.scenarioConstraintLayersFileNames[0]
+<a name="l00301"></a>00301     rfilePath = basePath + streamsFileName
+<a name="l00302"></a>00302     
+<a name="l00303"></a>00303     <span class="comment"># Load the raster layer, but do not add it to the registry so that it doesn&#39;t appear to the user.</span>
+<a name="l00304"></a>00304     <span class="comment"># Note we could check to see if the rlayer is already open and use it if it is, but </span>
+<a name="l00305"></a>00305     <span class="comment"># we would still need this code if it was not open, so why bother?</span>
+<a name="l00306"></a>00306     rlayer = <a class="code" href="namespace_tools_1_1shared.html#ad4d1153e9250c93378055b003b933599">openHiddenRasterLayer</a>(mainwindow, rfilePath) <span class="comment"># returns false if the file failed to open</span>
+<a name="l00307"></a>00307     <span class="keywordflow">if</span> rlayer == <span class="keyword">False</span>:    <span class="comment"># if the file failed to open, the constraints have not be met.</span>
+<a name="l00308"></a>00308         <span class="comment"># if the file failed to open, the constraints have not be met.</span>
+<a name="l00309"></a>00309         <span class="keywordflow">return</span> <span class="keyword">False</span>
+<a name="l00310"></a>00310     
+<a name="l00311"></a>00311     <span class="comment"># rlayer.identify returns a tuple with the result code (True or False) and a dictionary</span>
+<a name="l00312"></a>00312     <span class="comment"># with key = band and value = raster value for that band. We only have one band in the   </span>
+<a name="l00313"></a>00313     <span class="comment"># base_streams layer so the key = &quot;Band 1&quot;</span>
+<a name="l00314"></a>00314     result, identifyDict = rlayer.identify(qgsPoint)
+<a name="l00315"></a>00315         
+<a name="l00316"></a>00316     <span class="comment"># Now that we have a result, remove the layer from the registry</span>
+<a name="l00317"></a>00317     QgsMapLayerRegistry.instance().removeMapLayer(rlayer.id())
+<a name="l00318"></a>00318      
+<a name="l00319"></a>00319     <span class="keywordflow">if</span> <span class="keywordflow">not</span> result: <span class="comment"># if the identify method fails, we have not met constraints</span>
+<a name="l00320"></a>00320         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkStreamsConstraint(): base_streams.tif identify failed&quot;</span>
+<a name="l00321"></a>00321         <span class="keywordflow">return</span> <span class="keyword">False</span>
+<a name="l00322"></a>00322     
+<a name="l00323"></a>00323     <span class="keywordflow">if</span> unicode(identifyDict.get(QtCore.QString(<span class="stringliteral">&quot;Band 1&quot;</span>))) != <span class="stringliteral">u&quot;1&quot;</span>: <span class="comment"># stream centerlines have a value of 1</span>
+<a name="l00324"></a>00324         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.checkStreamsConstraint(): base_streams return False value = &quot;</span> \
+<a name="l00325"></a>00325                                                         + unicode(identifyDict.get(QtCore.QString(<span class="stringliteral">&quot;Band 1&quot;</span>)))
+<a name="l00326"></a>00326         <span class="keywordflow">if</span> featId != <span class="keywordtype">None</span>:
+<a name="l00327"></a>00327             text = <span class="stringliteral">&quot;All pasted features must fall on the centerline of a stream (dark blue color) \</span>
+<a name="l00328"></a>00328 <span class="stringliteral">in the base_streams layer. The feature in row &quot;</span> + unicode(featId+1) + <span class="stringliteral">&quot; in the attribute table of the layer you \</span>
+<a name="l00329"></a>00329 <span class="stringliteral">copied from does not meet this constraint.  Please check all your points carefully and try again.&quot;</span>
+<a name="l00330"></a>00330         <span class="keywordflow">else</span>:
+<a name="l00331"></a>00331             text = <span class="stringliteral">&quot;The added feature must fall on the centerline of a stream (dark blue color) \</span>
+<a name="l00332"></a>00332 <span class="stringliteral">in the base_streams layer. If the base_streams layer is not open in your scenario, you may open it by choosing \</span>
+<a name="l00333"></a>00333 <span class="stringliteral">&#39;Add Raster Layer&#39; from the toolbar or the &#39;Layer&#39; menu.\n\n\</span>
+<a name="l00334"></a>00334 <span class="stringliteral">If you are adding a culvert/bridge to a new road, please click as close as possible\</span>
+<a name="l00335"></a>00335 <span class="stringliteral">to the intersection of the stream&#39;s center and the new road so that the culvert will &#39;snap&#39; to the new road.&quot;</span>
 <a name="l00336"></a>00336 
 <a name="l00337"></a>00337         QtGui.QMessageBox.warning(mainwindow, <span class="stringliteral">&quot;Constraints Error:&quot;</span>, text)
 <a name="l00338"></a>00338         <span class="comment"># add the layer to the registry here if it is not already open</span>
@@ -562,75 +562,75 @@ Here is the caller graph for this function:</div>
     This method is called from Main.mainwindow.checkEditsState() and
     Main.mainwindow.pasteFeatures().
 </pre></div> 
-<p>Definition at line <a class="el" href="shared_8py_source.html#l00120">120</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
+<p>Definition at line <a class="el" href="shared_8py_source.html#l00121">121</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
 
-<p>References <a class="el" href="shared_8py_source.html#l00100">getCurrentFeats()</a>, <a class="el" href="shared_8py_source.html#l00112">getFeatsToDelete()</a>, <a class="el" href="shared_8py_source.html#l00555">printFeatures()</a>, and <a class="el" href="shared_8py_source.html#l00193">updateExtents()</a>.</p>
-<div class="fragment"><pre class="fragment"><a name="l00120"></a><a class="code" href="namespace_tools_1_1shared.html#abb765e0bafa2532a20190a31f228475c">00120</a> 
-<a name="l00121"></a>00121 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#abb765e0bafa2532a20190a31f228475c">deleteEdits</a>(mainwindow, editingLayerName, currentEditLayerFeats):
-<a name="l00122"></a>00122         <span class="stringliteral">&#39;&#39;&#39; </span>
-<a name="l00123"></a>00123 <span class="stringliteral">            Delete scenario edits added to editing layers since the last save.</span>
-<a name="l00124"></a>00124 <span class="stringliteral">            This method is called from Main.mainwindow.checkEditsState() and</span>
-<a name="l00125"></a>00125 <span class="stringliteral">            Main.mainwindow.pasteFeatures().</span>
-<a name="l00126"></a>00126 <span class="stringliteral">        &#39;&#39;&#39;</span>
-<a name="l00127"></a>00127         <span class="comment"># debugging</span>
-<a name="l00128"></a>00128         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits()&quot;</span>
-<a name="l00129"></a>00129         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits(): editingLayerName is :&quot;</span> + editingLayerName
-<a name="l00130"></a>00130         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits(): original features are: &quot;</span>, currentEditLayerFeats
-<a name="l00131"></a>00131         
-<a name="l00132"></a>00132         <span class="comment"># Tools.shared.deleteEdits should be impossible to call with an editingLayerName that is not</span>
-<a name="l00133"></a>00133         <span class="comment"># an editing layer; however, if it ever were to be called, we could accidentally delete users&#39; data.</span>
-<a name="l00134"></a>00134         <span class="comment"># The code below is insurance against such a serious bug. </span>
-<a name="l00135"></a>00135         <span class="keywordflow">if</span> editingLayerName <span class="keywordflow">not</span> <span class="keywordflow">in</span> config.editLayersBaseNames:
-<a name="l00136"></a>00136             QtGui.QMessageBox.warning(mainwindow, <span class="stringliteral">&quot;Deletion Error&quot;</span>, <span class="stringliteral">&quot;Tools.shared.deleteEdits() is attempting \</span>
-<a name="l00137"></a>00137 <span class="stringliteral">to delete edits from a vector layer other than an editing layer.&quot;</span>)
-<a name="l00138"></a>00138             <span class="keywordflow">return</span>
-<a name="l00139"></a>00139 
-<a name="l00140"></a>00140         <span class="comment"># Now that we know we have an editing layer, get the provider from the name</span>
-<a name="l00141"></a>00141         editingLayer = mainwindow.getLayerFromName(editingLayerName)
-<a name="l00142"></a>00142         <span class="keywordflow">if</span> <span class="keywordflow">not</span> editingLayer:
-<a name="l00143"></a>00143             <span class="keywordflow">return</span>
-<a name="l00144"></a>00144         provider = editingLayer.dataProvider()
-<a name="l00145"></a>00145         
-<a name="l00146"></a>00146         <span class="comment"># getFeatsToDelete returns a python list</span>
-<a name="l00147"></a>00147         <span class="comment"># If the currentEditLayer feats include some added since the last save then</span>
-<a name="l00148"></a>00148         <span class="comment"># this method will return the difference between the current edit layer state</span>
-<a name="l00149"></a>00149         <span class="comment"># and the state that was passed to this method.</span>
-<a name="l00150"></a>00150         toDelete = <a class="code" href="namespace_tools_1_1shared.html#a9f5b7632224b72b150a25515e2e1dc55">getFeatsToDelete</a>(provider, currentEditLayerFeats)
-<a name="l00151"></a>00151         
-<a name="l00152"></a>00152         <span class="comment"># debugging</span>
-<a name="l00153"></a>00153         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits(): features toDelete are:&quot;</span>, toDelete
-<a name="l00154"></a>00154         
-<a name="l00155"></a>00155         <span class="comment"># provider.deleteFeatures only works with a Python list as a parameter</span>
-<a name="l00156"></a>00156         <span class="comment"># AND the spaces must be in the parameter list!</span>
-<a name="l00157"></a>00157         <span class="keywordflow">try</span>:
-<a name="l00158"></a>00158             provider.deleteFeatures( toDelete )
-<a name="l00159"></a>00159         <span class="keywordflow">except</span> (IOError, OSError), e:
-<a name="l00160"></a>00160             error = unicode(e)
-<a name="l00161"></a>00161             <span class="keywordflow">print</span> error                    
-<a name="l00162"></a>00162             QtGui.QMessageBox.warning(mainwindow, <span class="stringliteral">&quot;Failed to delete edit(s)&quot;</span>, <span class="stringliteral">&quot;Please check if &quot;</span>
-<a name="l00163"></a>00163                                  + editingLayerName + <span class="stringliteral">&quot; is open in another program and then try again.&quot;</span>)
-<a name="l00164"></a>00164 
-<a name="l00165"></a>00165         editingLayer.triggerRepaint()
-<a name="l00166"></a>00166         
-<a name="l00167"></a>00167         <span class="comment"># update the attribute table if open</span>
-<a name="l00168"></a>00168         <span class="keywordflow">if</span> mainwindow.attrTable != <span class="keywordtype">None</span> <span class="keywordflow">and</span> mainwindow.attrTable.isVisible():
-<a name="l00169"></a>00169             mainwindow.openVectorAttributeTable()
-<a name="l00170"></a>00170         
-<a name="l00171"></a>00171         <span class="comment"># If we are back to the originalEditLayerFeats (i.e. state of last save) then </span>
-<a name="l00172"></a>00172         <span class="comment"># set editDirty = False, otherwise set it to true</span>
-<a name="l00173"></a>00173         currentFeats = <a class="code" href="namespace_tools_1_1shared.html#a552723889033b5c8feaba95981e26b2a">getCurrentFeats</a>(provider)
-<a name="l00174"></a>00174         <span class="keywordflow">if</span> currentFeats == mainwindow.originalEditLayerFeats:
-<a name="l00175"></a>00175             mainwindow.editDirty = <span class="keyword">False</span>
-<a name="l00176"></a>00176             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits(): currentEditLayerFeats = originalEditLayerFeats; editDirty = False&quot;</span>
-<a name="l00177"></a>00177         <span class="keywordflow">else</span>: 
-<a name="l00178"></a>00178             mainwindow.editDirty = <span class="keyword">True</span>
-<a name="l00179"></a>00179             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits(): currentEditLayerFeats != originalEditLayerFeats; editDirty = True&quot;</span>
-<a name="l00180"></a>00180             
-<a name="l00181"></a>00181         <span class="comment"># debugging  </span>
-<a name="l00182"></a>00182         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits(): the remaining features are&quot;</span>
-<a name="l00183"></a>00183         <a class="code" href="namespace_tools_1_1shared.html#abc11ef5d38063ff85b1a688430c02c85">printFeatures</a>(provider)
-<a name="l00184"></a>00184         
-<a name="l00185"></a>00185         <a class="code" href="namespace_tools_1_1shared.html#a9a2f8f670d9ac7bd7aadff7b84168393">updateExtents</a>(mainwindow, editingLayer, mainwindow.canvas)
+<p>References <a class="el" href="shared_8py_source.html#l00101">getCurrentFeats()</a>, <a class="el" href="shared_8py_source.html#l00113">getFeatsToDelete()</a>, <a class="el" href="shared_8py_source.html#l00569">printFeatures()</a>, and <a class="el" href="shared_8py_source.html#l00194">updateExtents()</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00121"></a><a class="code" href="namespace_tools_1_1shared.html#abb765e0bafa2532a20190a31f228475c">00121</a> 
+<a name="l00122"></a>00122 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#abb765e0bafa2532a20190a31f228475c">deleteEdits</a>(mainwindow, editingLayerName, currentEditLayerFeats):
+<a name="l00123"></a>00123         <span class="stringliteral">&#39;&#39;&#39; </span>
+<a name="l00124"></a>00124 <span class="stringliteral">            Delete scenario edits added to editing layers since the last save.</span>
+<a name="l00125"></a>00125 <span class="stringliteral">            This method is called from Main.mainwindow.checkEditsState() and</span>
+<a name="l00126"></a>00126 <span class="stringliteral">            Main.mainwindow.pasteFeatures().</span>
+<a name="l00127"></a>00127 <span class="stringliteral">        &#39;&#39;&#39;</span>
+<a name="l00128"></a>00128         <span class="comment"># debugging</span>
+<a name="l00129"></a>00129         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits()&quot;</span>
+<a name="l00130"></a>00130         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits(): editingLayerName is :&quot;</span> + editingLayerName
+<a name="l00131"></a>00131         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits(): original features are: &quot;</span>, currentEditLayerFeats
+<a name="l00132"></a>00132         
+<a name="l00133"></a>00133         <span class="comment"># Tools.shared.deleteEdits should be impossible to call with an editingLayerName that is not</span>
+<a name="l00134"></a>00134         <span class="comment"># an editing layer; however, if it ever were to be called, we could accidentally delete users&#39; data.</span>
+<a name="l00135"></a>00135         <span class="comment"># The code below is insurance against such a serious bug. </span>
+<a name="l00136"></a>00136         <span class="keywordflow">if</span> editingLayerName <span class="keywordflow">not</span> <span class="keywordflow">in</span> config.editLayersBaseNames:
+<a name="l00137"></a>00137             QtGui.QMessageBox.warning(mainwindow, <span class="stringliteral">&quot;Deletion Error&quot;</span>, <span class="stringliteral">&quot;Tools.shared.deleteEdits() is attempting \</span>
+<a name="l00138"></a>00138 <span class="stringliteral">to delete edits from a vector layer other than an editing layer.&quot;</span>)
+<a name="l00139"></a>00139             <span class="keywordflow">return</span>
+<a name="l00140"></a>00140 
+<a name="l00141"></a>00141         <span class="comment"># Now that we know we have an editing layer, get the provider from the name</span>
+<a name="l00142"></a>00142         editingLayer = mainwindow.getLayerFromName(editingLayerName)
+<a name="l00143"></a>00143         <span class="keywordflow">if</span> <span class="keywordflow">not</span> editingLayer:
+<a name="l00144"></a>00144             <span class="keywordflow">return</span>
+<a name="l00145"></a>00145         provider = editingLayer.dataProvider()
+<a name="l00146"></a>00146         
+<a name="l00147"></a>00147         <span class="comment"># getFeatsToDelete returns a python list</span>
+<a name="l00148"></a>00148         <span class="comment"># If the currentEditLayer feats include some added since the last save then</span>
+<a name="l00149"></a>00149         <span class="comment"># this method will return the difference between the current edit layer state</span>
+<a name="l00150"></a>00150         <span class="comment"># and the state that was passed to this method.</span>
+<a name="l00151"></a>00151         toDelete = <a class="code" href="namespace_tools_1_1shared.html#a9f5b7632224b72b150a25515e2e1dc55">getFeatsToDelete</a>(provider, currentEditLayerFeats)
+<a name="l00152"></a>00152         
+<a name="l00153"></a>00153         <span class="comment"># debugging</span>
+<a name="l00154"></a>00154         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits(): features toDelete are:&quot;</span>, toDelete
+<a name="l00155"></a>00155         
+<a name="l00156"></a>00156         <span class="comment"># provider.deleteFeatures only works with a Python list as a parameter</span>
+<a name="l00157"></a>00157         <span class="comment"># AND the spaces must be in the parameter list!</span>
+<a name="l00158"></a>00158         <span class="keywordflow">try</span>:
+<a name="l00159"></a>00159             provider.deleteFeatures( toDelete )
+<a name="l00160"></a>00160         <span class="keywordflow">except</span> (IOError, OSError), e:
+<a name="l00161"></a>00161             error = unicode(e)
+<a name="l00162"></a>00162             <span class="keywordflow">print</span> error                    
+<a name="l00163"></a>00163             QtGui.QMessageBox.warning(mainwindow, <span class="stringliteral">&quot;Failed to delete edit(s)&quot;</span>, <span class="stringliteral">&quot;Please check if &quot;</span>
+<a name="l00164"></a>00164                                  + editingLayerName + <span class="stringliteral">&quot; is open in another program and then try again.&quot;</span>)
+<a name="l00165"></a>00165 
+<a name="l00166"></a>00166         editingLayer.triggerRepaint()
+<a name="l00167"></a>00167         
+<a name="l00168"></a>00168         <span class="comment"># update the attribute table if open</span>
+<a name="l00169"></a>00169         <span class="keywordflow">if</span> mainwindow.attrTable != <span class="keywordtype">None</span> <span class="keywordflow">and</span> mainwindow.attrTable.isVisible():
+<a name="l00170"></a>00170             mainwindow.openVectorAttributeTable()
+<a name="l00171"></a>00171         
+<a name="l00172"></a>00172         <span class="comment"># If we are back to the originalEditLayerFeats (i.e. state of last save) then </span>
+<a name="l00173"></a>00173         <span class="comment"># set editDirty = False, otherwise set it to true</span>
+<a name="l00174"></a>00174         currentFeats = <a class="code" href="namespace_tools_1_1shared.html#a552723889033b5c8feaba95981e26b2a">getCurrentFeats</a>(provider)
+<a name="l00175"></a>00175         <span class="keywordflow">if</span> currentFeats == mainwindow.originalEditLayerFeats:
+<a name="l00176"></a>00176             mainwindow.editDirty = <span class="keyword">False</span>
+<a name="l00177"></a>00177             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits(): currentEditLayerFeats = originalEditLayerFeats; editDirty = False&quot;</span>
+<a name="l00178"></a>00178         <span class="keywordflow">else</span>: 
+<a name="l00179"></a>00179             mainwindow.editDirty = <span class="keyword">True</span>
+<a name="l00180"></a>00180             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits(): currentEditLayerFeats != originalEditLayerFeats; editDirty = True&quot;</span>
+<a name="l00181"></a>00181             
+<a name="l00182"></a>00182         <span class="comment"># debugging  </span>
+<a name="l00183"></a>00183         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.deleteEdits(): the remaining features are&quot;</span>
+<a name="l00184"></a>00184         <a class="code" href="namespace_tools_1_1shared.html#abc11ef5d38063ff85b1a688430c02c85">printFeatures</a>(provider)
+<a name="l00185"></a>00185         
+<a name="l00186"></a>00186         <a class="code" href="namespace_tools_1_1shared.html#a9a2f8f670d9ac7bd7aadff7b84168393">updateExtents</a>(mainwindow, editingLayer, mainwindow.canvas)
 
 </pre></div>
 <p><div class="dynheader">
@@ -659,21 +659,21 @@ Here is the call graph for this function:</div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="shared_8py_source.html#l00100">100</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
+<p>Definition at line <a class="el" href="shared_8py_source.html#l00101">101</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
 
-<p>Referenced by <a class="el" href="shared_8py_source.html#l00120">deleteEdits()</a>, and <a class="el" href="shared_8py_source.html#l00112">getFeatsToDelete()</a>.</p>
-<div class="fragment"><pre class="fragment"><a name="l00100"></a><a class="code" href="namespace_tools_1_1shared.html#a552723889033b5c8feaba95981e26b2a">00100</a> 
-<a name="l00101"></a>00101 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a552723889033b5c8feaba95981e26b2a">getCurrentFeats</a>(provider):
-<a name="l00102"></a>00102     <span class="comment"># debugging</span>
-<a name="l00103"></a>00103     <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.getCurrentFeats()&quot;</span>
-<a name="l00104"></a>00104     
-<a name="l00105"></a>00105     feat = QgsFeature()
-<a name="l00106"></a>00106     currentFeats = []
-<a name="l00107"></a>00107     allAttrs = provider.attributeIndexes()
-<a name="l00108"></a>00108     provider.select(allAttrs)
-<a name="l00109"></a>00109     <span class="keywordflow">while</span> provider.nextFeature(feat):
-<a name="l00110"></a>00110         currentFeats.append(feat.id())
-<a name="l00111"></a>00111     <span class="keywordflow">return</span> currentFeats
+<p>Referenced by <a class="el" href="shared_8py_source.html#l00121">deleteEdits()</a>, and <a class="el" href="shared_8py_source.html#l00113">getFeatsToDelete()</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00101"></a><a class="code" href="namespace_tools_1_1shared.html#a552723889033b5c8feaba95981e26b2a">00101</a> 
+<a name="l00102"></a>00102 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a552723889033b5c8feaba95981e26b2a">getCurrentFeats</a>(provider):
+<a name="l00103"></a>00103     <span class="comment"># debugging</span>
+<a name="l00104"></a>00104     <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.getCurrentFeats()&quot;</span>
+<a name="l00105"></a>00105     
+<a name="l00106"></a>00106     feat = QgsFeature()
+<a name="l00107"></a>00107     currentFeats = []
+<a name="l00108"></a>00108     allAttrs = provider.attributeIndexes()
+<a name="l00109"></a>00109     provider.select(allAttrs)
+<a name="l00110"></a>00110     <span class="keywordflow">while</span> provider.nextFeature(feat):
+<a name="l00111"></a>00111         currentFeats.append(feat.id())
+<a name="l00112"></a>00112     <span class="keywordflow">return</span> currentFeats
 
 </pre></div>
 <p><div class="dynheader">
@@ -712,19 +712,19 @@ Here is the caller graph for this function:</div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="shared_8py_source.html#l00112">112</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
+<p>Definition at line <a class="el" href="shared_8py_source.html#l00113">113</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
 
-<p>References <a class="el" href="shared_8py_source.html#l00100">getCurrentFeats()</a>.</p>
+<p>References <a class="el" href="shared_8py_source.html#l00101">getCurrentFeats()</a>.</p>
 
-<p>Referenced by <a class="el" href="shared_8py_source.html#l00120">deleteEdits()</a>.</p>
-<div class="fragment"><pre class="fragment"><a name="l00112"></a><a class="code" href="namespace_tools_1_1shared.html#a9f5b7632224b72b150a25515e2e1dc55">00112</a> 
-<a name="l00113"></a>00113 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a9f5b7632224b72b150a25515e2e1dc55">getFeatsToDelete</a>(provider, originalEditLayerFeats):
-<a name="l00114"></a>00114         <span class="comment"># debugging</span>
-<a name="l00115"></a>00115         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.getFeatsToDelete()&quot;</span>
-<a name="l00116"></a>00116         
-<a name="l00117"></a>00117         currentFeats = <a class="code" href="namespace_tools_1_1shared.html#a552723889033b5c8feaba95981e26b2a">getCurrentFeats</a>(provider)
-<a name="l00118"></a>00118         featsToDelete = [i <span class="keywordflow">for</span> i <span class="keywordflow">in</span> currentFeats <span class="keywordflow">if</span> i <span class="keywordflow">not</span> <span class="keywordflow">in</span> originalEditLayerFeats]
-<a name="l00119"></a>00119         <span class="keywordflow">return</span> featsToDelete
+<p>Referenced by <a class="el" href="shared_8py_source.html#l00121">deleteEdits()</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00113"></a><a class="code" href="namespace_tools_1_1shared.html#a9f5b7632224b72b150a25515e2e1dc55">00113</a> 
+<a name="l00114"></a>00114 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a9f5b7632224b72b150a25515e2e1dc55">getFeatsToDelete</a>(provider, originalEditLayerFeats):
+<a name="l00115"></a>00115         <span class="comment"># debugging</span>
+<a name="l00116"></a>00116         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.getFeatsToDelete()&quot;</span>
+<a name="l00117"></a>00117         
+<a name="l00118"></a>00118         currentFeats = <a class="code" href="namespace_tools_1_1shared.html#a552723889033b5c8feaba95981e26b2a">getCurrentFeats</a>(provider)
+<a name="l00119"></a>00119         featsToDelete = [i <span class="keywordflow">for</span> i <span class="keywordflow">in</span> currentFeats <span class="keywordflow">if</span> i <span class="keywordflow">not</span> <span class="keywordflow">in</span> originalEditLayerFeats]
+<a name="l00120"></a>00120         <span class="keywordflow">return</span> featsToDelete
       
 </pre></div>
 <p><div class="dynheader">
@@ -772,35 +772,35 @@ Here is the caller graph for this function:</div>
 </div>
 <div class="memdoc">
 <div class="fragment"><pre class="fragment">Track original features so we can delete unsaved added features </pre></div> 
-<p>Definition at line <a class="el" href="shared_8py_source.html#l00040">40</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
-<div class="fragment"><pre class="fragment"><a name="l00040"></a><a class="code" href="namespace_tools_1_1shared.html#a437ecd63be616e55127bc14202a550fb">00040</a> 
-<a name="l00041"></a>00041 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a437ecd63be616e55127bc14202a550fb">listOriginalFeatures</a>(mainwindow, editingLayerName):
-<a name="l00042"></a>00042         <span class="stringliteral">&#39;&#39;&#39; Track original features so we can delete unsaved added features &#39;&#39;&#39;</span>
-<a name="l00043"></a>00043         <span class="comment"># debugging</span>
-<a name="l00044"></a>00044         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.listOriginalFeatures()&quot;</span>
-<a name="l00045"></a>00045         
-<a name="l00046"></a>00046         originalEditLayerFeats = []
-<a name="l00047"></a>00047         
-<a name="l00048"></a>00048         editingLayer = mainwindow.getLayerFromName(editingLayerName)
-<a name="l00049"></a>00049         <span class="keywordflow">if</span> <span class="keywordflow">not</span> editingLayer:
-<a name="l00050"></a>00050             <span class="keywordflow">return</span>
-<a name="l00051"></a>00051         provider = editingLayer.dataProvider()
-<a name="l00052"></a>00052         
-<a name="l00053"></a>00053         <span class="comment"># debugging</span>
-<a name="l00054"></a>00054         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.listOriginalFeatures(): begin &quot;</span>
-<a name="l00055"></a>00055         <span class="keywordflow">print</span> originalEditLayerFeats
-<a name="l00056"></a>00056         
-<a name="l00057"></a>00057         feat = QgsFeature()
-<a name="l00058"></a>00058         allAttrs = provider.attributeIndexes()
-<a name="l00059"></a>00059         provider.select(allAttrs)
-<a name="l00060"></a>00060         <span class="keywordflow">while</span> provider.nextFeature(feat):
-<a name="l00061"></a>00061             originalEditLayerFeats.append(feat.id())
-<a name="l00062"></a>00062             
-<a name="l00063"></a>00063         <span class="comment"># debugging     </span>
-<a name="l00064"></a>00064         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.listOriginalFeatures():  end, originalEditLayerFeats are&quot;</span> 
-<a name="l00065"></a>00065         <span class="keywordflow">print</span> originalEditLayerFeats
-<a name="l00066"></a>00066         
-<a name="l00067"></a>00067         <span class="keywordflow">return</span> originalEditLayerFeats
+<p>Definition at line <a class="el" href="shared_8py_source.html#l00041">41</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00041"></a><a class="code" href="namespace_tools_1_1shared.html#a437ecd63be616e55127bc14202a550fb">00041</a> 
+<a name="l00042"></a>00042 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a437ecd63be616e55127bc14202a550fb">listOriginalFeatures</a>(mainwindow, editingLayerName):
+<a name="l00043"></a>00043         <span class="stringliteral">&#39;&#39;&#39; Track original features so we can delete unsaved added features &#39;&#39;&#39;</span>
+<a name="l00044"></a>00044         <span class="comment"># debugging</span>
+<a name="l00045"></a>00045         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.listOriginalFeatures()&quot;</span>
+<a name="l00046"></a>00046         
+<a name="l00047"></a>00047         originalEditLayerFeats = []
+<a name="l00048"></a>00048         
+<a name="l00049"></a>00049         editingLayer = mainwindow.getLayerFromName(editingLayerName)
+<a name="l00050"></a>00050         <span class="keywordflow">if</span> <span class="keywordflow">not</span> editingLayer:
+<a name="l00051"></a>00051             <span class="keywordflow">return</span>
+<a name="l00052"></a>00052         provider = editingLayer.dataProvider()
+<a name="l00053"></a>00053         
+<a name="l00054"></a>00054         <span class="comment"># debugging</span>
+<a name="l00055"></a>00055         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.listOriginalFeatures(): begin &quot;</span>
+<a name="l00056"></a>00056         <span class="keywordflow">print</span> originalEditLayerFeats
+<a name="l00057"></a>00057         
+<a name="l00058"></a>00058         feat = QgsFeature()
+<a name="l00059"></a>00059         allAttrs = provider.attributeIndexes()
+<a name="l00060"></a>00060         provider.select(allAttrs)
+<a name="l00061"></a>00061         <span class="keywordflow">while</span> provider.nextFeature(feat):
+<a name="l00062"></a>00062             originalEditLayerFeats.append(feat.id())
+<a name="l00063"></a>00063             
+<a name="l00064"></a>00064         <span class="comment"># debugging     </span>
+<a name="l00065"></a>00065         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.listOriginalFeatures():  end, originalEditLayerFeats are&quot;</span> 
+<a name="l00066"></a>00066         <span class="keywordflow">print</span> originalEditLayerFeats
+<a name="l00067"></a>00067         
+<a name="l00068"></a>00068         <span class="keywordflow">return</span> originalEditLayerFeats
     
 </pre></div>
 </div>
@@ -939,14 +939,14 @@ Here is the caller graph for this function:</div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="shared_8py_source.html#l00186">186</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
-<div class="fragment"><pre class="fragment"><a name="l00186"></a><a class="code" href="namespace_tools_1_1shared.html#af149cd3e5736209f11c8fb7a37074079">00186</a> 
-<a name="l00187"></a>00187 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#af149cd3e5736209f11c8fb7a37074079">numberFeaturesAdded</a>(activeVLayer, originalEditLayerFeats):
-<a name="l00188"></a>00188         <span class="comment"># debugging</span>
-<a name="l00189"></a>00189         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.numberFeaturesAdded()&quot;</span>
-<a name="l00190"></a>00190         
-<a name="l00191"></a>00191         newFeats = activeVLayer.featureCount()- len(originalEditLayerFeats)
-<a name="l00192"></a>00192         <span class="keywordflow">return</span> newFeats
+<p>Definition at line <a class="el" href="shared_8py_source.html#l00187">187</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00187"></a><a class="code" href="namespace_tools_1_1shared.html#af149cd3e5736209f11c8fb7a37074079">00187</a> 
+<a name="l00188"></a>00188 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#af149cd3e5736209f11c8fb7a37074079">numberFeaturesAdded</a>(activeVLayer, originalEditLayerFeats):
+<a name="l00189"></a>00189         <span class="comment"># debugging</span>
+<a name="l00190"></a>00190         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.numberFeaturesAdded()&quot;</span>
+<a name="l00191"></a>00191         
+<a name="l00192"></a>00192         newFeats = activeVLayer.featureCount()- len(originalEditLayerFeats)
+<a name="l00193"></a>00193         <span class="keywordflow">return</span> newFeats
     
 </pre></div>
 </div>
@@ -978,7 +978,7 @@ Here is the caller graph for this function:</div>
 <div class="fragment"><pre class="fragment">Open a raster layer without adding to the registry, so it is not visible to the user </pre></div> 
 <p>Definition at line <a class="el" href="shared_8py_source.html#l00416">416</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
 
-<p>Referenced by <a class="el" href="shared_8py_source.html#l00346">checkRoadConstraints()</a>, and <a class="el" href="shared_8py_source.html#l00292">checkStreamsConstraint()</a>.</p>
+<p>Referenced by <a class="el" href="shared_8py_source.html#l00346">checkRoadConstraints()</a>, and <a class="el" href="shared_8py_source.html#l00293">checkStreamsConstraint()</a>.</p>
 <div class="fragment"><pre class="fragment"><a name="l00416"></a><a class="code" href="namespace_tools_1_1shared.html#ad4d1153e9250c93378055b003b933599">00416</a> 
 <a name="l00417"></a>00417 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#ad4d1153e9250c93378055b003b933599">openHiddenRasterLayer</a>(mainwindow, rfilePath):
 <a name="l00418"></a>00418     <span class="stringliteral">&#39;&#39;&#39; Open a raster layer without adding to the registry, so it is not visible to the user &#39;&#39;&#39;</span>    
@@ -1015,32 +1015,32 @@ Here is the caller graph for this function:</div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="shared_8py_source.html#l00555">555</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
+<p>Definition at line <a class="el" href="shared_8py_source.html#l00569">569</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
 
-<p>Referenced by <a class="el" href="shared_8py_source.html#l00120">deleteEdits()</a>.</p>
-<div class="fragment"><pre class="fragment"><a name="l00555"></a><a class="code" href="namespace_tools_1_1shared.html#abc11ef5d38063ff85b1a688430c02c85">00555</a> 
-<a name="l00556"></a>00556 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#abc11ef5d38063ff85b1a688430c02c85">printFeatures</a>(provider):       
-<a name="l00557"></a>00557         <span class="comment"># debugging</span>
-<a name="l00558"></a>00558         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.printFeatures(): Testing&quot;</span>
-<a name="l00559"></a>00559         <span class="comment">#self.provider.reloadData()</span>
-<a name="l00560"></a>00560         feat = QgsFeature()
-<a name="l00561"></a>00561         allAttrs = provider.attributeIndexes()
-<a name="l00562"></a>00562         provider.select(allAttrs)
-<a name="l00563"></a>00563         <span class="comment"># the nextFeature() method operates on a select initialized provider</span>
-<a name="l00564"></a>00564         <span class="keywordflow">while</span> provider.nextFeature(feat):
-<a name="l00565"></a>00565             <span class="comment"># fetch the feature geometry, which is the feature&#39;s spatial coordinates</span>
-<a name="l00566"></a>00566             fgeom = feat.geometry()
-<a name="l00567"></a>00567             <span class="comment"># This prints the feature&#39;s ID and its spatial coordinates</span>
-<a name="l00568"></a>00568             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Feature ID %d: %s\n&quot;</span> % (feat.id(), fgeom.exportToWkt()) 
-<a name="l00569"></a>00569             <span class="keywordflow">print</span> type(feat.id())
-<a name="l00570"></a>00570             <span class="comment"># a QgsAttributeMap is a pointer to a series of QtCore.QVariant objects</span>
-<a name="l00571"></a>00571             attrs = feat.attributeMap() 
-<a name="l00572"></a>00572              
-<a name="l00573"></a>00573             <span class="comment"># the map first prints the Qgs feature ID and </span>
-<a name="l00574"></a>00574             <span class="comment"># then it prints the field key (starting with 0 for the first field) and the field&#39;s value.</span>
-<a name="l00575"></a>00575             <span class="comment"># note: the QgsAttribute map is a Python dictionary (key = field id : field value)</span>
-<a name="l00576"></a>00576             <span class="keywordflow">for</span> (key, attr) <span class="keywordflow">in</span> attrs.iteritems():
-<a name="l00577"></a>00577                 <span class="keywordflow">print</span> <span class="stringliteral">&quot;%d: %s&quot;</span> % (key, attr.toString())
+<p>Referenced by <a class="el" href="shared_8py_source.html#l00121">deleteEdits()</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00569"></a><a class="code" href="namespace_tools_1_1shared.html#abc11ef5d38063ff85b1a688430c02c85">00569</a> 
+<a name="l00570"></a>00570 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#abc11ef5d38063ff85b1a688430c02c85">printFeatures</a>(provider):       
+<a name="l00571"></a>00571         <span class="comment"># debugging</span>
+<a name="l00572"></a>00572         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.printFeatures(): Testing&quot;</span>
+<a name="l00573"></a>00573         <span class="comment">#self.provider.reloadData()</span>
+<a name="l00574"></a>00574         feat = QgsFeature()
+<a name="l00575"></a>00575         allAttrs = provider.attributeIndexes()
+<a name="l00576"></a>00576         provider.select(allAttrs)
+<a name="l00577"></a>00577         <span class="comment"># the nextFeature() method operates on a select initialized provider</span>
+<a name="l00578"></a>00578         <span class="keywordflow">while</span> provider.nextFeature(feat):
+<a name="l00579"></a>00579             <span class="comment"># fetch the feature geometry, which is the feature&#39;s spatial coordinates</span>
+<a name="l00580"></a>00580             fgeom = feat.geometry()
+<a name="l00581"></a>00581             <span class="comment"># This prints the feature&#39;s ID and its spatial coordinates</span>
+<a name="l00582"></a>00582             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Feature ID %d: %s\n&quot;</span> % (feat.id(), fgeom.exportToWkt()) 
+<a name="l00583"></a>00583             <span class="keywordflow">print</span> type(feat.id())
+<a name="l00584"></a>00584             <span class="comment"># a QgsAttributeMap is a pointer to a series of QtCore.QVariant objects</span>
+<a name="l00585"></a>00585             attrs = feat.attributeMap() 
+<a name="l00586"></a>00586              
+<a name="l00587"></a>00587             <span class="comment"># the map first prints the Qgs feature ID and </span>
+<a name="l00588"></a>00588             <span class="comment"># then it prints the field key (starting with 0 for the first field) and the field&#39;s value.</span>
+<a name="l00589"></a>00589             <span class="comment"># note: the QgsAttribute map is a Python dictionary (key = field id : field value)</span>
+<a name="l00590"></a>00590             <span class="keywordflow">for</span> (key, attr) <span class="keywordflow">in</span> attrs.iteritems():
+<a name="l00591"></a>00591                 <span class="keywordflow">print</span> <span class="stringliteral">&quot;%d: %s&quot;</span> % (key, attr.toString())
                         </pre></div>
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -1198,10 +1198,6 @@ Here is the caller graph for this function:</div>
 <a name="l00548"></a>00548         snappedQgsPoint = QgsPoint(x, y)
 <a name="l00549"></a>00549         <span class="keywordflow">return</span> snappedQgsPoint
 <a name="l00550"></a>00550     <span class="keywordflow">else</span>: <span class="keywordflow">return</span> <span class="keyword">False</span> <span class="comment"># will return false without this line, but for clarity</span>
-<a name="l00551"></a>00551 
-<a name="l00552"></a>00552 <span class="comment">#**************************************************************</span>
-<a name="l00553"></a>00553 <span class="stringliteral">&#39;&#39;&#39; Testing &#39;&#39;&#39;</span>
-<a name="l00554"></a>00554 <span class="comment">#**************************************************************</span>
 
 </pre></div>
 <p><div class="dynheader">
@@ -1246,69 +1242,69 @@ Here is the caller graph for this function:</div>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="shared_8py_source.html#l00193">193</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
+<p>Definition at line <a class="el" href="shared_8py_source.html#l00194">194</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
 
-<p>Referenced by <a class="el" href="shared_8py_source.html#l00120">deleteEdits()</a>.</p>
-<div class="fragment"><pre class="fragment"><a name="l00193"></a><a class="code" href="namespace_tools_1_1shared.html#a9a2f8f670d9ac7bd7aadff7b84168393">00193</a> 
-<a name="l00194"></a>00194 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a9a2f8f670d9ac7bd7aadff7b84168393">updateExtents</a>(mainwindow, activeVLayer, canvas):
-<a name="l00195"></a>00195         <span class="comment"># debugging</span>
-<a name="l00196"></a>00196         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.updateExtents()&quot;</span>
-<a name="l00197"></a>00197         <span class="keywordflow">print</span> <span class="stringliteral">&quot;The active layer feature count is &quot;</span> + str(activeVLayer.featureCount())
-<a name="l00198"></a>00198         vfilePath = unicode(activeVLayer.source())
-<a name="l00199"></a>00199         provider = activeVLayer.dataProvider()
-<a name="l00200"></a>00200         <span class="comment"># I tried every update method I could find, but nothing other than closing</span>
-<a name="l00201"></a>00201         <span class="comment"># and reopening the layer seems to reset the layer extents on the canvas.  </span>
-<a name="l00202"></a>00202         <span class="comment"># So I do that here.</span>
-<a name="l00203"></a>00203         vlayerName = unicode(activeVLayer.name())
-<a name="l00204"></a>00204         <span class="keywordflow">if</span> vlayerName <span class="keywordflow">in</span> config.editLayersBaseNames:
-<a name="l00205"></a>00205             layerId = activeVLayer.id()
-<a name="l00206"></a>00206             <span class="comment"># if not the default color of red save the color so we can keep the same color when reopening the layer</span>
-<a name="l00207"></a>00207             <span class="keywordflow">if</span> <span class="keywordflow">not</span> activeVLayer.rendererV2().symbols()[0].color() == QtGui.QColor(255, 0, 0, 255):
-<a name="l00208"></a>00208                 mainwindow.coloredLayers[vlayerName] = activeVLayer.rendererV2().symbols()[0].color()
-<a name="l00209"></a>00209             <span class="comment"># The method below removes the layer from the originalScenarioLayers list if the </span>
-<a name="l00210"></a>00210             <span class="comment"># editing layer was in self.originalScenarioLayers and returns True if it was</span>
-<a name="l00211"></a>00211             <span class="comment"># or False if it was not.  The method resets the </span>
-<a name="l00212"></a>00212             <span class="comment"># variables associated with the layer we are removing (to avoid runtime errors</span>
-<a name="l00213"></a>00213             <span class="comment"># associated with deleting underlying C++ objects)</span>
-<a name="l00214"></a>00214             <span class="comment"># and removes the layer from the registry.  Finally it removes the layer </span>
-<a name="l00215"></a>00215             <span class="comment"># from the legend and updates the legend&#39;s layer set.</span>
-<a name="l00216"></a>00216             inOriginalScenario = mainwindow.legend.removeLayerFromRegistry(activeVLayer, layerId)
-<a name="l00217"></a>00217             <span class="comment"># now reopen the layer but give some time to be removed first</span>
-<a name="l00218"></a>00218             time.sleep(0.1)
-<a name="l00219"></a>00219             mainwindow.openVectorLayer(vfilePath)
-<a name="l00220"></a>00220             
-<a name="l00221"></a>00221             <span class="comment"># if the layer was in self.originalScenarioLayers then add it back </span>
-<a name="l00222"></a>00222             <span class="keywordflow">if</span> inOriginalScenario:
-<a name="l00223"></a>00223                 mainwindow.originalScenarioLayers.append(mainwindow.activeVLayer)
-<a name="l00224"></a>00224                 <span class="comment"># although layer names shouldn&#39;t have changed, update anyway</span>
-<a name="l00225"></a>00225                 mainwindow.getOriginalScenarioLayersNames()
-<a name="l00226"></a>00226                 <span class="keywordflow">print</span> <span class="stringliteral">&quot; appended editing layer&quot;</span>
-<a name="l00227"></a>00227             
-<a name="l00228"></a>00228             <span class="comment"># debugging</span>
-<a name="l00229"></a>00229             <span class="keywordflow">for</span> layer <span class="keywordflow">in</span> mainwindow.originalScenarioLayers: <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.updateExtents(): &quot;</span> + layer.name()
-<a name="l00230"></a>00230 
-<a name="l00231"></a>00231             <span class="comment"># now highlight the layer as it was before</span>
-<a name="l00232"></a>00232             brush = QtGui.QBrush()
-<a name="l00233"></a>00233             color = QtGui.QColor(0, 0, 255)
-<a name="l00234"></a>00234             brush.setColor(color)
-<a name="l00235"></a>00235             editItems = mainwindow.legend.findItems(vlayerName, QtCore.Qt.MatchFixedString, 0)
-<a name="l00236"></a>00236             editItems[0].setForeground(0, brush)
-<a name="l00237"></a>00237             <span class="comment"># Make the layer visible.  This will cause a signal to be sent</span>
-<a name="l00238"></a>00238             <span class="comment"># and the legend will update the layer&#39;s status if not visible.</span>
-<a name="l00239"></a>00239             <span class="comment"># because we have just opened it, it is the active layer</span>
-<a name="l00240"></a>00240             mainwindow.legend.currentItem().setCheckState(0, QtCore.Qt.Checked)
-<a name="l00241"></a>00241             <span class="keywordflow">return</span> <span class="comment"># opening the layer will update the extents, so just return</span>
-<a name="l00242"></a>00242         
-<a name="l00243"></a>00243         <span class="comment"># none of these work for updating the extents of a vector layer after editing</span>
-<a name="l00244"></a>00244         <span class="comment">#activeVLayer.clearCacheImage()</span>
-<a name="l00245"></a>00245         <span class="comment">#provider.reloadData()</span>
-<a name="l00246"></a>00246         <span class="comment">#activeVLayer.reload()</span>
-<a name="l00247"></a>00247         activeVLayer.updateExtents()
-<a name="l00248"></a>00248         provider.updateExtents()
-<a name="l00249"></a>00249         <span class="comment">#canvas.mapRenderer().updateFullExtent()</span>
-<a name="l00250"></a>00250         canvas.updateFullExtent()
-<a name="l00251"></a>00251         <span class="comment">#canvas.map().render()</span>
-<a name="l00252"></a>00252         canvas.refresh()
+<p>Referenced by <a class="el" href="shared_8py_source.html#l00121">deleteEdits()</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00194"></a><a class="code" href="namespace_tools_1_1shared.html#a9a2f8f670d9ac7bd7aadff7b84168393">00194</a> 
+<a name="l00195"></a>00195 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a9a2f8f670d9ac7bd7aadff7b84168393">updateExtents</a>(mainwindow, activeVLayer, canvas):
+<a name="l00196"></a>00196         <span class="comment"># debugging</span>
+<a name="l00197"></a>00197         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.updateExtents()&quot;</span>
+<a name="l00198"></a>00198         <span class="keywordflow">print</span> <span class="stringliteral">&quot;The active layer feature count is &quot;</span> + str(activeVLayer.featureCount())
+<a name="l00199"></a>00199         vfilePath = unicode(activeVLayer.source())
+<a name="l00200"></a>00200         provider = activeVLayer.dataProvider()
+<a name="l00201"></a>00201         <span class="comment"># I tried every update method I could find, but nothing other than closing</span>
+<a name="l00202"></a>00202         <span class="comment"># and reopening the layer seems to reset the layer extents on the canvas.  </span>
+<a name="l00203"></a>00203         <span class="comment"># So I do that here.</span>
+<a name="l00204"></a>00204         vlayerName = unicode(activeVLayer.name())
+<a name="l00205"></a>00205         <span class="keywordflow">if</span> vlayerName <span class="keywordflow">in</span> config.editLayersBaseNames:
+<a name="l00206"></a>00206             layerId = activeVLayer.id()
+<a name="l00207"></a>00207             <span class="comment"># if not the default color of red save the color so we can keep the same color when reopening the layer</span>
+<a name="l00208"></a>00208             <span class="keywordflow">if</span> <span class="keywordflow">not</span> activeVLayer.rendererV2().symbols()[0].color() == QtGui.QColor(255, 0, 0, 255):
+<a name="l00209"></a>00209                 mainwindow.coloredLayers[vlayerName] = activeVLayer.rendererV2().symbols()[0].color()
+<a name="l00210"></a>00210             <span class="comment"># The method below removes the layer from the originalScenarioLayers list if the </span>
+<a name="l00211"></a>00211             <span class="comment"># editing layer was in self.originalScenarioLayers and returns True if it was</span>
+<a name="l00212"></a>00212             <span class="comment"># or False if it was not.  The method resets the </span>
+<a name="l00213"></a>00213             <span class="comment"># variables associated with the layer we are removing (to avoid runtime errors</span>
+<a name="l00214"></a>00214             <span class="comment"># associated with deleting underlying C++ objects)</span>
+<a name="l00215"></a>00215             <span class="comment"># and removes the layer from the registry.  Finally it removes the layer </span>
+<a name="l00216"></a>00216             <span class="comment"># from the legend and updates the legend&#39;s layer set.</span>
+<a name="l00217"></a>00217             inOriginalScenario = mainwindow.legend.removeLayerFromRegistry(activeVLayer, layerId)
+<a name="l00218"></a>00218             <span class="comment"># now reopen the layer but give some time to be removed first</span>
+<a name="l00219"></a>00219             time.sleep(0.1)
+<a name="l00220"></a>00220             mainwindow.openVectorLayer(vfilePath)
+<a name="l00221"></a>00221             
+<a name="l00222"></a>00222             <span class="comment"># if the layer was in self.originalScenarioLayers then add it back </span>
+<a name="l00223"></a>00223             <span class="keywordflow">if</span> inOriginalScenario:
+<a name="l00224"></a>00224                 mainwindow.originalScenarioLayers.append(mainwindow.activeVLayer)
+<a name="l00225"></a>00225                 <span class="comment"># although layer names shouldn&#39;t have changed, update anyway</span>
+<a name="l00226"></a>00226                 mainwindow.getOriginalScenarioLayersNames()
+<a name="l00227"></a>00227                 <span class="keywordflow">print</span> <span class="stringliteral">&quot; appended editing layer&quot;</span>
+<a name="l00228"></a>00228             
+<a name="l00229"></a>00229             <span class="comment"># debugging</span>
+<a name="l00230"></a>00230             <span class="keywordflow">for</span> layer <span class="keywordflow">in</span> mainwindow.originalScenarioLayers: <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.updateExtents(): &quot;</span> + layer.name()
+<a name="l00231"></a>00231 
+<a name="l00232"></a>00232             <span class="comment"># now highlight the layer as it was before</span>
+<a name="l00233"></a>00233             brush = QtGui.QBrush()
+<a name="l00234"></a>00234             color = QtGui.QColor(0, 0, 255)
+<a name="l00235"></a>00235             brush.setColor(color)
+<a name="l00236"></a>00236             editItems = mainwindow.legend.findItems(vlayerName, QtCore.Qt.MatchFixedString, 0)
+<a name="l00237"></a>00237             editItems[0].setForeground(0, brush)
+<a name="l00238"></a>00238             <span class="comment"># Make the layer visible.  This will cause a signal to be sent</span>
+<a name="l00239"></a>00239             <span class="comment"># and the legend will update the layer&#39;s status if not visible.</span>
+<a name="l00240"></a>00240             <span class="comment"># because we have just opened it, it is the active layer</span>
+<a name="l00241"></a>00241             mainwindow.legend.currentItem().setCheckState(0, QtCore.Qt.Checked)
+<a name="l00242"></a>00242             <span class="keywordflow">return</span> <span class="comment"># opening the layer will update the extents, so just return</span>
+<a name="l00243"></a>00243         
+<a name="l00244"></a>00244         <span class="comment"># none of these work for updating the extents of a vector layer after editing</span>
+<a name="l00245"></a>00245         <span class="comment">#activeVLayer.clearCacheImage()</span>
+<a name="l00246"></a>00246         <span class="comment">#provider.reloadData()</span>
+<a name="l00247"></a>00247         <span class="comment">#activeVLayer.reload()</span>
+<a name="l00248"></a>00248         activeVLayer.updateExtents()
+<a name="l00249"></a>00249         provider.updateExtents()
+<a name="l00250"></a>00250         <span class="comment">#canvas.mapRenderer().updateFullExtent()</span>
+<a name="l00251"></a>00251         canvas.updateFullExtent()
+<a name="l00252"></a>00252         <span class="comment">#canvas.map().render()</span>
+<a name="l00253"></a>00253         canvas.refresh()
 
 </pre></div>
 <p><div class="dynheader">
@@ -1322,11 +1318,49 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a class="anchor" id="a5cb5b18ce38612f7b0b0e6fbe045bdfa"></a><!-- doxytag: member="Tools::shared::validateFileName" ref="a5cb5b18ce38612f7b0b0e6fbe045bdfa" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespace_tools_1_1shared.html#a5cb5b18ce38612f7b0b0e6fbe045bdfa">Tools.shared.validateFileName</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>fileName</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<div class="fragment"><pre class="fragment">A method to ensure that a string is a valid file name and not longer than 40 characters. </pre></div> 
+<p>Definition at line <a class="el" href="shared_8py_source.html#l00551">551</a> of file <a class="el" href="shared_8py_source.html">shared.py</a>.</p>
+<div class="fragment"><pre class="fragment"><a name="l00551"></a><a class="code" href="namespace_tools_1_1shared.html#a5cb5b18ce38612f7b0b0e6fbe045bdfa">00551</a> 
+<a name="l00552"></a>00552 <span class="keyword">def </span><a class="code" href="namespace_tools_1_1shared.html#a5cb5b18ce38612f7b0b0e6fbe045bdfa">validateFileName</a>(fileName):
+<a name="l00553"></a>00553         <span class="stringliteral">&#39;&#39;&#39; A method to ensure that a string is a valid file name and not longer than 40 characters. &#39;&#39;&#39;</span>
+<a name="l00554"></a>00554         <span class="comment"># debugging</span>
+<a name="l00555"></a>00555         <span class="keywordflow">print</span> <span class="stringliteral">&quot;Tools.shared.validateFileName()&quot;</span>
+<a name="l00556"></a>00556         
+<a name="l00557"></a>00557         <span class="keywordflow">if</span> len(fileName) &gt; 40:
+<a name="l00558"></a>00558             <span class="keywordflow">return</span> <span class="keyword">False</span>
+<a name="l00559"></a>00559         
+<a name="l00560"></a>00560         validCharacters = <span class="stringliteral">&quot;-_.() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&quot;</span>
+<a name="l00561"></a>00561         <span class="keywordflow">for</span> c <span class="keywordflow">in</span> fileName:
+<a name="l00562"></a>00562             <span class="keywordflow">if</span> <span class="keywordflow">not</span> c <span class="keywordflow">in</span> validCharacters:
+<a name="l00563"></a>00563                 <span class="keywordflow">return</span> <span class="keyword">False</span>
+<a name="l00564"></a>00564         <span class="keywordflow">return</span> <span class="keyword">True</span>
+<a name="l00565"></a>00565 
+<a name="l00566"></a>00566 <span class="comment">#**************************************************************</span>
+<a name="l00567"></a>00567 <span class="stringliteral">&#39;&#39;&#39; Testing &#39;&#39;&#39;</span>
+<a name="l00568"></a>00568 <span class="comment">#**************************************************************</span>
+
+</pre></div>
+</div>
+</div>
 </div><!-- contents -->
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 22 2012 18:23:09 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 30 2013 15:07:43 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

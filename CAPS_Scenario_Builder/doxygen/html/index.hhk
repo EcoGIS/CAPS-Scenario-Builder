@@ -489,8 +489,8 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_tools_1_1identify_1_1_identify.html#a9c80dbec2376b6186921e6f0d0ef6b68"><param name="Name" value="display"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1mainwindow_1_1_main_window.html#a6f616425a6e13d10882b17fbc69c7c0c"><param name="Name" value="displayCopiedFeatInfo"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_tools_1_1identify_1_1_identify.html#a05fc5f7cdc13f0a762a0f4a60929ccc8"><param name="Name" value="displayInformation"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a9ec2cf74c038f923672f964cfa74aca4"><param name="Name" value="displayMsg"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a2a9aa43c1862b377c4dd293fd0513394"><param name="Name" value="displayProjectInfo"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#ab6c8a0d53f70d19a46129265b7e18d39"><param name="Name" value="displaySendMsg"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="classmake__setupexe_1_1_inno_script.html#aedaf2bc1d42b7954c6943fa6edf2486b"><param name="Name" value="dist_dir"></OBJECT>
   <UL>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="classmake__setupexe_1_1_inno_script.html#aedaf2bc1d42b7954c6943fa6edf2486b"><param name="Name" value="make_setupexe::InnoScript"></OBJECT>
@@ -855,8 +855,8 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#ab4c3cd372842418f8a815a62c44882e2"><param name="Name" value="checkIfScenarioFilesExist"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a7729458fb3f6caaff965456a9ac8bc90"><param name="Name" value="dateSent"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a54fe06fbae4b5d2261f3c6549360aac2"><param name="Name" value="deleteProject"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a9ec2cf74c038f923672f964cfa74aca4"><param name="Name" value="displayMsg"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a2a9aa43c1862b377c4dd293fd0513394"><param name="Name" value="displayProjectInfo"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#ab6c8a0d53f70d19a46129265b7e18d39"><param name="Name" value="displaySendMsg"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a99d3516033a023d789a2974cf31cd337"><param name="Name" value="existingScenariosNotInProject"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#ae31fc2bcca64c7c47b449df27c1b2ec3"><param name="Name" value="getProjectFileName"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a338f4b73e044f87a46aa12a640c21517"><param name="Name" value="getScenariosInProject"></OBJECT>
@@ -864,6 +864,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a1695b27d5ceccab0bc52f44c44eee518"><param name="Name" value="listFiles"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a2201822867871441eb2fd7be09a6cca1"><param name="Name" value="mainwindow"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a0c3932a25ee18829387dd9ca7550abfa"><param name="Name" value="message"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a5a7f9842c35183099e2edcb66cb7975b"><param name="Name" value="msg"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a1fc0c179a07d14493b4c2b57da183109"><param name="Name" value="oldProjectFileName"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#aef5be444bc69348b25ba73e7cbb13ba6"><param name="Name" value="projectName"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#aa300962fbcbdea4a8257a910300bbd61"><param name="Name" value="readProjectFile"></OBJECT>
@@ -875,12 +876,10 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#af720afa3331c37baf78291cd3c05630a"><param name="Name" value="scenariosInProjectThatExist"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a000531b07590afe3f1c4f882d3bc9a33"><param name="Name" value="sender"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a51f70d5aa126fd2f47e357739ad874c4"><param name="Name" value="senderEmail"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a5eebc2ac87435ee8fa773ef5b1bd4f1b"><param name="Name" value="sendMsg"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#ae00ae8b41f73c333fd14cbeba2716463"><param name="Name" value="sendProject"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a1a3f3939ded3b4dd9cabbf0f5ad880c7"><param name="Name" value="setCreateNewProjectMode"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a2e7ad95454415dbc4988752332c7f97f"><param name="Name" value="sftpUpload"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a18a015fe7cfa48072d3098eab6cbba7d"><param name="Name" value="validateEmail"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a16ca6c41370af7e2bff754e69b701703"><param name="Name" value="validateFileName"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#af5ca2633a4630bff06ae185848dc988a"><param name="Name" value="validateSaveData"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a4b4a5d64df52891a8b852945f79c869a"><param name="Name" value="validateSendData"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a633dd5bc8062a6c086e3c2afae0c93ba"><param name="Name" value="writeProjectFile"></OBJECT>
@@ -1626,6 +1625,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1mainwindow__ui_1_1_ui___main_window.html#ab041d97ae75e9eb7beda9dcda53cf078"><param name="Name" value="Main::mainwindow::MainWindow"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1mainwindow__ui_1_1_ui___main_window.html#ab041d97ae75e9eb7beda9dcda53cf078"><param name="Name" value="Main::mainwindow_ui::Ui_MainWindow"></OBJECT>
   </UL>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a5a7f9842c35183099e2edcb66cb7975b"><param name="Name" value="msg"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1mainwindow_1_1_main_window.html#a30a699796f242c3944dc899893f5606a"><param name="Name" value="msgFlag"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="classmake__setupexe_1_1_inno_script.html#a354e62270f547975c26c642bde5fa620"><param name="Name" value="name"></OBJECT>
   <UL>
@@ -2043,7 +2043,6 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects__ui_1_1_ui___dlg_manage_projects.html#a200e30d52ec8fdf60dccf9d8d1be46e0"><param name="Name" value="senderNameEdit"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects__ui_1_1_ui___dlg_manage_projects.html#a607e0d5befad9cce1a0455a35ae97737"><param name="Name" value="senderNameLabel"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects__ui_1_1_ui___dlg_manage_projects.html#a5345140baafdb7cb4595a512a2506804"><param name="Name" value="sendersEmailEdit"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a5eebc2ac87435ee8fa773ef5b1bd4f1b"><param name="Name" value="sendMsg"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#ae00ae8b41f73c333fd14cbeba2716463"><param name="Name" value="sendProject"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="namespacesnippets.html#a3daca2abc299e8fa9ded180c1988496d"><param name="Name" value="set_file_readonly"></OBJECT>
   <UL>
@@ -2121,6 +2120,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="shared_8py.html#ad64a50abb2fa5c4c3d4a4d93983a7b18"><param name="Name" value="resetIdNumbers"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="shared_8py.html#a13d094a7b3ffb1c9cf81ed04d2e16b6e"><param name="Name" value="snapToNewRoad"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="shared_8py.html#a9a2f8f670d9ac7bd7aadff7b84168393"><param name="Name" value="updateExtents"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="shared_8py.html#a5cb5b18ce38612f7b0b0e6fbe045bdfa"><param name="Name" value="validateFileName"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1legend_1_1_legend.html#a23b5d4b94cffebed6f9000246b4c9288"><param name="Name" value="showMenu"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="namespaceconfig.html#a153bbd0584201353f02589efedd61dd3"><param name="Name" value="slowLoadingLayers"></OBJECT>
@@ -2436,6 +2436,7 @@
     <LI><OBJECT type="text/sitemap"><param name="Local" value="namespace_tools_1_1shared.html#ad64a50abb2fa5c4c3d4a4d93983a7b18"><param name="Name" value="resetIdNumbers"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="namespace_tools_1_1shared.html#a13d094a7b3ffb1c9cf81ed04d2e16b6e"><param name="Name" value="snapToNewRoad"></OBJECT>
     <LI><OBJECT type="text/sitemap"><param name="Local" value="namespace_tools_1_1shared.html#a9a2f8f670d9ac7bd7aadff7b84168393"><param name="Name" value="updateExtents"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="namespace_tools_1_1shared.html#a5cb5b18ce38612f7b0b0e6fbe045bdfa"><param name="Name" value="validateFileName"></OBJECT>
   </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1mainwindow_1_1_main_window.html#a5fed7be90d8d7f9eb07e00e15aaf0060"><param name="Name" value="toolSelect"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="namespaceprepareforsetupexe.html#aa9f60f394b130fac73bb937af3121a4b"><param name="Name" value="toolsFiles"></OBJECT>
@@ -2486,7 +2487,11 @@
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgsftpproperties__ui_1_1_ui___dlg_sftp_properties.html#aacbf7c7fceaa70d940c28497b042674d"><param name="Name" value="userEdit"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgsftpproperties__ui_1_1_ui___dlg_sftp_properties.html#aec49b8dfbe27807ea7c53752c2250cef"><param name="Name" value="userLabel"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a18a015fe7cfa48072d3098eab6cbba7d"><param name="Name" value="validateEmail"></OBJECT>
-  <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a16ca6c41370af7e2bff754e69b701703"><param name="Name" value="validateFileName"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Local" value="namespace_tools_1_1shared.html#a5cb5b18ce38612f7b0b0e6fbe045bdfa"><param name="Name" value="validateFileName"></OBJECT>
+  <UL>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="namespace_tools_1_1shared.html#a5cb5b18ce38612f7b0b0e6fbe045bdfa"><param name="Name" value="shared.py"></OBJECT>
+    <LI><OBJECT type="text/sitemap"><param name="Local" value="namespace_tools_1_1shared.html#a5cb5b18ce38612f7b0b0e6fbe045bdfa"><param name="Name" value="Tools::shared"></OBJECT>
+  </UL>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#af5ca2633a4630bff06ae185848dc988a"><param name="Name" value="validateSaveData"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a4b4a5d64df52891a8b852945f79c869a"><param name="Name" value="validateSendData"></OBJECT>
   <LI><OBJECT type="text/sitemap"><param name="Local" value="class_tools_1_1identify_1_1_identify.html#a09c1a91a005aeadb9d52ba1de1bae8ed"><param name="Name" value="vectorIdentifyTool"></OBJECT>

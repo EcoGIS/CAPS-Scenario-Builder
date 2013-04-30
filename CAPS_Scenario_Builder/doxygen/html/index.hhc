@@ -282,6 +282,7 @@
       <LI><OBJECT type="text/sitemap"><param name="Name" value="resetIdNumbers"><param name="Local" value="namespace_tools_1_1shared.html#ad64a50abb2fa5c4c3d4a4d93983a7b18"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="snapToNewRoad"><param name="Local" value="namespace_tools_1_1shared.html#a13d094a7b3ffb1c9cf81ed04d2e16b6e"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="updateExtents"><param name="Local" value="namespace_tools_1_1shared.html#a9a2f8f670d9ac7bd7aadff7b84168393"><param name="ImageNumber" value="11"></OBJECT>
+      <LI><OBJECT type="text/sitemap"><param name="Name" value="validateFileName"><param name="Local" value="namespace_tools_1_1shared.html#a5cb5b18ce38612f7b0b0e6fbe045bdfa"><param name="ImageNumber" value="11"></OBJECT>
       </UL>
     </UL>
   <LI><OBJECT type="text/sitemap"><param name="Name" value="Package Functions"><param name="Local" value="namespacemembers.html"><param name="ImageNumber" value="11"></OBJECT>
@@ -365,8 +366,8 @@
       <LI><OBJECT type="text/sitemap"><param name="Name" value="checkDateSent"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a3e3c302eee6715bcaeb4a73a6d07a504"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="checkIfScenarioFilesExist"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#ab4c3cd372842418f8a815a62c44882e2"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="deleteProject"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a54fe06fbae4b5d2261f3c6549360aac2"><param name="ImageNumber" value="11"></OBJECT>
+      <LI><OBJECT type="text/sitemap"><param name="Name" value="displayMsg"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a9ec2cf74c038f923672f964cfa74aca4"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="displayProjectInfo"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a2a9aa43c1862b377c4dd293fd0513394"><param name="ImageNumber" value="11"></OBJECT>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="displaySendMsg"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#ab6c8a0d53f70d19a46129265b7e18d39"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="getProjectFileName"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#ae31fc2bcca64c7c47b449df27c1b2ec3"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="getScenariosInProject"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a338f4b73e044f87a46aa12a640c21517"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="isProjectDirty"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#ac8cc45e96bb7a163c09c7d76f63d2a9b"><param name="ImageNumber" value="11"></OBJECT>
@@ -380,7 +381,6 @@
       <LI><OBJECT type="text/sitemap"><param name="Name" value="setCreateNewProjectMode"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a1a3f3939ded3b4dd9cabbf0f5ad880c7"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="sftpUpload"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a2e7ad95454415dbc4988752332c7f97f"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="validateEmail"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a18a015fe7cfa48072d3098eab6cbba7d"><param name="ImageNumber" value="11"></OBJECT>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="validateFileName"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a16ca6c41370af7e2bff754e69b701703"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="validateSaveData"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#af5ca2633a4630bff06ae185848dc988a"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="validateSendData"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a4b4a5d64df52891a8b852945f79c869a"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="writeProjectFile"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a633dd5bc8062a6c086e3c2afae0c93ba"><param name="ImageNumber" value="11"></OBJECT>
@@ -388,13 +388,13 @@
       <LI><OBJECT type="text/sitemap"><param name="Name" value="existingScenariosNotInProject"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a99d3516033a023d789a2974cf31cd337"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="mainwindow"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a2201822867871441eb2fd7be09a6cca1"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="message"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a0c3932a25ee18829387dd9ca7550abfa"><param name="ImageNumber" value="11"></OBJECT>
+      <LI><OBJECT type="text/sitemap"><param name="Name" value="msg"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a5a7f9842c35183099e2edcb66cb7975b"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="oldProjectFileName"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a1fc0c179a07d14493b4c2b57da183109"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="projectName"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#aef5be444bc69348b25ba73e7cbb13ba6"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="scenariosInProjectFile"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#ae05d17d3279e88967b8ed16ce6f0f2e2"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="scenariosInProjectThatExist"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#af720afa3331c37baf78291cd3c05630a"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="sender"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a000531b07590afe3f1c4f882d3bc9a33"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="senderEmail"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a51f70d5aa126fd2f47e357739ad874c4"><param name="ImageNumber" value="11"></OBJECT>
-      <LI><OBJECT type="text/sitemap"><param name="Name" value="sendMsg"><param name="Local" value="class_main_1_1dlgmanageprojects_1_1_dlg_manage_projects.html#a5eebc2ac87435ee8fa773ef5b1bd4f1b"><param name="ImageNumber" value="11"></OBJECT>
       </UL>
     <LI><OBJECT type="text/sitemap"><param name="Name" value="Main.dlgscenarioedittypes.DlgScenarioEditTypes"><param name="Local" value="class_main_1_1dlgscenarioedittypes_1_1_dlg_scenario_edit_types.html"><param name="ImageNumber" value="1"></OBJECT>
       <UL>
@@ -1208,6 +1208,7 @@
       <LI><OBJECT type="text/sitemap"><param name="Name" value="resetIdNumbers"><param name="Local" value="namespace_tools_1_1shared.html#ad64a50abb2fa5c4c3d4a4d93983a7b18"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="snapToNewRoad"><param name="Local" value="namespace_tools_1_1shared.html#a13d094a7b3ffb1c9cf81ed04d2e16b6e"><param name="ImageNumber" value="11"></OBJECT>
       <LI><OBJECT type="text/sitemap"><param name="Name" value="updateExtents"><param name="Local" value="namespace_tools_1_1shared.html#a9a2f8f670d9ac7bd7aadff7b84168393"><param name="ImageNumber" value="11"></OBJECT>
+      <LI><OBJECT type="text/sitemap"><param name="Name" value="validateFileName"><param name="Local" value="namespace_tools_1_1shared.html#a5cb5b18ce38612f7b0b0e6fbe045bdfa"><param name="ImageNumber" value="11"></OBJECT>
       </UL>
     </UL>
   </UL>

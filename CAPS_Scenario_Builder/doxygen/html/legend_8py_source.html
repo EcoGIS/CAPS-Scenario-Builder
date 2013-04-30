@@ -20,12 +20,12 @@
  <tbody>
  <tr style="height: 56px;">
   
-  <td id="projectlogo"><img alt="Logo" src="CAPS_icon.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="setup_wizard_icon.bmp"/></td>
   
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Caps Scenario Builder
-   &#160;<span id="projectnumber">0.9</span>
+   &#160;<span id="projectnumber">1.0</span>
    </div>
    
   </td>
@@ -67,7 +67,7 @@
 <a href="legend_8py.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a><a class="code" href="namespace_main_1_1legend.html">00001</a> <span class="comment"># -*- coding:utf-8 -*-</span>
 <a name="l00002"></a>00002 <span class="comment">#---------------------------------------------------------------------</span>
 <a name="l00003"></a>00003 <span class="comment"># </span>
-<a name="l00004"></a>00004 <span class="comment"># Conservation Assessment and Prioritization System (CAPS) - An Open Source  </span>
+<a name="l00004"></a>00004 <span class="comment"># Conservation Assessment and Prioritization System (CAPS) Scenario Builder - An Open Source  </span>
 <a name="l00005"></a>00005 <span class="comment"># GIS tool to create scenarios for environmental modeling.</span>
 <a name="l00006"></a>00006 <span class="comment"># </span>
 <a name="l00007"></a>00007 <span class="comment">#---------------------------------------------------------------------</span>
@@ -81,20 +81,20 @@
 <a name="l00015"></a>00015 <span class="comment">#</span>
 <a name="l00016"></a>00016 <span class="comment"># licensed under the terms of GNU GPLv3</span>
 <a name="l00017"></a>00017 <span class="comment"># </span>
-<a name="l00018"></a>00018 <span class="comment"># This file is part of CAPS.</span>
+<a name="l00018"></a>00018 <span class="comment"># This file is part of CAPS Scenario Builder.</span>
 <a name="l00019"></a>00019 
-<a name="l00020"></a>00020 <span class="comment"># CAPS is free software: you can redistribute it and/or modify</span>
+<a name="l00020"></a>00020 <span class="comment"># CAPS Scenario Builder is free software: you can redistribute it and/or modify</span>
 <a name="l00021"></a>00021 <span class="comment"># it under the terms of the GNU General Public License as published by</span>
 <a name="l00022"></a>00022 <span class="comment"># the Free Software Foundation, either version 3 of the License, or</span>
 <a name="l00023"></a>00023 <span class="comment"># (at your option) any later version.</span>
 <a name="l00024"></a>00024 
-<a name="l00025"></a>00025 <span class="comment"># CAPS is distributed in the hope that it will be useful,</span>
+<a name="l00025"></a>00025 <span class="comment"># CAPS Scenario Builder is distributed in the hope that it will be useful,</span>
 <a name="l00026"></a>00026 <span class="comment"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
 <a name="l00027"></a>00027 <span class="comment"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
 <a name="l00028"></a>00028 <span class="comment"># GNU General Public License for more details.</span>
 <a name="l00029"></a>00029 
 <a name="l00030"></a>00030 <span class="comment"># You should have received a copy of the GNU General Public License</span>
-<a name="l00031"></a>00031 <span class="comment"># along with CAPS.  If not, see &lt;http://www.gnu.org/licenses/&gt;..</span>
+<a name="l00031"></a>00031 <span class="comment"># along with CAPS Scenario Builder.  If not, see &lt;http://www.gnu.org/licenses/&gt;..</span>
 <a name="l00032"></a>00032 <span class="comment"># </span>
 <a name="l00033"></a>00033 <span class="comment">#---------------------------------------------------------------------</span>
 <a name="l00034"></a>00034 <span class="comment"># General system includes</span>
@@ -105,7 +105,7 @@
 <a name="l00039"></a>00039 <span class="comment"># QGIS bindings for mapping functions</span>
 <a name="l00040"></a>00040 <span class="keyword">from</span> qgis.core <span class="keyword">import</span> * <span class="comment">#QGis, QgsMapLayerRegistry</span>
 <a name="l00041"></a>00041 <span class="keyword">from</span> qgis.gui <span class="keyword">import</span> * <span class="comment">#QgsMapCanvasLayer</span>
-<a name="l00042"></a>00042 <span class="comment"># CAPS application imports</span>
+<a name="l00042"></a>00042 <span class="comment"># CAPS Scenario Builder application imports</span>
 <a name="l00043"></a>00043 <span class="keyword">import</span> config
 <a name="l00044"></a>00044 
 <a name="l00045"></a>00045 <span class="comment">#icons for the legend are compiled in resources_rc.py</span>
@@ -320,7 +320,7 @@
 <a name="l00254"></a>00254             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Main.legend.LegendItem.setRendererV2(): geometry = 1&quot;</span>
 <a name="l00255"></a>00255             symbolLayer = vlayer.rendererV2().symbols()[0].symbolLayer(0)
 <a name="l00256"></a>00256             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Main.legend.LegendItem.setRendererV2(): The line width before setting is: &quot;</span> + str(symbolLayer.width())
-<a name="l00257"></a>00257             symbolLayer.setWidth(0.4)
+<a name="l00257"></a>00257             symbolLayer.setWidth(1.5)
 <a name="l00258"></a>00258             <span class="keywordflow">print</span> <span class="stringliteral">&quot;Main.legend.LegendItem.setRendererV2(): The line width after setting is: &quot;</span> + str(symbolLayer.width())
 <a name="l00259"></a>00259             vlayer.triggerRepaint()
 <a name="l00260"></a>00260         
@@ -495,7 +495,7 @@
 <a name="l00429"></a>00429             self.<a class="code" href="class_main_1_1legend_1_1_legend_item.html#a2b588baf784d2a6ad86a6e02fb0f50f1">addLayerToColoredLayers</a>() 
 <a name="l00430"></a>00430         <span class="keywordflow">else</span>: <span class="keywordflow">print</span> <span class="stringliteral">&quot;Main.legend.LegendItem.setRendererVretvalThere is a &#39;retval&#39; error&quot;</span>
 <a name="l00431"></a>00431         
-<a name="l00432"></a>00432         symbolLayer.setWidth(0.4)
+<a name="l00432"></a>00432         symbolLayer.setWidth(1.5)
 <a name="l00433"></a>00433         vlayer.triggerRepaint()
 <a name="l00434"></a>00434         
 <a name="l00435"></a><a class="code" href="class_main_1_1legend_1_1_legend_item.html#aedcba3245b505c4b13d3fea4d5d4640c">00435</a>     <span class="keyword">def </span><a class="code" href="class_main_1_1legend_1_1_legend_item.html#aedcba3245b505c4b13d3fea4d5d4640c">setPolygonColor</a>(self, vlayer, red, vlayerName):
@@ -746,27 +746,27 @@
 <a name="l00680"></a>00680         <span class="comment"># set some variables</span>
 <a name="l00681"></a>00681         layer = self.currentItem().canvasLayer.layer()
 <a name="l00682"></a>00682         layerId = self.currentItem().canvasLayer.layer().id()
-<a name="l00683"></a>00683         name = unicode(layer.name())
-<a name="l00684"></a>00684 
-<a name="l00685"></a>00685         <span class="stringliteral">&#39;&#39;&#39; Check and warn on removing an editing layer &#39;&#39;&#39;</span>
-<a name="l00686"></a>00686 
-<a name="l00687"></a>00687         <span class="keywordflow">if</span> name <span class="keywordflow">in</span> config.editLayersBaseNames:
-<a name="l00688"></a>00688             reply = QtGui.QMessageBox.warning(self, <span class="stringliteral">&quot;Warning!&quot;</span>, <span class="stringliteral">&quot;Removing &#39;&quot;</span> + name + <span class="stringliteral">&quot;&#39; \</span>
-<a name="l00689"></a>00689 <span class="stringliteral">from the legend will cause all that layer&#39;s files and any associated &#39;Export Scenario&#39; file to be deleted from \</span>
-<a name="l00690"></a>00690 <span class="stringliteral">the file system. All changes to these files will be lost. Do you want to delete this file(s)?&quot;</span>, 
-<a name="l00691"></a>00691                                                         QtGui.QMessageBox.No|QtGui.QMessageBox.Yes)
-<a name="l00692"></a>00692             <span class="keywordflow">if</span> reply == QtGui.QMessageBox.No: <span class="keywordflow">return</span> <span class="comment"># user canceled so don&#39;t remove layer</span>
-<a name="l00693"></a>00693             <span class="keywordflow">else</span>: <span class="comment"># user chose ok</span>
-<a name="l00694"></a>00694                 <span class="comment"># since we are deleting an editing layer we should be safe and </span>
-<a name="l00695"></a>00695                 <span class="comment"># remove any exported scenario files.</span>
-<a name="l00696"></a>00696                 self.mainwindow.deleteExportScenarioFile()
-<a name="l00697"></a>00697                 <span class="comment"># So we can delete the editing shapefile but must remove from registry first!</span>
-<a name="l00698"></a>00698                 <span class="comment"># Note that this method also checks if the layer is in the originalScenarioLayers</span>
-<a name="l00699"></a>00699                 <span class="comment"># list, sets self.mainwindow.scenarioDirty = True, enables the &#39;Save Scenario&#39; button</span>
-<a name="l00700"></a>00700                 <span class="comment"># and removes the layer from the originalScenarioLayers list.</span>
-<a name="l00701"></a>00701                 self.<a class="code" href="class_main_1_1legend_1_1_legend.html#a5f622884f4f66c32d89cd383457071b6">removeLayerFromRegistry</a>(layer, layerId, <span class="keyword">True</span>)
-<a name="l00702"></a>00702                 <span class="comment"># Finally, delete the editing layer</span>
-<a name="l00703"></a>00703                 editFilePath = unicode(layer.source())
+<a name="l00683"></a>00683         editFilePath = unicode(layer.source())
+<a name="l00684"></a>00684         name = unicode(layer.name())
+<a name="l00685"></a>00685 
+<a name="l00686"></a>00686         <span class="stringliteral">&#39;&#39;&#39; Check and warn on removing an editing layer &#39;&#39;&#39;</span>
+<a name="l00687"></a>00687 
+<a name="l00688"></a>00688         <span class="keywordflow">if</span> name <span class="keywordflow">in</span> config.editLayersBaseNames:
+<a name="l00689"></a>00689             reply = QtGui.QMessageBox.warning(self, <span class="stringliteral">&quot;Warning!&quot;</span>, <span class="stringliteral">&quot;Removing &#39;&quot;</span> + name + <span class="stringliteral">&quot;&#39; \</span>
+<a name="l00690"></a>00690 <span class="stringliteral">from the legend will cause all that layer&#39;s files and any associated &#39;Export Scenario&#39; file to be deleted from \</span>
+<a name="l00691"></a>00691 <span class="stringliteral">the file system. All changes to these files will be lost. Do you want to delete this file(s)?&quot;</span>, 
+<a name="l00692"></a>00692                                                         QtGui.QMessageBox.No|QtGui.QMessageBox.Yes)
+<a name="l00693"></a>00693             <span class="keywordflow">if</span> reply == QtGui.QMessageBox.No: <span class="keywordflow">return</span> <span class="comment"># user canceled so don&#39;t remove layer</span>
+<a name="l00694"></a>00694             <span class="keywordflow">else</span>: <span class="comment"># user chose ok</span>
+<a name="l00695"></a>00695                 <span class="comment"># since we are deleting an editing layer we should be safe and </span>
+<a name="l00696"></a>00696                 <span class="comment"># remove any exported scenario files.</span>
+<a name="l00697"></a>00697                 self.mainwindow.deleteExportScenarioFile()
+<a name="l00698"></a>00698                 <span class="comment"># So we can delete the editing shapefile but must remove from registry first!</span>
+<a name="l00699"></a>00699                 <span class="comment"># Note that this method also checks if the layer is in the originalScenarioLayers</span>
+<a name="l00700"></a>00700                 <span class="comment"># list, sets self.mainwindow.scenarioDirty = True, enables the &#39;Save Scenario&#39; button</span>
+<a name="l00701"></a>00701                 <span class="comment"># and removes the layer from the originalScenarioLayers list.</span>
+<a name="l00702"></a>00702                 self.<a class="code" href="class_main_1_1legend_1_1_legend.html#a5f622884f4f66c32d89cd383457071b6">removeLayerFromRegistry</a>(layer, layerId, <span class="keyword">True</span>)
+<a name="l00703"></a>00703                 <span class="comment"># Finally, delete the editing layer</span>
 <a name="l00704"></a>00704                 self.<a class="code" href="class_main_1_1legend_1_1_legend.html#aa541e80067525773e6696ebcc8985288">deleteEditingLayer</a>(editFilePath)
 <a name="l00705"></a>00705                 <span class="comment"># If the layer name exists in coloredLayers dictionary, remove it.</span>
 <a name="l00706"></a>00706                 self.mainwindow.coloredLayers.pop(name, <span class="keywordtype">None</span>)
@@ -1043,7 +1043,7 @@
 <a name="l00977"></a>00977         <span class="keywordflow">elif</span> self.<a class="code" href="class_main_1_1legend_1_1_legend.html#a2a150d746dc19b7351ca488701947b18">mainwindow</a>.activeRLayer:
 <a name="l00978"></a>00978             activeLayerId = self.mainwindow.activeRLayer.id()
 <a name="l00979"></a>00979 
-<a name="l00980"></a>00980         <span class="comment"># Check if the layer to be moved is in the originalScenarioLayers list and remove if it is. This needs to be done before </span>
+<a name="l00980"></a>00980         <span class="comment"># Check if the layer to be removed is in the originalScenarioLayers list and remove if it is. This needs to be done before </span>
 <a name="l00981"></a>00981         <span class="comment"># removing the layer from the registry, which calls Main.mainwindow.MainWindow.activeLayerChanged(), or we sometimes </span>
 <a name="l00982"></a>00982         <span class="comment"># get an &quot;underlying C++ object deleted when debugging or other code tries to read originalScenarioLayers list.</span>
 <a name="l00983"></a>00983         inOriginalScenario = <span class="keyword">False</span>
@@ -1111,7 +1111,7 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 22 2012 18:23:06 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 30 2013 15:07:38 for Caps Scenario Builder by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
